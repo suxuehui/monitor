@@ -1,0 +1,144 @@
+@import '../../../styles/var.less';
+.monitor-wrap {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  overflow: hidden;
+  #map {
+    height: e('calc(100vh - 98px)');
+  }
+  .container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 360px;
+    border: 1px solid @primary-color;
+    background: #ffffff;
+    border-radius: 5px;
+    transition: all .5s ease-in-out;
+    .fenceSet {
+      border-bottom: 1px solid @primary-color;
+      .fenceTit {
+        position: relative;
+        width: 100%;
+        font-size: 14px;
+        color: #ffffff;
+        text-align: center;
+        padding: 12px 0;
+        background-color: @primary-color;
+        .hideDetail {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          cursor: pointer;
+        }
+      }
+      .fenceInfo {
+        padding: 5px 24px;
+        .el-form-item {
+          margin-bottom: 0px;
+        }
+        .address {
+          margin-left: 0;
+          width: 100%;
+        }
+        .monitorArea {
+          .el-button--mini, .el-button--mini.is-round {
+            padding: 7px 10px
+          }
+          .el-button+.el-button {
+            margin-left: 0px;
+          }
+          .item {
+            line-height: 16px;
+            margin-right: 5px;
+            padding: 2px 10px;
+            cursor: pointer;
+            display: inline-block;
+            border: 1px solid @primary-color;
+            border-radius: 5px;
+          }
+          .active {
+            color: #ffffff;
+            background-color: @primary-color;
+          }
+          .clear {
+            margin-left: 6px;
+          }
+        }
+        .monitorTime {
+          .el-input--suffix .el-input__inner {
+            padding-right: 15px;
+          }
+          .el-input--prefix .el-input__inner {
+            padding-left: 24px;
+          }
+        }
+      }
+    }
+    .monitorCars{
+      border-bottom: 1px solid @primary-color;
+      .fenceTit {
+        color: #232323;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px 0;
+      }
+      .selectCars {
+        width: 80%;
+        margin:0 10% 10px 10%;
+      }
+      .carTable {
+        width: 310px;
+        margin: 0 auto;
+      }
+      .el-table td, .el-table th {
+        padding: 0px 0;
+      }
+      .el-table .cell{
+        line-height: 30px;
+      }
+      .selectPage {
+        width: 310px;
+        margin: 10px auto;
+        display: flex;
+        .btnAll {
+          width:20%;
+        }
+        .setPage {
+          width: 80%;
+          text-align: center;
+        }
+      }
+    }
+    .submit {
+      text-align: center;
+      button {
+        margin: 10px 0;
+      }
+    }
+  }
+  .tableActive {
+    right: -360px;
+  }
+  .showActive {
+    position: absolute;
+    top: 30px;
+    right: -38px;
+    width: 28px;
+    border: 1px solid @primary-color;
+    word-wrap: break-word; 
+    letter-spacing: 20px; 
+    font-size: 15px;
+    background-color: @primary-color;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    transition: all .5s ease-in-out;
+  }
+  .detailActive {
+    right: 10px;
+  }
+}

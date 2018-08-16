@@ -1,0 +1,249 @@
+@import '../../../styles/var.less';
+.monitor-wrap {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  overflow: hidden;
+  #map {
+    height: e('calc(100vh - 98px)');
+  }
+  .loc-search-box {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+    display: flex;
+    .el-input-group__append {
+      padding: 0 12px;
+    }
+    .restore {
+      margin-left: 20px;
+    }
+    #reload{
+      padding: 9px 10px;
+    }
+  }
+  .loc-change-box {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    transition: all .5s ease-in-out;
+    .btn {
+      margin-left: 0px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .less {
+      margin-bottom: 10px;
+    }
+  }
+  .car-detail-box {
+    max-height: e('calc(100vh - 500px)');
+    position: absolute;
+    top: -100%;
+    left: 10px;
+    width: 300px;
+    border: 1px solid @primary-color;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: all .5s ease-in-out;
+    &.big {
+      max-height: e('calc(100vh - 100px)');
+      .car-detail {
+        max-height: e('calc(100vh - 350px)');
+      }
+    }
+    .car-info {
+      padding: 8px;
+      color: #fff;
+      height: 95px;
+      background-color: @primary-color;
+      .top {
+        margin-bottom: 10px;
+        .plateNumber {
+          font-size: 16px;
+          font-weight: 500;
+        }
+        .modelName {
+          font-size: 14px;
+        }
+      }
+      .center {
+        padding-bottom: 5px;
+        border-bottom: 1px solid #fff;
+        display: flex;
+        justify-content: space-between;
+      }
+      .bottom {
+        padding: 5px 0;
+        display: flex;
+        justify-content: space-between;
+        span {
+          width: 50%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+    .car-control {
+      padding: 10px;
+      border-bottom: 1px solid @primary-color;
+      display: flex;
+      height: 55px;
+      button {
+        margin: 0;
+      }
+      .el-button--mini, .el-button--mini.is-round{
+        padding: 7px 7px;
+      }
+      .left {
+        border-right: 1px solid #d8d8d8; 
+        padding-right: 10px;
+        padding-top: 4px;
+        button {
+          color: #fff;
+          background-color: @primary-color;
+        }
+        .fire {
+          margin-right: 5px;
+        }
+      }
+      .right {
+        .lock {
+          margin-right: 2px;
+        }
+        .unlock {
+          margin-right: 2px;
+        }
+      }
+    }
+    .car-address {
+      padding: 10px 20px;
+      border-bottom: 1px solid @primary-color;
+      .loc {
+        position: relative;
+        .icon {
+          position: absolute;
+          top: 3px;
+          left: -15px;
+          font-size: 14px;
+        }
+      }
+      .time {
+        margin-top: 4px;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        .icon {
+          position: absolute;
+          top: 2px;
+          left: -15px;
+          font-size: 14px;
+        }
+        .status {
+          margin-top: -1px;
+        }
+      }
+    }
+    .car-detail {
+      padding: 10px;
+      word-spacing: 2px;
+      max-height: e('calc(100vh - 710px)');
+      overflow: auto;
+      transition: all .5s ease-in-out;
+      .line {
+        width: 100%;
+        height: 100%;
+        .item {
+          float: left;
+          width: 48%;
+          margin-right: 5px;
+          list-style: none;
+          margin-bottom: 8px;
+          .label {
+            display: inline-block;
+            width: 55px;
+            text-align: right;
+          }
+          .val {
+            margin-left: 10px;
+            text-align: left;
+          }
+        }
+      }
+    }
+    .cancel {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 16px;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
+  .car-table {
+    width: 100%;
+    height: 390px;
+    position: absolute;
+    bottom: -390px;
+    transition: all .5s ease-in-out;
+    background-color: #fff;
+    overflow-x: hidden;
+    overflow-y: auto;
+    .pagination{
+      text-align: center;
+    }
+    .filter-table {
+      height: auto;
+      min-height: auto;
+      th .cell {
+        text-align: left;
+      }
+    }
+  }
+  .detail-active {
+    top: 10px;
+  }
+  .loc-active {
+    bottom: 390px;
+  }
+  .table-active {
+    bottom: 0;
+  }
+}
+.map-table {
+  .m-table {
+    padding: 0;
+  }
+}
+.makerMsg {
+  background-color: #fff;
+  border-radius: 6px;
+  position: relative;
+  .plateNum {
+    padding: 4px 10px;
+    top: -5px;
+    left: 50%;
+  }
+  .msg {
+    list-style: none;
+    line-height: 30px;
+    li {
+      width: 50%;
+      float: left;
+      .icon {
+        margin-right: 5px;
+        position: relative;
+        top: 2px;
+      }
+      .txt {
+        color: #666;
+      }
+    }
+  }
+}

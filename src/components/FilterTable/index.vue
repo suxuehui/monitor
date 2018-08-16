@@ -1,0 +1,135 @@
+<template>
+  <div class="filter-table">
+    <m-filter
+      :filter-list="filterList"
+      :filter-grade="filterGrade"
+      :filter-params="filterParams"
+      :table-list="tableList"
+      :add-btn="addBtn"
+      :export-btn="exportBtn"
+      @search="searchFun"
+      @export="exportBack"
+      @setTable="setTable"
+      @addFun="addBack"
+    />
+    <m-table
+      ref="MTable"
+      :table-list="tableList"
+      :url="url"
+      :data-type="dataType"
+      :row-key="rowKey"
+      :opreat="opreat"
+      :opreat-width="opreatWidth"
+      :back-params="BackParams"
+      :local-name="localName"
+      :fetch-error="fetchError"
+      :table-params="tableParams"
+      :highlight-current-row="highlightCurrentRow"
+      @tableClick="tableClick"
+      @selectChange="selectChange"
+      @currentChange="currentChange"
+    />
+  </div>
+</template>
+
+<script lang="ts">
+import { Prop, Emit, Vue, Component } from 'vue-property-decorator';
+import { FilterFormList, tableList, Opreat } from '@/interface/index';
+import MFilter from './MFilter';
+import MTable from './MTable';
+
+@Component({
+  components: {
+  "m-filter": MFilter,
+  "m-table": MTable
+  }
+  })
+export default class FilterTable extends Vue {
+  // 筛选表单生成参数
+  @Prop() private filterList!: FilterFormList[];
+  // 筛选表单高级生成参数
+  @Prop() private filterGrade! : FilterFormList[];
+  // 筛选表单存储数据参数
+  @Prop({ default: {} }) private filterParams!: any;
+  // 外部参数
+  @Prop({ default: {} }) private outParams!: any;
+  // 是否展示新增按钮
+  @Prop() private addBtn!: boolean;
+  // 是否展示导出按钮
+  @Prop() private exportBtn!: boolean;
+  // 表格参数
+  @Prop() private tableList!: tableList[];
+  // 请求数据地址
+  @Prop() private url!: string;
+  // 请求数据类型
+  @Prop({ default: 'formData' }) private dataType!: string;
+  // 表格行ID
+  @Prop() private rowKey!: string;
+  // 操作参数
+  @Prop() private opreat!: Opreat[];
+  // 操作栏width
+  @Prop() private opreatWidth!: string;
+  // 本地存储字段名
+  @Prop() private localName!: string;
+  // 请求错误回调事件
+  @Prop() private fetchError!: string;
+  // 默认分页数量
+  @Prop() private defaultPageSize!: number;
+  // 数据返回格式
+  @Prop() private BackParams!: object;
+
+  @Prop({ default: false }) private highlightCurrentRow!: boolean;
+  // 初始化请求参数
+  tableParams: any = Object.assign(this.filterParams, this.outParams);
+
+  reloadTable() {
+    const table: any = this.$refs.MTable;
+    // 延迟100ms加载数据
+    setTimeout(() => {
+      table.reload();
+    }, 100);
+  }
+
+  @Emit()
+  searchFun(params: any) {
+    this.tableParams = params;
+    const table: any = this.$refs.MTable;
+    // 延迟100ms加载数据
+    setTimeout(() => {
+      table.reload();
+    }, 100);
+  }
+  @Emit()
+  addBack() {
+    this.$emit('addBack');
+  }
+  @Emit()
+  exportBack() {
+    this.$emit('exportBack');
+  }
+  @Emit()
+  setTable(list: Array<string>) {
+    console.log(list);
+  }
+  @Emit()
+  tableClick(key: string, row: any) {
+    this.$emit('menuClick', key, row);
+  }
+  @Emit()
+  selectChange(val: any) {
+    this.$emit('selectChange', val);
+  }
+  @Emit()
+  currentChange(val: any) {
+    this.$emit('currentChange', val);
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.filter-table {
+  overflow: hidden;
+  min-height: e("calc(100vh - 100px)");
+}
+</style>
+

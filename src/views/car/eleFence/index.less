@@ -1,0 +1,220 @@
+@import '../../../styles/var.less';
+.monitor-wrap {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  overflow: hidden;
+  #map {
+    height: e('calc(100vh - 98px)');
+  }
+  .loc-search-box {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+    display: flex;
+    .el-input-group__append {
+      padding: 0 12px;
+    }
+    .restore {
+      margin-left: 20px;
+    }
+  }
+  .loc-change-box {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    transition: all .5s ease-in-out;
+    .btn {
+      margin-left: 0px;
+      margin-bottom: 10px;
+    }
+    .less {
+      margin-bottom: 10px;
+    }
+  }
+  .car-detail-box {
+    position: absolute;
+    top: -520px;
+    left: 10px;
+    width: 300px;
+    border: 1px solid @primary-color;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: all .5s ease-in-out;
+    .car-info {
+      padding: 8px;
+      color: #fff;
+      height: 95px;
+      background-color: @primary-color;
+      .top {
+        margin-bottom: 10px;
+        .plateNumber {
+          font-size: 16px;
+          font-weight: 500;
+        }
+        .modelName {
+          font-size: 14px;
+        }
+      }
+      .center {
+        padding-bottom: 5px;
+        border-bottom: 1px solid #fff;
+        display: flex;
+        justify-content: space-between;
+        .net {
+          text-align: right;
+        }
+      }
+      .bottom {
+        margin-top: 5px;
+        display: flex;
+        justify-content: space-between;
+        span {
+          width: 50%;
+          text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      
+    }
+    .car-control {
+      padding: 10px;
+      border-bottom: 1px solid @primary-color;
+      display: flex;
+      height: 55px;
+      button {
+        margin: 0;
+      }
+      .el-button--mini, .el-button--mini.is-round{
+        padding: 7px 7px;
+      }
+      .left {
+        border-right: 1px solid #d8d8d8; 
+        padding-right: 10px;
+        padding-top: 4px;
+        button {
+          color: #fff;
+          background-color: @primary-color;
+        }
+        .fire {
+          margin-right: 5px;
+        }
+      }
+      .right {
+        .lock {
+          margin-right: 2px;
+        }
+        .unlock {
+          margin-right: 2px;
+        }
+      }
+    }
+    .car-address {
+      padding: 10px 20px;
+      border-bottom: 1px solid @primary-color;
+      .loc {
+        position: relative;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        .icon {
+          position: absolute;
+          top: 1px;
+          left: 0px;
+          font-size: 14px;
+        }
+        span {
+          margin-left: 16px;
+        }
+      }
+      .time {
+        margin-top: 4px;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        .icon {
+          position: absolute;
+          top: 2px;
+          left: -15px;
+          font-size: 14px;
+        }
+        .status {
+          margin-top: -1px;
+        }
+      }
+    }
+    .car-detail {
+      padding: 10px;
+      word-spacing: 2px;
+      height: auto;
+      .line {
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+        .item {
+          display: inline-block;
+          width: 90px;
+          margin-top: 10px;
+          text-align: center;
+        }
+      }
+      .pageSet {
+        text-align: center;
+        margin-top: 10px;
+      }
+    }
+    .cancel {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 16px;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
+  .car-table {
+    width: 100%;
+    position: absolute;
+    bottom: -410px;
+    transition: all .5s ease-in-out;
+    background-color: #fff;
+    overflow-x: hidden;
+    overflow-y: auto;
+    .pagination{
+      text-align: center;
+      padding-top: 5px;
+    }
+    .filter-table {
+      height: auto;
+      min-height: auto;
+      th .cell {
+        text-align: left;
+      }
+    }
+  }
+  .detail-active {
+    top: 10px;
+  }
+  .loc-active {
+    bottom: 410px;
+  }
+  .table-active {
+    bottom: 0;
+  }
+  .BMap_pop {
+    .BMap_bubble_title {
+      font-size: 14px;
+    }
+    .BMap_bubble_content {
+      margin-top: 5px;
+      text-align: center;
+    }
+  }
+}

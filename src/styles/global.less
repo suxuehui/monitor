@@ -1,0 +1,330 @@
+@import './var.less';
+::-webkit-scrollbar-thumb {
+  background-color: #e6e6e6;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+@primary-color: #409EFF;
+
+
+article,
+aside,
+blockquote,
+body,
+button,
+code,
+dd,
+details,
+div,
+dl,
+dt,
+fieldset,
+figcaption,
+figure,
+footer,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+header,
+hgroup,
+hr,
+input,
+legend,
+li,
+menu,
+nav,
+ol,
+p,
+pre,
+section,
+td,
+textarea,
+th,
+ul {
+  margin: 0;
+  padding: 0
+}
+body,
+button,
+input,
+select,
+textarea {
+  font-size: 12px;
+}
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding: 0;
+  margin: 0;
+  background-color: #f1f1f1;
+  height: 100%;
+}
+
+label {
+  font-weight: 700;
+}
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+  text-size-adjust: 100%;
+  background-color: #f3f4f5;
+  font-family: Monospaced Number,Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+.no-padding {
+  padding: 0px !important;
+}
+
+.padding-content {
+  padding: 4px 0;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+.fr {
+  float: right;
+}
+
+.fl {
+  float: left;
+}
+
+.pr-5 {
+  padding-right: 5px;
+}
+
+.pl-5 {
+  padding-left: 5px;
+}
+
+.block {
+  display: block;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.inlineBlock {
+  display: block;
+}
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+#nav {
+  padding: 30px;
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+@font-face {
+  font-family: 'iconfont';  /* project id 730427 */
+  src: url('//at.alicdn.com/t/font_730427_psbt0uuwzn.eot');
+  src: url('//at.alicdn.com/t/font_730427_psbt0uuwzn.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_730427_psbt0uuwzn.woff') format('woff'),
+  url('//at.alicdn.com/t/font_730427_psbt0uuwzn.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_730427_psbt0uuwzn.svg#iconfont') format('svg');
+}
+
+[class*=" iconfont-"], [class^="iconfont-"] {
+  font-family: iconfont !important;
+  font-size: 18px;
+  speak: none;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  vertical-align: baseline;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.iconfont-user::before {
+  content: '\e7ae';
+}
+.iconfont-lock::before {
+  content: '\e7c9';
+}
+.iconfont-code::before {
+  content: '\e7fc';
+}
+.iconfont-indent::before {
+  content: '\e7f3';
+}
+.iconfont-outdent::before {
+  content: '\e7f4';
+}
+.iconfont-email::before {
+  content: '\e7de';
+}
+.iconfont-crown::before {
+  content: '\e842';
+}
+.iconfont-tag::before {
+  content: '\e7e4';
+}
+.iconfont-sound::before {
+  content: '\e7db';
+}
+.iconfont-cloudDownload::before {
+  content: '\e7da';
+}
+.iconfont-cloudUpload::before {
+  content: '\e7d9';
+}
+.iconfont-car::before {
+  content: '\e7d7';
+}
+.iconfont-unlike::before {
+  content: '\e7ca';
+}
+.iconfont-like::before {
+  content: '\e7c8';
+}
+.iconfont-filter::before {
+  content: '\e7c7';
+}
+.iconfont-skin::before {
+  content: '\e7c6';
+}
+.iconfont-bell::before {
+  content: '\e7c5';
+}
+.iconfont-delete::before {
+  content: '\e7c4';
+}
+.iconfont-alert::before {
+  content: '\e7c3';
+}
+.iconfont-fileSearch::before {
+  content: '\e7b4';
+}
+.iconfont-mobile::before {
+  content: '\e7b2';
+}
+.iconfont-import::before {
+  content: '\e794';
+}
+.iconfont-save::before {
+  content: '\e793';
+}
+.iconfont-export::before {
+  content: '\e792';
+}
+.iconfont-edit::before {
+  content: '\e791';
+}
+.iconfont-location::before {
+  content: '\e790';
+}
+.iconfont-setting::before {
+  content: '\e78f';
+}
+.iconfont-chart::before {
+  content: '\e78e';
+}
+.iconfont-dashboard::before {
+  content: '\e78b';
+}
+.iconfont-message::before {
+  content: '\e78a';
+}
+.iconfont-server::before {
+  content: '\e7b1';
+}
+.iconfont-team::before {
+  content: '\e7af';
+}
+.iconfont-listMenu::before {
+  content: '\e7f5';
+}
+.iconfont-down::before {
+  content: '\e7ee';
+}
+.iconfont-up::before {
+  content: '\e7ed';
+}
+.iconfont-time-circle::before {
+  content: '\e784';
+}
+.iconfont-unlock::before {
+  content: '\e7cb';
+}
+.iconfont-wifi::before {
+  content: '\e7e0';
+}
+.iconfont-direction::before {
+  content: '\e609';
+}
+.iconfont-speed::before {
+  content: '\e8db';
+}
+.iconfont-close::before {
+  content: '\e800';
+}
+.iconfont-monitor::before {
+  content: '\e670';
+}
+#app {
+  font-family: Monospaced Number,Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
+  .el-dialog__header {
+    padding: 16px 24px;
+    text-align: left;
+    border-bottom: 1px solid #ececec;
+    .el-dialog__title {
+      font-size: 16px;
+      color: #666;
+    }
+  }
+  .el-dialog__body {
+    padding: 20px;
+    
+  }
+}
