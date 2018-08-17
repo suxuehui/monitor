@@ -302,7 +302,7 @@ export default class EleFence extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
-      this.$router.push({ name: '围栏详情', query: { eleFenceId: row.id } });
+      this.$router.push({ name: '围栏详情', params: { eleFenceId: row.id } });
     } else if (key === 'use') {
       if (row.isactive) {
         // 禁用
@@ -488,7 +488,6 @@ render() {
         {/* 搜索 */}
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
-            <el-button slot="append" icon="el-icon-search" on-click={this.search}></el-button>
           </el-autocomplete>
           <el-button class="restore" size="small" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
         </div>
@@ -498,7 +497,8 @@ render() {
           <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
           <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
           {!this.locChange ?
-            <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> : <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+            <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
+            <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
           }
         </div>
         {/* 详情 */}

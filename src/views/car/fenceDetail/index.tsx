@@ -385,7 +385,7 @@ export default class FenceDetail extends Vue {
 
   // 初始化
   mounted() {
-    this.fenceId = this.$route.query.eleFenceId;
+    this.fenceId = this.$route.params.eleFenceId;
     if (parseInt(this.fenceId, 10) > 0) {
       getFenceDetail({ eleFenceId: this.fenceId }).then((res) => {
         this.modelForm = res.entity;

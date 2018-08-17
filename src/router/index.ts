@@ -32,14 +32,6 @@ export const constantRouterMap: routerItem[] & RouterOptions['routes'] = [
 ];
 
 export const asyncRouterMap: routerItem[] = [
-  // {
-  //   path: '/dashboard',
-  //   icon: 'dashboard',
-  //   name: '系统主页',
-  //   component: getComponent('Dashboard.vue'),
-  //   permission: true,
-  //   meta: { key: 'Dashboard' },
-  // },
   {
     path: '/dashboard',
     icon: 'dashboard',
@@ -98,11 +90,19 @@ export const asyncRouterMap: routerItem[] = [
         meta: { key: 'EleFence' },
       },
       {
-        path: 'fenceDetail',
+        path: 'fenceDetail/:eleFenceId',
         name: '围栏详情',
         component: getComponent('car/fenceDetail/index'),
         permission: '/car/eleFence/list',
         meta: { key: 'FenceDetail' },
+        hidden: true,
+      },
+      {
+        path: 'track/:id',
+        name: '车辆追踪',
+        component: getComponent('car/track/index'),
+        permission: '/device/vehicle/list',
+        meta: { key: 'Track' },
         hidden: true,
       },
     ],
