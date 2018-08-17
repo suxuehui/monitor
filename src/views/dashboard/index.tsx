@@ -1,11 +1,12 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Button, DatePicker } from 'element-ui';
+import { Button, DatePicker, Dialog } from 'element-ui';
 import './index.less';
 
 @Component({
   components: {
   'el-button': Button,
-  'el-date-picker': DatePicker
+  'el-date-picker': DatePicker,
+  'el-dialog': Dialog,
   }
   })
 export default class Dashboard extends Vue {
@@ -104,6 +105,8 @@ export default class Dashboard extends Vue {
   thirtydayActive: boolean = false;
   allActive: boolean = false;
 
+  openVisible: boolean = false;
+
   mounted() {
     // 环状图表
     const circleChart = new window.G2.Chart({
@@ -138,7 +141,7 @@ export default class Dashboard extends Vue {
     });
     circleChart.intervalStack()
       .position('percent')
-      .color('item', ['#00CA68', '#FF0101'])
+      .color('item', ['#00CA68', '#F25D56'])
       .label('percent', {
         formatter: function formatter(val: any, item: any) {
           return `${item.point.item}:${val}`;
@@ -235,7 +238,7 @@ export default class Dashboard extends Vue {
     this.startTime = timer.t2;
     this.endTime = timer.t1;
     this.defaultTime = [
-      new Date(timer.Y2, Number(timer.M2)-1, Number(timer.D2)),
+      new Date(timer.Y2, Number(timer.M2) - 1, Number(timer.D2)),
       new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
     ];
   }
@@ -247,7 +250,7 @@ export default class Dashboard extends Vue {
     this.startTime = timer.t2;
     this.endTime = timer.t1;
     this.defaultTime = [
-      new Date(timer.Y2, Number(timer.M2)-1, Number(timer.D2)),
+      new Date(timer.Y2, Number(timer.M2) - 1, Number(timer.D2)),
       new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
     ];
   }
@@ -269,6 +272,13 @@ export default class Dashboard extends Vue {
       this.endTime = t2;
     }
   }
+  openLink() {
+    this.openVisible = true;
+  }
+
+  closeDialog() {
+    this.openVisible = false;
+  }
 
   render(h: any) {
     return (
@@ -282,6 +292,7 @@ export default class Dashboard extends Vue {
               <el-button type="primary" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
             </div>
           </div>
+          <el-button type="success" plain size="mini" class="iconfont iconfont-link openLink" on-click={this.openLink}>   开放接口</el-button>
         </div>
         <div class="driveArea">
           <div class="title">
@@ -374,7 +385,22 @@ export default class Dashboard extends Vue {
             }
           </ul>
         </div>
-      </div>
+        <el-dialog
+          class="openInfo"
+          title="开放接口"
+          visible={this.openVisible}
+          width="520px"
+          before-close={this.closeDialog}>
+          <p class="title">您的平台接口对接秘钥</p>
+          <p class="key">1akshndgkljfdhuif</p>
+          <p class="webAddress">
+            接口地址：
+            <a href="http://www.qq.com" target="_blank">
+              <span style="color:#1890ff">www.jiekouwendang.com</span>
+            </a>
+          </p>
+        </el-dialog >
+      </div >
     );
   }
 }
