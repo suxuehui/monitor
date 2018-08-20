@@ -2,8 +2,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { gpsToAddress } from '@/api/app';
 import { Button, Tabs, TabPane } from 'element-ui';
 import config from '@/utils';
-import RecordTable from '@/views/car/track/components/RecordTable';
-import EquipmentTable from '@/views/car/track/components/EquipmentTable';
+import RecordTable from '@/views/car/track/record/RecordTable';
+import EquipmentTable from '@/views/car/track/equip/EquipTable';
 import './index.less';
 import '../../../styles/var.less';
 
@@ -129,7 +129,6 @@ export default class Track extends Vue {
   }
 
   tabClick(data: any) {
-    console.log(data);
   }
   render() {
     return (

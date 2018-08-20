@@ -1,109 +1,93 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { Button, Tabs, TabPane } from 'element-ui';
+import { tableList, Opreat, FilterFormList } from '@/interface';
+import { Button, Tabs, TabPane, Tag } from 'element-ui';
+import DeployModel from './components/deployModel';
+import './EquipTable.less';
 
-import './EquipmentTable.less';
 @Component({
   components: {
   'el-button': Button,
   'el-tabs': Tabs,
-  'el-tab-pane': TabPane
+  'el-tab-pane': TabPane,
+  'el-tag': Tag,
+  'deploy-model': DeployModel
   }
   })
 export default class Equipment extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [
     {
-      key: 'levelcode',
-      type: 'levelcode',
-      label: '所属门店',
-      placeholder: '请选择门店',
-      options: [],
-    },
-    {
-      key: 'areaValue',
-      type: 'cascader',
-      label: '所在地区',
-      placeholder: '请选择所在地区',
-      options: [],
-    },
-    {
-      key: 'alarmType',
-      type: 'select',
-      label: '监控类型',
-      placeholder: '请选择监控类型',
-      options: [],
-    },
-    {
       key: 'isactive',
       type: 'select',
       label: '状态',
-      placeholder: '请选择状态',
+      placeholder: '请选择型号',
       options: [],
     },
     {
       key: 'keyword',
       type: 'input',
-      label: '围栏名称/围栏地址',
-      placeholder: '围栏名称/围栏地址',
+      label: 'imei',
+      placeholder: '请输入imei号',
     },
   ];
   tableList: tableList[] = [
     {
-      label: '所属商户',
+      label: 'imei号',
       prop: 'shopName',
     },
     {
-      label: '围栏名称',
+      label: '型号',
       prop: 'name',
     },
     {
-      label: '所在地区',
+      label: '启动时间',
       prop: 'areaValue',
     },
     {
-      label: '围栏地址',
+      label: '启动时长',
       prop: 'address',
     },
     {
-      label: '监控类型',
+      label: '上报频率',
       prop: 'alarmType',
     },
     {
-      label: '监控时段',
-      prop: 'time',
-      formatter(row: any) {
-        return `每天${row.beginTime}~${row.endTime}`;
-      },
+      label: '追踪时间',
+      prop: 'remark',
     },
     {
-      label: '备注',
+      label: '生效时间',
+      prop: 'remark',
+    },
+    {
+      label: '追踪时长',
+      prop: 'remark',
+    },
+    {
+      label: '追踪频率',
+      prop: 'remark',
+    },
+    {
+      label: '剩余电量',
       prop: 'remark',
     },
     {
       label: '状态',
       prop: 'isactive',
+      formatter: this.formatStatus,
     },
   ];
   opreat: Opreat[] = [
     {
-      key: 'edit',
+      key: 'deploy',
       color: 'blue',
-      text: '编辑',
+      text: '配置',
       roles: true,
     },
     {
-      key: 'use',
-      color: (row: any) => (row.isactive ? 'red' : 'green'),
-      text: (row: any) => (row.isactive ? '关闭' : '启用'),
-      msg: (row: any) => (row.isactive ? '是否要关闭？' : '是否要启用？'),
-      roles: true,
-    },
-    {
-      key: 'delete',
-      color: (row: any) => (row.active ? 'green' : 'red'),
-      text: (row: any) => (row.active ? '删除' : '删除'),
-      msg: (row: any) => (row.active ? '是否要删除？' : '是否要删除？'),
+      key: 'reserve',
+      color: 'green',
+      text: '预约',
       roles: true,
     },
   ];
@@ -124,13 +108,50 @@ export default class Equipment extends Vue {
   tableUrl: string = '/fence/list'; // 表格请求地址
   outParams: any = {}
 
+  deployVisible: boolean = false;
+
+  // 格式化状态
+  formatStatus(row: any) {
+    let type;
+    switch (row.status) {
+      case 0:
+        type = <el-tag size="small" type="success">未预约</el-tag>;
+        break;
+      case 1:
+        type = <el-tag size="small" type="danger">已预约</el-tag>;
+        break;
+      case 2:
+        type = <el-tag size="small" type="danger">追踪中</el-tag>;
+        break;
+      default:
+        break;
+    }
+    return type;
+  }
+
   currentChange = (val: any) => {
 
   }
 
   menuClick(key: string, row: any) {
-
+    if (key === 'deploy') {
+      this.deployVisible = true;
+    } else if (key === 'reserve') {
+      console.log(2);
+    }
   }
+
+  // 关闭弹窗
+  closeModal(): void {
+    this.deployVisible = false;
+  }
+  // 关闭后刷新
+  refresh(): void {
+    const FromTable: any = this.$refs.table;
+    FromTable.reloadTable();
+    this.deployVisible = false;
+  }
+
   render() {
     return (
       <div class="container">
@@ -154,6 +175,11 @@ export default class Equipment extends Vue {
           opreat-width="150px"
         >
         </filter-table>
+        <deploy-model
+          visible={this.deployVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        ></deploy-model>
       </div>
     );
   }
