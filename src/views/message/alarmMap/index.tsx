@@ -1,7 +1,6 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Input, Button } from 'element-ui';
 import config from '@/utils';
-import request from '@/utils/request';
 import { gpsToAddress } from '@/api/app';
 import './index.less';
 
@@ -33,7 +32,8 @@ export default class AlarmMap extends Vue {
     // 坐标点
     const pt = new this.BMap.Point(lng, lat);
     const myIcon = new this.BMap.Icon(pointIcon, new this.BMap.Size(16, 16));
-    const marker2 = new this.BMap.Marker(pt, { icon: myIcon });
+    // const marker2 = new this.BMap.Marker(pt, { icon: myIcon });
+    const marker2 = new this.BMap.Marker(pt);
     this.SMap.addOverlay(marker2);
 
     gpsToAddress({ lat, lng }).then((response: any) => {
