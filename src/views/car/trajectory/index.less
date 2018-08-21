@@ -1,4 +1,7 @@
 .trajectory-wrap {
+  height: e('calc(100vh - 98px)');
+  overflow: hidden;
+  position: relative;
   #map {
     height: e('calc(100vh - 98px)');
   }
@@ -78,25 +81,25 @@
   }
 
   .carInfoHeader0, .carInfoHeader1, .carInfoHeader2{
-      height: 40px;
-      margin-top: 10px;
-      line-height: 40px;
-      font-size: 13px;
-      background-repeat: no-repeat;
-      background-position: left center;
-      padding-left: 25px;
-      width: 225px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      background-size: 16px 14px;
+    height: 40px;
+    margin-top: 10px;
+    line-height: 40px;
+    font-size: 13px;
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 25px;
+    width: 225px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background-size: 16px 14px;
   }
 
   .carInfoContent{
       height: 150px;
       width: 100%;
       font-size: 12px;
-      // overflow-y: scroll;
+      overflow-y: auto;
       -webkit-overflow-scrolling:touch;
   }
 

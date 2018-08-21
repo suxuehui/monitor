@@ -67,33 +67,55 @@ export default class MapContorl {
   // 当前轨迹点
   playNumber: number = 0;
   // 初始化播放轨迹
-  mapPlay(data: any, playSeconds: number) {
+  initMapPlay(data: any, playSeconds: number) {
     this.trackData = data;
     this.oneTime = (playSeconds * 1000) / this.trackData.length;
     const firstPoint = new window.BMap.Point(data[0].lng, data[0].lat);
+    this.removeTrackCarOverlay('playCar');
     this.addTrackCarOverlay(firstPoint, 'playCar');
-    this.myCarOverlay.div.style.transition = `all ${this.oneTime / 1000}s linear`;
-    console.log(this.playTimers);
-    this.playTimers = this.playInterVal();
+    this.myCarOverlay.div.style.transition = `left ${this.oneTime / 1000}s linear, top ${this.oneTime / 1000}s linear`;
   }
-  playInterVal = () => setInterval(() => {
-    if (this.playNumber === this.trackData.length - 1) {
-      window.clearInterval(this.playTimers);
-      this.playNumber = 0;
+  playInterVal() {
+    return setInterval(() => {
+      if (this.playNumber === this.trackData.length - 1) {
+        console.log(this.playTimers);
+        window.clearInterval(this.playTimers);
+        this.playNumber = 0;
+      }
+      const Point = new window.BMap.Point(
+        this.trackData[this.playNumber].lng,
+        this.trackData[this.playNumber].lat,
+      );
+      const pixel = this.SMap.pointToOverlayPixel(Point);
+      this.myCarOverlay.div.style.left = `${pixel.x - 14}px`;
+      this.myCarOverlay.div.style.top = `${pixel.y - 14}px`;
+      this.rotateAnimate(this.myCarOverlay.div, this.trackData[this.playNumber].direction);
+      this.playNumber += 1;
+    }, this.oneTime.toFixed(6));
+  }
+  rotateAnimate(dom: any, direction: number) {
+    const patt = /\d+/g;
+    let startVal: any = patt.exec(dom.style.transform);
+    startVal = parseInt(startVal ? startVal[0] : '0', 10);
+    // 是否反方向旋转
+    let isThe = false;
+    if (Math.abs(startVal - direction) > 180) {
+      isThe = true;
     }
-    const Point = new window.BMap.Point(
-      this.trackData[this.playNumber].lng,
-      this.trackData[this.playNumber].lat,
-    );
-    const pixel = this.SMap.pointToOverlayPixel(Point);
-    this.myCarOverlay.div.style.left = `${pixel.x - 14}px`;
-    this.myCarOverlay.div.style.top = `${pixel.y - 14}px`;
-    this.myCarOverlay.div.style.transform = `rotate(${this.trackData[this.playNumber].direction}deg)`;
-    this.playNumber += 1;
-  }, this.oneTime)
+    dom.style.transform = `rotate(${isThe ? -direction : direction}deg)`;
+  }
   // 继续播放动画
   playContinue() {
     this.playTimers = this.playInterVal();
+  }
+  // 播放时长设置
+  playSetTime(val: number) {
+    if (this.trackData) {
+      this.oneTime = (val * 1000) / this.trackData.length;
+      this.passPlay();
+      this.playNumber = 0;
+      this.playContinue();
+    }
   }
   // 暂停播放
   passPlay() {
@@ -103,6 +125,12 @@ export default class MapContorl {
   jumpPlay(val: number) {
     const JumpNumber = parseInt(((val * 1000) / this.oneTime).toString(), 10);
     this.playNumber = JumpNumber;
+  }
+  // 清除播放
+  clearPlay() {
+    this.removeTrackCarOverlay('playCar');
+    this.passPlay();
+    this.playNumber = 0;
   }
   /**
    * 初始化轨迹点信息覆盖物
@@ -121,10 +149,10 @@ export default class MapContorl {
       this.map = self.SMap;
       this.div = document.createElement('div');
       const { div } = this;
-      // div.className = 'trackpointOverlay';
-      div.className = this.type;
+      div.className = 'trackpoint';
+      // div.className = this.type;
       const innerDiv = document.createElement('div');
-      innerDiv.className = 'trackpoint_in';
+      innerDiv.className = this.type;
       div.appendChild(innerDiv);
       self.SMap
         .getPanes()
@@ -277,6 +305,24 @@ export default class MapContorl {
     }
   }
   /**
+  * 删除轨迹车辆覆盖物
+  *
+  * @param {string} type 类型，分为鼠标浮动和点击两种
+  */
+  removeTrackCarOverlay(type: string) {
+    const overlays = this.SMap.getOverlays();
+    const { length } = overlays;
+    const trackPointOverlays = [];
+    for (let i = 0; i < length; i += 1) {
+      if (overlays[i].type === type) {
+        trackPointOverlays.push(overlays[i]);
+      }
+    }
+    for (let j = 0; j < trackPointOverlays.length; j += 1) {
+      this.SMap.removeOverlay(trackPointOverlays[j]);
+    }
+  }
+  /**
    * 删除设备监控的marker,
    *
    */
@@ -296,9 +342,9 @@ export default class MapContorl {
    * 展示轨迹点详情
   */
   showTrackInfoBox(data: any) {
-    this.removeTrackPointOverlay('trackpoint');
+    this.removeTrackPointOverlay('trackpoint_in');
     this.removeTrackInfoBox();
-    this.addTrackPointOverlay(data, 'trackpoint');
+    this.addTrackPointOverlay(data, 'trackpoint_in');
     gpsToAddress({ lat: data.lat, lng: data.lng, coordinateSystem: 'bd09ll' }).then((response) => {
       if (response.status === 0) {
         const address = response.result.formatted_address + response.result.sematic_description;

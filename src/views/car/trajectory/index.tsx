@@ -394,6 +394,9 @@ export default class Trajectory extends Vue {
       color: 'rgba(0, 0, 0, 0)',
     };
     // 初始化PointCollection
+    if (this.pointCollection) {
+      this.SMap.removeOverlay(this.pointCollection);
+    }
     this.pointCollection = new this.BMap.PointCollection(totalPoints, options);
     this.pointCollection.addEventListener('click', (e: any) => {
       this.mapContorl.showTrackInfoBox({
@@ -491,6 +494,11 @@ export default class Trajectory extends Vue {
   // 表格单选
   currentChange(val: any) {
     this.plateNum = val.plateNum;
+    // 如果有播放状态则清除播放
+    if (this.playStatus) {
+      this.getMapContorl().clearPlay();
+      this.clearPlay();
+    }
     tripGPS({ id: val.id }).then((res) => {
       if (res.result.resultCode === '0') {
         let data = res.entity;
@@ -504,6 +512,7 @@ export default class Trajectory extends Vue {
         this.trackView(data);
         // 设置轨迹播放时间-1小时轨迹播放时长为1分钟
         this.playTime = this.timeFormat(val.minutes);
+        this.defaultTime = this.playTime;
       }
     });
   }
@@ -511,14 +520,15 @@ export default class Trajectory extends Vue {
    * 播放轨迹动画-start
    */
   playOnTime: number = 0; // 播放当前时间点
+  defaultTime: string = '';
   playTime: string = '1:00'; // 播放时长
   playStatus: boolean = false; // 播放状态
   playMultiple: number = 1; // 播放速度
   timeFormat(val: number) { // 格式化时间
-    return `${parseInt((val / 60).toString(), 10)}:${(val % 60) < 10 ? `0${val % 60}` : val % 60}`;
+    return `${parseInt((val / 60).toString(), 10)}:${(val % 60) < 10 ? `0${val % 60}` : (val % 60).toFixed(0)}`;
   }
-  playTimeNumber() {
-    const timeArr = this.playTime.split(':');
+  playTimeNumber(time: string) {
+    const timeArr = time.split(':');
     let timeNumber = 0;
     timeNumber += parseInt(timeArr[0], 10) * 60;
     timeNumber += parseInt(timeArr[1], 10);
@@ -536,7 +546,7 @@ export default class Trajectory extends Vue {
   trackPlay() {
     const mapContorl = this.getMapContorl();
     if (this.firstPlay) {
-      mapContorl.mapPlay(this.getTrackData(), this.playTimeNumber());
+      mapContorl.initMapPlay(this.getTrackData(), this.playTimeNumber(this.playTime));
       this.firstPlay = false;
     }
     if (this.playStatus) {
@@ -547,7 +557,7 @@ export default class Trajectory extends Vue {
       this.playStatus = true;
       mapContorl.playContinue();
       this.playTimer = setInterval(() => {
-        if (this.playOnTime === this.playTimeNumber()) {
+        if (this.playOnTime === this.playTimeNumber(this.playTime)) {
           clearInterval(this.playTimer);
           this.playStatus = false;
           this.playOnTime = 0;
@@ -560,6 +570,17 @@ export default class Trajectory extends Vue {
   }
   jumpPlay(val: number) {
     this.getMapContorl().jumpPlay(val);
+  }
+  clearPlay() {
+    this.trackPlay();
+    this.playOnTime = 0;
+    this.firstPlay = true;
+  }
+  playChange(val: number) {
+    this.playTime = this.timeFormat(this.playTimeNumber(this.defaultTime) / val);
+    this.clearPlay();
+    this.trackPlay();
+    this.getMapContorl().playSetTime(this.playTimeNumber(this.defaultTime) / val);
   }
   /**
    * 播放轨迹动画-end
@@ -575,12 +596,12 @@ export default class Trajectory extends Vue {
             <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
             <el-slider
               v-model={this.playOnTime}
-              max={this.playTimeNumber()}
+              max={this.playTimeNumber(this.playTime)}
               on-onchange={this.jumpPlay}
               format-tooltip={this.timeFormat}>
             </el-slider>
             <span class="dot-right">{this.playTime}</span>
-            <el-select v-model={this.playMultiple} placeholder="请选择">
+            <el-select v-model={this.playMultiple} on-change={this.playChange} placeholder="请选择">
               <el-option key={0} label="0.3x" value={0.3}></el-option>
               <el-option key={1} label="0.5x" value={0.5}></el-option>
               <el-option key={2} label="0.8x" value={0.8}></el-option>
