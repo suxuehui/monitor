@@ -142,12 +142,14 @@ export default class EleFence extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
+      rowKey: 'id',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'use',
+      rowKey: 'id',
       color: (row: any) => (row.isactive ? 'red' : 'green'),
       text: (row: any) => (row.isactive ? '关闭' : '启用'),
       msg: (row: any) => (row.isactive ? '是否要关闭？' : '是否要启用？'),
@@ -155,6 +157,7 @@ export default class EleFence extends Vue {
     },
     {
       key: 'delete',
+      rowKey: 'id',
       color: (row: any) => (row.active ? 'green' : 'red'),
       text: (row: any) => (row.active ? '删除' : '删除'),
       msg: (row: any) => (row.active ? '是否要删除？' : '是否要删除？'),

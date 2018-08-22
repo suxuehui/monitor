@@ -289,10 +289,10 @@ export default class Dashboard extends Vue {
             <div id="mountNode" class="mountNode"></div>
             <div class="title">
               <span style="marginRight:20px">{this.helloWord}好！当前{this.count}辆车处于监控中</span>
-              <el-button type="primary" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+              <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
             </div>
           </div>
-          <el-button type="success" plain size="mini" class="iconfont iconfont-link openLink" on-click={this.openLink}>   开放接口</el-button>
+          <el-button type="success" id="openLink" plain size="mini" class="iconfont iconfont-link openLink" on-click={this.openLink}>   开放接口</el-button>
         </div>
         <div class="driveArea">
           <div class="title">
@@ -301,24 +301,28 @@ export default class Dashboard extends Vue {
           <div class="timeSet">
             <ul class="normalTime">
               <li
+                id="toDay"
                 class={['item', this.todayActive ? 'active' : '']}
                 on-click={this.toDayData}
               >
                 今天
               </li>
               <li
+                id="sevenDay"
                 class={['item', this.sevendayActive ? 'active' : '']}
                 on-click={this.sevenData}
               >
                 近7天
               </li>
               <li
+                id="thirtyDay"
                 class={['item', this.thirtydayActive ? 'active' : '']}
                 on-click={this.thirtyData}
               >
                 近30天
               </li>
               <li
+                id="allDay"
                 class={['item', this.allActive ? 'active' : '']}
                 on-click={this.allData}
               >
@@ -326,6 +330,7 @@ export default class Dashboard extends Vue {
               </li>
             </ul>
             <el-date-picker
+              id="datePicker"
               v-model={this.defaultTime}
               class="datePicker"
               type="daterange"

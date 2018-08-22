@@ -243,24 +243,28 @@ export default class Monitor extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
+      rowKey: 'vin',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'tracking',
+      rowKey: 'vin',
       color: 'blue',
       text: '追踪',
       roles: true,
     },
     {
       key: 'trip',
+      rowKey: 'vin',
       color: 'blue',
       text: '轨迹',
       roles: true,
     },
     {
       key: 'delete',
+      rowKey: 'vin',
       color: 'red',
       text: '删除',
       roles: true,

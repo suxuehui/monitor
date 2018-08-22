@@ -50,6 +50,7 @@ export interface tableList {
 // 操作
 export interface Opreat {
   key: string,
+  rowKey: string,
   color: Function | string,
   text: Function | string,
   disabled?: Function;

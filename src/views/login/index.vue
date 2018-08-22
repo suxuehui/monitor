@@ -3,7 +3,7 @@
     <h2 class="loginTxt">欢迎使用<br>兴享融管理系统</h2>
     <div class="loginForm">
       <div class="logo">
-        <img alt="logo" src="../../assets/logo.svg" >
+        <img alt="logo" src="../../assets/logo.svg">
         <span>{{config.name}}</span>
       </div>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="small">
@@ -12,7 +12,8 @@
             id="username"
             v-model="loginForm.username"
             prefix-icon="iconfont-user"
-            placeholder="请输入用户名"/>
+            placeholder="请输入用户名"
+          />
         </el-form-item>
         <el-form-item prop="password">
           <el-input
@@ -20,14 +21,17 @@
             v-model="loginForm.password"
             prefix-icon="iconfont-lock"
             type="password"
-            placeholder="请输入密码"/>
+            placeholder="请输入密码"
+          />
         </el-form-item>
         <el-form-item prop="captcha">
           <el-input
             id="captcha"
             v-model="loginForm.captcha"
             prefix-icon="iconfont-code"
-            placeholder="请输入验证码"/>
+            placeholder="请输入验证码"
+          />
+          <img :src="codeImg" class="authcodeImg" @click="fleshCode">
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
@@ -38,32 +42,36 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Emit, Vue, Inject, Provide } from 'vue-property-decorator';
+import {
+  Component,
+  Prop,
+  Emit,
+  Vue,
+  Inject,
+  Provide,
+} from 'vue-property-decorator';
 import { Form, FormItem, Button, Input } from 'element-ui';
 import config from '@/utils/config';
-import { login } from '@/api/app';
+import { login, getCodeImg, getUserInfo, getMenu } from '@/api/app';
 @Component({
   components: {
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-button': Button,
-  'el-input': Input,
+  "el-form": Form,
+  "el-form-item": FormItem,
+  "el-button": Button,
+  "el-input": Input
   }
   })
 export default class Login extends Vue {
+  codeImg: any = '';
   loginForm: {
-    username: string, password: string, captcha: string
+    username: string;
+    password: string;
+    captcha: string;
   } = { username: '', password: '', captcha: '' };
   loginRules = {
-    username: [
-      { required: true, message: '请输入用户名', trigger: 'blur' },
-    ],
-    password: [
-      { required: true, message: '请输入密码', trigger: 'blur' },
-    ],
-    captcha: [
-      { required: true, message: '请输入验证码', trigger: 'blur' },
-    ],
+    username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+    captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
   };
   config = config;
   @Emit()
@@ -71,17 +79,23 @@ export default class Login extends Vue {
     (this.$refs.loginForm as Form).validate((valid: boolean) => {
       if (valid) {
         login(this.loginForm).then((res) => {
-          const { result: { resultCode, resultMessage }, entity: { token } } = res;
+          const {
+            result: { resultCode, resultMessage },
+            entity: { token },
+          } = res;
           if (resultCode) {
             this.$message.error(resultMessage);
           } else {
             this.$message.success(resultMessage);
             localStorage.setItem('token', token);
-            this.$store.dispatch('getUserInfo').then(() => {
-              this.$router.push('/');
-            }).catch((error) => {
-              this.$message.error(error);
-            });
+            this.$store
+              .dispatch('getUserInfo')
+              .then(() => {
+                this.$router.push('/');
+              })
+              .catch((error) => {
+                this.$message.error(error);
+              });
           }
         });
         return true;
@@ -93,12 +107,16 @@ export default class Login extends Vue {
   resetForm() {
     (this.$refs.loginForm as Form).resetFields();
   }
+  @Emit()
+  fleshCode() {
+    this.codeImg = `/sys/user/getImg?r=${Math.random()}`;
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .loginWrap {
-  background: url('../../assets/login-bg.jpg') center no-repeat;
+  background: url("../../assets/login-bg.jpg") center no-repeat;
   background-size: cover;
   width: 100%;
   height: 100vh;
@@ -119,7 +137,7 @@ export default class Login extends Vue {
   width: 320px;
   height: 360px;
   padding: 36px;
-  box-shadow: 0 0 100px rgba(0,0,0,.08);
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.08);
   background-color: #fff;
   border-radius: 6px;
   .el-form-item {
@@ -201,5 +219,4 @@ export default class Login extends Vue {
     left: 50%;
   }
 }
-
 </style>

@@ -82,12 +82,14 @@ export default class Equipment extends Vue {
   opreat: Opreat[] = [
     {
       key: 'deploy',
+      rowKey: 'id',
       color: 'blue',
       text: '配置',
       roles: true,
     },
     {
       key: 'reserve',
+      rowKey: 'id',
       color: 'green',
       text: '预约',
       roles: true,
