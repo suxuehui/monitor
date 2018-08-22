@@ -12,11 +12,12 @@ import { Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect } from 'ele
   'el-row': Row
   }
   })
-export default class DeployModel extends Vue {
+export default class ReverseModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop() private data: any;
   modelForm: any = {
     startTime: '',
+    trackDuration: '',
   };
   loading: boolean = false;
 
@@ -59,13 +60,13 @@ export default class DeployModel extends Vue {
     return (
       <el-dialog
         width="500px"
-        title="配置"
+        title="预约"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
         <el-form model={this.modelForm} ref="modelForm" label-width="80px" class="model">
-          <el-form-item label="启动时间" prop="roleName">
+          <el-form-item label="追踪时间" prop="roleName">
             <el-time-select
               v-model={this.modelForm.startTime}
               id="roleName"
@@ -74,21 +75,27 @@ export default class DeployModel extends Vue {
               placeholder="请选择启动时间">
             </el-time-select>
           </el-form-item>
-          <el-form-item label="启动时长" prop="remark">
+          <el-form-item label="生效时间" prop="remark1">
             <el-input
-              id="remark"
-              value="5分钟"
+              id="remark1"
               disabled={true}
-              placeholder="请输入职能描述"
             ></el-input>
           </el-form-item>
-          <el-form-item label="上报频率" prop="remark">
+          <el-form-item label="追踪时长" prop="remark2">
             <el-input
-              id="remark"
-              value="5分钟/次"
-              disabled={true}
-              placeholder="请输入职能描述"
-            ></el-input>
+              id="remark2"
+              placeholder="请输入追踪时长"
+            >
+              <template slot="append">分钟</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="追踪频率" prop="remark3">
+            <el-input
+              id="remark3"
+              placeholder="请输入追踪频率"
+            >
+              <template slot="append">分钟/次</template>
+            </el-input>
           </el-form-item>
         </el-form>
         <el-row>

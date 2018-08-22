@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList } from '@/interface';
 import { Button, Tabs, TabPane, Tag } from 'element-ui';
 import DeployModel from './components/deployModel';
+import ReverseModel from './components/reverseModel';
 import './EquipTable.less';
 
 @Component({
@@ -10,7 +11,8 @@ import './EquipTable.less';
   'el-tabs': Tabs,
   'el-tab-pane': TabPane,
   'el-tag': Tag,
-  'deploy-model': DeployModel
+  'deploy-model': DeployModel,
+  'reverse-model': ReverseModel,
   }
   })
 export default class Equipment extends Vue {
@@ -109,6 +111,7 @@ export default class Equipment extends Vue {
   outParams: any = {}
 
   deployVisible: boolean = false;
+  reverseVisible: boolean = false;
 
   // 格式化状态
   formatStatus(row: any) {
@@ -137,19 +140,21 @@ export default class Equipment extends Vue {
     if (key === 'deploy') {
       this.deployVisible = true;
     } else if (key === 'reserve') {
-      console.log(2);
+      this.reverseVisible = true;
     }
   }
 
   // 关闭弹窗
   closeModal(): void {
     this.deployVisible = false;
+    this.reverseVisible = false;
   }
   // 关闭后刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
     this.deployVisible = false;
+    this.reverseVisible = false;
   }
 
   render() {
@@ -180,6 +185,11 @@ export default class Equipment extends Vue {
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></deploy-model>
+        <reverse-model
+          visible={this.reverseVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        ></reverse-model>
       </div>
     );
   }
