@@ -3,9 +3,10 @@ import request from '@/utils/request';
 // 角色管理
 // 角色列表
 export async function getRolesList(params: any) {
+  console.log(1111);
   return request({
     url: '/monitor/sys/role/select',
-    method: 'post',
+    method: 'get',
     fetchType: 'JSON',
     data: params,
   });

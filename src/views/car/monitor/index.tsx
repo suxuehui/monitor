@@ -270,7 +270,7 @@ export default class Monitor extends Vue {
       roles: true,
     },
   ];
-  tableUrl: string = '/device/vehicle/list'; // 表格请求地址
+  tableUrl: string = '/monitor/device/vehicle/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
   BMapLib: any = null; // 百度地图lib对象
   SMap: any = null; // 当前地图对象实例
