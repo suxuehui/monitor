@@ -6,15 +6,138 @@ export default class MapContorl {
   constructor(props: any) {
     this.SMap = props.SMap;
     this.initTrackPointOverlay();
+    this.initTrackCarOverlay();
   }
   trackPointOverlay: any = null;
   point: any = null;
   type: string = '';
+  trackCarOverlay: any = null;
+  /**
+   * 初始化轨迹车辆覆盖物
+   *
+   */
+  initTrackCarOverlay() {
+    const self = this;
+    this.trackCarOverlay = function trackCarOverlay(point : any, type : string) {
+      this.point = point;
+      // this.type = 'trackpoint';
+      this.type = type;
+    };
+    this.trackCarOverlay.prototype = new window.BMap.Overlay();
+    this.trackCarOverlay.prototype.initialize = function initialize(map: any) {
+      const that = this;
+      this.map = self.SMap;
+      this.div = document.createElement('div');
+      const { div } = this;
+      // div.className = 'trackpointOverlay';
+      div.className = this.type;
+      const innerDiv = document.createElement('div');
+      innerDiv.className = 'trackcar';
+      div.appendChild(innerDiv);
+      self.SMap
+        .getPanes()
+        .labelPane
+        .appendChild(div);
+      return div;
+    };
+    this.trackCarOverlay.prototype.draw = function draw() {
+      const { map } = this;
+      const pixel = map.pointToOverlayPixel(this.point);
+      this.div.style.left = `${pixel.x - 8}px`;
+      this.div.style.top = `${pixel.y - 8}px`;
+    };
+  }
+  myCarOverlay: any = null;
+  /**
+   * 添加车辆覆盖物
+   *
+   * @param {Object} point 点
+   * @param {string} type 点类型
+   */
+  addTrackCarOverlay(point: any, type: string) {
+    this.myCarOverlay = new this.trackCarOverlay(point, type);
+    this.SMap.addOverlay(this.myCarOverlay);
+  }
+  // 轨迹数据
+  trackData: any = null;
+  // 播放一个坐标点的时长
+  oneTime: number = 0;
+  // 动画setinterval值
+  playTimers: any = null;
+  // 当前轨迹点
+  playNumber: number = 0;
+  // 初始化播放轨迹
+  initMapPlay(data: any, playSeconds: number) {
+    this.trackData = data;
+    this.oneTime = (playSeconds * 1000) / this.trackData.length;
+    const firstPoint = new window.BMap.Point(data[0].lng, data[0].lat);
+    this.removeTrackCarOverlay('playCar');
+    this.addTrackCarOverlay(firstPoint, 'playCar');
+    this.myCarOverlay.div.style.transition = `left ${this.oneTime / 1000}s linear, top ${this.oneTime / 1000}s linear`;
+  }
+  playInterVal() {
+    return setInterval(() => {
+      if (this.playNumber === this.trackData.length - 1) {
+        console.log(this.playTimers);
+        window.clearInterval(this.playTimers);
+        this.playNumber = 0;
+      }
+      const Point = new window.BMap.Point(
+        this.trackData[this.playNumber].lng,
+        this.trackData[this.playNumber].lat,
+      );
+      const pixel = this.SMap.pointToOverlayPixel(Point);
+      this.myCarOverlay.div.style.left = `${pixel.x - 14}px`;
+      this.myCarOverlay.div.style.top = `${pixel.y - 14}px`;
+      this.rotateAnimate(this.myCarOverlay.div, this.trackData[this.playNumber].direction);
+      this.playNumber += 1;
+    }, this.oneTime.toFixed(6));
+  }
+  rotateAnimate(dom: any, direction: number) {
+    const patt = /\d+/g;
+    let startVal: any = patt.exec(dom.style.transform);
+    startVal = parseInt(startVal ? startVal[0] : '0', 10);
+    // 是否反方向旋转
+    let isThe = false;
+    if (Math.abs(startVal - direction) > 180) {
+      isThe = true;
+    }
+    dom.style.transform = `rotate(${isThe ? -direction : direction}deg)`;
+  }
+  // 继续播放动画
+  playContinue() {
+    this.playTimers = this.playInterVal();
+  }
+  // 播放时长设置
+  playSetTime(val: number) {
+    if (this.trackData) {
+      this.oneTime = (val * 1000) / this.trackData.length;
+      this.passPlay();
+      this.playNumber = 0;
+      this.playContinue();
+    }
+  }
+  // 暂停播放
+  passPlay() {
+    window.clearInterval(this.playTimers);
+  }
+  // 跳跃播放
+  jumpPlay(val: number) {
+    const JumpNumber = parseInt(((val * 1000) / this.oneTime).toString(), 10);
+    this.playNumber = JumpNumber;
+  }
+  // 清除播放
+  clearPlay() {
+    this.removeTrackCarOverlay('playCar');
+    this.passPlay();
+    this.playNumber = 0;
+  }
   /**
    * 初始化轨迹点信息覆盖物
    *
    */
   initTrackPointOverlay() {
+    const self = this;
     this.trackPointOverlay = function trackPointOverlay(point : any, type : string) {
       this.point = point;
       // this.type = 'trackpoint';
@@ -23,15 +146,15 @@ export default class MapContorl {
     this.trackPointOverlay.prototype = new window.BMap.Overlay();
     this.trackPointOverlay.prototype.initialize = function initialize(map: any) {
       const that = this;
-      this.map = map;
+      this.map = self.SMap;
       this.div = document.createElement('div');
       const { div } = this;
-      // div.className = 'trackpointOverlay';
-      div.className = this.type;
+      div.className = 'trackpoint';
+      // div.className = this.type;
       const innerDiv = document.createElement('div');
-      innerDiv.className = 'trackpoint_in';
+      innerDiv.className = this.type;
       div.appendChild(innerDiv);
-      map
+      self.SMap
         .getPanes()
         .labelPane
         .appendChild(div);
@@ -50,8 +173,8 @@ export default class MapContorl {
    * @param {Object} point 点
    * @param {string} type 点类型
    */
-  addTrackPointOverlay(point: any, type: string) {
-    const myCompOverlay = new this.trackPointOverlay(point, type);
+  addTrackPointOverlay(data: any, type: string) {
+    const myCompOverlay = new this.trackPointOverlay(data.point, type);
     this.SMap.addOverlay(myCompOverlay);
   }
   /**
@@ -99,6 +222,7 @@ export default class MapContorl {
     const icon = new window.BMap.Icon(iconUrl, size);
     icon.setImageSize(imageSize);
     this.entityMarker = new window.BMap.Marker(point, { icon });
+    this.entityMarker.setZIndex(999);
     this.entityMarker.setRotation(data.direction);
     this.entityMarker.addEventListener('click', (e: any) => {
       that.trackInfoBox.open(that.entityMarker);
@@ -108,6 +232,7 @@ export default class MapContorl {
     if (!data.interval) {
       this.SMap.panTo(point);
     }
+    console.log(this.entityMarker.getIcon());
   }
   trackInfoBox: any = null; // 窗口对象
   entityMarker: any = null; // 标记
@@ -119,7 +244,7 @@ export default class MapContorl {
   setTrackInfoBox(data: any) {
     const infoContentFrontArr = [
       '<div class="carInfoWindow">',
-      `<div class="carInfoHeader${data.status}">`,
+      '<div class="carInfoHeader0">',
       `<abbr title="${data.plateNum}">`,
       data.plateNum,
       '</abbr>',
@@ -139,18 +264,9 @@ export default class MapContorl {
       ];
       infoContentFrontArr.push(itemPushArr.join(''));
     });
-    const infoContentNextArr = [
-      '</div>',
-      '<div class="infoControl">',
-      '<div class="infoGoTrack" id="monitorInfoZoomIn">',
-      '放大',
-      '</div>',
-      '</div>',
-      '</div>',
-    ];
     this.trackInfoBox = new window.BMapLib.InfoBox(
       this.SMap,
-      infoContentFrontArr.concat(infoContentNextArr).join(''),
+      infoContentFrontArr.join(''),
       {
         boxClass: 'carInfoBox',
         // boxStyle:{background:"url('tipbox.gif') no-repeatcenter top",width: "200px"},
@@ -162,7 +278,7 @@ export default class MapContorl {
     this.trackInfoBox.addEventListener('close', () => {
       // TrackAction.closemonitorinfobox();
     });
-    this.trackInfoBox.open(this.entityMarker);
+    this.trackInfoBox.open(data.point);
     // $('#monitorInfoZoomIn').click((e) => {
     //   TrackAction.triggerswitchmanagetab(1);
     //   TrackAction.triggersearchentitytrack();
@@ -170,7 +286,42 @@ export default class MapContorl {
     //   TrackAction.triggerselecttrack();
     // });
   }
-
+  /**
+  * 删除轨迹点信息覆盖物
+  *
+  * @param {string} type 类型，分为鼠标浮动和点击两种
+  */
+  removeTrackPointOverlay(type: string) {
+    const overlays = this.SMap.getOverlays();
+    const { length } = overlays;
+    const trackPointOverlays = [];
+    for (let i = 0; i < length; i += 1) {
+      if (overlays[i].type === type) {
+        trackPointOverlays.push(overlays[i]);
+      }
+    }
+    for (let j = 0; j < trackPointOverlays.length; j += 1) {
+      this.SMap.removeOverlay(trackPointOverlays[j]);
+    }
+  }
+  /**
+  * 删除轨迹车辆覆盖物
+  *
+  * @param {string} type 类型，分为鼠标浮动和点击两种
+  */
+  removeTrackCarOverlay(type: string) {
+    const overlays = this.SMap.getOverlays();
+    const { length } = overlays;
+    const trackPointOverlays = [];
+    for (let i = 0; i < length; i += 1) {
+      if (overlays[i].type === type) {
+        trackPointOverlays.push(overlays[i]);
+      }
+    }
+    for (let j = 0; j < trackPointOverlays.length; j += 1) {
+      this.SMap.removeOverlay(trackPointOverlays[j]);
+    }
+  }
   /**
    * 删除设备监控的marker,
    *
@@ -191,19 +342,22 @@ export default class MapContorl {
    * 展示轨迹点详情
   */
   showTrackInfoBox(data: any) {
-    this.setEntityMarker(data, 2);
+    this.removeTrackPointOverlay('trackpoint_in');
+    this.removeTrackInfoBox();
+    this.addTrackPointOverlay(data, 'trackpoint_in');
     gpsToAddress({ lat: data.lat, lng: data.lng, coordinateSystem: 'bd09ll' }).then((response) => {
       if (response.status === 0) {
         const address = response.result.formatted_address + response.result.sematic_description;
         const infor = [
           ['定位', data.lnglat],
           ['地址', address],
-          ['速度', data.speed],
+          ['速度', `${data.speed}km/h`],
           ['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')],
         ];
         this.setTrackInfoBox({
           plateNum: data.plateNum,
           infor,
+          point: data.point,
           status: data.status,
         });
       } else {

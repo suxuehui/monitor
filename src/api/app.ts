@@ -1,11 +1,36 @@
 import axios from 'axios';
 import request from '@/utils/request';
+import qs from 'qs';
 
-export async function login(params: any) {
+export async function login(params: any, token: string) {
   return request({
-    url: '/sys/user/login',
+    url: '/monitor/sys/login',
     method: 'post',
     data: params,
+    headers: {
+      token,
+    },
+  });
+}
+
+export async function getAuthCodeToken(params: any) {
+  return request({
+    url: '/monitor/guest-acl',
+    method: 'post',
+    data: params,
+  });
+}
+
+export async function getAuthCode(params: any, token?: string) {
+  const data = qs.stringify(params);
+  return axios({
+    url: `${process.env.NODE_ENV === 'production' ? '' : '/api'}/verify/send/image`,
+    method: 'post',
+    data,
+    headers: {
+      token,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
   });
 }
 

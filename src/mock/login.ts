@@ -81,16 +81,11 @@ export default {
     return baseData('error', '用户名密码错误');
   },
   getUserInfo: (config: MockConfig) => {
-    let { token } = qs.parse(config.body);
-    if (token) {
-      token = JSON.parse(token);
-      const user = userMap.filter(item => item.id === token.id);
-      const data = baseData('success', '获取成功');
-      const [userData] = user;
-      data.entity = userData;
-      return data;
-    }
-    return baseData('error', '登录超时', 3);
+    const user = userMap[0];
+    const data = baseData('success', '获取成功');
+    data.entity = user;
+    return data;
+    // return baseData('error', '登录超时', 3);
   },
   logout: () => 'success',
 };

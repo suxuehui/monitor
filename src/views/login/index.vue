@@ -30,8 +30,8 @@
             v-model="loginForm.captcha"
             prefix-icon="iconfont-code"
             placeholder="请输入验证码"
-          />
-          <img :src="codeImg" class="authcodeImg" @click="fleshCode">
+            @keydown.enter="submitForm('ruleForm')"/>
+          <img :src="codeImg" class="authcodeImg" alt="" @click="getCodeImg">
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
@@ -52,7 +52,8 @@ import {
 } from 'vue-property-decorator';
 import { Form, FormItem, Button, Input } from 'element-ui';
 import config from '@/utils/config';
-import { login, getCodeImg, getUserInfo, getMenu } from '@/api/app';
+import { login, getAuthCodeToken, getAuthCode } from '@/api/app';
+
 @Component({
   components: {
   "el-form": Form,
@@ -62,7 +63,7 @@ import { login, getCodeImg, getUserInfo, getMenu } from '@/api/app';
   }
   })
 export default class Login extends Vue {
-  codeImg: any = '';
+  codeImg = '';
   loginForm: {
     username: string;
     password: string;
@@ -74,33 +75,37 @@ export default class Login extends Vue {
     captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
   };
   config = config;
-
-  @Emit()
-  mounted() {
-
+  imgToken = '';
+  created() {
+    getAuthCodeToken(null).then((res) => {
+      this.imgToken = res.entity;
+      this.getCodeImg();
+    });
+  }
+  getCodeImg() {
+    getAuthCode({ account: this.imgToken }, this.imgToken).then((response) => {
+      if (response.data) {
+        this.codeImg = `data:image/png;base64,${response.data}`;
+      }
+    });
   }
   @Emit()
   submitForm() {
     (this.$refs.loginForm as Form).validate((valid: boolean) => {
       if (valid) {
-        login(this.loginForm).then((res) => {
-          const {
-            result: { resultCode, resultMessage },
-            entity: { token },
-          } = res;
-          if (resultCode) {
+        login({ ...this.loginForm, flagAuth: true }, this.imgToken).then((res) => {
+          const { result: { resultCode, resultMessage }, entity } = res;
+          if (resultCode !== '0') {
             this.$message.error(resultMessage);
+            this.getCodeImg();
           } else {
             this.$message.success(resultMessage);
-            localStorage.setItem('token', token);
-            this.$store
-              .dispatch('getUserInfo')
-              .then(() => {
-                this.$router.push('/');
-              })
-              .catch((error) => {
-                this.$message.error(error);
-              });
+            localStorage.setItem('token', entity.token);
+            this.$store.dispatch('getUserInfo').then(() => {
+              this.$router.push('/');
+            }).catch((error) => {
+              this.$message.error(error);
+            });
           }
         });
         return true;
@@ -190,8 +195,8 @@ export default class Login extends Vue {
 }
 .authcodeImg {
   position: absolute;
-  right: 20px;
-  top: -2px;
+  right: 10px;
+  top: 8px;
   width: 60px;
 }
 

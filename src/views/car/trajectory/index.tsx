@@ -1,5 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Button } from 'element-ui';
+import { Button, Slider, Select, Option } from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import { tripGPS } from '@/api/trajectory';
 import coordTrasns from '@/utils/coordTrasns';
@@ -12,7 +12,10 @@ function getTimeDay(day : number) {}
 
 @Component({
   components: {
-  'el-button': Button
+  'el-button': Button,
+  'el-slider': Slider,
+  'el-select': Select,
+  'el-option': Option,
   }
   })
 export default class Trajectory extends Vue {
@@ -101,48 +104,48 @@ export default class Trajectory extends Vue {
       label: '用时',
       prop: 'minutes',
       formatter(row : any) {
-        return row.mileage
-          ? `${row.mileage}分钟`
+        return row.minutes
+          ? `${row.minutes}分钟`
           : '未知';
       },
     }, {
       label: '耗油',
       prop: 'oil',
       formatter(row : any) {
-        return row.mileage
-          ? `${row.mileage}L`
+        return row.oil
+          ? `${row.oil}L`
           : '未知';
       },
     }, {
       label: '耗电',
       prop: 'consuElectric',
       formatter(row : any) {
-        return row.mileage
-          ? `${row.mileage}%`
+        return row.consuElectric
+          ? `${row.consuElectric}%`
           : '未知';
       },
     }, {
       label: '平均油耗',
       prop: 'avgOil',
       formatter(row : any) {
-        return row.mileage
-          ? `${row.mileage}L/km`
+        return row.avgOil
+          ? `${row.avgOil}L/km`
           : '未知';
       },
     }, {
       label: '平均速度',
       prop: 'avgSpeed',
       formatter(row : any) {
-        return row.mileage
-          ? `${row.mileage}km/h`
+        return row.avgSpeed
+          ? `${row.avgSpeed}km/h`
           : '未知';
       },
     }, {
       label: '最高速度',
       prop: 'maxSpeed',
       formatter(row : any) {
-        return row.mileage
-          ? `${row.mileage}km`
+        return row.maxSpeed
+          ? `${row.maxSpeed}km`
           : '未知';
       },
     },
@@ -232,6 +235,7 @@ export default class Trajectory extends Vue {
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
       tempPoint.speed = data[i].obdspeed ? data[i].obdspeed : data[i].gpsspeed;
       tempPoint.uTCTime = data[i].uTCTime;
+      tempPoint.direction = data[i].direction;
       tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
       tempPoint.lnglat = `${data[i].lng.toFixed(2)},${data[i].lat.toFixed(2)}`;
       totalPoints.push(tempPoint);
@@ -390,16 +394,24 @@ export default class Trajectory extends Vue {
       color: 'rgba(0, 0, 0, 0)',
     };
     // 初始化PointCollection
+    if (this.pointCollection) {
+      this.SMap.removeOverlay(this.pointCollection);
+    }
     this.pointCollection = new this.BMap.PointCollection(totalPoints, options);
     this.pointCollection.addEventListener('click', (e: any) => {
       this.mapContorl.showTrackInfoBox({
         ...e.point,
-        plateNum: this.plateNum,
+        plateNum: this.getPlateNum(),
         status: e.point.printSpeed,
+        point: e.point,
       });
     });
     // 添加Overlay
     this.SMap.addOverlay(this.pointCollection);
+  }
+
+  getPlateNum() {
+    return this.plateNum;
   }
 
   getColorBySpeed = (speed: number) => {
@@ -482,6 +494,11 @@ export default class Trajectory extends Vue {
   // 表格单选
   currentChange(val: any) {
     this.plateNum = val.plateNum;
+    // 如果有播放状态则清除播放
+    if (this.playStatus) {
+      this.getMapContorl().clearPlay();
+      this.clearPlay();
+    }
     tripGPS({ id: val.id }).then((res) => {
       if (res.result.resultCode === '0') {
         let data = res.entity;
@@ -493,13 +510,108 @@ export default class Trajectory extends Vue {
         });
         this.currentTrackData = data;
         this.trackView(data);
+        // 设置轨迹播放时间-1小时轨迹播放时长为1分钟
+        this.playTime = this.timeFormat(val.minutes);
+        this.defaultTime = this.playTime;
       }
     });
   }
+  /**
+   * 播放轨迹动画-start
+   */
+  playOnTime: number = 0; // 播放当前时间点
+  defaultTime: string = '';
+  playTime: string = '1:00'; // 播放时长
+  playStatus: boolean = false; // 播放状态
+  playMultiple: number = 1; // 播放速度
+  timeFormat(val: number) { // 格式化时间
+    return `${parseInt((val / 60).toString(), 10)}:${(val % 60) < 10 ? `0${val % 60}` : (val % 60).toFixed(0)}`;
+  }
+  playTimeNumber(time: string) {
+    const timeArr = time.split(':');
+    let timeNumber = 0;
+    timeNumber += parseInt(timeArr[0], 10) * 60;
+    timeNumber += parseInt(timeArr[1], 10);
+    return timeNumber;
+  }
+  // 播放seInterval值
+  playTimer: any = null;
+  // 是否第一次播放轨迹
+  firstPlay: boolean = true;
+  getTrackData() {
+    return this.currentTrackData;
+  }
+  getMapContorl = () => this.mapContorl
+  // 播放轨迹动画
+  trackPlay() {
+    const mapContorl = this.getMapContorl();
+    if (this.firstPlay) {
+      mapContorl.initMapPlay(this.getTrackData(), this.playTimeNumber(this.playTime));
+      this.firstPlay = false;
+    }
+    if (this.playStatus) {
+      this.playStatus = false;
+      clearInterval(this.playTimer);
+      mapContorl.passPlay();
+    } else {
+      this.playStatus = true;
+      mapContorl.playContinue();
+      this.playTimer = setInterval(() => {
+        if (this.playOnTime === this.playTimeNumber(this.playTime)) {
+          clearInterval(this.playTimer);
+          this.playStatus = false;
+          this.playOnTime = 0;
+          this.firstPlay = true;
+        } else {
+          this.playOnTime += 1;
+        }
+      }, 1000);
+    }
+  }
+  jumpPlay(val: number) {
+    this.getMapContorl().jumpPlay(val);
+  }
+  clearPlay() {
+    this.trackPlay();
+    this.playOnTime = 0;
+    this.firstPlay = true;
+  }
+  playChange(val: number) {
+    this.playTime = this.timeFormat(this.playTimeNumber(this.defaultTime) / val);
+    this.clearPlay();
+    this.trackPlay();
+    this.getMapContorl().playSetTime(this.playTimeNumber(this.defaultTime) / val);
+  }
+  /**
+   * 播放轨迹动画-end
+   */
   render() {
     return (
       <div class="trajectory-wrap">
         <div id="map"></div>
+        {
+          this.currentTrackData.length ?
+          <div class={`play-box ${this.locChange ? 'bottom': ''}`}>
+            <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
+            <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
+            <el-slider
+              v-model={this.playOnTime}
+              max={this.playTimeNumber(this.playTime)}
+              on-onchange={this.jumpPlay}
+              format-tooltip={this.timeFormat}>
+            </el-slider>
+            <span class="dot-right">{this.playTime}</span>
+            <el-select v-model={this.playMultiple} on-change={this.playChange} placeholder="请选择">
+              <el-option key={0} label="0.3x" value={0.3}></el-option>
+              <el-option key={1} label="0.5x" value={0.5}></el-option>
+              <el-option key={2} label="0.8x" value={0.8}></el-option>
+              <el-option key={3} label="1x" value={1}></el-option>
+              <el-option key={4} label="1.5x" value={1.5}></el-option>
+              <el-option key={5} label="2x" value={2}></el-option>
+              <el-option key={6} label="3x" value={3}></el-option>
+            </el-select>
+          </div> : null
+        }
         <div
           class={[
           'loc-change-box', this.locChange

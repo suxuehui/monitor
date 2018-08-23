@@ -113,9 +113,7 @@ const commonfun = {
    */
   getSpeed(speed: number): string {
     let speedDesc;
-    if (speed >= 150) {
-      speedDesc = ' - - ';
-    } else if (speed >= 1 && speed < 150) {
+    if (speed >= 1) {
       speedDesc = `${speed.toFixed(1)}km/h`;
     } else {
       speedDesc = '静止';

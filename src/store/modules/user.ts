@@ -45,7 +45,7 @@ const user = {
     },
     roles: [],
     permission_routers: [],
-    spinning: false,
+    spinning: true,
   },
   mutations: {
     SAVEROLES: (state: any, roles: Array<any>) => {
