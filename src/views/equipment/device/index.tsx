@@ -99,7 +99,7 @@ export default class Device extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/device/terminal/list';
+  url: string = '/monitor/device/terminal/list';
 
   opreat: Opreat[] = [
     {
@@ -287,6 +287,7 @@ export default class Device extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           add-btn={true}
+          data-type={'JSON'}
           on-addBack={this.addModel}
           opreat={this.opreat}
           opreatWidth={'180px'}

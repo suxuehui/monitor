@@ -106,17 +106,13 @@ export default class Login extends Vue {
             this.$message.error(resultMessage || '未知错误');
             this.getCodeImg();
           } else {
-            this.loading = false;
-            this.$message.success(resultMessage || '未知成功');
-            localStorage.setItem('token', entity.token);
-            this.$store
-              .dispatch('getUserInfo')
-              .then(() => {
-                this.$router.push('/');
-              })
-              .catch((error) => {
-                this.$message.error(error);
-              });
+            this.$message.success(resultMessage);
+            localStorage.setItem('token', entity);
+            this.$store.dispatch('getUserInfo').then(() => {
+              this.$router.push('/');
+            }).catch((error) => {
+              this.$message.error(error);
+            });
           }
         });
         return true;
