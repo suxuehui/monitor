@@ -95,7 +95,7 @@ export default class Login extends Vue {
             this.getCodeImg();
           } else {
             this.$message.success(resultMessage);
-            localStorage.setItem('token', entity.token);
+            localStorage.setItem('token', entity);
             this.$store.dispatch('getUserInfo').then(() => {
               this.$router.push('/');
             }).catch((error) => {
