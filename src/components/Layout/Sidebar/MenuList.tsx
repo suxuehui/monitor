@@ -43,7 +43,6 @@ export default class MenuList extends Vue {
   }
   renderMenu(menuData: routerItem[], parentPath?: string): (JSX.Element | null)[] {
     return menuData.map((item: routerItem) => {
-      console.log(item);
       if (item.children) {
         let isEmpty = true;
         item.children.forEach((items: routerItem) => {

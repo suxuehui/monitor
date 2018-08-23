@@ -196,6 +196,7 @@ export default class Merchants extends Vue {
           table-list={this.tableList}
           url={this.url}
           export-btn={true}
+          dataType={'JSON'}
           on-menuClick={this.menuClick}
         />
         <add-modal

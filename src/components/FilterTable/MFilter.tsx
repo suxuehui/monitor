@@ -71,6 +71,8 @@ export default class MFilter extends Vue {
   checkList: Array<string> = [];
   // 高级搜索开关
   showGrade: boolean = false;
+  // 高级筛选高度
+  gradeHeight: number = 1;
   created() {
     this.tableList.map((item) => {
       if (item.prop) {
@@ -104,6 +106,7 @@ export default class MFilter extends Vue {
   @Emit()
   gradeSwitch(val: boolean): void {
     this.showGrade = val;
+    // this.gradeHeight = this.$refs.filterGrade.offsetHeight;
   }
   @Emit()
   addFun(): void {
@@ -174,9 +177,9 @@ export default class MFilter extends Vue {
         break;
       case 'checkboxButton':
         itemDom = <el-checkbox-group
-        on-change={item.change}
-        v-model={this.params[item.key]}
-        size="small">
+          on-change={item.change}
+          v-model={this.params[item.key]}
+          size="small">
           {
             item.options && item.options.map((
               items,
@@ -184,7 +187,7 @@ export default class MFilter extends Vue {
             ) => <el-checkbox-button
               label={items.value}
               key={indexs}>
-              {items.label}
+                {items.label}
               </el-checkbox-button>)
           }
         </el-checkbox-group>;
@@ -232,18 +235,19 @@ export default class MFilter extends Vue {
           </el-form>
         </div>
         {
-          this.filterGrade.length ? <div class="filter-grade">
-            <el-form model={this.params} size="mini" label-width={isMobile ? '' : this.labelWidth}>
-              <el-row gutter={20}>
-                {
-                  this.filterGrade.map((item, index) => this.formItem(item, index, true))
-                }
-                <el-col class="btn-wrap" span={24} sm={24} xs={24}>
-                  {this.btnElement(false)}
-                </el-col>
-              </el-row>
-            </el-form>
-          </div> : null
+          this.filterGrade.length ?
+            <div class="filter-grade" ref="filterGrade" id="filter-grade">
+              <el-form model={this.params} size="mini" label-width={isMobile ? '' : this.labelWidth}>
+                <el-row gutter={20}>
+                  {
+                    this.filterGrade.map((item, index) => this.formItem(item, index, true))
+                  }
+                  <el-col class="btn-wrap" span={24} sm={24} xs={24}>
+                    {this.btnElement(false)}
+                  </el-col>
+                </el-row>
+              </el-form>
+            </div> : null
         }
         <el-dialog id="tableSet" width="500px" title="表格设置" visible={this.setModel} on-close={this.closeModal}>
           <el-checkbox-group class="checkbox-list" v-model={this.checkList}>
@@ -275,10 +279,10 @@ export default class MFilter extends Vue {
         }
         <div class="right-btn">
           {
-            this.addBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableAdd': 'tableAdd2'} size="mini" icon="el-icon-plus">新增</el-button> : null
+            this.addBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableAdd' : 'tableAdd2'} size="mini" icon="el-icon-plus">新增</el-button> : null
           }
           {
-            this.exportBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableExport': 'tableExport2'} size="mini" icon="el-icon-download" circle></el-button> : null
+            this.exportBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableExport' : 'tableExport2'} size="mini" icon="el-icon-download" circle></el-button> : null
           }
           <el-button on-click={this.openSetting} id="tableSet" icon="el-icon-setting" size="mini" circle></el-button>
         </div>
