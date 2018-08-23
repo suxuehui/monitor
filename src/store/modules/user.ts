@@ -1,4 +1,4 @@
-import { userInfo } from '@/api/app';
+import { getUserInfo } from '@/api/app';
 import config from '@/utils/config';
 import router, { asyncRouterMap, constantRouterMap } from '@/router';
 import { routerItem } from '@/interface';
@@ -64,7 +64,7 @@ const user = {
         token: localStorage.getItem('token'),
       };
       context.commit('LOADING', false);
-      userInfo(params).then(({ result, entity }) => {
+      getUserInfo(params).then(({ result, entity }) => {
         context.commit('LOADING', true);
         if (!result.resultCode) {
           if (config.noLoginList.indexOf(window.location.hash) > -1) {

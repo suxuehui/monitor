@@ -1,11 +1,12 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Button, DatePicker } from 'element-ui';
+import { Button, DatePicker, Dialog } from 'element-ui';
 import './index.less';
 
 @Component({
   components: {
   'el-button': Button,
-  'el-date-picker': DatePicker
+  'el-date-picker': DatePicker,
+  'el-dialog': Dialog,
   }
   })
 export default class Dashboard extends Vue {
@@ -104,6 +105,8 @@ export default class Dashboard extends Vue {
   thirtydayActive: boolean = false;
   allActive: boolean = false;
 
+  openVisible: boolean = false;
+
   mounted() {
     // 环状图表
     const circleChart = new window.G2.Chart({
@@ -138,7 +141,7 @@ export default class Dashboard extends Vue {
     });
     circleChart.intervalStack()
       .position('percent')
-      .color('item', ['#00CA68', '#FF0101'])
+      .color('item', ['#00CA68', '#F25D56'])
       .label('percent', {
         formatter: function formatter(val: any, item: any) {
           return `${item.point.item}:${val}`;
@@ -169,8 +172,6 @@ export default class Dashboard extends Vue {
     // 时间
     this.nowDate = new Date();// 获取系统当前时间
     const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
-    this.defaultTime[0] = this.nowDate;
-    this.defaultTime[1] = this.nowDate;
     this.setHelloWord(myTime);
   }
   setHelloWord(time: any) {
@@ -188,21 +189,26 @@ export default class Dashboard extends Vue {
 
   timeForMat(count: number) {
     // 拼接时间
+    // 当前时间
     const time1 = new Date();
     time1.setTime(time1.getTime());
     const Y1 = time1.getFullYear();
     const M1 = ((time1.getMonth() + 1) > 10 ? (time1.getMonth() + 1) : `0${time1.getMonth() + 1}`);
     const D1 = (time1.getDate() > 10 ? time1.getDate() : `0${time1.getDate()}`);
-    const timer1 = `${Y1}-${M1}-${D1}`; // 当前时间
+    const timer1 = `${Y1}-${M1}-${D1}`;
+    // 之前的7天或者30天
     const time2 = new Date();
     time2.setTime(time2.getTime() - (24 * 60 * 60 * 1000 * count));
     const Y2 = time2.getFullYear();
     const M2 = ((time2.getMonth() + 1) > 9 ? (time2.getMonth() + 1) : `0${time2.getMonth() + 1}`);
     const D2 = (time2.getDate() > 9 ? time2.getDate() : `0${time2.getDate()}`);
-    const timer2 = `${Y2}-${M2}-${D2}`; // 之前的7天或者30天
+    const timer2 = `${Y2}-${M2}-${D2}`;
     return {
       t1: timer1,
       t2: timer2,
+      Y2,
+      M2,
+      D2,
     };
   }
   cancelAllActive() {
@@ -218,9 +224,10 @@ export default class Dashboard extends Vue {
     const time = this.nowDate.toLocaleDateString().split('/').join('-');
     this.startTime = time;
     this.endTime = time;
-    console.log('今天');
-    console.log(`开始时间${this.startTime}`);
-    console.log(`结束时间${this.endTime}`);
+    this.defaultTime = [
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+    ];
   }
 
 
@@ -230,9 +237,10 @@ export default class Dashboard extends Vue {
     const timer = this.timeForMat(7);
     this.startTime = timer.t2;
     this.endTime = timer.t1;
-    console.log('7天');
-    console.log(`开始时间${this.startTime}`);
-    console.log(`结束时间${this.endTime}`);
+    this.defaultTime = [
+      new Date(timer.Y2, Number(timer.M2) - 1, Number(timer.D2)),
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+    ];
   }
 
   thirtyData() {
@@ -241,9 +249,10 @@ export default class Dashboard extends Vue {
     const timer = this.timeForMat(30);
     this.startTime = timer.t2;
     this.endTime = timer.t1;
-    console.log('30天');
-    console.log(`开始时间${this.startTime}`);
-    console.log(`结束时间${this.endTime}`);
+    this.defaultTime = [
+      new Date(timer.Y2, Number(timer.M2) - 1, Number(timer.D2)),
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+    ];
   }
 
   allData() {
@@ -251,9 +260,7 @@ export default class Dashboard extends Vue {
     this.allActive = true;
     this.startTime = '';
     this.endTime = '';
-    console.log('全部');
-    console.log(`开始时间${this.startTime}`);
-    console.log(`结束时间${this.endTime}`);
+    this.defaultTime = [];
   }
 
   timeSelect(data: any) {
@@ -264,9 +271,13 @@ export default class Dashboard extends Vue {
       this.startTime = t1;
       this.endTime = t2;
     }
-    console.log('搜索时间');
-    console.log(`开始时间${this.startTime}`);
-    console.log(`结束时间${this.endTime}`);
+  }
+  openLink() {
+    this.openVisible = true;
+  }
+
+  closeDialog() {
+    this.openVisible = false;
   }
 
   render(h: any) {
@@ -278,9 +289,10 @@ export default class Dashboard extends Vue {
             <div id="mountNode" class="mountNode"></div>
             <div class="title">
               <span style="marginRight:20px">{this.helloWord}好！当前{this.count}辆车处于监控中</span>
-              <el-button type="primary" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+              <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
             </div>
           </div>
+          <el-button type="success" id="openLink" plain size="mini" class="iconfont iconfont-link openLink" on-click={this.openLink}>   开放接口</el-button>
         </div>
         <div class="driveArea">
           <div class="title">
@@ -289,24 +301,28 @@ export default class Dashboard extends Vue {
           <div class="timeSet">
             <ul class="normalTime">
               <li
+                id="toDay"
                 class={['item', this.todayActive ? 'active' : '']}
                 on-click={this.toDayData}
               >
                 今天
               </li>
               <li
+                id="sevenDay"
                 class={['item', this.sevendayActive ? 'active' : '']}
                 on-click={this.sevenData}
               >
                 近7天
               </li>
               <li
+                id="thirtyDay"
                 class={['item', this.thirtydayActive ? 'active' : '']}
                 on-click={this.thirtyData}
               >
                 近30天
               </li>
               <li
+                id="allDay"
                 class={['item', this.allActive ? 'active' : '']}
                 on-click={this.allData}
               >
@@ -314,9 +330,11 @@ export default class Dashboard extends Vue {
               </li>
             </ul>
             <el-date-picker
+              id="datePicker"
               v-model={this.defaultTime}
               class="datePicker"
               type="daterange"
+              // default-value={this.defaultTime}
               size="mini"
               value-format="yyyy-MM-dd"
               on-change={(val: any) => this.timeSelect(val)}
@@ -372,7 +390,22 @@ export default class Dashboard extends Vue {
             }
           </ul>
         </div>
-      </div>
+        <el-dialog
+          class="openInfo"
+          title="开放接口"
+          visible={this.openVisible}
+          width="520px"
+          before-close={this.closeDialog}>
+          <p class="title">您的平台接口对接秘钥</p>
+          <p class="key">1akshndgkljfdhuif</p>
+          <p class="webAddress">
+            接口地址：
+            <a href="http://www.qq.com" target="_blank">
+              <span style="color:#1890ff">www.jiekouwendang.com</span>
+            </a>
+          </p>
+        </el-dialog >
+      </div >
     );
   }
 }

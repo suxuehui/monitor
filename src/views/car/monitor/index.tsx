@@ -84,7 +84,7 @@ export default class Monitor extends Vue {
       ],
     },
     {
-      key: 'onliine',
+      key: 'online',
       type: 'select',
       label: '车辆状态',
       placeholder: '车辆状态',
@@ -114,47 +114,47 @@ export default class Monitor extends Vue {
           label: '无位置变化（全部）',
         },
         {
-          value: `${12*60}`,
+          value: `${12 * 60}`,
           label: '12时以上',
         },
         {
-          value: `${24*60}`,
+          value: `${24 * 60}`,
           label: '1天以上',
         },
         {
-          value: `${48*60}`,
+          value: `${48 * 60}`,
           label: '2天以上',
         },
         {
-          value: `${72*60}`,
+          value: `${72 * 60}`,
           label: '3天以上',
         },
         {
-          value: `${96*60}`,
+          value: `${96 * 60}`,
           label: '4天以上',
         },
         {
-          value: `${120*60}`,
+          value: `${120 * 60}`,
           label: '5天以上',
         },
         {
-          value: `${144*60}`,
+          value: `${144 * 60}`,
           label: '6天以上',
         },
         {
-          value: `${168*60}`,
+          value: `${168 * 60}`,
           label: '7天以上',
         },
         {
-          value: `${192*60}`,
+          value: `${192 * 60}`,
           label: '8天以上',
         },
         {
-          value: `${216*60}`,
+          value: `${216 * 60}`,
           label: '9天以上',
         },
         {
-          value: `${240*60}`,
+          value: `${240 * 60}`,
           label: '10天以上',
         },
       ],
@@ -243,24 +243,28 @@ export default class Monitor extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
+      rowKey: 'vin',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'tracking',
+      rowKey: 'vin',
       color: 'blue',
       text: '追踪',
       roles: true,
     },
     {
       key: 'trip',
+      rowKey: 'vin',
       color: 'blue',
       text: '轨迹',
       roles: true,
     },
     {
       key: 'delete',
+      rowKey: 'vin',
       color: 'red',
       text: '删除',
       roles: true,
@@ -554,6 +558,9 @@ export default class Monitor extends Vue {
       case 'trip':
         this.$router.push({ name: '车辆轨迹', params: { id: row.id } });
         break;
+      case 'tracking':
+        this.$router.push({ name: '车辆追踪', params: { id: row.id } });
+        break;
       default:
         break;
     }
@@ -566,7 +573,7 @@ export default class Monitor extends Vue {
       case 'string':
         return value;
       case 'number':
-        return unit ? value + unit: value;
+        return unit ? value + unit : value;
       default:
         return value;
     }
@@ -584,7 +591,7 @@ export default class Monitor extends Vue {
   searchAddress(val: string, cb: any) {
     queryAddress(val).then((res) => {
       if (res.status === 0) {
-        const nameList: {value: any, lat: number, lng: number}[] = [];
+        const nameList: { value: any, lat: number, lng: number }[] = [];
         res.result.forEach((item: any, index: number) => {
           nameList.push({
             value: item.name,

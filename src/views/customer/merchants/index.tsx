@@ -53,12 +53,14 @@ export default class Merchants extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
+      rowKey: 'manageUser',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'freeze',
+      rowKey: 'manageUser',
       color: (row: any) => (row.activeStatus ? 'green' : 'red'),
       text: (row: any) => (row.activeStatus ? '解冻' : '冻结'),
       msg: (row: any) => (row.activeStatus ? '是否要解冻？' : '是否要冻结？'),
@@ -194,6 +196,7 @@ export default class Merchants extends Vue {
           table-list={this.tableList}
           url={this.url}
           export-btn={true}
+          dataType={'JSON'}
           on-menuClick={this.menuClick}
         />
         <add-modal

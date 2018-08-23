@@ -3,7 +3,6 @@ import request from '@/utils/request';
 // 角色管理
 // 角色列表
 export async function getRolesList(params: any) {
-  console.log(1111);
   return request({
     url: '/monitor/sys/role/select',
     method: 'get',
@@ -14,7 +13,7 @@ export async function getRolesList(params: any) {
 // 角色新增
 export async function roleAdd(params: any) {
   return request({
-    url: '/sys/role/save',
+    url: '/monitor/sys/role/save',
     method: 'post',
     fetchType: 'JSON',
     data: params,
@@ -23,7 +22,7 @@ export async function roleAdd(params: any) {
 // 角色修改
 export async function roleUpdate(params: any) {
   return request({
-    url: '/sys/role/update',
+    url: '/monitor/sys/role/update',
     method: 'post',
     data: params,
   });
@@ -31,7 +30,7 @@ export async function roleUpdate(params: any) {
 // 角色启用
 export async function roleUnlock(params: any) {
   return request({
-    url: '/sys/role/unlock',
+    url: '/monitor/sys/role/unlock',
     method: 'post',
     fetchType: 'JSON',
     data: params,
@@ -40,7 +39,7 @@ export async function roleUnlock(params: any) {
 // 角色禁用
 export async function roleLock(params: any) {
   return request({
-    url: '/sys/role/lock',
+    url: '/monitor/sys/role/lock',
     method: 'post',
     fetchType: 'JSON',
     data: params,
@@ -50,7 +49,7 @@ export async function roleLock(params: any) {
 // 获取登录的用户信息
 export async function getUserInfo(params: any) {
   return request({
-    url: '/sys/user/info',
+    url: '/monitor/sys/user/info',
     method: 'get',
     data: params,
   });
@@ -60,7 +59,7 @@ export async function getUserInfo(params: any) {
 // 成员解冻
 export async function userUnlock(params: any) {
   return request({
-    url: '/sys/user/unlock',
+    url: '/monitor/sys/user/unlock',
     method: 'post',
     fetchType: 'JSON',
     data: params,
@@ -69,7 +68,7 @@ export async function userUnlock(params: any) {
 // 成员冻结
 export async function userLock(params: any) {
   return request({
-    url: '/sys/user/lock',
+    url: '/monitor/sys/user/lock',
     method: 'post',
     fetchType: 'JSON',
     data: params,

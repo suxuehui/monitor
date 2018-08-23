@@ -75,12 +75,14 @@ export default class Member extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
+      rowKey: 'roleId',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'freeze',
+      rowKey: 'roleId',
       color: (row: any) => (row.active ? 'red' : 'green'),
       text: (row: any) => (row.active ? '冻结' : '解冻'),
       msg: (row: any) => (row.active ? '是否要冻结？' : '是否要解冻？'),
@@ -208,6 +210,7 @@ export default class Member extends Vue {
           table-list={this.tableList}
           url={this.url}
           export-btn={true}
+          dataType={'JSON'}
           on-menuClick={this.menuClick}
         />
         <add-modal

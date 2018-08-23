@@ -3,7 +3,7 @@ import request from '@/utils/request';
 // 商户新增
 export async function customerAdd(params: any) {
   return request({
-    url: '/sys/org/save',
+    url: '/monitor/sys/org/save',
     method: 'post',
     data: params,
   });
@@ -11,7 +11,7 @@ export async function customerAdd(params: any) {
 // 商户修改
 export async function customerUpdate(params: any) {
   return request({
-    url: '/sys/org/update',
+    url: '/monitor/sys/org/update',
     method: 'post',
     data: params,
   });
@@ -19,28 +19,28 @@ export async function customerUpdate(params: any) {
 // 商户冻结
 export async function customerLock(params: any) {
   return request({
-    url: `/sys/org/lock/${params}`,
+    url: `/monitor/sys/org/lock/${params}`,
     method: 'post',
   });
 }
 // 商户解冻
 export async function customerUnlock(params: any) {
   return request({
-    url: `/sys/org/unlock/${params}`,
+    url: `/monitor/sys/org/unlock/${params}`,
     method: 'post',
   });
 }
 // 检查商户
 export async function checkOrgName(params: any) {
   return request({
-    url: `/sys/org/unlock/${params}`,
+    url: `/monitor/sys/org/unlock/${params}`,
     method: 'post',
   });
 }
 // 所有商户列表
 export async function getCustomerList(params: any) {
   return request({
-    url: '/sys/org/list',
+    url: '/monitor/sys/org/list',
     method: 'post',
   });
 }

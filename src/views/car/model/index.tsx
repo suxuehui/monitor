@@ -51,12 +51,14 @@ export default class Member extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
+      rowKey: 'id',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'freeze',
+      rowKey: 'id',
       color: (row: any) => (row.status ? 'red' : 'green'),
       text: (row: any) => (row.status ? '禁用' : '启用'),
       msg: (row: any) => (row.status ? '是否要禁用？' : '是否要启用？'),
@@ -152,6 +154,7 @@ export default class Member extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
+          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

@@ -65,6 +65,7 @@ export default class Alarm extends Vue {
   opreat: Opreat[] = [
     {
       key: 'handle',
+      rowKey: 'id',
       color: 'blue',
       text: (row: any) => (row.status ? '查看' : '处理'),
       roles: true,

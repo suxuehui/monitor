@@ -147,7 +147,7 @@ export default class MTable extends Vue {
       this.opreat.map((item, indexs) => {
         const whiteList = ['red', 'orange'];
         if (item.disabled && item.disabled(row)) {
-          return <a key={indexs} class="btn disabled">
+          return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
             { typeof item.text === 'function' ? item.text(row) : item.text }
           </a>;
         } else if (typeof item.color === 'function'
@@ -155,12 +155,12 @@ export default class MTable extends Vue {
           return <pop-confirm
             on-confirm={() => this.menuClick(item.key, row)}
             title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
-            <a key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
+            <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
               { typeof item.text === 'function' ? item.text(row) : item.text }
             </a>
           </pop-confirm>;
         }
-        return <a class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
+        return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
       })
     }
   </div>;

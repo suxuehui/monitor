@@ -34,7 +34,15 @@ export async function getAuthCode(params: any, token?: string) {
   });
 }
 
-export async function userInfo(params: any) {
+export async function getCodeImg(params: any) {
+  return request({
+    url: `/sys/user/getImg?r=${Math.random()}`,
+    method: 'get',
+    data: params,
+  });
+}
+
+export async function getUserInfo(params: any) {
   return request({
     url: '/sys/user/getUserInfo',
     method: 'post',

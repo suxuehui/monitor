@@ -37,7 +37,7 @@ export default class MenuList extends Vue {
         active-text-color="#1890ff"
         on-open={this.handleOpen}
         on-close={this.handleClose}>
-        { menuData ? this.renderMenu(menuData) : null }
+        {menuData ? this.renderMenu(menuData) : null}
       </el-menu>
     );
   }
@@ -52,32 +52,36 @@ export default class MenuList extends Vue {
         });
         if (isEmpty) {
           return <el-menu-item
-          on-click={() => this.openPage(
-            `${parentPath ? `${parentPath}/${item.path}` : item.path}`,
-            item.name,
-          )} index={`${item.path}`}>
-              <i class={`iconfont-${item.icon}`}></i>
-              <span slot="title">{item.name}</span>
-            </el-menu-item>;
+            id={item.path}
+            on-click={() => this.openPage(
+              `${parentPath ? `${parentPath}/${item.path}` : item.path}`,
+              item.name,
+            )} index={`${item.path}`}>
+            <i class={`iconfont-${item.icon}`}></i>
+            <span slot="title">{item.name}</span>
+          </el-menu-item>;
         }
-        return <el-submenu index={item.path}>
+        return <el-submenu
+          id={item.path}
+          index={item.path}>
           <template slot="title">
             <i class={`iconfont-${item.icon}`}></i>
             <span slot="title">{item.name}</span>
           </template>
-          { this.renderMenu(item.children, parentPath ? `${parentPath}/${item.path}` : item.path) }
+          {this.renderMenu(item.children, parentPath ? `${parentPath}/${item.path}` : item.path)}
         </el-submenu>;
       } else if (item.hidden) {
         return null;
       }
       return <el-menu-item
-      on-click={() => this.openPage(
-        `${parentPath ? `${parentPath}/${item.path}` : item.path}`,
-        item.name,
-      )} index={`${item.path}`}>
-          <i class={`iconfont-${item.icon}`}></i>
-          <span slot="title">{item.name}</span>
-        </el-menu-item>;
+        id={item.path}
+        on-click={() => this.openPage(
+          `${parentPath ? `${parentPath}/${item.path}` : item.path}`,
+          item.name,
+        )} index={`${item.path}`}>
+        <i class={`iconfont-${item.icon}`}></i>
+        <span slot="title">{item.name}</span>
+      </el-menu-item>;
     });
   }
   openPage(path: string, name: string | undefined) {

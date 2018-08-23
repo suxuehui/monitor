@@ -1,6 +1,7 @@
 <template>
   <div class="filter-table">
     <m-filter
+      ref="MFilter"
       :filter-list="filterList"
       :filter-grade="filterGrade"
       :filter-params="filterParams"

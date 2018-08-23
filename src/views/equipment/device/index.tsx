@@ -50,14 +50,14 @@ export default class Device extends Vue {
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
-      key: 'active',
+      key: 'orgId',
       type: 'select',
       label: '所属商户',
       placeholder: '请选择所属商户',
       options: [],
     },
     {
-      key: 'active',
+      key: 'terminalType',
       type: 'select',
       label: '设备类型',
       placeholder: '请选择设备类型',
@@ -104,6 +104,7 @@ export default class Device extends Vue {
   opreat: Opreat[] = [
     {
       key: 'bind',
+      rowKey: 'imei',
       color: (row: any) => (row.status === 1 ? 'green' : 'red'),
       text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
       msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
@@ -112,6 +113,7 @@ export default class Device extends Vue {
     },
     {
       key: 'accept',
+      rowKey: 'imei',
       color: 'blue',
       text: '验收',
       disabled: (row: any) => (row.status === 1 || row.status === 4 || row.status === 5),
@@ -119,6 +121,7 @@ export default class Device extends Vue {
     },
     {
       key: 'update',
+      rowKey: 'imei',
       color: 'green',
       text: '更新',
       disabled: (row: any) => !((row.cfgVer !== row.upCfgVer) && (row.online)),
@@ -126,6 +129,7 @@ export default class Device extends Vue {
     },
     {
       key: 'authCode',
+      rowKey: 'imei',
       color: 'blue',
       text: '鉴权码',
       disabled: (row: any) => (!row.online),
@@ -290,6 +294,7 @@ export default class Device extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
+          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />
