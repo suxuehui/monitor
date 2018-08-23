@@ -74,6 +74,11 @@ export default class Login extends Vue {
     captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
   };
   config = config;
+
+  @Emit()
+  mounted() {
+
+  }
   @Emit()
   submitForm() {
     (this.$refs.loginForm as Form).validate((valid: boolean) => {

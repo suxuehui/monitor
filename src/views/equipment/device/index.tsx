@@ -50,14 +50,14 @@ export default class Device extends Vue {
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
-      key: 'active',
+      key: 'orgId',
       type: 'select',
       label: '所属商户',
       placeholder: '请选择所属商户',
       options: [],
     },
     {
-      key: 'active',
+      key: 'terminalType',
       type: 'select',
       label: '设备类型',
       placeholder: '请选择设备类型',

@@ -3,7 +3,7 @@ import request from '@/utils/request';
 // 获得全部权限列表
 export async function getMenuList(params: any) {
   return request({
-    url: '/sys/menu/list',
+    url: '/monitor/sys/menu/list',
     method: 'post',
     data: params,
   });

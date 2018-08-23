@@ -245,7 +245,7 @@ export default class MFilter extends Vue {
             </el-form>
           </div> : null
         }
-        <el-dialog width="500px" title="表格设置" visible={this.setModel} on-close={this.closeModal}>
+        <el-dialog id="tableSet" width="500px" title="表格设置" visible={this.setModel} on-close={this.closeModal}>
           <el-checkbox-group class="checkbox-list" v-model={this.checkList}>
             {
               this.tableList.map((item, index) => <el-checkbox key={index} label={item.prop}>

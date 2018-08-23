@@ -84,7 +84,7 @@ export default class Monitor extends Vue {
       ],
     },
     {
-      key: 'onliine',
+      key: 'online',
       type: 'select',
       label: '车辆状态',
       placeholder: '车辆状态',
