@@ -30,11 +30,16 @@
             v-model="loginForm.captcha"
             prefix-icon="iconfont-code"
             placeholder="请输入验证码"
-            @keydown.enter="submitForm('ruleForm')"/>
+            @keydown.enter="submitForm('ruleForm')"
+          />
           <img :src="codeImg" class="authcodeImg" alt="" @click="getCodeImg">
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+          <el-button
+            :loading="loading"
+            type="primary"
+            @click="submitForm('ruleForm')"
+          >登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -76,6 +81,7 @@ export default class Login extends Vue {
   };
   config = config;
   imgToken = '';
+  loading = false;
   created() {
     getAuthCodeToken(null).then((res) => {
       this.imgToken = res.entity;
@@ -94,18 +100,23 @@ export default class Login extends Vue {
     (this.$refs.loginForm as Form).validate((valid: boolean) => {
       if (valid) {
         login({ ...this.loginForm, flagAuth: true }, this.imgToken).then((res) => {
+          this.loading = true;
           const { result: { resultCode, resultMessage }, entity } = res;
           if (resultCode !== '0') {
-            this.$message.error(resultMessage);
+            this.$message.error(resultMessage || '未知错误');
             this.getCodeImg();
           } else {
-            this.$message.success(resultMessage);
+            this.loading = false;
+            this.$message.success(resultMessage || '未知成功');
             localStorage.setItem('token', entity.token);
-            this.$store.dispatch('getUserInfo').then(() => {
-              this.$router.push('/');
-            }).catch((error) => {
-              this.$message.error(error);
-            });
+            this.$store
+              .dispatch('getUserInfo')
+              .then(() => {
+                this.$router.push('/');
+              })
+              .catch((error) => {
+                this.$message.error(error);
+              });
           }
         });
         return true;
