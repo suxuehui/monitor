@@ -15,11 +15,18 @@ const service = axios.create({
   timeout: 20000, // 请求超时时间
 });
 
-const fetch = (options: { method: string, data?: any, fetchType?: string, url: string }) => {
-  let { data, url } = options;
+const fetch = (options: {
+url: string,
+method: string,
+data?: object,
+fetchType?: string,
+headers?: any,
+}) => {
+  const { data } = options;
+  let { url } = options;
   const { method = 'get', fetchType } = options;
 
-  let cloneData = lodash.cloneDeep(data);
+  let cloneData: any = lodash.cloneDeep(data);
   cloneData = qs.stringify(cloneData);
 
   try {
@@ -57,7 +64,6 @@ const fetch = (options: { method: string, data?: any, fetchType?: string, url: s
     });
   } else if (fetchType === 'YQL') {
     url = `http://query.yahooapis.com/v1/public/yql?q=select * from json where url='${options.url}?${encodeURIComponent(qs.stringify(options.data))}'&format=json`;
-    data = null;
   } else if (fetchType === 'JSON') {
     return service({
       url,
@@ -71,19 +77,40 @@ const fetch = (options: { method: string, data?: any, fetchType?: string, url: s
 
   switch (method.toLowerCase()) {
     case 'get':
-      return service.get(url, {
-        params: cloneData,
+      return service({
+        url,
+        method: 'get',
+        data: cloneData,
+        headers: options.headers,
       });
     case 'delete':
-      return service.delete(url, {
+      return service({
+        url,
+        method: 'delete',
         data: cloneData,
+        headers: options.headers,
       });
     case 'post':
-      return service.post(url, cloneData);
+      return service({
+        url,
+        method: 'post',
+        data: cloneData,
+        headers: options.headers,
+      });
     case 'put':
-      return service.put(url, cloneData);
+      return service({
+        url,
+        method: 'put',
+        data: cloneData,
+        headers: options.headers,
+      });
     case 'patch':
-      return service.patch(url, cloneData);
+      return service({
+        url,
+        method: 'patch',
+        data: cloneData,
+        headers: options.headers,
+      });
     default:
       return service(options);
   }
@@ -94,6 +121,7 @@ interface Option {
   method: string,
   data?: object,
   fetchType?: string,
+  headers?: any,
 }
 
 export default function request(options: Option): Promise<any> {
