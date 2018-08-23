@@ -50,7 +50,7 @@ export default class Member extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/sys/user/list';
+  url: string = '/monitor/sys/user/list';
 
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '全部' },
@@ -201,6 +201,7 @@ export default class Member extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           add-btn={true}
+          data-type={'JSON'}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}

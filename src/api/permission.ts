@@ -3,9 +3,10 @@ import request from '@/utils/request';
 // 角色管理
 // 角色列表
 export async function getRolesList(params: any) {
+  console.log(1111);
   return request({
-    url: '/sys/role/select',
-    method: 'post',
+    url: '/monitor/sys/role/select',
+    method: 'get',
     fetchType: 'JSON',
     data: params,
   });
@@ -77,7 +78,7 @@ export async function userLock(params: any) {
 // 成员修改
 export async function userUpdate(params: any) {
   return request({
-    url: '/sys/user/update',
+    url: '/monitor/sys/user/update',
     method: 'post',
     data: params,
   });
@@ -85,7 +86,7 @@ export async function userUpdate(params: any) {
 // 成员新增
 export async function userAdd(params: any) {
   return request({
-    url: '/sys/user/save',
+    url: '/monitor/sys/user/save',
     method: 'post',
     data: params,
   });
@@ -93,7 +94,7 @@ export async function userAdd(params: any) {
 // 检测成员是否存在
 export async function userCheck(params: any) {
   return request({
-    url: `/sys/user/exist/${params}`,
+    url: `/monitor/sys/user/exist/${params}`,
     method: 'post',
   });
 }
