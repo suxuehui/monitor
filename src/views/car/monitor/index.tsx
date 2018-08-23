@@ -196,42 +196,42 @@ export default class Monitor extends Vue {
       label: '剩余油量',
       prop: 'leftOil',
       formatter(row: any) {
-        return `${row.leftOil}%`;
+        return row.leftOil === undefined ? `${row.leftOil}%` : '未知';
       },
     },
     {
       label: '剩余电量',
       prop: 'leftElectricPercent',
       formatter(row: any) {
-        return `${row.leftElectricPercent}%`;
+        return row.leftElectricPercent === undefined ? `${row.leftElectricPercent}%` : '未知';
       },
     },
     {
       label: '续航里程',
       prop: 'leftMileage',
       formatter(row: any) {
-        return `${row.leftMileage}km`;
+        return row.leftMileage === undefined ? `${row.leftMileage}km` : '未知';
       },
     },
     {
       label: '累计里程',
       prop: 'totalMileage',
       formatter(row: any) {
-        return `${row.totalMileage}km`;
+        return row.totalMileage === undefined ? `${row.totalMileage}km` : '未知';
       },
     },
     {
       label: '电瓶电压',
       prop: 'voltage',
       formatter(row: any) {
-        return `${row.voltage}V`;
+        return row.voltage === undefined ? `${row.voltage}V` : '未知';
       },
     },
     {
       label: '无位置变化',
       prop: 'minutes',
       formatter(row: any) {
-        return `${row.minutes}分钟`;
+        return row.minutes === undefined ? `${row.minutes}分钟` : '未知';
       },
     },
     {
@@ -727,6 +727,7 @@ export default class Monitor extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
+            data-type={'JSON'}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
