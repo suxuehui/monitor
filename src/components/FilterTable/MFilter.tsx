@@ -128,7 +128,7 @@ export default class MFilter extends Vue {
           placeholder={item.placeholder}>
           {
             item.options && item.options.map((items: any, indexs: number) => <el-option
-              key={indexs} value={items.key} label={items.label}></el-option>)
+              key={indexs} value={items.value} label={items.label}></el-option>)
           }
         </el-select>;
         break;

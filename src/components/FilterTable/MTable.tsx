@@ -56,7 +56,7 @@ export default class MTable extends Vue {
   @Prop() private highlightCurrentRow!: boolean;
   // data
   tableData: any = [];
-  pageParams: {rows: number, page: number} = { rows: this.defaultPageSize, page: 1 };
+  pageParams: {pageSize: number, pageNum: number} = { pageSize: this.defaultPageSize, pageNum: 1 };
   loading: boolean = false;
   // 数据总数
   dataTotal: number = 0;
@@ -118,10 +118,14 @@ export default class MTable extends Vue {
         on-selection-change={this.selectChange}
         highlightCurrentRow={this.highlightCurrentRow}>
           {
-            this.tableList.map((item, index) => <el-table-column
-            key={index} {...{ props: item }}>
-              {/* { item.render ? item.render() : null } */}
-            </el-table-column>)
+            this.tableList.map((item, index) => {
+              if (!item.formatter) {
+                item.formatter = (row: any) => (row[item.prop] !== null ? row[item.prop] : '--');
+              }
+              return <el-table-column
+              key={index} {...{ props: item }}>
+              </el-table-column>;
+            })
           }
           {
             this.opreat.length ? <el-table-column width={this.opreatWidth} label="操作" formatter={this.opreatJSX}></el-table-column> : null
@@ -131,9 +135,9 @@ export default class MTable extends Vue {
           class="pagination"
           on-size-change={this.handleSizeChange}
           on-current-change={this.handleCurrentChange}
-          current-page={this.pageParams.page}
+          current-page={this.pageParams.pageNum}
           page-sizes={this.pageSizeList}
-          page-size={this.pageParams.rows}
+          page-size={this.pageParams.pageSize}
           layout="total, sizes, prev, pager, next, jumper"
           total={this.dataTotal}>
         </el-pagination>
@@ -167,12 +171,12 @@ export default class MTable extends Vue {
   }
 
   handleSizeChange(val: number) {
-    this.pageParams.rows = val;
+    this.pageParams.pageSize = val;
     this.getData();
   }
 
   handleCurrentChange(val: number) {
-    this.pageParams.page = val;
+    this.pageParams.pageNum = val;
     this.getData();
   }
 

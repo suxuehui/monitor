@@ -35,8 +35,8 @@ export default class Monitor extends Vue {
     code: 'result.resultCode',
     codeOK: '0',
     message: 'result.resultMessage',
-    data: 'entity',
-    total: 'count',
+    data: 'entity.data',
+    total: 'entity.count',
   };
   outParams: object = {
     brandId: '',
@@ -174,6 +174,7 @@ export default class Monitor extends Vue {
     {
       label: '车牌号',
       prop: 'plateNum',
+
     },
     {
       label: '车架号',
@@ -196,42 +197,42 @@ export default class Monitor extends Vue {
       label: '剩余油量',
       prop: 'leftOil',
       formatter(row: any) {
-        return row.leftOil === undefined ? `${row.leftOil}%` : '未知';
+        return row.leftOil !== null ? `${row.leftOil}%` : '--';
       },
     },
     {
       label: '剩余电量',
       prop: 'leftElectricPercent',
       formatter(row: any) {
-        return row.leftElectricPercent === undefined ? `${row.leftElectricPercent}%` : '未知';
+        return row.leftElectricPercent !== null ? `${row.leftElectricPercent}%` : '--';
       },
     },
     {
       label: '续航里程',
       prop: 'leftMileage',
       formatter(row: any) {
-        return row.leftMileage === undefined ? `${row.leftMileage}km` : '未知';
+        return row.leftMileage !== null ? `${row.leftMileage}km` : '未知';
       },
     },
     {
       label: '累计里程',
       prop: 'totalMileage',
       formatter(row: any) {
-        return row.totalMileage === undefined ? `${row.totalMileage}km` : '未知';
+        return row.totalMileage !== null ? `${row.totalMileage}km` : '--';
       },
     },
     {
       label: '电瓶电压',
       prop: 'voltage',
       formatter(row: any) {
-        return row.voltage === undefined ? `${row.voltage}V` : '未知';
+        return row.voltage !== null ? `${row.voltage}V` : '--';
       },
     },
     {
       label: '无位置变化',
       prop: 'minutes',
       formatter(row: any) {
-        return row.minutes === undefined ? `${row.minutes}分钟` : '未知';
+        return row.minutes !== null ? `${row.minutes}分钟` : '--';
       },
     },
     {
@@ -481,13 +482,13 @@ export default class Monitor extends Vue {
   formatEnergy(row: any) {
     let type;
     switch (row.energyType) {
-      case 1:
+      case '燃油':
         type = <el-tag size="small" type="warning">燃油</el-tag>;
         break;
-      case 2:
+      case '电动':
         type = <el-tag size="small" type="success">电动</el-tag>;
         break;
-      case 3:
+      case '混动':
         type = <el-tag size="small" >混动</el-tag>;
         break;
       default:
