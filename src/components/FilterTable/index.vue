@@ -12,6 +12,7 @@
       @export="exportBack"
       @setTable="setTable"
       @addFun="addBack"
+      @tableHeight="tableHeight"
     />
     <m-table
       ref="MTable"
@@ -109,6 +110,12 @@ export default class FilterTable extends Vue {
   @Emit()
   addBack() {
     this.$emit('addBack');
+  }
+  @Emit()
+  tableHeight(params: any) {
+    const table: any = this.$refs.MTable;
+    table.$el.style.marginTop = `${params -38}px`;
+    // console.log(table.$el.style);
   }
   @Emit()
   exportBack() {

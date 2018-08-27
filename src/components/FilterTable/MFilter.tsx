@@ -72,7 +72,7 @@ export default class MFilter extends Vue {
   // 高级搜索开关
   showGrade: boolean = false;
   // 高级筛选高度
-  gradeHeight: number = 1;
+  tableMarginTop: number = 0;
   created() {
     this.tableList.map((item) => {
       if (item.prop) {
@@ -106,7 +106,10 @@ export default class MFilter extends Vue {
   @Emit()
   gradeSwitch(val: boolean): void {
     this.showGrade = val;
-    // this.gradeHeight = this.$refs.filterGrade.offsetHeight;
+    this.tableMarginTop = val ?
+      (this.$refs.filterGrade as Element).clientHeight :
+      (this.$refs.filterNormal as Element).clientHeight;
+    this.$emit('tableHeight', this.tableMarginTop);
   }
   @Emit()
   addFun(): void {
@@ -222,7 +225,7 @@ export default class MFilter extends Vue {
     const { isMobile } = this.$store.state.app;
     return (
       <div class={`filter-wrap ${this.showGrade ? 'showGrade' : ''}`}>
-        <div class="filter-mormal">
+        <div class="filter-mormal" ref="filterNormal">
           <el-form model={this.params} size="mini">
             <el-row gutter={20}>
               {
