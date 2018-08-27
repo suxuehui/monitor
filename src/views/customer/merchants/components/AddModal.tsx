@@ -58,7 +58,10 @@ export default class AddModal extends Vue {
   checkName(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        callback();
+        checkOrgName(value).then((res) => {
+          console.log(res);
+          callback();
+        });
       } else {
         callback(new Error('不能为空'));
       }
@@ -68,6 +71,9 @@ export default class AddModal extends Vue {
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
+        userCheck(value).then((res) => {
+          console.log(res);
+        });
         callback();
       } else {
         callback(new Error('不能为空'));
@@ -122,7 +128,7 @@ export default class AddModal extends Vue {
       From.validate((valid: any) => {
         if (valid) {
           customerAdd(obj).then((res) => {
-            if (res.result.resultCode) {
+            if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
@@ -148,7 +154,7 @@ export default class AddModal extends Vue {
           obj.roleId = this.data.roleId;
           this.loading = true;
           customerUpdate(obj).then((res) => {
-            if (res.result.resultCode) {
+            if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);

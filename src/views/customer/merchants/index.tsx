@@ -48,7 +48,7 @@ export default class Merchants extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/sys/org/list';
+  url: string = '/monitor/customer/org/list';
   // 地址
   opreat: Opreat[] = [
     {
@@ -79,18 +79,21 @@ export default class Merchants extends Vue {
       prop: 'carNum',
       sortable: true,
       sortBy: 'carNum',
+      formatter: (row:any) => (row.carNum ? `${row.carNum} 辆` : '--'),
     },
     {
       label: '设备数',
       prop: 'terminalNum',
       sortable: true,
       sortBy: 'terminalNum',
+      formatter: (row:any) => (row.terminalNum ? `${row.terminalNum} 个` : '--'),
     },
     {
       label: '添加时间',
       prop: 'crtTime',
       sortable: true,
       sortBy: 'crtTime',
+      formatter: (row:any) => (row.crtTime ? row.crtTime : '--'),
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
@@ -196,6 +199,7 @@ export default class Merchants extends Vue {
           table-list={this.tableList}
           url={this.url}
           export-btn={true}
+          fetch-type={'get'}
           dataType={'JSON'}
           on-menuClick={this.menuClick}
         />

@@ -152,6 +152,12 @@ export default class Device extends Vue {
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
 
+  mounted() {
+    getCustomerList(null).then((res) => {
+      console.log(res);
+    });
+  }
+
   bindLog(row: any) {
     return <a class="check-link" on-click={() => this.checklog(row)}>查看</a>;
   }
@@ -294,7 +300,6 @@ export default class Device extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

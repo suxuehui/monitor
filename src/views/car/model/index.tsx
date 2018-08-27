@@ -23,7 +23,7 @@ export default class Member extends Vue {
       options: [],
     },
     {
-      key: 'status',
+      key: 'available',
       type: 'select',
       label: '状态',
       placeholder: '请选择状态',
@@ -41,12 +41,12 @@ export default class Member extends Vue {
   // 筛选参数
   filterParams: any = {
     shopName: '',
-    status: '',
+    available: '',
     confName: '',
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/vehicle/model/list';
+  url: string = '/monitor/vehicle/model/list';
 
   opreat: Opreat[] = [
     {
@@ -59,54 +59,55 @@ export default class Member extends Vue {
     {
       key: 'freeze',
       rowKey: 'id',
-      color: (row: any) => (row.status ? 'red' : 'green'),
-      text: (row: any) => (row.status ? '禁用' : '启用'),
-      msg: (row: any) => (row.status ? '是否要禁用？' : '是否要启用？'),
+      color: (row: any) => (row.available === 1 ? 'red' : 'green'),
+      text: (row: any) => (row.available === 1 ? '禁用' : '启用'),
+      msg: (row: any) => (row.available === 1 ? '是否要禁用？' : '是否要启用？'),
       roles: true,
     },
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'shopName' },
-    { label: '配置文件名', prop: 'confName' },
-    { label: '配置版本', prop: 'confVersion' },
-    { label: '主机版本', prop: 'hostVersion' },
-    { label: '硬件版本', prop: 'hardwareVersion' },
-    { label: '协议', prop: 'protocol' },
-    { label: '品牌', prop: 'brandName' },
-    { label: '车型', prop: 'modelName' },
-    { label: '能源类型', prop: 'energyType' },
+    { label: '所属商户', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
+    { label: '配置文件名', prop: 'cfgName', formatter: (row: any) => (row.cfgName ? row.cfgName : '--') },
+    { label: '配置版本', prop: 'cfgVer', formatter: (row: any) => (row.cfgVer ? row.cfgVer : '--') },
+    { label: '主机版本', prop: 'hostVer', formatter: (row: any) => (row.hostVer ? row.hostVer : '--') },
+    { label: '硬件版本', prop: 'hardWareVer', formatter: (row: any) => (row.hardWareVer ? row.hardWareVer : '--') },
+    { label: '协议', prop: 'protocolName', formatter: (row: any) => (row.protocolName ? row.protocolName : '--') },
+    { label: '品牌', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
+    { label: '车型', prop: 'modelName', formatter: (row: any) => (row.modelName ? row.modelName : '--') },
+    { label: '能源类型', prop: 'energyType', formatter: (row: any) => (row.energyType ? row.energyType : '--') },
     {
       label: '油箱容量',
-      prop: 'oilVolume',
+      prop: 'fuelTankCap ',
       formatter(row: any) {
-        return `${row.oilVolume} L`;
+        return `${row.fuelTankCap} L`;
       },
     },
-    { label: '状态', prop: 'status', formatter: this.statusDom },
+    { label: '状态', prop: 'available ', formatter: this.statusDom },
   ];
 
   statusDom(row: any) {
-    const type = row.status ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.status ? '已启用' : '未启用'}</el-tag>;
+    const type = row.available ? 'success' : 'danger';
+    return <el-tag size="medium" type={type}>{row.available ? '已启用' : '未启用'}</el-tag>;
   }
 
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '状态(全部)' },
-    { key: true, value: true, label: '已启用' },
-    { key: false, value: false, label: '未启用' },
+    { key: 0, value: 0, label: '已启用' },
+    { key: 1, value: 1, label: '未启用' },
   ]
 
   mounted() {
     this.filterList[1].options = this.activeTypes;
-    getCustomerList(null).then((res) => {
-      res.entity.data.forEach((element: any) => {
-        element.key = element.orgName;
-        element.value = element.id;
-        element.label = element.orgName;
-      });
-      this.filterList[0].options = res.entity.data;
-    });
+    // getCustomerList(null).then((res) => {
+    //   console.log(res);
+    // res.entity.data.forEach((element: any) => {
+    //   element.key = element.orgName;
+    //   element.value = element.id;
+    //   element.label = element.orgName;
+    // });
+    // this.filterList[0].options = res.entity.data;
+    // });
   }
 
   // 新增、编辑
@@ -154,7 +155,7 @@ export default class Member extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          dataType={'JSON'}
+          // dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

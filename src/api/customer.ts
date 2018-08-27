@@ -6,6 +6,7 @@ export async function customerAdd(params: any) {
     url: '/monitor/sys/org/save',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 // 商户修改
@@ -13,6 +14,7 @@ export async function customerUpdate(params: any) {
   return request({
     url: '/monitor/sys/org/update',
     method: 'post',
+    fetchType: 'JSON',
     data: params,
   });
 }
@@ -20,27 +22,28 @@ export async function customerUpdate(params: any) {
 export async function customerLock(params: any) {
   return request({
     url: `/monitor/sys/org/lock/${params}`,
-    method: 'post',
+    method: 'get',
   });
 }
 // 商户解冻
 export async function customerUnlock(params: any) {
   return request({
     url: `/monitor/sys/org/unlock/${params}`,
-    method: 'post',
+    method: 'get',
   });
 }
-// 检查商户
+// 检查商户名是否存在
 export async function checkOrgName(params: any) {
   return request({
-    url: `/monitor/sys/org/unlock/${params}`,
-    method: 'post',
+    url: `/monitor/sys/org/check/${params}`,
+    method: 'get',
   });
 }
 // 所有商户列表
 export async function getCustomerList(params: any) {
   return request({
-    url: '/monitor/sys/org/list',
-    method: 'post',
+    url: '/monitor/customer/org/list',
+    method: 'get',
+    fetchType: 'JSON',
   });
 }

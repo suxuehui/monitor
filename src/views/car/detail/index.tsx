@@ -23,52 +23,53 @@ interface OilType { key: any, value: any, label: string }
 
 export default class Detail extends Vue {
   modelForm: any = {
-    shopName: '',
+    levelcode: '',
     brandModel: '',
     energyType: '',
-    oilVolume: '',
-    protocol: '',
-    confName: '',
-    confVersion: '',
-    hostVersion: '',
-    hardwareVersion: '',
+    fuelTankCap: '',
+    cfgVer: '',
+    cfgName: '',
+    hostVer: '',
+    hardWareVer: '',
     reboot: '',
+    protocolName: '',
     cfgParam: '',
-    status: '',
+    available: '',
   };
 
   loading: boolean = false;
   customerList: Array<any> = [];
-  id: number = 1;
+  id: number = 0;
   mounted() {
     getCustomerList(null).then((res) => {
-      res.entity.data.forEach((element: any) => {
-        this.customerList.push({
-          key: element.orgName,
-          value: element.id,
-          label: element.orgName,
-        });
-      });
+      console.log(res);
+      // res.entity.data.forEach((element: any) => {
+      //   this.customerList.push({
+      //     key: element.orgName,
+      //     value: element.id,
+      //     label: element.orgName,
+      //   });
+      // });
     });
     this.id = parseInt(this.$route.query.id, 10) ? parseInt(this.$route.query.id, 10) : 0;
     if (this.id > 0) {
       vehicleModelInfo({ id: this.id }).then((res) => {
         res.entity.reboot = `${res.entity.reboot}`;
-        res.entity.status = `${res.entity.status}`;
+        res.entity.available = `${res.entity.available}`;
         this.modelForm = res.entity;
       });
     }
   }
   // 电动、燃油、混动
   oilType: OilType[] = [
-    { key: 1, value: '1', label: '电动' },
-    { key: 2, value: '2', label: '燃油' },
+    { key: 1, value: '1', label: '燃油' },
+    { key: 2, value: '2', label: '电动' },
     { key: 3, value: '3', label: '混动' },
+    { key: 4, value: '4', label: '汽油' },
   ]
 
-
   rules = {
-    // shopName: [
+    // levelcode: [
     //   { required: true, message: '请输入角色名称', trigger: 'blur' },
     // ],
     // cfgParam: [
@@ -80,19 +81,19 @@ export default class Detail extends Vue {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
-      shopName: this.modelForm.shopName,
+      levelcode: this.modelForm.levelcode,
+      cfgName: this.modelForm.cfgName,
+      cfgVer: this.modelForm.cfgVer,
+      hostVer: this.modelForm.hostVer,
+      hardWareVer: this.modelForm.hardWareVer,
+      protocolName: this.modelForm.protocolName,
+      // brandId,
+      // modelId,
       energyType: this.modelForm.energyType,
-      // brandName,
-      // modelName,
-      oilVolume: this.modelForm.oilVolume,
-      protocol: this.modelForm.protocol,
-      confName: this.modelForm.confName,
-      confVersion: this.modelForm.confVersion,
-      hostVersion: this.modelForm.hostVersion,
-      hardwareVersion: this.modelForm.hardwareVersion,
+      fuelTankCap: this.modelForm.fuelTankCap,
       reboot: this.modelForm.reboot,
       cfgParam: this.modelForm.cfgParam,
-      status: this.modelForm.status,
+      available: this.modelForm.available,
     };
     if (this.id > 0) {
       // 编辑
@@ -110,7 +111,7 @@ export default class Detail extends Vue {
         if (valid) {
           console.log('新增');
         } else {
-          this.loading=false;
+          this.loading = false;
           return false;
         }
         return false;
@@ -128,10 +129,10 @@ export default class Detail extends Vue {
             </div>
             <el-row>
               <el-col span={12}>
-                <el-form-item label="所属商户" prop="shopName">
+                <el-form-item label="所属商户" prop="levelcode">
                   <el-select
-                    id="shopName"
-                    v-model={this.modelForm.shopName}
+                    id="levelcode"
+                    v-model={this.modelForm.levelcode}
                     filterable={true}
                     placeholder="请选择商户"
                     style="width:100%"
@@ -145,12 +146,27 @@ export default class Detail extends Vue {
                 </el-form-item>
               </el-col>
               <el-col span={12}>
-                <el-form-item label="品牌车型" prop="brandName">
+                {/* <el-form-item label="品牌车型" prop="brandName">
                   <el-input
                     id="brandName"
                     v-model={this.modelForm.brandName}
                     placeholder="请选择品牌车型"
                   ></el-input>
+                </el-form-item> */}
+                 <el-form-item label="品牌车型" prop="brandName">
+                  <el-select
+                    id="brandName"
+                    v-model={this.modelForm.brandName}
+                    filterable={true}
+                    placeholder="请选择品牌车型"
+                    style="width:100%"
+                  >
+                    {
+                      this.oilType.map((item: any) => (
+                        <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                      ))
+                    }
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col span={12}>
@@ -171,63 +187,63 @@ export default class Detail extends Vue {
                 </el-form-item>
               </el-col>
               <el-col span={12}>
-                <el-form-item label="油箱容量" prop="oilVolume">
+                <el-form-item label="油箱容量" prop="fuelTankCap">
                   <el-input
-                    id="oilVolume"
-                    v-model={this.modelForm.oilVolume}
+                    id="fuelTankCap"
+                    v-model={this.modelForm.fuelTankCap}
                     placeholder="请输入油箱容量"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col span={12}>
-                <el-form-item label="配置协议" prop="protocol">
+                <el-form-item label="配置协议" prop="protocolName">
                   <el-input
-                    id="protocol"
-                    v-model={this.modelForm.protocol}
+                    id="protocolName"
+                    v-model={this.modelForm.protocolName}
                     placeholder="请选择配置协议"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col span={12}>
-                <el-form-item label="配置文件名" prop="confName">
+                <el-form-item label="配置文件名" prop="cfgName">
                   <el-input
-                    id="confName"
-                    v-model={this.modelForm.confName}
+                    id="cfgName"
+                    v-model={this.modelForm.cfgName}
                     placeholder="请输入配置文件名"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col span={12}>
-                <el-form-item label="配置版本号" prop="confVersion">
+                <el-form-item label="配置版本号" prop="cfgVer">
                   <el-input
-                    id="confVersion"
-                    v-model={this.modelForm.confVersion}
+                    id="cfgVer"
+                    v-model={this.modelForm.cfgVer}
                     placeholder="请输入配置版本号"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col span={12}>
-                <el-form-item label="主机版本号" prop="hostVersion">
+                <el-form-item label="主机版本号" prop="hostVer">
                   <el-input
-                    id="hostVersion"
-                    v-model={this.modelForm.hostVersion}
+                    id="hostVer"
+                    v-model={this.modelForm.hostVer}
                     placeholder="请输入主机版本号"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col span={12}>
-                <el-form-item label="硬件版本号" prop="hardwareVersion">
+                <el-form-item label="硬件版本号" prop="hardWareVer">
                   <el-input
-                    id="hardwareVersion"
-                    v-model={this.modelForm.hardwareVersion}
+                    id="hardWareVer"
+                    v-model={this.modelForm.hardWareVer}
                     placeholder="请输入硬件版本号"
                   ></el-input>
                 </el-form-item>
               </el-col>
               <el-col span={12} class="radioGroup">
                 <el-form-item label="是否重启" prop="reboot">
-                  <el-radio v-model={this.modelForm.reboot} id="reboot" label="true">是</el-radio>
-                  <el-radio v-model={this.modelForm.reboot} id="reboot" label="false">否</el-radio>
+                  <el-radio v-model={this.modelForm.reboot} id="rebootY" label="true">是</el-radio>
+                  <el-radio v-model={this.modelForm.reboot} id="rebootN" label="false">否</el-radio>
                   <p class="reStart">( 设备下发配置成功后是否重启设备 )</p>
                 </el-form-item>
               </el-col>
@@ -246,21 +262,19 @@ export default class Detail extends Vue {
                 </el-form-item>
               </el-col>
               <el-col span={24}>
-                <el-form-item label="是否启用" prop="status">
+                <el-form-item label="是否启用" prop="available">
                   <div class="radioGroup">
-                    <el-radio v-model={this.modelForm.status} id="status" label="true">是</el-radio>
-                    <el-radio v-model={this.modelForm.status} id="status" label="false">否</el-radio>
+                    <el-radio v-model={this.modelForm.available} id="availableY" label="true">是</el-radio>
+                    <el-radio v-model={this.modelForm.available} id="availableN" label="false">否</el-radio>
                   </div>
                 </el-form-item>
+              </el-col>
+              <el-col offset={12} class="btn">
+                <el-button id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
               </el-col>
             </el-row>
           </el-form>
         </el-card>
-        <el-row class="btn">
-          <el-col offset={12}>
-            <el-button class="btn" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
-          </el-col>
-        </el-row>
       </div >
     );
   }
