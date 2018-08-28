@@ -55,7 +55,7 @@ import {
   Inject,
   Provide,
 } from 'vue-property-decorator';
-import { Form, FormItem, Button, Input } from 'element-ui';
+import { Form, FormItem, Button, Input, Message } from 'element-ui';
 import config from '@/utils/config';
 import { login, getAuthCodeToken, getAuthCode } from '@/api/app';
 
@@ -85,6 +85,7 @@ export default class Login extends Vue {
   created() {
     getAuthCodeToken(null).then((res) => {
       this.imgToken = res.entity;
+      localStorage.setItem('token', res.entity);
       this.getCodeImg();
     });
   }
@@ -115,6 +116,9 @@ export default class Login extends Vue {
               this.$message.error(error);
             });
           }
+        }).catch((err) => {
+          this.loading = false;
+          Message.error(err.message);
         });
         return true;
       }
