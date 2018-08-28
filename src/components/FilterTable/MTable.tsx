@@ -56,7 +56,15 @@ export default class MTable extends Vue {
   @Prop() private highlightCurrentRow!: boolean;
   // data
   tableData: any = [];
-  pageParams: {pageSize: number, pageNum: number} = { pageSize: this.defaultPageSize, pageNum: 1 };
+  pageParams: {
+    pageSize: number,
+    pageNum: number,
+    page: boolean,
+  } = {
+    pageSize: this.defaultPageSize,
+    pageNum: 1,
+    page: true,
+  };
   loading: boolean = false;
   // 数据总数
   dataTotal: number = 0;

@@ -190,7 +190,6 @@ export default class Merchants extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           add-btn={true}
-          fetch-type={'get'}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}

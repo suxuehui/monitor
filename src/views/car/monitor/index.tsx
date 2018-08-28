@@ -271,7 +271,7 @@ export default class Monitor extends Vue {
       roles: true,
     },
   ];
-  tableUrl: string = '/monitor/device/vehicle/list'; // 表格请求地址
+  tableUrl: string = '/monitor/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
   BMapLib: any = null; // 百度地图lib对象
   SMap: any = null; // 当前地图对象实例
@@ -312,9 +312,9 @@ export default class Monitor extends Vue {
     { label: '右后车窗:', prop: 'rightRearWindow' },
   ];
   geolocationControl: any = null; // 定位
-  mapCenter: { lat: number, lng: number } = { lat: 29.563694, lng: 106.560421 };
+  mapCenter: { lat: number, lng: number } = { lat: 29.35, lng: 106.33 };
   // 地图查询半径
-  radius: number = 1000;
+  radius: number = 5000;
   mapCarData: MapCarData[] = [];
   constructor(props: any) {
     super(props);
@@ -471,6 +471,8 @@ export default class Monitor extends Vue {
   onlineFormat(row: any) {
     if (row.online) {
       return <el-tag size="small" type="success">在线</el-tag>;
+    } else if (row.online === null) {
+      return <el-tag size="small" type="info">未知</el-tag>;
     }
     return <el-tag size="small" type="danger">离线</el-tag>;
   }
@@ -568,18 +570,21 @@ export default class Monitor extends Vue {
   }
 
   renderStatus(value: boolean | string | number, unit?: string) {
-    switch (typeof value) {
-      case 'boolean':
+    const gettype = Object.prototype.toString;
+    switch (gettype.call(value)) {
+      case '[object Boolean]':
         return value ? '开' : '关';
-      case 'string':
+      case '[object String]':
         return value;
-      case 'number':
+      case '[object Number]':
         return unit ? value + unit : value;
+      case '[object Null]':
+        return '未知';
       default:
         return value;
     }
   }
-
+  // 单击表格-选择车辆
   currentChange = (val: any) => {
     this.mapCenter = {
       lat: val.lat,
@@ -709,7 +714,7 @@ export default class Monitor extends Vue {
             <div class="time">
               <i class="iconfont-time-circle icon"></i>
               <span>
-                {carDetail.gpsTime}
+                {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
               </span>
               <span class="status">
                 ({carDetail.minutes}分钟无位置变化)
@@ -742,6 +747,7 @@ export default class Monitor extends Vue {
             export-btn={true}
             on-menuClick={this.menuClick}
             table-list={this.tableList}
+            default-page-size={5}
             url={this.tableUrl}
             opreat={this.opreat}
             opreat-width="150px"

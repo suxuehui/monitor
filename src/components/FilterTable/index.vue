@@ -26,6 +26,7 @@
       :fetch-type="fetchType"
       :fetch-error="fetchError"
       :table-params="tableParams"
+      :default-page-size="defaultPageSize"
       :highlight-current-row="highlightCurrentRow"
       @tableClick="tableClick"
       @selectChange="selectChange"

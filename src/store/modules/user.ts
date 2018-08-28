@@ -31,7 +31,8 @@ function filterAsyncRouter(
 
 const hasPermission = (permission: string[]) => { // 过滤路由
   const filterRouter = filterAsyncRouter(asyncRouterMap, permission);
-  router.addRoutes(filterRouter.filter(item => item.path !== '/dashboard')); // 添加路由的时候排除掉dashboard
+  // 添加路由的时候排除掉dashboard
+  router.addRoutes(filterRouter.filter(item => item.path !== '/dashboard'));
   return filterRouter;
 };
 

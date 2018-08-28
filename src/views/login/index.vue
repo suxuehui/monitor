@@ -99,8 +99,9 @@ export default class Login extends Vue {
   submitForm() {
     (this.$refs.loginForm as Form).validate((valid: boolean) => {
       if (valid) {
+        this.loading = true;
         login({ ...this.loginForm, flagAuth: true }, this.imgToken).then((res) => {
-          this.loading = true;
+          this.loading = false;
           const { result: { resultCode, resultMessage }, entity } = res;
           if (resultCode !== '0') {
             this.$message.error(resultMessage || '未知错误');
