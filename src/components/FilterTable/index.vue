@@ -115,7 +115,6 @@ export default class FilterTable extends Vue {
   tableHeight(params: any) {
     const table: any = this.$refs.MTable;
     table.$el.style.marginTop = `${params -38}px`;
-    // console.log(table.$el.style);
   }
   @Emit()
   exportBack() {
