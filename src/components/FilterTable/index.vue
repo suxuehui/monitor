@@ -24,9 +24,11 @@
       :opreat-width="opreatWidth"
       :back-params="BackParams"
       :local-name="localName"
+      :fetch-type="fetchType"
       :fetch-error="fetchError"
       :fetch-type="fetchType"
       :table-params="tableParams"
+      :default-page-size="defaultPageSize"
       :highlight-current-row="highlightCurrentRow"
       @tableClick="tableClick"
       @selectChange="selectChange"
@@ -84,6 +86,8 @@ export default class FilterTable extends Vue {
   // 数据返回格式
   @Prop() private BackParams!: object;
   // 请求数据方法
+  @Prop() private fetchType!: string;
+
   @Prop() private fetchType!: string;
 
   @Prop({ default: false }) private highlightCurrentRow!: boolean;

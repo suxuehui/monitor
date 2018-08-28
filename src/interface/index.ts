@@ -21,7 +21,7 @@ export interface tableList {
   index?: string | Function,
   columnKey?: string,
   label?: string,
-  prop?: string,
+  prop: string,
   width?: string,
   minWidth?: string,
   fixed?: string | boolean,

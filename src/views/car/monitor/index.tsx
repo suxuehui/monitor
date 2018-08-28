@@ -35,8 +35,8 @@ export default class Monitor extends Vue {
     code: 'result.resultCode',
     codeOK: '0',
     message: 'result.resultMessage',
-    data: 'entity',
-    total: 'count',
+    data: 'entity.data',
+    total: 'entity.count',
   };
   outParams: object = {
     brandId: '',
@@ -174,6 +174,7 @@ export default class Monitor extends Vue {
     {
       label: '车牌号',
       prop: 'plateNum',
+
     },
     {
       label: '车架号',
@@ -196,42 +197,42 @@ export default class Monitor extends Vue {
       label: '剩余油量',
       prop: 'leftOil',
       formatter(row: any) {
-        return `${row.leftOil}%`;
+        return row.leftOil !== null ? `${row.leftOil}%` : '--';
       },
     },
     {
       label: '剩余电量',
       prop: 'leftElectricPercent',
       formatter(row: any) {
-        return `${row.leftElectricPercent}%`;
+        return row.leftElectricPercent !== null ? `${row.leftElectricPercent}%` : '--';
       },
     },
     {
       label: '续航里程',
       prop: 'leftMileage',
       formatter(row: any) {
-        return `${row.leftMileage}km`;
+        return row.leftMileage !== null ? `${row.leftMileage}km` : '未知';
       },
     },
     {
       label: '累计里程',
       prop: 'totalMileage',
       formatter(row: any) {
-        return `${row.totalMileage}km`;
+        return row.totalMileage !== null ? `${row.totalMileage}km` : '--';
       },
     },
     {
       label: '电瓶电压',
       prop: 'voltage',
       formatter(row: any) {
-        return `${row.voltage}V`;
+        return row.voltage !== null ? `${row.voltage}V` : '--';
       },
     },
     {
       label: '无位置变化',
       prop: 'minutes',
       formatter(row: any) {
-        return `${row.minutes}分钟`;
+        return row.minutes !== null ? `${row.minutes}分钟` : '--';
       },
     },
     {
@@ -270,7 +271,7 @@ export default class Monitor extends Vue {
       roles: true,
     },
   ];
-  tableUrl: string = '/monitor/device/vehicle/list'; // 表格请求地址
+  tableUrl: string = '/monitor/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
   BMapLib: any = null; // 百度地图lib对象
   SMap: any = null; // 当前地图对象实例
@@ -311,9 +312,9 @@ export default class Monitor extends Vue {
     { label: '右后车窗:', prop: 'rightRearWindow' },
   ];
   geolocationControl: any = null; // 定位
-  mapCenter: { lat: number, lng: number } = { lat: 29.563694, lng: 106.560421 };
+  mapCenter: { lat: number, lng: number } = { lat: 29.35, lng: 106.33 };
   // 地图查询半径
-  radius: number = 1000;
+  radius: number = 5000;
   mapCarData: MapCarData[] = [];
   constructor(props: any) {
     super(props);
@@ -470,6 +471,8 @@ export default class Monitor extends Vue {
   onlineFormat(row: any) {
     if (row.online) {
       return <el-tag size="small" type="success">在线</el-tag>;
+    } else if (row.online === null) {
+      return <el-tag size="small" type="info">未知</el-tag>;
     }
     return <el-tag size="small" type="danger">离线</el-tag>;
   }
@@ -481,13 +484,13 @@ export default class Monitor extends Vue {
   formatEnergy(row: any) {
     let type;
     switch (row.energyType) {
-      case 1:
+      case '燃油':
         type = <el-tag size="small" type="warning">燃油</el-tag>;
         break;
-      case 2:
+      case '电动':
         type = <el-tag size="small" type="success">电动</el-tag>;
         break;
-      case 3:
+      case '混动':
         type = <el-tag size="small" >混动</el-tag>;
         break;
       default:
@@ -567,18 +570,21 @@ export default class Monitor extends Vue {
   }
 
   renderStatus(value: boolean | string | number, unit?: string) {
-    switch (typeof value) {
-      case 'boolean':
+    const gettype = Object.prototype.toString;
+    switch (gettype.call(value)) {
+      case '[object Boolean]':
         return value ? '开' : '关';
-      case 'string':
+      case '[object String]':
         return value;
-      case 'number':
+      case '[object Number]':
         return unit ? value + unit : value;
+      case '[object Null]':
+        return '未知';
       default:
         return value;
     }
   }
-
+  // 单击表格-选择车辆
   currentChange = (val: any) => {
     this.mapCenter = {
       lat: val.lat,
@@ -708,7 +714,7 @@ export default class Monitor extends Vue {
             <div class="time">
               <i class="iconfont-time-circle icon"></i>
               <span>
-                {carDetail.gpsTime}
+                {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
               </span>
               <span class="status">
                 ({carDetail.minutes}分钟无位置变化)
@@ -734,12 +740,14 @@ export default class Monitor extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
+            data-type={'JSON'}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             export-btn={true}
             on-menuClick={this.menuClick}
             table-list={this.tableList}
+            default-page-size={5}
             url={this.tableUrl}
             opreat={this.opreat}
             opreat-width="150px"

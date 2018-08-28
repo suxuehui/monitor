@@ -48,7 +48,7 @@ export default class Merchants extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/monitor/customer/org/list';
+  url: string = '/monitor/sys/org/list';
   // 地址
   opreat: Opreat[] = [
     {

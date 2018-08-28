@@ -29,8 +29,8 @@ headers?: any,
   let { url } = options;
   const { method = 'get', fetchType } = options;
   options.headers = {
-    token: window.localStorage.getItem('token'),
     ...options.headers,
+    token: window.localStorage.getItem('token'),
   };
   let cloneData: any = lodash.cloneDeep(data);
   cloneData = qs.stringify(cloneData);
@@ -80,12 +80,14 @@ headers?: any,
       data,
     });
   }
-  return service({
-    url,
-    method: method.toLowerCase(),
-    data: cloneData,
-    headers: options.headers,
-  });
+  switch (method.toLowerCase()) {
+    case 'post':
+      return service.post(url, cloneData, options.headers);
+    case 'get':
+      return service.get(`${url}?${cloneData}`, options.headers);
+    default:
+      return service.get(`${url}?${cloneData}`, options.headers);
+  }
 };
 
 interface Option {
