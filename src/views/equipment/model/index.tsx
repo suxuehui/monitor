@@ -2,7 +2,7 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import { getCustomerList } from '@/api/customer';
-import { configDelete } from '@/api/config';
+import { configDelete, configInfo } from '@/api/config';
 import AddModel from '@/views/equipment/model/components/Addmodel';
 
 interface ActiveType { key: any, value: any, label: string }
@@ -74,20 +74,28 @@ export default class Member extends Vue {
   addVisible: boolean = false;
   addTitle: string = '';
 
-  modelForm: any = {
-    roleName: '',
-    remark: '',
-  };
-  freezeData: any = {}
+  rowData: any = {};
 
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
-      this.addVisible = true;
-      this.addTitle = '修改配置';
+      configInfo({ id: row.id }).then((res) => {
+        this.rowData = res.entity;
+      });
+      setTimeout(() => {
+        this.addVisible = true;
+        this.addTitle = '修改配置';
+      }, 200);
     } else if (key === 'delete') {
-      console.log(1);
+      configDelete({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
   addModel() {
@@ -126,6 +134,7 @@ export default class Member extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-model
+          data={this.rowData}
           title={this.addTitle}
           visible={this.addVisible}
           on-close={this.closeModal}

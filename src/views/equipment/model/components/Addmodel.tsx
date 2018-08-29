@@ -1,6 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio } from 'element-ui';
-import { configAdd, configDelete, configUpdate } from '@/api/config';
+import { configAdd, configUpdate } from '@/api/config';
 
 import './Addmodel.less';
 @Component({
@@ -42,7 +42,7 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入配置参数', trigger: 'blur' },
     ],
     reboot: [
-      { required: false },
+      { required: true, message: '请确认是否重启' },
     ],
     remark: [
       { required: false },
@@ -50,6 +50,33 @@ export default class AddModal extends Vue {
     productCode: [
       { required: true, message: '请输入产品编码', trigger: 'blur' },
     ],
+  }
+
+  @Watch('data')
+  onDataChange() {
+    if (this.data.id > 0) {
+      const obj = JSON.parse(JSON.stringify(this.data));
+      // 配置参数
+      const cfgParamStr = obj.cfgParam.replace(/\["|"]/g, '');
+      const cfgParamArr = cfgParamStr.split('","');
+      const cfgParamAddArr = cfgParamStr.split('","').slice(1);
+      console.log(cfgParamAddArr);
+      const cfgParamAddArrEnd: any = [];
+      cfgParamAddArr.map((item: any, key: number) => cfgParamAddArrEnd.push({
+        value: item,
+        key,
+      }));
+      this.modelForm = {
+        cfgName: obj.cfgName,
+        reboot: '',
+        remark: obj.remark,
+        productCode: obj.productCode,
+        cfgParam: cfgParamArr[0],
+        cfgParamAdd: cfgParamAddArrEnd,
+      };
+    } else {
+      this.resetData();
+    }
   }
 
   // 重置数据
@@ -79,6 +106,7 @@ export default class AddModal extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.modelForm.cfgParamAdd = [];
     }, 200);
   }
 
@@ -87,37 +115,76 @@ export default class AddModal extends Vue {
     const From: any = this.$refs.modelForm;
     // 配置参数
     const cfgParamArr: any = [];
-    cfgParamArr.push(this.modelForm.cfgParam);
+    cfgParamArr.push(`"${this.modelForm.cfgParam}"`);
     this.modelForm.cfgParamAdd.map((item: any, key: number) =>
-      cfgParamArr.push(item.value));
-    let cfgParamString: any = '';
-    cfgParamString = `[${cfgParamArr.join(',')}]`;
+      cfgParamArr.push(`"${item.value}"`));
+    let cfgParamStr: any = '';
+    cfgParamStr = `[${cfgParamArr.join(',')}]`;
     // 是否重启
-    const isReBoot = this.modelForm.reboot === 'true' ? 1 : 0;
+    let isReBoot: number = 0;
+    if (this.modelForm.reboot === 'true') {
+      isReBoot = 1;
+    } else if (this.modelForm.reboot === 'false') {
+      isReBoot = 2;
+    }
 
     const obj = {
       cfgName: this.modelForm.cfgName,
       reboot: isReBoot,
       remark: this.modelForm.remark,
       productCode: this.modelForm.productCode,
-      cfgParam: cfgParamString,
+      cfgParam: cfgParamStr,
+      id: this.data.id ? this.data.id : null,
     };
     if (this.title === '新增配置') {
-      configAdd(obj).then((res) => {
-        if (res.result.resultCode === '0') {
-          setTimeout(() => {
-            this.loading = false;
-            this.$message.success(res.result.resultMessage);
-            From.resetFields();
-            this.modelForm.cfgParamAdd=[];
-            this.$emit('refresh');
-          }, 1500);
+      From.validate((valid: any) => {
+        if (valid) {
+          configAdd(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.modelForm.cfgParamAdd = [];
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
         } else {
-          setTimeout(() => {
-            this.loading = false;
-            this.$message.error(res.result.resultMessage);
-          }, 1500);
+          this.loading = false;
+          return false;
         }
+        return false;
+      });
+    } else {
+      From.validate((valid: any) => {
+        if (valid) {
+          configUpdate(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.modelForm.cfgParamAdd = [];
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
+        } else {
+          this.loading = false;
+          return false;
+        }
+        return false;
       });
     }
   }
@@ -131,7 +198,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} ref="modelForm" label-width="80px" class="model">
+        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
               <el-form-item label="配置名称" prop="cfgName">
@@ -191,7 +258,7 @@ export default class AddModal extends Vue {
               }
             </el-col>
             <el-col span={24}>
-              <el-form-item label="是否启用" prop="reboot" class="isStart">
+              <el-form-item label="是否重启" prop="reboot" class="isStart">
                 <div class="radioGroup">
                   <el-radio v-model={this.modelForm.reboot} id="availableY" label="true">是</el-radio>
                   <el-radio v-model={this.modelForm.reboot} id="availableN" label="false">否</el-radio>

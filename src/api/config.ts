@@ -3,8 +3,8 @@ import request from '@/utils/request';
 // 配置详情
 export async function configInfo(params: any) {
   return request({
-    url: '/vehicle/config/info',
-    method: 'get',
+    url: '/monitor/vehicle/config/info',
+    method: 'post',
     data: params,
   });
 }
