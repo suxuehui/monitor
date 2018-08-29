@@ -2,7 +2,7 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import { getCustomerList } from '@/api/customer';
-import { vehicleModelEnable } from '@/api/car';
+import { configDelete } from '@/api/config';
 import AddModel from '@/views/equipment/model/components/Addmodel';
 
 interface ActiveType { key: any, value: any, label: string }
@@ -34,7 +34,7 @@ export default class Member extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/monitor/vehicle/model/list';
+  url: string = '/monitor/vehicle/config/list';
 
   opreat: Opreat[] = [
     {
@@ -58,19 +58,17 @@ export default class Member extends Vue {
     { label: '配置名称', prop: 'cfgName', formatter: (row: any) => (row.cfgName ? row.cfgName : '--') },
     { label: '产品编码', prop: 'productCode', formatter: (row: any) => (row.productCode ? row.productCode : '--') },
     { label: '配置描述', prop: 'remark', formatter: (row: any) => (row.remark ? row.remark : '--') },
-    { label: '是否重启', prop: 'reboot', formatter: (row: any) => (row.reboot ? row.reboot : '--') },
+    { label: '是否重启', prop: 'reboot', formatter: this.statusDom },
   ];
 
   statusDom(row: any) {
-    const type = row.available ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.available ? '已启用' : '未启用'}</el-tag>;
+    if (row.reboot === 1) {
+      return <el-tag size="medium" type="success">是</el-tag>;
+    } else if (row.reboot === 0) {
+      return <el-tag size="medium" type="danger">否</el-tag>;
+    }
+    return <el-tag size="medium" type="info">未知</el-tag>;
   }
-
-  activeTypes: ActiveType[] = [
-    { key: null, value: null, label: '状态(全部)' },
-    { key: 0, value: 0, label: '已启用' },
-    { key: 1, value: 1, label: '未启用' },
-  ]
 
   // 新增、编辑
   addVisible: boolean = false;
@@ -89,12 +87,10 @@ export default class Member extends Vue {
       this.addVisible = true;
       this.addTitle = '修改配置';
     } else if (key === 'delete') {
-      // this.$router.push({ name: '详情配置', query: { id: row.id } });
       console.log(1);
     }
   }
   addModel() {
-    // this.$router.push({ name: '详情配置' });
     this.addVisible = true;
     this.addTitle = '新增配置';
   }
@@ -125,7 +121,7 @@ export default class Member extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          dataType={'JSON'}
+          // dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

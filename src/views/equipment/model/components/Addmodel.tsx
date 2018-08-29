@@ -1,5 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio } from 'element-ui';
+import { configAdd, configDelete, configUpdate } from '@/api/config';
 
 import './Addmodel.less';
 @Component({
@@ -25,8 +26,9 @@ export default class AddModal extends Vue {
 
   modelForm: any = {
     cfgName: '',
-    reboot: '',
+    reboot: 'true',
     cfgParam: '',
+    cfgParamAdd: [],
     remark: '',
     productCode: '',
   };
@@ -34,19 +36,19 @@ export default class AddModal extends Vue {
 
   rules = {
     cfgName: [
-      { required: true, message: '请选择所属商户', trigger: 'blur' },
+      { required: true, message: '请输入配置名称', trigger: 'blur' },
     ],
     cfgParam: [
-      { required: true, message: '请选择设备类型', trigger: 'blur' },
+      { required: true, message: '请输入配置参数', trigger: 'blur' },
     ],
     reboot: [
-      { required: true, message: '请输入设备IMEI' },
+      { required: false },
     ],
     remark: [
-      { required: false, message: '请输入设备IMEI', trigger: 'blur' },
+      { required: false },
     ],
     productCode: [
-      { required: true, message: '请输入设备IMEI', trigger: 'blur' },
+      { required: true, message: '请输入产品编码', trigger: 'blur' },
     ],
   }
 
@@ -55,10 +57,21 @@ export default class AddModal extends Vue {
     this.modelForm = {
       cfgName: '',
       reboot: '',
-      cfgParam: '',
       remark: '',
       productCode: '',
+      cfgParam: '',
+      cfgParamAdd: [],
     };
+  }
+
+  addCfgParam() {
+    this.modelForm.cfgParamAdd.push({
+      value: '',
+      key: Date.now(),
+    });
+  }
+  deleteCfgParam(key: any) {
+    this.modelForm.cfgParamAdd.splice(key, 1);
   }
 
   closeModal() {
@@ -70,6 +83,43 @@ export default class AddModal extends Vue {
   }
 
   onSubmit() {
+    this.loading = true;
+    const From: any = this.$refs.modelForm;
+    // 配置参数
+    const cfgParamArr: any = [];
+    cfgParamArr.push(this.modelForm.cfgParam);
+    this.modelForm.cfgParamAdd.map((item: any, key: number) =>
+      cfgParamArr.push(item.value));
+    let cfgParamString: any = '';
+    cfgParamString = `[${cfgParamArr.join(',')}]`;
+    // 是否重启
+    const isReBoot = this.modelForm.reboot === 'true' ? 1 : 0;
+
+    const obj = {
+      cfgName: this.modelForm.cfgName,
+      reboot: isReBoot,
+      remark: this.modelForm.remark,
+      productCode: this.modelForm.productCode,
+      cfgParam: cfgParamString,
+    };
+    if (this.title === '新增配置') {
+      configAdd(obj).then((res) => {
+        if (res.result.resultCode === '0') {
+          setTimeout(() => {
+            this.loading = false;
+            this.$message.success(res.result.resultMessage);
+            From.resetFields();
+            this.modelForm.cfgParamAdd=[];
+            this.$emit('refresh');
+          }, 1500);
+        } else {
+          setTimeout(() => {
+            this.loading = false;
+            this.$message.error(res.result.resultMessage);
+          }, 1500);
+        }
+      });
+    }
   }
 
   render() {
@@ -81,7 +131,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} ref="modelForm" rules={this.rules} label-width="80px" class="model">
+        <el-form model={this.modelForm} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
               <el-form-item label="配置名称" prop="cfgName">
@@ -118,8 +168,27 @@ export default class AddModal extends Vue {
                   id="cfgParam"
                   v-model={this.modelForm.cfgParam}
                   placeholder="请输入配置参数"
-                ></el-input>
+                >
+                  <el-button slot="append" icon="iconfont-plus icon-plus" on-click={this.addCfgParam}></el-button>
+                </el-input>
               </el-form-item>
+            </el-col>
+            <el-col span={24}>
+              {
+                this.modelForm.cfgParamAdd.map((item: any, index: number) => <el-form-item
+                  label={`配置参数${index + 1}`}
+                  key={item.key}
+                  prop={this.modelForm.cfgParamAdd[index].value}
+                >
+                  <el-input
+                    id="cfgParam"
+                    v-model={this.modelForm.cfgParamAdd[index].value}
+                    placeholder="请输入配置参数"
+                  >
+                    <el-button slot="append" icon="iconfont-delete icon-close" on-click={() => this.deleteCfgParam(index)}></el-button>
+                  </el-input>
+                </el-form-item>)
+              }
             </el-col>
             <el-col span={24}>
               <el-form-item label="是否启用" prop="reboot" class="isStart">
