@@ -131,6 +131,7 @@ export default function request(options: Option): Promise<any> {
       statusCode = 600;
       msg = error.message || 'Network Error';
     }
+    Message.error(msg);
     return Promise.reject(new Error(msg));
   });
 }

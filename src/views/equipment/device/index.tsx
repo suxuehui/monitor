@@ -94,7 +94,7 @@ export default class Device extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/monitor/device/terminal/list';
+  url: string = '/device/terminal/list';
   // 表格数据返回格式
   tableBackData: object = {
     code: 'result.resultCode',
@@ -104,39 +104,39 @@ export default class Device extends Vue {
     total: 'count',
   }
   opreat: Opreat[] = [
-    // {
-    //   key: 'bind',
-    //   rowKey: 'imei',
-    //   color: (row: any) => (row.status === 1 ? 'green' : 'red'),
-    //   text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
-    //   msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
-    //   disabled: (row: any) => (row.status === 5),
-    //   roles: true,
-    // },
-    // {
-    //   key: 'accept',
-    //   rowKey: 'imei',
-    //   color: 'blue',
-    //   text: '验收',
-    //   disabled: (row: any) => (row.status === 1 || row.status === 4 || row.status === 5),
-    //   roles: true,
-    // },
-    // {
-    //   key: 'update',
-    //   rowKey: 'imei',
-    //   color: 'green',
-    //   text: '更新',
-    //   disabled: (row: any) => !((row.cfgVer !== row.upCfgVer) && (row.online)),
-    //   roles: true,
-    // },
-    // {
-    //   key: 'authCode',
-    //   rowKey: 'imei',
-    //   color: 'blue',
-    //   text: '鉴权码',
-    //   disabled: (row: any) => (!row.online),
-    //   roles: true,
-    // },
+    {
+      key: 'bind',
+      rowKey: 'imei',
+      color: (row: any) => (row.status === 1 ? 'green' : 'red'),
+      text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
+      msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
+      disabled: (row: any) => (row.status === 5),
+      roles: true,
+    },
+    {
+      key: 'accept',
+      rowKey: 'imei',
+      color: 'blue',
+      text: '验收',
+      disabled: (row: any) => (row.status === 1 || row.status === 4 || row.status === 5),
+      roles: true,
+    },
+    {
+      key: 'update',
+      rowKey: 'imei',
+      color: 'green',
+      text: '更新',
+      disabled: (row: any) => !((row.cfgVer !== row.upCfgVer) && (row.online)),
+      roles: true,
+    },
+    {
+      key: 'authCode',
+      rowKey: 'imei',
+      color: 'blue',
+      text: '鉴权码',
+      disabled: (row: any) => (!row.online),
+      roles: true,
+    },
     {
       key: 'downConfig',
       rowKey: 'imei',

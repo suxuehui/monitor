@@ -1,5 +1,5 @@
 import { Component, Prop, Emit, Vue, Inject, Provide } from 'vue-property-decorator';
-import { Table, TableColumn, Pagination, Tag } from 'element-ui';
+import { Table, TableColumn, Pagination, Tag, Dropdown, DropdownItem, DropdownMenu } from 'element-ui';
 import { tableList, Opreat, Directives } from '@/interface';
 import request from '@/utils/request';
 import Popconfirm from '@/components/Popconfirm';
@@ -13,6 +13,9 @@ import './MTable.less';
   'pop-confirm': Popconfirm,
   'el-pagination': Pagination,
   'm-spin': Spin,
+  'el-dropdown': Dropdown,
+  'el-dropdown-item': DropdownItem,
+  'el-dropdown-menu': DropdownMenu,
   }
   })
 export default class MTable extends Vue {
@@ -154,6 +157,24 @@ export default class MTable extends Vue {
   }
 
   opreatJSX(row: any, column: string, cellValue: any, index: number) {
+    if (this.opreat.length > 4) {
+      return <el-dropdown on-command={(command: string) => this.menuClick(command, row)}>
+        <span class="el-dropdown-link">
+          下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          {
+            this.opreat.map((item, indexs) => <el-dropdown-item
+              key={indexs}
+              command={item.key}
+              disabled={item.disabled && item.disabled(row)}
+            >
+              {typeof item.text === 'function' ? item.text(row) : item.text}
+            </el-dropdown-item>)
+          }
+        </el-dropdown-menu>
+      </el-dropdown>;
+    }
     return <div class="table-opreat">
     {
       this.opreat.map((item, indexs) => {
