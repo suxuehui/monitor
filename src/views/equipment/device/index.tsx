@@ -7,6 +7,8 @@ import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
 import UpdateModal from '@/views/equipment/device/components/UpdateModal';
+import DownModel from './components/DownModel';
+import ClearModel from './components/ClearModel';
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -19,6 +21,8 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   'bind-modal': BindModal,
   'accept-modal': AcceptModal,
   'update-modal': UpdateModal,
+  'down-model': DownModel,
+  'clear-model': ClearModel,
   }
   })
 export default class Device extends Vue {
@@ -134,7 +138,7 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '鉴权码',
-      disabled: (row: any) => (!row.online),
+      disabled: (row: any) => (row.online !== 1),
       roles: true,
     },
     {
@@ -142,7 +146,7 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '下发配置',
-      disabled: (row: any) => (row.status !== 1),
+      disabled: (row: any) => (row.online !== 1),
       roles: true,
     },
     {
@@ -150,7 +154,7 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '清除配置',
-      disabled: (row: any) => (row.status !== 1),
+      disabled: (row: any) => (row.online !== 1),
       roles: true,
     },
   ];
@@ -215,17 +219,26 @@ export default class Device extends Vue {
   updateVisible: boolean = false;
   updateTitle: string = '';
 
+  // 下发配置
+  downVisible: boolean = false;
+  downTitle: string = '下发配置';
+
+  // 清除配置
+  clearVisible: boolean = false;
+  clearTitle: string = '';
+
   modelForm: any = {
     imei: '',
   };
   updateData: any = {}
   acceptData: any = {}
+  downData: any = {}
+  clearData: any = {}
 
   created() {
     // 门店
     getCustomerList(null).then((res) => {
       const shopList: any = [];
-      console.log(res.entity.data);
     });
     // 设备类型
     terminalType(null).then((res) => {
@@ -305,32 +318,49 @@ export default class Device extends Vue {
   // 操作
   menuClick(key: string, row: any) {
     const formTable: any = this.$refs.table;
-    // 绑定、解绑
-    if (key === 'bind') {
-      if (row.status === 1) {
-        this.modelForm = row;
-        this.bindVisible = true;
-        this.bindTitle = '绑定车辆';
-      } else {
-        terminalUnbind({ imei: row.imei }).then((res) => {
-          if (res.result.resultCode) {
-            formTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      }
-    } else if (key === 'accept') {
-      this.acceptData = row;
-      this.acceptTitle = '安装验收';
-      this.acceptVisible = true;
-    } else if (key === 'update') {
-      this.updateData = row;
-      this.updateTitle = '配置更新';
-      this.updateVisible = true;
-    } else if (key === 'authCode') {
-      console.log('鉴权码');
+    switch (key) {
+      // 绑定、解绑
+      case 'bind':
+        if (row.status === 1) {
+          this.modelForm = row;
+          this.bindVisible = true;
+          this.bindTitle = '绑定车辆';
+        } else {
+          terminalUnbind({ imei: row.imei }).then((res) => {
+            if (res.result.resultCode) {
+              formTable.reloadTable();
+              this.$message.success(res.result.resultMessage);
+            } else {
+              this.$message.error(res.result.resultMessage);
+            }
+          });
+        }
+        break;
+      case 'accept':
+        this.acceptData = row;
+        this.acceptTitle = '安装验收';
+        this.acceptVisible = true;
+        break;
+      case 'update':
+        this.updateData = row;
+        this.updateTitle = '配置更新';
+        this.updateVisible = true;
+        break;
+      case 'authCode':
+        console.log('鉴权码');
+        break;
+      case 'downConfig':
+        this.downData = row;
+        this.downTitle = '配置更新';
+        this.downVisible = true;
+        break;
+      case 'clearConfig':
+        this.clearData = row;
+        this.clearTitle = '清除配置';
+        this.clearVisible = true;
+        break;
+      default:
+        console.log(1);
     }
   }
 
@@ -345,15 +375,14 @@ export default class Device extends Vue {
     this.bindVisible = false;
     this.acceptVisible = false;
     this.updateVisible = false;
+    this.downVisible = false;
+    this.clearVisible = false;
   }
   // 关闭弹窗时刷新
   refresh(): void {
-    this.addVisible = false;
-    this.bindVisible = false;
-    this.acceptVisible = false;
-    this.updateVisible = false;
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
+    this.closeModal();
   }
   render(h: any) {
     return (
@@ -367,7 +396,7 @@ export default class Device extends Vue {
           data-type={'JSON'}
           on-addBack={this.addModel}
           opreat={this.opreat}
-          opreatWidth={'180px'}
+          opreatWidth={'150px'}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
@@ -401,6 +430,21 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
           on-close={this.closeModal}
         ></update-modal>
+        <down-model
+          data={this.downData}
+          title={this.downTitle}
+          visible={this.downVisible}
+          on-refresh={this.refresh}
+          on-close={this.closeModal}
+        ></down-model>
+        <clear-model
+          data={this.clearData}
+          title={this.clearTitle}
+          visible={this.clearVisible}
+          on-refresh={this.refresh}
+          on-close={this.closeModal}
+        >
+        </clear-model>
       </div>
     );
   }

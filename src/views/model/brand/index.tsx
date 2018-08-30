@@ -99,7 +99,7 @@ export default class Brand extends Vue {
   }
   // 关闭弹窗时刷新
   refresh(): void {
-    this.addVisible = false;
+    this.closeModal();
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
   }

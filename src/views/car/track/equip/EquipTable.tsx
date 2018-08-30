@@ -155,8 +155,7 @@ export default class Equipment extends Vue {
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
-    this.deployVisible = false;
-    this.reverseVisible = false;
+    this.closeModal();
   }
 
   render() {

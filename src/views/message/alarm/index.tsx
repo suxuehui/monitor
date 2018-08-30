@@ -142,7 +142,7 @@ export default class Alarm extends Vue {
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
-    this.handleVisible = false;
+    this.closeModal();
   }
 
   render(h: any) {

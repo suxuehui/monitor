@@ -34,7 +34,7 @@ export default class Member extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/monitor/vehicle/config/list';
+  url: string = '/vehicle/config/list';
 
   opreat: Opreat[] = [
     {
@@ -109,9 +109,9 @@ export default class Member extends Vue {
   }
   // 关闭弹窗时刷新
   refresh(): void {
-    this.addVisible = false;
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
+    this.closeModal();
   }
 
   render(h: any) {

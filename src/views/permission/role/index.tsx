@@ -160,8 +160,7 @@ export default class Role extends Vue {
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
-    this.addVisible = false;
-    this.setVisible = false;
+    this.closeModal();
   }
   render(h: any) {
     return (
