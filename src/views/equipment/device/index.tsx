@@ -1,15 +1,15 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Tag, Loading, Button } from 'element-ui';
+import { Tag, Loading, Button, Switch } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { getCustomerList } from '@/api/customer';
-import { terminalUnbind } from '@/api/equipment';
+import { terminalUnbind, terminalType } from '@/api/equipment';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
 import UpdateModal from '@/views/equipment/device/components/UpdateModal';
 import './index.less';
 
-interface TerminalType { key: number, value: string, label: string, color: string }
+interface TerminalType { key: number, value: number, label: string, color: string }
 
 @Component({
   components: {
@@ -26,31 +26,7 @@ export default class Device extends Vue {
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'active',
-      type: 'select',
-      label: '所属商户',
-      placeholder: '请选择所属商户',
-      options: [],
-    },
-    {
-      key: 'active',
-      type: 'select',
-      label: '设备类型',
-      placeholder: '请选择设备类型',
-      options: [],
-    },
-    {
-      key: 'active',
-      type: 'select',
-      label: '配置更新',
-      placeholder: '请选择配置状态',
-      options: [],
-    },
-  ];
-  // 高级筛选
-  filterGrade: FilterFormList[] = [
-    {
-      key: 'orgId',
+      key: 'levelCode',
       type: 'select',
       label: '所属商户',
       placeholder: '请选择所属商户',
@@ -64,21 +40,37 @@ export default class Device extends Vue {
       options: [],
     },
     {
-      key: 'active',
+      key: 'keyword',
+      type: 'input',
+      label: '模糊查询',
+      placeholder: 'imei、车牌、配置名称、产品编码',
+    },
+  ];
+  // 高级筛选
+  filterGrade: FilterFormList[] = [
+    {
+      key: 'levelCode',
       type: 'select',
-      label: '配置更新',
-      placeholder: '请选择配置状态',
+      label: '所属商户',
+      placeholder: '请选择所属商户',
       options: [],
     },
     {
-      key: 'active',
+      key: 'terminalType',
+      type: 'select',
+      label: '设备类型',
+      placeholder: '请选择设备类型',
+      options: [],
+    },
+    {
+      key: 'status',
       type: 'select',
       label: '设备状态',
       placeholder: '请选择设备状态',
       options: [],
     },
     {
-      key: 'active',
+      key: 'online',
       type: 'select',
       label: '网络状态',
       placeholder: '请选择网络状态',
@@ -88,119 +80,123 @@ export default class Device extends Vue {
       key: 'keyword',
       type: 'input',
       label: '模糊查询',
-      placeholder: '请输入imei号或车牌号',
+      placeholder: 'imei、车牌、配置名称、产品编码',
     },
   ];
   // 筛选参数
   filterParams: any = {
-    roleId: '',
-    active: '',
+    levelCode: '1/',
+    terminalType: 0,
+    status: 0,
+    online: -1,
     keyword: '',
+    active: 1,
   };
   outParams: any = {};
   // 请求地址
   url: string = '/monitor/device/terminal/list';
-
+  // 表格数据返回格式
+  tableBackData: object = {
+    code: 'result.resultCode',
+    codeOK: '0',
+    message: 'result.resultMessage',
+    data: 'entity',
+    total: 'count',
+  }
   opreat: Opreat[] = [
+    // {
+    //   key: 'bind',
+    //   rowKey: 'imei',
+    //   color: (row: any) => (row.status === 1 ? 'green' : 'red'),
+    //   text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
+    //   msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
+    //   disabled: (row: any) => (row.status === 5),
+    //   roles: true,
+    // },
+    // {
+    //   key: 'accept',
+    //   rowKey: 'imei',
+    //   color: 'blue',
+    //   text: '验收',
+    //   disabled: (row: any) => (row.status === 1 || row.status === 4 || row.status === 5),
+    //   roles: true,
+    // },
+    // {
+    //   key: 'update',
+    //   rowKey: 'imei',
+    //   color: 'green',
+    //   text: '更新',
+    //   disabled: (row: any) => !((row.cfgVer !== row.upCfgVer) && (row.online)),
+    //   roles: true,
+    // },
+    // {
+    //   key: 'authCode',
+    //   rowKey: 'imei',
+    //   color: 'blue',
+    //   text: '鉴权码',
+    //   disabled: (row: any) => (!row.online),
+    //   roles: true,
+    // },
     {
-      key: 'bind',
-      rowKey: 'imei',
-      color: (row: any) => (row.status === 1 ? 'green' : 'red'),
-      text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
-      msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
-      disabled: (row: any) => (row.status === 5),
-      roles: true,
-    },
-    {
-      key: 'accept',
+      key: 'downConfig',
       rowKey: 'imei',
       color: 'blue',
-      text: '验收',
-      disabled: (row: any) => (row.status === 1 || row.status === 4 || row.status === 5),
+      text: '下发配置',
+      disabled: (row: any) => (row.status !== 1),
       roles: true,
     },
     {
-      key: 'update',
-      rowKey: 'imei',
-      color: 'green',
-      text: '更新',
-      disabled: (row: any) => !((row.cfgVer !== row.upCfgVer) && (row.online)),
-      roles: true,
-    },
-    {
-      key: 'authCode',
+      key: 'clearConfig',
       rowKey: 'imei',
       color: 'blue',
-      text: '鉴权码',
-      disabled: (row: any) => (!row.online),
+      text: '清除配置',
+      disabled: (row: any) => (row.status !== 1),
       roles: true,
     },
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName' },
-    { label: '设备类型', prop: 'terminalTypeName' },
-    { label: 'imei号', prop: 'imei' },
-    { label: '配置版本', prop: 'cfgVer' },
-    { label: '硬件版本', prop: 'hardVer' },
-    { label: '主机版本', prop: 'hostVer' },
-    { label: '当前车辆', prop: 'plateNum' },
+    { label: '所属商户', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
+    { label: '设备类型', prop: 'terminalTypeName', formatter: (row: any) => (row.terminalTypeName ? row.terminalTypeName : '--') },
+    { label: 'imei号', prop: 'imei', formatter: (row: any) => (row.imei ? row.imei : '--') },
+    { label: '配置名称', prop: 'cfgName', formatter: (row: any) => (row.cfgName ? row.cfgName : '--') },
+    { label: '产品编码', prop: 'productCode', formatter: (row: any) => (row.productCode ? row.productCode : '--') },
+    { label: '当前车辆', prop: 'plateNum', formatter: (row: any) => (row.plateNum ? row.plateNum : '--') },
     { label: '安绑记录', prop: 'plateNum', formatter: this.bindLog },
-    { label: '设备到期', prop: 'serviceEndTime' },
-    { label: '配置更新', prop: 'upCfgVer', formatter: this.cfgConfirm },
+    { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
 
-  bindLog(row: any) {
-    return <a class="check-link" on-click={() => this.checklog(row)}>查看</a>;
-  }
+  // 设备类型
+  typeList: any = [];
 
-  checklog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei }, params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
-  }
-
-  cfgConfirm(row: any) {
-    const type = row.cfgVer === row.upCfgVer ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.active ? '已最新' : '可更新'}</el-tag>;
-  }
-
-  onlineSelect(row: any) {
-    const type = row.online ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.online ? '在线' : '离线'}</el-tag>;
-  }
-  terSelect(row: any) {
-    const arr = this.terConfirm(row.status);
-    return arr.map(item => <el-tag size="medium" type={item.color} style="marginRight:5px">{item.label}</el-tag>);
-  }
-
-  terConfirm(data: any) {
-    const arr: TerminalType[] = [];
-    this.terminalStatus.forEach((item) => {
-      if (item.key === data) {
-        arr.push(item);
-      }
-    });
-    return arr;
-  }
-
-  // 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
+  // 设备状态 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
   terminalStatus: TerminalType[] = [
     {
-      key: 1, value: '1', label: '待安绑', color: '',
+      key: 0, value: 0, label: '全部', color: '',
     },
     {
-      key: 2, value: '2', label: '待验收', color: 'info',
+      key: 1, value: 1, label: '待安绑', color: '',
     },
     {
-      key: 3, value: '3', label: '未合格', color: 'warning',
+      key: 2, value: 2, label: '待验收', color: 'info',
     },
     {
-      key: 4, value: '4', label: '已合格', color: 'success',
+      key: 3, value: 3, label: '未合格', color: 'warning',
     },
     {
-      key: 5, value: '5', label: '已返厂', color: 'danger',
+      key: 4, value: 4, label: '已合格', color: 'success',
     },
+    {
+      key: 5, value: 5, label: '已返厂', color: 'danger',
+    },
+  ]
+  // 网络状态 1-在线，0-离线 ,
+  onlineStatus: any = [
+    { key: -1, value: -1, label: '全部' },
+    { key: 1, value: 1, label: '在线' },
+    { key: 0, value: 0, label: '离线' },
   ]
 
   // 新增
@@ -224,6 +220,87 @@ export default class Device extends Vue {
   };
   updateData: any = {}
   acceptData: any = {}
+
+  created() {
+    // 门店
+    getCustomerList(null).then((res) => {
+      const shopList: any = [];
+      console.log(res.entity.data);
+    });
+    // 设备类型
+    terminalType(null).then((res) => {
+      res.entity.map((item: any) => this.typeList.push({
+        key: Math.random(),
+        value: item.enumValue,
+        label: item.name,
+      }));
+      // 设备类型（全部）
+      this.typeList.unshift({
+        key: Math.random(),
+        value: 0,
+        label: '设备类型（全部）',
+      });
+      this.filterList[1].options = this.typeList;
+      this.filterGrade[1].options = this.typeList;
+    });
+    // 网络状态
+    this.filterGrade[3].options = this.onlineStatus;
+  }
+
+  bindLog(row: any) {
+    return <a class="check-link" on-click={() => this.checkLog(row)}>查看</a>;
+  }
+
+  endDay(row: any) {
+    return <div>
+      <span style="marginLeft:-6px">{row.serviceEndDay ? `${row.serviceEndDay}天` : '--'}</span>
+      <el-button size="mini" type="text" style="marginLeft:10px">重置</el-button>
+    </div>;
+  }
+
+  checkLog(row: any) {
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei }, params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
+  }
+
+  onlineSelect(row: any) {
+    const type = row.online === 1 ? 'success' : 'danger';
+    return <el-tag size="medium" type={type}>{row.online ? '在线' : '离线'}</el-tag>;
+  }
+  terSelect(row: any) {
+    let type;
+    // 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
+    switch (row.status) {
+      case 1:
+        type = <el-tag size="medium" type="blue" style="marginRight:5px">待安绑</el-tag>;
+        break;
+      case 2:
+        type = <el-tag size="medium" type="info" style="marginRight:5px">待验收</el-tag>;
+        break;
+      case 3:
+        type = <el-tag size="medium" type="warning" style="marginRight:5px">未合格</el-tag>;
+        break;
+      case 4:
+        type = <el-tag size="medium" type="success" style="marginRight:5px">已合格</el-tag>;
+        break;
+      case 5:
+        type = <el-tag size="medium" type="danger" style="marginRight:5px">已返厂</el-tag>;
+        break;
+      default:
+        type = <el-tag size="medium" type="gray" style="marginRight:5px">未知</el-tag>;
+    }
+    return type;
+  }
+
+  terConfirm(data: any) {
+    const arr: TerminalType[] = [];
+    this.terminalStatus.forEach((item) => {
+      if (item.key === data) {
+        arr.push(item);
+      }
+    });
+    return arr;
+  }
+
 
   // 操作
   menuClick(key: string, row: any) {
@@ -294,7 +371,6 @@ export default class Device extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

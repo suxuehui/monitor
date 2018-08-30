@@ -118,7 +118,7 @@ export default class MTable extends Vue {
 
   render() {
     return (
-      <div class="m-table">
+      <div class="m-table" >
         <m-spin show={this.loading}/>
         <el-table
         data={this.tableData}

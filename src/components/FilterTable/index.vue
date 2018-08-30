@@ -12,6 +12,7 @@
       @export="exportBack"
       @setTable="setTable"
       @addFun="addBack"
+      @tableHeight="tableHeight"
     />
     <m-table
       ref="MTable"
@@ -51,11 +52,13 @@ export default class FilterTable extends Vue {
   // 筛选表单生成参数
   @Prop() private filterList!: FilterFormList[];
   // 筛选表单高级生成参数
-  @Prop() private filterGrade! : FilterFormList[];
+  @Prop() private filterGrade!: FilterFormList[];
   // 筛选表单存储数据参数
-  @Prop({ default: {} }) private filterParams!: any;
+  @Prop({ default: {} })
+  private filterParams!: any;
   // 外部参数
-  @Prop({ default: {} }) private outParams!: any;
+  @Prop({ default: {} })
+  private outParams!: any;
   // 是否展示新增按钮
   @Prop() private addBtn!: boolean;
   // 是否展示导出按钮
@@ -65,7 +68,8 @@ export default class FilterTable extends Vue {
   // 请求数据地址
   @Prop() private url!: string;
   // 请求数据类型
-  @Prop({ default: 'formData' }) private dataType!: string;
+  @Prop({ default: 'formData' })
+  private dataType!: string;
   // 表格行ID
   @Prop() private rowKey!: string;
   // 操作参数
@@ -80,7 +84,7 @@ export default class FilterTable extends Vue {
   @Prop() private defaultPageSize!: number;
   // 数据返回格式
   @Prop() private BackParams!: object;
-
+  // 请求数据方法
   @Prop() private fetchType!: string;
 
   @Prop({ default: false }) private highlightCurrentRow!: boolean;
@@ -107,6 +111,11 @@ export default class FilterTable extends Vue {
   @Emit()
   addBack() {
     this.$emit('addBack');
+  }
+  @Emit()
+  tableHeight(params: any) {
+    const table: any = this.$refs.MTable;
+    table.$el.style.marginTop = `${params - 48}px`;
   }
   @Emit()
   exportBack() {

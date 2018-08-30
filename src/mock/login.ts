@@ -34,6 +34,8 @@ const userPermission: Premission[] = [
       '/permission/members/list',
       '/permission/role/list',
       '/system/setting/list',
+      '/model/brand/list',
+      '/model/series/list',
     ],
     role: EnumRoleType.ADMIN,
   },

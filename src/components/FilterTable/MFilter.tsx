@@ -72,7 +72,7 @@ export default class MFilter extends Vue {
   // 高级搜索开关
   showGrade: boolean = false;
   // 高级筛选高度
-  gradeHeight: number = 1;
+  tableMarginTop: number = 0;
   created() {
     this.tableList.map((item) => {
       if (item.prop) {
@@ -107,7 +107,10 @@ export default class MFilter extends Vue {
   @Emit()
   gradeSwitch(val: boolean): void {
     this.showGrade = val;
-    // this.gradeHeight = this.$refs.filterGrade.offsetHeight;
+    this.tableMarginTop = val ?
+      (this.$refs.filterGrade as Element).clientHeight :
+      (this.$refs.filterNormal as Element).clientHeight;
+    this.$emit('tableHeight', this.tableMarginTop);
   }
   @Emit()
   addFun(): void {
@@ -223,7 +226,7 @@ export default class MFilter extends Vue {
     const { isMobile } = this.$store.state.app;
     return (
       <div class={`filter-wrap ${this.showGrade ? 'showGrade' : ''}`}>
-        <div class="filter-mormal">
+        <div class="filter-mormal" ref="filterNormal">
           <el-form model={this.params} size="mini">
             <el-row gutter={20}>
               {
@@ -250,15 +253,15 @@ export default class MFilter extends Vue {
               </el-form>
             </div> : null
         }
-        <el-dialog id="tableSet" width="500px" title="表格设置" visible={this.setModel} on-close={this.closeModal}>
+        <el-dialog id="tableSet" width="500px" title="表格设置" visible={this.setModel} close-on-click-modal={false} on-close={this.closeModal}>
           <el-checkbox-group class="checkbox-list" v-model={this.checkList}>
             {
               this.tableList.map((item, index) => <el-checkbox key={index} label={item.prop}>
                 {item.label}</el-checkbox>)
             }
-            <div slot="footer" class="dialog-footer">
-              <el-button on-click={this.closeModal}>取 消</el-button>
-              <el-button type="primary" on-click={this.setTable}>确 定</el-button>
+            <div class="dialog-footer">
+              <el-button size="mini" on-click={this.closeModal}>取 消</el-button>
+              <el-button size="mini" type="primary" on-click={this.setTable}>保 存</el-button>
             </div>
           </el-checkbox-group>
         </el-dialog>
