@@ -3,7 +3,7 @@ import request from '@/utils/request';
 // 配置详情
 export async function configInfo(params: any) {
   return request({
-    url: '/monitor/vehicle/config/info',
+    url: '/vehicle/config/info',
     method: 'post',
     data: params,
   });
@@ -12,7 +12,7 @@ export async function configInfo(params: any) {
 // 新增配置
 export async function configAdd(params: any) {
   return request({
-    url: '/monitor/vehicle/config/add',
+    url: '/vehicle/config/add',
     method: 'post',
     data: params,
   });
@@ -21,7 +21,7 @@ export async function configAdd(params: any) {
 // 修改配置
 export async function configUpdate(params: any) {
   return request({
-    url: '/monitor/vehicle/config/update',
+    url: '/vehicle/config/update',
     method: 'post',
     data: params,
   });
@@ -30,7 +30,7 @@ export async function configUpdate(params: any) {
 // 删除配置
 export async function configDelete(params: any) {
   return request({
-    url: '/monitor/vehicle/config/delete',
+    url: '/vehicle/config/delete',
     method: 'post',
     data: params,
   });

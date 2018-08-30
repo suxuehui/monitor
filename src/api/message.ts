@@ -4,7 +4,7 @@ import request from '@/utils/request';
 // 处理告警
 export async function handleAlarm(params: any) {
   return request({
-    url: '/monitor/msg/alarm/handle',
+    url: '/msg/alarm/handle',
     method: 'post',
     data: params,
   });
@@ -14,7 +14,7 @@ export async function handleAlarm(params: any) {
 // 新增
 export async function noticeAdd(params: any) {
   return request({
-    url: '/monitor/msg/notice/publish',
+    url: '/msg/notice/publish',
     method: 'post',
     data: params,
   });
@@ -22,7 +22,7 @@ export async function noticeAdd(params: any) {
 // 删除
 export async function noticeDelete(params: any) {
   return request({
-    url: '/monitor/msg/notice/delete',
+    url: '/msg/notice/delete',
     method: 'post',
     data: params,
   });

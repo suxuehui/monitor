@@ -4,7 +4,7 @@ import request from '@/utils/request';
 // 列表
 export async function brandList(params: any) {
   return request({
-    url: '/monitor/vehicle/brand/list',
+    url: '/vehicle/brand/list',
     method: 'post',
     data: params,
   });
@@ -12,7 +12,7 @@ export async function brandList(params: any) {
 // 新增
 export async function brandAdd(params: any) {
   return request({
-    url: '/monitor/vehicle/brand/add',
+    url: '/vehicle/brand/add',
     method: 'post',
     data: params,
   });
@@ -20,7 +20,7 @@ export async function brandAdd(params: any) {
 // 详情
 export async function brandInfo(params: any) {
   return request({
-    url: '/monitor/vehicle/brand/info',
+    url: '/vehicle/brand/info',
     method: 'post',
     data: params,
   });
@@ -28,7 +28,7 @@ export async function brandInfo(params: any) {
 // 编辑
 export async function brandEdit(params: any) {
   return request({
-    url: '/monitor/vehicle/brand/edit',
+    url: '/vehicle/brand/edit',
     method: 'post',
     data: params,
   });
@@ -36,7 +36,7 @@ export async function brandEdit(params: any) {
 // 删除
 export async function brandDelete(params: any) {
   return request({
-    url: '/monitor/vehicle/brand/delete',
+    url: '/vehicle/brand/delete',
     method: 'post',
     data: params,
   });
@@ -46,7 +46,7 @@ export async function brandDelete(params: any) {
 // 列表
 export async function seriesList(params: any) {
   return request({
-    url: '/monitor/vehicle/series/list',
+    url: '/vehicle/series/list',
     method: 'post',
     data: params,
   });
@@ -54,7 +54,7 @@ export async function seriesList(params: any) {
 // 新增
 export async function seriesAdd(params: any) {
   return request({
-    url: '/monitor/vehicle/series/add',
+    url: '/vehicle/series/add',
     method: 'post',
     data: params,
   });
@@ -62,7 +62,7 @@ export async function seriesAdd(params: any) {
 // 详情
 export async function seriesInfo(params: any) {
   return request({
-    url: '/monitor/vehicle/series/detail',
+    url: '/vehicle/series/detail',
     method: 'post',
     data: params,
   });
@@ -70,7 +70,7 @@ export async function seriesInfo(params: any) {
 // 编辑
 export async function seriesEdit(params: any) {
   return request({
-    url: '/monitor/vehicle/series/edit',
+    url: '/vehicle/series/edit',
     method: 'post',
     data: params,
   });
@@ -78,7 +78,7 @@ export async function seriesEdit(params: any) {
 // 删除
 export async function seriesDelete(params: any) {
   return request({
-    url: '/monitor/vehicle/series/delete',
+    url: '/vehicle/series/delete',
     method: 'post',
     data: params,
   });
@@ -88,7 +88,7 @@ export async function seriesDelete(params: any) {
 // 新增
 export async function modelAdd(params: any) {
   return request({
-    url: '/monitor/vehicle/model/add',
+    url: '/vehicle/model/add',
     method: 'post',
     data: params,
   });
@@ -96,7 +96,7 @@ export async function modelAdd(params: any) {
 // 详情
 export async function modelInfo(params: any) {
   return request({
-    url: '/monitor/vehicle/model/info',
+    url: '/vehicle/model/info',
     method: 'post',
     data: params,
   });
@@ -104,7 +104,7 @@ export async function modelInfo(params: any) {
 // 编辑
 export async function modelEdit(params: any) {
   return request({
-    url: '/monitor/vehicle/model/edit',
+    url: '/vehicle/model/edit',
     method: 'post',
     data: params,
   });
@@ -112,7 +112,7 @@ export async function modelEdit(params: any) {
 // 删除
 export async function modelDelete(params: any) {
   return request({
-    url: '/monitor/vehicle/model/delete',
+    url: '/vehicle/model/delete',
     method: 'post',
     data: params,
   });

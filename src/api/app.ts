@@ -4,7 +4,7 @@ import qs from 'qs';
 
 export async function login(params: any, token: string) {
   return request({
-    url: '/monitor/sys/login',
+    url: '/sys/login',
     method: 'post',
     data: params,
     headers: {
@@ -15,7 +15,7 @@ export async function login(params: any, token: string) {
 
 export async function getAuthCodeToken(params: any) {
   return request({
-    url: '/monitor/guest-acl',
+    url: '/guest-acl',
     method: 'post',
     data: params,
   });

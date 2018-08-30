@@ -11,7 +11,7 @@ import router from '@/router';
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const service = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' ? '' : '/api', // api的base_url
+  baseURL: process.env.NODE_ENV === 'production' ? '/monitor' : '/api', // api的base_url
   timeout: 20000, // 请求超时时间
   headers: {
     token: window.localStorage.getItem('token'),

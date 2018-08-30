@@ -39,7 +39,7 @@ export async function roleUnlock(params: any) {
 // 角色禁用
 export async function roleLock(params: any) {
   return request({
-    url: '/monitor/sys/role/lock',
+    url: '/sys/role/lock',
     method: 'post',
     fetchType: 'JSON',
     data: params,
@@ -59,7 +59,7 @@ export async function getUserInfo(params: any) {
 // 成员解冻
 export async function userUnlock(params: any) {
   return request({
-    url: '/monitor/sys/user/unlock',
+    url: '/sys/user/unlock',
     method: 'post',
     fetchType: 'JSON',
     data: params,

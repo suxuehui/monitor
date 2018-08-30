@@ -3,7 +3,7 @@ import request from '@/utils/request';
 // 获取省
 export async function getProvince(params: any) {
   return request({
-    url: '/monitor/area/province',
+    url: '/area/province',
     method: 'get',
     data: params,
   });
@@ -12,7 +12,7 @@ export async function getProvince(params: any) {
 // 获取市
 export async function getCity(params: any) {
   return request({
-    url: '/monitor/area/city',
+    url: '/area/city',
     method: 'get',
     data: params,
   });
@@ -21,7 +21,7 @@ export async function getCity(params: any) {
 // 获取区县
 export async function getDistrict(params: any) {
   return request({
-    url: '/monitor/area/district',
+    url: '/area/district',
     method: 'get',
     data: params,
   });
