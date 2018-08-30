@@ -11,6 +11,7 @@ import '../../../styles/var.less';
 
 // 车子图片
 const carIcon = require('@/assets/car.png');
+const pointIcon = require('@/assets/point.png');
 @Component({
   components: {
   'el-input': Input,
@@ -197,7 +198,7 @@ export default class Monitor extends Vue {
       label: '剩余油量',
       prop: 'leftOil',
       formatter(row: any) {
-        return row.leftOil !== null ? `${row.leftOil}%` : '--';
+        return row.leftOil !== null ? `${row.leftOil}L` : '--';
       },
     },
     {
@@ -297,8 +298,8 @@ export default class Monitor extends Vue {
     { label: '累计里程:', prop: 'totalMileage', unit: 'km' },
     { label: '续航里程:', prop: 'leftMileage', unit: 'km' },
     { label: '总灯状态:', prop: 'allLight' },
-    { label: '大灯状态:', prop: 'bigLight' },
-    { label: '小灯状态:', prop: 'smallLight' },
+    // { label: '大灯状态:', prop: 'bigLight' },
+    // { label: '小灯状态:', prop: 'smallLight' },
     { label: '充电状态:', prop: 'chargeLight' },
     { label: '引擎盖:', prop: 'hood' },
     { label: '后备箱:', prop: 'trunk' },
@@ -450,20 +451,30 @@ export default class Monitor extends Vue {
     let carDetail: any = {};
     vehicleInfo({ id }).then((res) => {
       if (res.result.resultCode === '0') {
-        gpsToAddress({
-          lat: res.entity.lat,
-          lng: res.entity.lng,
-          coordinateSystem: res.entity.coordinateSystem,
-        }).then((response: any) => {
-          if (response.status === 0) {
-            carDetail = {
-              address: response.result.formatted_address + response.result.sematic_description,
-              ...res.entity,
-            };
-            this.carDetail = carDetail;
-          }
+        // 如果车辆坐标为空-位置为未知
+        if (res.entity.lat && res.entity.lng) {
+          gpsToAddress({
+            lat: res.entity.lat,
+            lng: res.entity.lng,
+            coordinateSystem: res.entity.coordinateSystem,
+          }).then((response: any) => {
+            if (response.status === 0) {
+              carDetail = {
+                address: response.result.formatted_address + response.result.sematic_description,
+                ...res.entity,
+              };
+              this.carDetail = carDetail;
+              this.detailShow = true;
+            }
+          });
+        } else {
+          carDetail = {
+            address: '未知位置',
+            ...res.entity,
+          };
+          this.carDetail = carDetail;
           this.detailShow = true;
-        });
+        }
       }
     });
   }
@@ -617,6 +628,15 @@ export default class Monitor extends Vue {
     };
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
     this.radiusGetData();
+    // 添加坐标
+    const PT = new this.BMap.Point(val.lng, val.lat);
+    const marker = new this.BMap.Marker(
+      PT,
+      {
+        icon: new this.BMap.Icon(pointIcon, new this.BMap.Size(28, 40)),
+      },
+    );
+    this.SMap.addOverlay(marker); // 创建标注
   }
   // 编辑开关
   editDialog: boolean = false;

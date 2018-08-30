@@ -406,6 +406,12 @@ export default class Trajectory extends Vue {
         point: e.point,
       });
     });
+    this.pointCollection.addEventListener('mouseover', (e: any) => {
+      this.mapContorl.addTrackPointOverlay(e, 'trackpoint_over');
+    });
+    this.pointCollection.addEventListener('mouseout', (e: any) => {
+      this.mapContorl.removeTrackPointOverlay('trackpoint_over');
+    });
     // 添加Overlay
     this.SMap.addOverlay(this.pointCollection);
   }
