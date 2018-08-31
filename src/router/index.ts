@@ -116,6 +116,13 @@ export const asyncRouterMap: routerItem[] = [
         permission: '/model/series/list',
         meta: { key: 'Series' },
       },
+      {
+        path: 'model',
+        name: '车型管理',
+        component: getComponent('model/model/index'),
+        permission: '/model/model/list',
+        meta: { key: 'Model' },
+      },
     ],
   },
   {

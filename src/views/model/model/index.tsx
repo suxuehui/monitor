@@ -1,30 +1,37 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { brandDelete, brandInfo } from '@/api/model';
+import { seriesDelete, seriesInfo } from '@/api/model';
 import AddModel from './components/Addmodel';
-
 @Component({
   components: {
   'el-tag': Tag,
   'add-model': AddModel,
   }
   })
-export default class Brand extends Vue {
+export default class Model extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
     {
+      key: 'brandId',
+      type: 'select',
+      label: '品牌',
+      placeholder: '请选择品牌车系',
+      options: [],
+    },
+    {
       key: 'keyword',
       type: 'input',
-      label: '品牌名称',
-      placeholder: '请输入品牌名称',
+      label: '车型名称',
+      placeholder: '请输入车型名称',
     },
   ];
   // 高级筛选
   filterGrade: FilterFormList[] = [];
   // 筛选参数
   filterParams: any = {
+    brandId: '',
     keyword: '',
   };
   outParams: any = {};
@@ -50,11 +57,11 @@ export default class Brand extends Vue {
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '品牌图标', prop: 'logo', formatter: (row: any) => (row.logo ? row.logo : '--') },
-    { label: '品牌名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
-    { label: '品牌描述', prop: 'description', formatter: (row: any) => (row.description ? row.description : '--') },
-    { label: '车系数量', prop: 'seriesNum', formatter: (row: any) => (row.seriesNum ? row.seriesNum : '--') },
-    { label: '车型数量', prop: 'modelNum', formatter: (row: any) => (row.modelNum ? row.modelNum : '--') },
+    { label: '品牌名称', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
+    { label: '车系名称', prop: 'seriesName', formatter: (row: any) => (row.seriesName ? row.seriesName : '--') },
+    { label: '车型名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
+    { label: '能源类型', prop: 'energyType', formatter: (row: any) => (row.energyType ? row.energyType : '--') },
+    { label: '油箱容量', prop: 'fuelTankCap', formatter: (row: any) => (row.fuelTankCap ? row.fuelTankCap : '--') },
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? row.vehicleNum : '--') },
   ];
 
@@ -73,7 +80,7 @@ export default class Brand extends Vue {
       // });
       // setTimeout(() => {
       //   this.addVisible = true;
-      //   this.addTitle = '编辑品牌';
+      //   this.addTitle = '编辑车系';
       // }, 200);
       console.log('编辑');
     } else if (key === 'delete') {
@@ -90,7 +97,7 @@ export default class Brand extends Vue {
   }
   addModel() {
     this.addVisible = true;
-    this.addTitle = '新增品牌';
+    this.addTitle = '新增车系';
   }
 
   // 关闭弹窗

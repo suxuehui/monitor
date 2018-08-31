@@ -37,7 +37,7 @@ export default class Series extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/monitor/vehicle/config/list';
+  url: string = '/vehicle/config/list';
 
   opreat: Opreat[] = [
     {
