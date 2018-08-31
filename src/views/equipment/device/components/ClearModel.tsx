@@ -1,6 +1,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Dialog, Row, Col, Button } from 'element-ui';
-import { terminalCfg } from '@/api/equipment';
+import { deliveryCfg, clearCfg } from '@/api/equipment';
 import './ClearModel.less';
 
 @Component({
@@ -25,8 +25,8 @@ export default class ClearModel extends Vue {
 
   onSubmit() {
     this.loading = true;
-    terminalCfg({ cfgId: this.data.cfgId }).then((res) => {
-      if (res.result.resultCode) {
+    clearCfg({ imei: this.data.imei }).then((res) => {
+      if (res.result.resultCode === '0') {
         setTimeout(() => {
           this.loading = false;
           this.$message.success(res.result.resultMessage);
@@ -51,7 +51,7 @@ export default class ClearModel extends Vue {
         close-on-click-modal={false}
       >
         <p class="notice">
-          确定要清除/下发此设备配置参数吗？
+          确定要{this.title === '下发配置' ? '下发' : '清除'}此设备配置参数吗？
         </p>
         <el-row>
           <el-col offset={6} span={12}>

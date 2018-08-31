@@ -9,6 +9,14 @@ export async function brandList(params: any) {
     data: params,
   });
 }
+// 全部
+export async function brandAll(params: any) {
+  return request({
+    url: '/vehicle/brand/all',
+    method: 'post',
+    data: params,
+  });
+}
 // 新增
 export async function brandAdd(params: any) {
   return request({

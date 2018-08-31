@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { seriesDelete, seriesInfo } from '@/api/model';
+import { seriesDelete, seriesInfo, brandAll } from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
   components: {
@@ -19,6 +19,7 @@ export default class Model extends Vue {
       label: '品牌',
       placeholder: '请选择品牌车系',
       options: [],
+      itemChange: this.brandLoad,
     },
     {
       key: 'keyword',
@@ -36,7 +37,7 @@ export default class Model extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/vehicle/config/list';
+  url: string = '/vehicle/model/list';
 
   opreat: Opreat[] = [
     {
@@ -70,6 +71,16 @@ export default class Model extends Vue {
   addTitle: string = '';
 
   rowData: any = {};
+
+  created() {
+    brandAll(null).then((res) => {
+      console.log(res);
+    });
+  }
+
+  brandLoad(val: any) {
+    console.log(val);
+  }
 
   // 操作
   menuClick(key: string, row: any) {
@@ -126,7 +137,7 @@ export default class Model extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          // dataType={'JSON'}
+          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

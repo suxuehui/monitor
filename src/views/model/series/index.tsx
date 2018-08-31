@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { seriesDelete, seriesInfo } from '@/api/model';
+import { seriesDelete, seriesInfo, brandAll } from '@/api/model';
 import AddModel from './components/Addmodel';
 
 @Component({
@@ -37,7 +37,7 @@ export default class Series extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/vehicle/config/list';
+  url: string = '/vehicle/series/list';
 
   opreat: Opreat[] = [
     {
@@ -70,6 +70,24 @@ export default class Series extends Vue {
   addTitle: string = '';
 
   rowData: any = {};
+  brandList: any = [];
+
+  created() {
+    brandAll(null).then((res) => {
+      res.entity.map((item: any) => this.brandList.push({
+        key: item.id,
+        value: item.id,
+        label: item.name,
+      }));
+      // 所有品牌
+      this.brandList.unshift({
+        key: Math.random(),
+        value: null,
+        label: '所有品牌',
+      });
+      this.filterList[0].options = this.brandList;
+    });
+  }
 
   // 操作
   menuClick(key: string, row: any) {
@@ -126,7 +144,7 @@ export default class Series extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          // dataType={'JSON'}
+          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

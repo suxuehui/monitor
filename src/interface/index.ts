@@ -8,6 +8,7 @@ export interface FilterFormList {
   value?: string[];
   options?: Array<{ value: any, label: string }>;
   change?: Function;
+  itemChange?: Function;
   pickerOptions?: { shortcuts: Array<{ text: string, onClick(picker: any): void }> };
 }
 

@@ -69,3 +69,21 @@ export async function findCar(params: any) {
     data: params,
   });
 }
+
+// 下发配置
+export async function deliveryCfg(params: any) {
+  return request({
+    url: '/device/terminal/deliveryCfg',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 清除配置
+export async function clearCfg(params: any) {
+  return request({
+    url: '/device/terminal/clearCfg',
+    method: 'post',
+    data: params,
+  });
+}

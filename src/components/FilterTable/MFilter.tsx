@@ -142,6 +142,7 @@ export default class MFilter extends Vue {
           options={item.options}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}
+          on-active-item-change={item.itemChange}
           change={item.change}></el-cascader>;
         break;
       case 'levelcode':

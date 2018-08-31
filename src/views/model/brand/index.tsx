@@ -4,12 +4,14 @@ import { Tag } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
 import AddModel from './components/Addmodel';
 
+const noPic = require('@/assets/noPic.png');
 @Component({
   components: {
   'el-tag': Tag,
   'add-model': AddModel,
   }
   })
+
 export default class Brand extends Vue {
   // data
   // 普通筛选
@@ -29,7 +31,7 @@ export default class Brand extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/vehicle/config/list';
+  url: string = '/vehicle/brand/list';
 
   opreat: Opreat[] = [
     {
@@ -50,7 +52,7 @@ export default class Brand extends Vue {
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '品牌图标', prop: 'logo', formatter: (row: any) => (row.logo ? row.logo : '--') },
+    { label: '品牌图标', prop: 'logo', formatter: this.showLogo },
     { label: '品牌名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
     { label: '品牌描述', prop: 'description', formatter: (row: any) => (row.description ? row.description : '--') },
     { label: '车系数量', prop: 'seriesNum', formatter: (row: any) => (row.seriesNum ? row.seriesNum : '--') },
@@ -63,6 +65,10 @@ export default class Brand extends Vue {
   addTitle: string = '';
 
   rowData: any = {};
+
+  showLogo(row: any) {
+    return row.logo ? <img alt="品牌图片" style="width:60px" src={row.logo} /> : noPic;
+  }
 
   // 操作
   menuClick(key: string, row: any) {
@@ -119,7 +125,7 @@ export default class Brand extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          // dataType={'JSON'}
+          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

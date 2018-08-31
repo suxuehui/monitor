@@ -32,6 +32,7 @@ export default class Dashboard extends Vue {
     { name: '急加速', num: 38 },
     { name: '急减速', num: 41 },
     { name: '急转弯', num: 56 },
+    { name: '轻震动', num: 29 },
     { name: '轻碰撞', num: 23 },
     { name: '重碰撞', num: 10 },
     { name: '翻滚', num: 69 },

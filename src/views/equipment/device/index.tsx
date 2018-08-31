@@ -172,9 +172,6 @@ export default class Device extends Vue {
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
 
-  // 设备类型
-  typeList: any = [];
-
   // 设备状态 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
   terminalStatus: TerminalType[] = [
     {
@@ -235,10 +232,27 @@ export default class Device extends Vue {
   downData: any = {}
   clearData: any = {}
 
+  // 设备类型
+  typeList: any = [];
+  // 门店列表
+  shopList: any = [];
+
   created() {
     // 门店
     getCustomerList(null).then((res) => {
-      const shopList: any = [];
+      res.entity.data.map((item: any) => this.shopList.push({
+        key: item.id,
+        value: item.levelcode,
+        label: item.orgName,
+      }));
+      // 所属商户(全部)
+      this.shopList.unshift({
+        key: Math.random(),
+        value: 0,
+        label: '所属商户(全部)',
+      });
+      this.filterList[0].options = this.shopList;
+      this.filterGrade[0].options = this.shopList;
     });
     // 设备类型
     terminalType(null).then((res) => {
@@ -247,15 +261,17 @@ export default class Device extends Vue {
         value: item.enumValue,
         label: item.name,
       }));
-      // 设备类型（全部）
+      // 设备类型(全部)
       this.typeList.unshift({
         key: Math.random(),
         value: 0,
-        label: '设备类型（全部）',
+        label: '设备类型(全部)',
       });
       this.filterList[1].options = this.typeList;
       this.filterGrade[1].options = this.typeList;
     });
+    // 设备状态
+    this.filterGrade[2].options = this.terminalStatus;
     // 网络状态
     this.filterGrade[3].options = this.onlineStatus;
   }
@@ -351,7 +367,7 @@ export default class Device extends Vue {
         break;
       case 'downConfig':
         this.downData = row;
-        this.downTitle = '配置更新';
+        this.downTitle = '下发配置';
         this.downVisible = true;
         break;
       case 'clearConfig':
@@ -369,6 +385,7 @@ export default class Device extends Vue {
     this.modelForm = null;
     this.addTitle = '添加设备';
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -384,6 +401,7 @@ export default class Device extends Vue {
     FromTable.reloadTable();
     this.closeModal();
   }
+
   render(h: any) {
     return (
       <div class="member-wrap">

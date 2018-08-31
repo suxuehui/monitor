@@ -131,7 +131,7 @@ export default class AddModal extends Vue {
                 <el-form-item label="品牌图标" prop="logo">
                   <el-upload
                   id="logo"
-                  action="https://jsonplaceholder.typicode.com/posts/"
+                  action="http://192.168.6.160:5555/verify/file/upload"
                   list-type="picture-card"
                   on-preview={this.handlePictureCardPreview}
                   on-remove={this.handleRemove}

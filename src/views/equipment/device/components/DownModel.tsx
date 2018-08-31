@@ -1,8 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
-import { terminalAdd } from '@/api/equipment';
-
-
+import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Popover } from 'element-ui';
+import { deliveryCfg } from '@/api/equipment';
 @Component({
   components: {
   'el-dialog': Dialog,
@@ -14,7 +12,8 @@ import { terminalAdd } from '@/api/equipment';
   'el-input': Input,
   'el-select': Select,
   'el-button': Button,
-  'el-option': Option
+  'el-option': Option,
+  'el-popover': Popover
   }
   })
 export default class DownModel extends Vue {
@@ -24,17 +23,17 @@ export default class DownModel extends Vue {
   @Prop() private data: any;
 
   modelForm: any = {
-    levelCode: '',
-    terminalType: '',
-    imei: '',
+    productCode: '',
   };
   loading: boolean = false;
 
   rules = {
-    imei: [
-      { required: true, message: '请输入设备IMEI', trigger: 'blur' },
+    productCode: [
+      { required: true, message: '请输入产品编码', trigger: 'blur' },
     ],
   }
+
+  popVisible: boolean = false;
 
   closeModal() {
     this.$emit('close');
@@ -44,19 +43,25 @@ export default class DownModel extends Vue {
     }, 200);
   }
 
+  closePop() {
+    this.popVisible = false;
+  }
+
   onSubmit() {
+    this.loading = true;
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
-      imei: this.modelForm.imei,
+      productCode: this.modelForm.productCode,
+      imei: this.data.imei,
     };
     From.validate((valid: any) => {
       if (valid) {
-        this.loading = true;
-        terminalAdd(obj).then((res) => {
-          if (res.result.resultCode) {
+        deliveryCfg(obj).then((res) => {
+          if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
+              this.popVisible = false;
               this.$message.success(res.result.resultMessage);
               From.resetFields();
               this.$emit('refresh');
@@ -64,12 +69,14 @@ export default class DownModel extends Vue {
           } else {
             setTimeout(() => {
               this.loading = false;
+              this.popVisible = false;
               this.$message.error(res.result.resultMessage);
             }, 1500);
           }
         });
       } else {
         this.loading = false;
+        this.popVisible = false;
         return false;
       }
       return false;
@@ -86,18 +93,29 @@ export default class DownModel extends Vue {
         close-on-click-modal={false}
       >
         <el-form model={this.modelForm} ref="modelForm" rules={this.rules} label-width="80px" class="model">
-          <el-form-item label="产品编码" prop="imei">
+          <el-form-item label="产品编码" prop="productCode">
             <el-input
-              id="imei"
-              v-model={this.modelForm.imei}
+              id="productCode"
+              v-model={this.modelForm.productCode}
               placeholder="请输入产品编码"
             ></el-input>
           </el-form-item>
         </el-form>
         <el-row>
           <el-col offset={7} span={12}>
-            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>下发配置</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+            <el-popover
+              placement="top"
+              width="224"
+              v-model={this.popVisible}
+            >
+              <p style="marginBottom:20px">确定要下发此设备配置参数吗？</p>
+              <div style="text-align: right; margin: 0">
+                <el-button size="mini" type="text" id="cancelPop" on-click={this.closePop}>取消</el-button>
+                <el-button type="primary" size="mini" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
+              </div>
+              <el-button type="primary" size="small" id="downConfig" slot="reference">下发配置</el-button>
+            </el-popover>
+            <el-button style="marginLeft:20px" size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
           </el-col>
         </el-row>
       </el-dialog>
