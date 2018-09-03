@@ -74,24 +74,26 @@ export default class Brand extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
-      // configInfo({ id: row.id }).then((res) => {
-      //   this.rowData = res.entity;
-      // });
-      // setTimeout(() => {
-      //   this.addVisible = true;
-      //   this.addTitle = '编辑品牌';
-      // }, 200);
-      console.log('编辑');
+      brandInfo({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.rowData = res.entity;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
+      setTimeout(() => {
+        this.addVisible = true;
+        this.addTitle = '编辑品牌';
+      }, 200);
     } else if (key === 'delete') {
-      console.log('删除');
-      // configDelete({ id: row.id }).then((res) => {
-      //   if (res.result.resultCode === '0') {
-      //     FromTable.reloadTable();
-      //     this.$message.success(res.result.resultMessage);
-      //   } else {
-      //     this.$message.error(res.result.resultMessage);
-      //   }
-      // });
+      brandDelete({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
   addModel() {
@@ -130,6 +132,7 @@ export default class Brand extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-model
+          ref="addTable"
           data={this.rowData}
           title={this.addTitle}
           visible={this.addVisible}

@@ -23,6 +23,7 @@ export async function brandAdd(params: any) {
     url: '/vehicle/brand/add',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 // 详情
@@ -39,6 +40,7 @@ export async function brandEdit(params: any) {
     url: '/vehicle/brand/edit',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 // 删除
@@ -65,6 +67,7 @@ export async function seriesAdd(params: any) {
     url: '/vehicle/series/add',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 // 详情

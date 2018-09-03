@@ -1,7 +1,9 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload } from 'element-ui';
 import { uploadFile } from '@/api/app';
 import { brandAdd, brandEdit } from '@/api/model';
+import UploadBlock from '@/components/Upload/index.vue';
+
 import './Addmodel.less';
 @Component({
   components: {
@@ -13,6 +15,7 @@ import './Addmodel.less';
   'el-input': Input,
   'el-button': Button,
   'el-upload': Upload,
+  'upload-Model': UploadBlock,
   }
   })
 export default class AddModal extends Vue {
@@ -31,7 +34,8 @@ export default class AddModal extends Vue {
   // 图片上传
   dialogImageUrl: string = '';
   dialogVisible: boolean = false;
-
+  headers: any = '';
+  uploadUrl: string = '';
 
   rules = {
     name: [
@@ -41,18 +45,34 @@ export default class AddModal extends Vue {
       { required: false },
     ],
     logo: [
-      { required: true },
+      { required: false },
     ],
   }
 
-  // @Watch('data')
-  // onDataChange() {
-  //   if (this.data.id > 0) {
+  logoUrl: any = [];
+  @Watch('data')
+  onDataChange() {
+    if (this.data.id > 0) {
+      this.modelForm = {
+        name: this.data.name,
+        description: this.data.description,
+      };
+      this.logoUrl = [];
+      this.logoUrl.push({
+        name: this.data.name,
+        url: this.data.logo,
+      });
+    } else {
+      this.resetData();
+    }
+  }
 
-  //   } else {
-  //     this.resetData();
-  //   }
-  // }
+  mounted() {
+    this.headers = {
+      token: window.localStorage.getItem('token'),
+    };
+    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/verify/file/upload' : '/rootApi/verify/file/upload';
+  }
 
   // 重置数据
   resetData() {
@@ -71,22 +91,47 @@ export default class AddModal extends Vue {
     }, 200);
   }
 
-  handleRemove(file:any, fileList:any) {
-    console.log(file, fileList);
+  removeBack(file: any, fileList: any) {
+    this.modelForm.logo = '';
+    this.$message.error('图片已删除，请重新上传');
   }
 
-  handlePictureCardPreview(file:any) {
-    this.dialogImageUrl = file.url;
-    this.dialogVisible = true;
+  successBack(response: any, file: any, fileList: any) {
+    if (response.result.resultCode === '0') {
+      this.$message.success('图片上传成功');
+      this.modelForm.logo = response.entity;
+    }
   }
 
   onSubmit() {
     this.loading = true;
+    const upModel: any = this.$refs.uploadModel;
     const From: any = this.$refs.modelForm;
-    if (this.title === '新增配置') {
+    const obj = {
+      id: this.data.id ? this.data.id : null,
+      name: this.modelForm.name,
+      logo: this.modelForm.logo,
+      description: this.modelForm.description,
+    };
+    if (this.title === '新增品牌') {
       From.validate((valid: any) => {
         if (valid) {
-          console.log('新增');
+          brandAdd(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                upModel.$children[0].clearFiles();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
         } else {
           this.loading = false;
           return false;
@@ -94,9 +139,31 @@ export default class AddModal extends Vue {
         return false;
       });
     } else {
+      obj.id = this.data.id;
       From.validate((valid: any) => {
         if (valid) {
-          console.log('编辑');
+          if (this.modelForm.logo !== '') {
+            brandEdit(obj).then((res) => {
+              if (res.result.resultCode === '0') {
+                setTimeout(() => {
+                  this.loading = false;
+                  this.$message.success(res.result.resultMessage);
+                  From.resetFields();
+                  upModel.$children[0].clearFiles();
+                  this.$emit('refresh');
+                }, 1500);
+              } else {
+                setTimeout(() => {
+                  this.loading = false;
+                  this.$message.error(res.result.resultMessage);
+                }, 1500);
+              }
+            });
+          } else {
+            this.$message.error('图片已删除，请重新选择图片');
+            this.loading = false;
+            return false;
+          }
         } else {
           this.loading = false;
           return false;
@@ -129,15 +196,14 @@ export default class AddModal extends Vue {
               </el-col>
               <el-col span={24}>
                 <el-form-item label="品牌图标" prop="logo">
-                  <el-upload
-                  id="logo"
-                  action="http://192.168.6.160:5555/verify/file/upload"
-                  list-type="picture-card"
-                  on-preview={this.handlePictureCardPreview}
-                  on-remove={this.handleRemove}
-                  >
-                    <i class="el-icon-plus"></i>
-                  </el-upload>
+                  <upload-Model
+                    ref="uploadModel"
+                    url={this.uploadUrl}
+                    logoUrl={this.logoUrl}
+                    headers={this.headers}
+                    on-successBack={this.successBack}
+                    on-removeBack={this.removeBack}
+                  ></upload-Model>
                 </el-form-item>
               </el-col>
               <el-col span={24}>
@@ -166,4 +232,7 @@ export default class AddModal extends Vue {
       </div >
     );
   }
+  // renderUpload() {
+
+  // }
 }

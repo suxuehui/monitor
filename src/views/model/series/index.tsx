@@ -74,11 +74,15 @@ export default class Series extends Vue {
 
   created() {
     brandAll(null).then((res) => {
-      res.entity.map((item: any) => this.brandList.push({
-        key: item.id,
-        value: item.id,
-        label: item.name,
-      }));
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.brandList.push({
+          key: item.id,
+          value: item.id,
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
       // 所有品牌
       this.brandList.unshift({
         key: Math.random(),

@@ -60,10 +60,11 @@ export async function getMenu(params: any) {
 
 export async function uploadFile(params: any) {
   return axios({
-    url: '/sys/file/uploadFile',
+    url: '/verify/file/upload',
     method: 'post',
     data: params,
     headers: {
+      token: window.localStorage.getItem('token'),
       'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryf2YougAqFTPuaO2k',
     },
   });

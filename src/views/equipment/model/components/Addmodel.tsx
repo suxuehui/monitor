@@ -60,7 +60,6 @@ export default class AddModal extends Vue {
       const cfgParamStr = obj.cfgParam.replace(/\["|"]/g, '');
       const cfgParamArr = cfgParamStr.split('","');
       const cfgParamAddArr = cfgParamStr.split('","').slice(1);
-      console.log(cfgParamAddArr);
       const cfgParamAddArrEnd: any = [];
       cfgParamAddArr.map((item: any, key: number) => cfgParamAddArrEnd.push({
         value: item,

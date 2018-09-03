@@ -81,7 +81,11 @@ export default class Member extends Vue {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
       configInfo({ id: row.id }).then((res) => {
-        this.rowData = res.entity;
+        if (res.result.resultCode === '0') {
+          this.rowData = res.entity;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
       });
       setTimeout(() => {
         this.addVisible = true;

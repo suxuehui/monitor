@@ -90,8 +90,13 @@ export default class MTable extends Vue {
       this.loading = false;
       const code = this.getValue(this.BackParams.code, res);
       if (code === this.BackParams.codeOK) {
-        this.tableData = this.getValue(this.BackParams.data, res);
-        this.dataTotal = this.getValue(this.BackParams.total, res);
+        if (!res.entity) {
+          this.tableData=[];
+          this.dataTotal=0;
+        } else {
+          this.tableData = this.getValue(this.BackParams.data, res);
+          this.dataTotal = this.getValue(this.BackParams.total, res);
+        }
       } else {
         this.$message.error(this.getValue(this.BackParams.message, res));
       }

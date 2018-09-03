@@ -1,6 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option } from 'element-ui';
-import { seriesAdd, seriesEdit } from '@/api/model';
+import { seriesAdd, seriesEdit, brandAll } from '@/api/model';
 import './Addmodel.less';
 @Component({
   components: {
@@ -58,6 +58,21 @@ export default class AddModal extends Vue {
   //   }
   // }
 
+  created() {
+    brandAll(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.brandList.push({
+          key: item.id,
+          value: item.id,
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+
   // 重置数据
   resetData() {
     this.modelForm = {
@@ -79,10 +94,32 @@ export default class AddModal extends Vue {
   onSubmit() {
     this.loading = true;
     const From: any = this.$refs.modelForm;
-    if (this.title === '新增配置') {
+    const obj = {
+      id: this.data.id ? this.data.id : null,
+      brandId: this.modelForm.brandId,
+      name: this.modelForm.name,
+      description: this.modelForm.description,
+    };
+    if (this.title === '新增车系') {
       From.validate((valid: any) => {
         if (valid) {
-          console.log('新增');
+          seriesAdd(obj).then((res) => {
+            console.log(res);
+            // if (res.result.resultCode === '0') {
+            //   setTimeout(() => {
+            //     this.loading = false;
+            //     this.$message.success(res.result.resultMessage);
+            //     From.resetFields();
+            //     this.modelForm.cfgParamAdd = [];
+            //     this.$emit('refresh');
+            //   }, 1500);
+            // } else {
+            //   setTimeout(() => {
+            //     this.loading = false;
+            //     this.$message.error(res.result.resultMessage);
+            //   }, 1500);
+            // }
+          });
         } else {
           this.loading = false;
           return false;
