@@ -104,6 +104,10 @@ export default class Brand extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 200);
   }
   // 关闭弹窗时刷新
   refresh(): void {

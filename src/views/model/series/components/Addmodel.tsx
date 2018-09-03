@@ -49,14 +49,14 @@ export default class AddModal extends Vue {
   // 品牌列表
   brandList: any = [];
 
-  // @Watch('data')
-  // onDataChange() {
-  //   if (this.data.id > 0) {
-
-  //   } else {
-  //     this.resetData();
-  //   }
-  // }
+  @Watch('data')
+  onDataChange() {
+    if (this.data.id > 0) {
+      this.modelForm = this.data;
+    } else {
+      this.resetData();
+    }
+  }
 
   created() {
     brandAll(null).then((res) => {
@@ -104,21 +104,19 @@ export default class AddModal extends Vue {
       From.validate((valid: any) => {
         if (valid) {
           seriesAdd(obj).then((res) => {
-            console.log(res);
-            // if (res.result.resultCode === '0') {
-            //   setTimeout(() => {
-            //     this.loading = false;
-            //     this.$message.success(res.result.resultMessage);
-            //     From.resetFields();
-            //     this.modelForm.cfgParamAdd = [];
-            //     this.$emit('refresh');
-            //   }, 1500);
-            // } else {
-            //   setTimeout(() => {
-            //     this.loading = false;
-            //     this.$message.error(res.result.resultMessage);
-            //   }, 1500);
-            // }
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
           });
         } else {
           this.loading = false;
@@ -127,9 +125,24 @@ export default class AddModal extends Vue {
         return false;
       });
     } else {
+      obj.id = this.data.id;
       From.validate((valid: any) => {
         if (valid) {
-          console.log('编辑');
+          seriesEdit(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
         } else {
           this.loading = false;
           return false;
@@ -158,6 +171,7 @@ export default class AddModal extends Vue {
                   filterable={true}
                   placeholder="请选择品牌"
                   style="width:100%"
+                  disabled={this.data.id > 0}
                 >
                   {
                     this.brandList.map((item: any) => (

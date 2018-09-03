@@ -86,8 +86,9 @@ export default class AddModal extends Vue {
   closeModal() {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
+    const upModel: any = this.$refs.uploadModel;
     setTimeout(() => {
-      From.resetFields();
+      upModel.$children[0].clearFiles();
     }, 200);
   }
 

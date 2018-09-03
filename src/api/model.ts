@@ -73,7 +73,7 @@ export async function seriesAdd(params: any) {
 // 详情
 export async function seriesInfo(params: any) {
   return request({
-    url: '/vehicle/series/detail',
+    url: '/vehicle/series/info',
     method: 'post',
     data: params,
   });
@@ -84,6 +84,7 @@ export async function seriesEdit(params: any) {
     url: '/vehicle/series/edit',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 // 删除

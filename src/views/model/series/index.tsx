@@ -97,24 +97,26 @@ export default class Series extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
-      // configInfo({ id: row.id }).then((res) => {
-      //   this.rowData = res.entity;
-      // });
-      // setTimeout(() => {
-      //   this.addVisible = true;
-      //   this.addTitle = '编辑车系';
-      // }, 200);
-      console.log('编辑');
+      seriesInfo({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.rowData = res.entity;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
+      setTimeout(() => {
+        this.addVisible = true;
+        this.addTitle = '编辑车系';
+      }, 200);
     } else if (key === 'delete') {
-      console.log('删除');
-      // configDelete({ id: row.id }).then((res) => {
-      //   if (res.result.resultCode === '0') {
-      //     FromTable.reloadTable();
-      //     this.$message.success(res.result.resultMessage);
-      //   } else {
-      //     this.$message.error(res.result.resultMessage);
-      //   }
-      // });
+      seriesDelete({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.$message.success(res.result.resultMessage);
+          FromTable.reloadTable();
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
   addModel() {
@@ -125,6 +127,10 @@ export default class Series extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 200);
   }
   // 关闭弹窗时刷新
   refresh(): void {
@@ -153,6 +159,7 @@ export default class Series extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-model
+          ref="addTable"
           data={this.rowData}
           title={this.addTitle}
           visible={this.addVisible}
