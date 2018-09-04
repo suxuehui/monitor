@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { seriesDelete, seriesInfo, brandAll } from '@/api/model';
+import { seriesDelete, seriesInfo, brandAll, seriesAll } from '@/api/model';
 import AddModel from './components/Addmodel';
 
 @Component({

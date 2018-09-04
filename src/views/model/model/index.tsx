@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { seriesDelete, seriesInfo, brandAll } from '@/api/model';
+import { modelInfo, modelDelete, brandAll, seriesAll } from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
   components: {
@@ -13,14 +13,14 @@ export default class Model extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
-    {
-      key: 'brandId',
-      type: 'select',
-      label: '品牌',
-      placeholder: '请选择品牌车系',
-      options: [],
-      itemChange: this.brandLoad,
-    },
+    // {
+    //   key: 'brandId',
+    //   type: 'cascader',
+    //   label: '品牌',
+    //   placeholder: '请选择品牌车系',
+    //   options: [],
+    //   itemChange: this.brandLoad,
+    // },
     {
       key: 'keyword',
       type: 'input',
@@ -72,48 +72,96 @@ export default class Model extends Vue {
 
   rowData: any = {};
 
-  created() {
+  brandList: any = [];
+
+  props: any = {
+    value: 'value',
+    children: 'name',
+  }
+
+  mounted() {
     brandAll(null).then((res) => {
-      console.log(res);
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any, index: number) => {
+          this.brandList.push({
+            label: item.name,
+            name: [],
+            value: item.id,
+          });
+          this.filterList[0].options = this.brandList;
+          return true;
+        });
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
   }
 
   brandLoad(val: any) {
-    console.log(val);
+    const obj = {
+      brandId: val[0],
+    };
+    seriesAll(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.brandList.map((item: any, index: number) => {
+          if (val[0] === item.value) {
+            setTimeout(() => {
+              this.brandList[index].name = [];
+              res.entity.map((items: any) => {
+                this.brandList[index].name.push({
+                  label: items.name,
+                  value: items.id,
+                });
+                return true;
+              });
+            }, 200);
+          }
+          return true;
+        });
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
-      // configInfo({ id: row.id }).then((res) => {
-      //   this.rowData = res.entity;
-      // });
-      // setTimeout(() => {
-      //   this.addVisible = true;
-      //   this.addTitle = '编辑车系';
-      // }, 200);
-      console.log('编辑');
+      modelInfo({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.rowData = res.entity;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
+      setTimeout(() => {
+        this.addVisible = true;
+        this.addTitle = '编辑车型';
+      }, 300);
     } else if (key === 'delete') {
-      console.log('删除');
-      // configDelete({ id: row.id }).then((res) => {
-      //   if (res.result.resultCode === '0') {
-      //     FromTable.reloadTable();
-      //     this.$message.success(res.result.resultMessage);
-      //   } else {
-      //     this.$message.error(res.result.resultMessage);
-      //   }
-      // });
+      modelDelete({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
   addModel() {
     this.addVisible = true;
-    this.addTitle = '新增车系';
+    this.addTitle = '新增车型';
   }
 
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 200);
   }
   // 关闭弹窗时刷新
   refresh(): void {
@@ -142,6 +190,7 @@ export default class Model extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-model
+          ref="addTable"
           data={this.rowData}
           title={this.addTitle}
           visible={this.addVisible}

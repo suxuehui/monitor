@@ -125,7 +125,6 @@ export default class AddModal extends Vue {
         return false;
       });
     } else {
-      obj.id = this.data.id;
       From.validate((valid: any) => {
         if (valid) {
           seriesEdit(obj).then((res) => {

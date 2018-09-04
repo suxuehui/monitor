@@ -95,6 +95,14 @@ export async function seriesDelete(params: any) {
     data: params,
   });
 }
+// 全部
+export async function seriesAll(params: any) {
+  return request({
+    url: '/vehicle/series/all',
+    method: 'post',
+    data: params,
+  });
+}
 
 // 车型管理
 // 新增
@@ -103,6 +111,7 @@ export async function modelAdd(params: any) {
     url: '/vehicle/model/add',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 // 详情
@@ -119,6 +128,7 @@ export async function modelEdit(params: any) {
     url: '/vehicle/model/edit',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 // 删除
