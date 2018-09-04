@@ -26,18 +26,19 @@ export default class SetModal extends Vue {
 
   loading: boolean = false;
 
-  // mounted() {
-  //   menuSelect(null).then((res) => {
-  //     if (res.result.resultCode === '0') {
-  //       this.menuList = res.entity;
-  //       if (res.entity.length > 0) {
-  //         this.setList(this.menuList);
-  //       }
-  //     } else {
-  //       this.$message.error(res.result.resultMessage);
-  //     }
-  //   });
-  // }
+  mounted() {
+    menuSelect(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.menuList = res.entity;
+        console.log(res.entity);
+        // if (res.entity.length > 0) {
+        //   // this.setList(this.menuList);
+        // }
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
 
   // @Watch('data')
   // onDataChange() {
@@ -80,31 +81,6 @@ export default class SetModal extends Vue {
               )))
             }
           </tbody> */}
-          <tbody>
-            {
-              list.map((item: any, index: number) => item.list.map((items: any, indexs: number) => (
-                <tr>
-                  {
-                    !indexs ? <td
-                      rowspan={item.list.length}>
-                      <el-checkbox label={item.id}>
-                        {item.name}
-                      </el-checkbox>
-                    </td> : null
-                  }
-                  <td><el-checkbox label={items.id}>{items.name}</el-checkbox></td>
-                  <td>
-                    {
-                      items.list.map((three: any, ind: number) => <el-checkbox
-                        label={three.id}>
-                        {three.name}
-                      </el-checkbox>)
-                    }
-                  </td>
-                </tr>
-              )))
-            }
-          </tbody>
         </table>
       </el-checkbox-group>
     );

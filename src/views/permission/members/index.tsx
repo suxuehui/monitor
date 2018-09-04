@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Tag, Loading } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { getRolesList, userLock, userUnlock } from '@/api/permission';
+import { roleSelect, userLock, userUnlock, userInfo } from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
 import './index.less';
@@ -50,23 +50,34 @@ export default class Member extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/monitor/sys/user/list';
+  url: string = '/sys/user/list';
 
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '全部' },
-    { key: true, value: true, label: '正常' },
-    { key: false, value: false, label: '冻结' },
+    { key: 1, value: 1, label: '正常' },
+    { key: 2, value: 2, label: '冻结' },
   ]
 
   mounted() {
     this.filterList[1].options = this.activeTypes;
-    getRolesList(null).then((res) => {
-      res.entity.forEach((item: any) => {
-        item.key = parseInt(item.roleId, 10);
-        item.value = item.roleId;
-        item.label = item.roleName;
-      });
-      this.roleTypeList = res.entity;
+    roleSelect(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((item: any) => {
+          item.key = parseInt(item.id, 10);
+          item.value = item.id;
+          item.label = item.roleName;
+        });
+        this.roleTypeList = res.entity;
+        // 所有品牌
+        this.roleTypeList.unshift({
+          key: Math.random(),
+          value: '',
+          label: '所有角色',
+        });
+        this.filterList[0].options = this.roleTypeList;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
   }
 
@@ -83,53 +94,45 @@ export default class Member extends Vue {
     {
       key: 'freeze',
       rowKey: 'roleId',
-      color: (row: any) => (row.active ? 'red' : 'green'),
-      text: (row: any) => (row.active ? '冻结' : '解冻'),
-      msg: (row: any) => (row.active ? '是否要冻结？' : '是否要解冻？'),
+      color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
+      text: (row: any) => (row.activeStatus === 1 ? '冻结' : '解冻'),
+      msg: (row: any) => (row.activeStatus === 1 ? '是否要冻结？' : '是否要解冻？'),
       roles: true,
     },
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '成员姓名', prop: 'realName' },
-    { label: '登录账号', prop: 'userName' },
-    { label: '角色类型', prop: 'roleIdList', formatter: this.roleChange },
-    { label: '备注', prop: 'remark' },
+    { label: '成员姓名', prop: 'realName', formatter: (row: any) => (row.realName ? row.realName : '--') },
+    { label: '登录账号', prop: 'userName', formatter: (row: any) => (row.userName ? row.userName : '--') },
+    { label: '角色类型', prop: 'roleNames', formatter: this.roleChange },
+    { label: '备注', prop: 'remark', formatter: (row: any) => (row.remark ? row.remark : '--') },
     {
       label: '添加时间',
-      prop: 'createTime',
+      prop: 'crtTime',
       sortable: true,
-      sortBy: 'createTime',
+      sortBy: 'crtTime',
+      formatter: (row: any) => (row.crtTime ? row.crtTime : '--'),
     },
     {
       label: '最后登录',
-      prop: 'lastTime',
+      prop: 'lastLoginTime',
       sortable: true,
-      sortBy: 'lastTime',
+      sortBy: 'lastLoginTime',
+      formatter: (row: any) => (row.lastLoginTime ? row.lastLoginTime : '--'),
     },
-    { label: '状态', prop: 'active', formatter: this.statusDom },
+    { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
 
   // 角色
   roleChange(row: any) {
-    const roleTypeOptions: string[] = row.roleIdList.split(',');
-    const arr = this.roleConfirm(roleTypeOptions);
-    return arr.map(item => <el-tag size="medium" type='success' style="marginRight:5px">{item.label}</el-tag>);
+    const roleTypeOptions: string[] = row.roleNames.indexOf(',') > 0 ? row.roleNames.split(',') : row.roleNames.split('');
+    return roleTypeOptions.map(item =>
+      <el-tag size="medium" type='success' style="marginRight:5px">{item}</el-tag>);
   }
 
   statusDom(row: any) {
-    const type = row.active ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.active ? '正常' : '冻结'}</el-tag>;
-  }
-
-  roleConfirm(roleTypeOptions: any) {
-    const arr: RoleType[] = [];
-    this.roleTypeList.forEach((item) => {
-      if (roleTypeOptions.indexOf(item.value) > -1) {
-        arr.push(item);
-      }
-    });
-    return arr;
+    const type = row.activeStatus === 1 ? 'success' : 'danger';
+    return <el-tag size="medium" type={type}>{row.activeStatus === 1 ? '正常' : '冻结'}</el-tag>;
   }
 
   // 新增、编辑
@@ -144,34 +147,31 @@ export default class Member extends Vue {
     password: '',
   };
 
-  freezeData: any = {
-    userId: '',
-  }
-
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
       this.modelForm = row;
       this.addVisible = true;
-      this.addTitle = '编辑';
+      this.addTitle = '编辑成员';
     } else if (key === 'freeze') {
-      if (row.active) {
+      // activeStatus 1 正常 2 冻结
+      if (row.activeStatus === 1) {
         // 冻结
-        userLock({ userIds: row.userId }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
+        userLock([row.id]).then((res) => {
+          if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
+            FromTable.reloadTable();
           } else {
             this.$message.error(res.result.resultMessage);
           }
         });
       } else {
         // 解冻
-        userUnlock({ userIds: row.userId }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
+        userUnlock([row.id]).then((res) => {
+          if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
+            FromTable.reloadTable();
           } else {
             this.$message.error(res.result.resultMessage);
           }
@@ -181,8 +181,8 @@ export default class Member extends Vue {
   }
   addModel() {
     this.addVisible = true;
-    this.modelForm = null;
-    this.addTitle = '新增';
+    this.modelForm = {};
+    this.addTitle = '新增成员';
   }
   // 关闭弹窗
   closeModal(): void {
@@ -203,14 +203,12 @@ export default class Member extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           add-btn={true}
-          data-type={'JSON'}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
           export-btn={true}
-          dataType={'JSON'}
           on-menuClick={this.menuClick}
         />
         <add-modal

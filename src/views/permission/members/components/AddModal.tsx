@@ -1,6 +1,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
-import { getRolesList, userUpdate, userAdd } from '@/api/permission';
+import { roleSelect, userUpdate, userAdd } from '@/api/permission';
+import { join } from 'path';
 
 interface RoleType { key: number, value: string, label: string }
 
@@ -33,6 +34,7 @@ export default class AddModal extends Vue {
     roles: {},
     remark: '',
     password: '',
+    roleIdList: '',
   };
 
   loading: boolean = false;
@@ -55,13 +57,18 @@ export default class AddModal extends Vue {
   }
 
   mounted() {
-    getRolesList(null).then((res) => {
-      res.entity.forEach((item: any) => {
-        item.key = parseInt(item.roleId, 10);
-        item.value = item.roleId;
-        item.label = item.roleName;
-      });
-      this.roleTypeList = res.entity;
+    roleSelect(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((item: any) => {
+          item.key = parseInt(item.id, 10);
+          item.value = item.id;
+          item.label = item.roleName;
+        });
+        this.roleTypeList = res.entity;
+        console.log(this.roleTypeList);
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
   }
 
@@ -69,9 +76,42 @@ export default class AddModal extends Vue {
 
   @Watch('data')
   onDataChange() {
-    if (this.data) {
-      this.modelForm = JSON.parse(JSON.stringify(this.data));
-      this.modelForm.roleIdList = this.modelForm.roleIdList.split(',');
+    if (this.data.id > 0) {
+      // this.modelForm = JSON.parse(JSON.stringify(this.data));
+      // this.modelForm.roleIdList = [10];
+      const arr: any = [];
+      const roleName = this.data.roleNames.indexOf(',') > 0 ? this.data.roleNames.split(',') : this.data.roleNames.split('');
+
+      const long = roleName.length < this.roleTypeList.length ? this.roleTypeList : roleName;
+      const short = roleName.length < this.roleTypeList.length ? roleName : this.roleTypeList;
+      const str = `,${long.toString()},`;
+      const result = [];
+      // var arr1 = ['a','b','c','d'];
+      // var arr2 = ['x','b','c','y'];
+      // var long = arr1.length<arr2.length?arr2:arr1;
+      // var short = arr1.length<arr2.length?arr1:arr2;
+      // var str = ","+long.toString()+",";
+      // var result=[];
+      // for(var i in short){
+      //     if(str.indexOf(","+short[i]+",")>=0){
+      //         result.push(short[i]);
+      //     }
+      // }
+      console.log(1);
+      for (const i in short) {
+        if (str.indexOf(`,${short[i]},`) >= 0) {
+          result.push(short[i]);
+        }
+      }
+      // });
+      // for (const i in roleName) {
+      //   for (const j in this.roleTypeList) {
+      //     if (roleName[i] === this.roleTypeList[join]) {
+      //       return arr.push(roleName[i]);
+      //     }
+      //   }
+      // }
+      console.log(result);
     } else {
       this.resetData();
     }
@@ -100,64 +140,67 @@ export default class AddModal extends Vue {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
-      realName: this.modelForm.realName,
-      userName: this.modelForm.userName,
       roleIdList: this.modelForm.roleIdList.join(','),
-      remark: this.modelForm.remark,
+      realName: this.modelForm.realName,
+      username: this.modelForm.userName,
       password: this.modelForm.password,
+      remark: this.modelForm.remark,
     };
-    if (this.title === '新增') {
-      // 新增
-      From.validate((valid: any) => {
-        if (valid) {
-          this.loading = true;
-          userAdd(obj).then((res) => {
-            if (res.result.resultCode) {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.success(res.result.resultMessage);
-                From.resetFields();
-                this.$emit('refresh');
-              }, 1500);
-            } else {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.error(res.result.resultMessage);
-              }, 1500);
-            }
-          });
-        } else {
-          return false;
-        }
-        return false;
-      });
-    } else {
-      // 修改
-      From.validate((valid: any) => {
-        if (valid) {
-          obj.userId = this.data.userId;
-          this.loading = true;
-          userUpdate(obj).then((res) => {
-            if (res.result.resultCode) {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.success(res.result.resultMessage);
-                From.resetFields();
-                this.$emit('refresh');
-              }, 1500);
-            } else {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.error(res.result.resultMessage);
-              }, 1500);
-            }
-          });
-        } else {
-          return false;
-        }
-        return false;
-      });
-    }
+    console.log(obj.roleIdList);
+    // if (this.title === '新增成员') {
+    //   // 新增
+    //   console.log(obj);
+    //   // From.validate((valid: any) => {
+    //   //   if (valid) {
+    //   //     this.loading = true;
+    //   //     userAdd(obj).then((res) => {
+    //   //       if (res.result.resultCode) {
+    //   //         setTimeout(() => {
+    //   //           this.loading = false;
+    //   //           this.$message.success(res.result.resultMessage);
+    //   //           From.resetFields();
+    //   //           this.$emit('refresh');
+    //   //         }, 1500);
+    //   //       } else {
+    //   //         setTimeout(() => {
+    //   //           this.loading = false;
+    //   //           this.$message.error(res.result.resultMessage);
+    //   //         }, 1500);
+    //   //       }
+    //   //     });
+    //   //   } else {
+    //   //     return false;
+    //   //   }
+    //   //   return false;
+    //   // });
+    // } else {
+    //   // 修改
+    //   obj.userId=this.data.id;
+    //   console.log(obj);
+    //   // From.validate((valid: any) => {
+    //   //   if (valid) {
+    //   //     this.loading = true;
+    //   //     userUpdate(obj).then((res) => {
+    //   //       if (res.result.resultCode === '0') {
+    //   //         setTimeout(() => {
+    //   //           this.loading = false;
+    //   //           this.$message.success(res.result.resultMessage);
+    //   //           From.resetFields();
+    //   //           this.$emit('refresh');
+    //   //         }, 1500);
+    //   //       } else {
+    //   //         setTimeout(() => {
+    //   //           this.loading = false;
+    //   //           this.$message.error(res.result.resultMessage);
+    //   //         }, 1500);
+    //   //       }
+    //   //     });
+    //   //   } else {
+    //   //     return false;
+    //   //   }
+    //   //   return false;
+    //   // });
+    // }
   }
 
   render() {
@@ -187,7 +230,6 @@ export default class AddModal extends Vue {
                   v-model={this.modelForm.roleIdList}
                   multiple={true}
                   filterable={true}
-                  disabled={this.title === '编辑'}
                   placeholder="请选择角色类型"
                   style="width:100%"
                 >
@@ -204,7 +246,6 @@ export default class AddModal extends Vue {
                 <el-input
                   id="userName"
                   v-model={this.modelForm.userName}
-                  disabled={this.title === '编辑'}
                   placeholder="请输入登录账号"
                 ></el-input>
               </el-form-item>

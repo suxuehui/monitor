@@ -48,7 +48,7 @@ export default class Merchants extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/monitor/sys/org/list';
+  url: string = '/customer/org/list';
   // 地址
   opreat: Opreat[] = [
     {
@@ -169,7 +169,7 @@ export default class Merchants extends Vue {
   addModel() {
     this.addVisible = true;
     this.modelForm = null;
-    this.addTitle = '新增';
+    this.addTitle = '新增商户';
   }
   // 关闭弹窗
   closeModal(): void {

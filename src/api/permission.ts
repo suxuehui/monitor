@@ -1,15 +1,6 @@
 import request from '@/utils/request';
 
 // 角色管理
-// 角色列表
-export async function getRolesList(params: any) {
-  return request({
-    url: '/sys/role/select',
-    method: 'get',
-    fetchType: 'JSON',
-    data: params,
-  });
-}
 // 角色新增
 export async function roleAdd(params: any) {
   return request({
@@ -50,17 +41,32 @@ export async function roleSaveRoleMenu(params: any) {
     data: params,
   });
 }
-
-// 获取登录的用户信息
-export async function getUserInfo(params: any) {
+// 角色列表
+export async function roleSelect(params: any) {
   return request({
-    url: '/sys/user/info',
-    method: 'get',
+    url: '/sys/role/select',
+    method: 'post',
     data: params,
   });
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 成员管理
+// 成员新增
+export async function userAdd(params: any) {
+  return request({
+    url: '/sys/user/save',
+    method: 'post',
+    data: params,
+  });
+}
+// 成员修改
+export async function userUpdate(params: any) {
+  return request({
+    url: '/sys/user/update',
+    method: 'post',
+    data: params,
+  });
+}
 // 成员解冻
 export async function userUnlock(params: any) {
   return request({
@@ -79,19 +85,12 @@ export async function userLock(params: any) {
     data: params,
   });
 }
-// 成员修改
-export async function userUpdate(params: any) {
+// 修改密码
+export async function resetPW(params: any) {
   return request({
-    url: '/sys/user/update',
+    url: '/sys/user/password',
     method: 'post',
-    data: params,
-  });
-}
-// 成员新增
-export async function userAdd(params: any) {
-  return request({
-    url: '/sys/user/save',
-    method: 'post',
+    fetchType: 'JSON',
     data: params,
   });
 }
@@ -103,3 +102,19 @@ export async function userCheck(params: any) {
   });
 }
 
+// 获取登录的用户信息
+export async function getUserInfo(params: any) {
+  return request({
+    url: '/sys/user/info',
+    method: 'get',
+    data: params,
+  });
+}
+
+// 查看用户信息
+export async function userInfo(params: any) {
+  return request({
+    url: `/sys/user/info/${params}`,
+    method: 'get',
+  });
+}
