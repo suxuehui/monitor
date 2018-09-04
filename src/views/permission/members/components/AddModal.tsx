@@ -81,37 +81,16 @@ export default class AddModal extends Vue {
       // this.modelForm.roleIdList = [10];
       const arr: any = [];
       const roleName = this.data.roleNames.indexOf(',') > 0 ? this.data.roleNames.split(',') : this.data.roleNames.split('');
-
       const long = roleName.length < this.roleTypeList.length ? this.roleTypeList : roleName;
       const short = roleName.length < this.roleTypeList.length ? roleName : this.roleTypeList;
       const str = `,${long.toString()},`;
       const result = [];
-      // var arr1 = ['a','b','c','d'];
-      // var arr2 = ['x','b','c','y'];
-      // var long = arr1.length<arr2.length?arr2:arr1;
-      // var short = arr1.length<arr2.length?arr1:arr2;
-      // var str = ","+long.toString()+",";
-      // var result=[];
-      // for(var i in short){
-      //     if(str.indexOf(","+short[i]+",")>=0){
-      //         result.push(short[i]);
-      //     }
-      // }
-      console.log(1);
       for (const i in short) {
         if (str.indexOf(`,${short[i]},`) >= 0) {
           result.push(short[i]);
         }
       }
-      // });
-      // for (const i in roleName) {
-      //   for (const j in this.roleTypeList) {
-      //     if (roleName[i] === this.roleTypeList[join]) {
-      //       return arr.push(roleName[i]);
-      //     }
-      //   }
-      // }
-      console.log(result);
+      console.log(this.data);
     } else {
       this.resetData();
     }
