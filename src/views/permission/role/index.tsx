@@ -1,13 +1,12 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
+import { roleUpdateStatus } from '@/api/permission';
+import { getListByUser, menuSelect } from '@/api/menu';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
-import { roleLock, roleUnlock } from '@/api/permission';
-
 
 interface ActiveType { key: any, value: any, label: string }
-
 @Component({
   components: {
   'el-tag': Tag,
@@ -55,9 +54,9 @@ export default class Role extends Vue {
     {
       key: 'freeze',
       rowKey: 'userName',
-      color: (row: any) => (row.active ? 'red' : 'green'),
-      text: (row: any) => (row.active ? '禁用' : '启用'),
-      msg: (row: any) => (row.active ? '是否要禁用？' : '是否要启用？'),
+      color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
+      text: (row: any) => (row.activeStatus === 1 ? '禁用' : '启用'),
+      msg: (row: any) => (row.activeStatus === 1 ? '是否要禁用？' : '是否要启用？'),
       roles: true,
     },
     {
@@ -75,27 +74,24 @@ export default class Role extends Vue {
     { label: '成员数量', prop: 'countUser' },
     {
       label: '添加时间',
-      prop: 'createTime',
+      prop: 'crtTime',
       sortable: true,
-      sortBy: 'createTime',
+      sortBy: 'crtTime',
     },
-    { label: '状态', prop: 'active', formatter: this.statusDom },
+    { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
 
   statusDom(row: any) {
-    const type = row.active ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.active ? '已启用' : '未启用'}</el-tag>;
+    const type = row.activeStatus === 1 ? 'success' : 'danger';
+    return <el-tag size="medium" type={type}>{row.activeStatus === 1 ? '已启用' : '未启用'}</el-tag>;
   }
 
+  // 激活状态:1-启用；2-禁用
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '全部' },
-    { key: true, value: true, label: '已启用' },
-    { key: false, value: false, label: '未启用' },
+    { key: 1, value: 1, label: '已启用' },
+    { key: 2, value: 2, label: '未启用' },
   ]
-
-  mounted() {
-    this.filterList[0].options = this.activeTypes;
-  }
 
   // 新增、编辑
   addVisible: boolean = false;
@@ -114,31 +110,18 @@ export default class Role extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
+      this.addTitle = '编辑角色';
       this.addVisible = true;
       this.modelForm = row;
-      this.addTitle = '编辑';
     } else if (key === 'freeze') {
-      if (row.active) {
-        // 禁用
-        roleLock({ userIds: row.userId }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      } else {
-        // 启用
-        roleUnlock({ userIds: row.userId }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      }
+      roleUpdateStatus({ roleId: row.roleId }).then((res) => {
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     } else if (key === 'setAuth') {
       this.setVisible = true;
       this.setAuthData = row;
@@ -148,12 +131,16 @@ export default class Role extends Vue {
   addModel() {
     this.addVisible = true;
     this.modelForm = null;
-    this.addTitle = '新增';
+    this.addTitle = '新增角色';
   }
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
     this.setVisible = false;
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 200);
   }
 
   // 关闭弹窗时刷新
@@ -177,11 +164,11 @@ export default class Role extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />
         <add-modal
+          ref="addTable"
           title={this.addTitle}
           visible={this.addVisible}
           data={this.modelForm}

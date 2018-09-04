@@ -15,33 +15,38 @@ export async function roleAdd(params: any) {
   return request({
     url: '/sys/role/save',
     method: 'post',
-    fetchType: 'JSON',
     data: params,
   });
 }
 // 角色修改
 export async function roleUpdate(params: any) {
   return request({
-    url: '/sys/role/update',
+    url: '/sys/role/edit',
     method: 'post',
     data: params,
   });
 }
-// 角色启用
-export async function roleUnlock(params: any) {
+// 角色信息
+export async function roleInfo(params: any) {
   return request({
-    url: '/sys/role/unlock',
+    url: '/sys/role/info',
     method: 'post',
-    fetchType: 'JSON',
     data: params,
   });
 }
-// 角色禁用
-export async function roleLock(params: any) {
+// 角色启用\禁用
+export async function roleUpdateStatus(params: any) {
   return request({
-    url: '/sys/role/lock',
+    url: '/sys/role/updateStatus',
     method: 'post',
-    fetchType: 'JSON',
+    data: params,
+  });
+}
+// 角色分配权限
+export async function roleSaveRoleMenu(params: any) {
+  return request({
+    url: '/sys/role/saveRoleMenu',
+    method: 'post',
     data: params,
   });
 }

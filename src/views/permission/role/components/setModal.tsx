@@ -1,7 +1,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Dialog, Input, Button, Checkbox, Form, CheckboxGroup } from 'element-ui';
-import { getMenuList } from '@/api/menu';
-import { roleUpdate } from '@/api/permission';
+import { roleSaveRoleMenu } from '@/api/permission';
+import { getListByUser, menuSelect } from '@/api/menu';
 import './setModal.less';
 
 @Component({
@@ -24,24 +24,25 @@ export default class SetModal extends Vue {
   menuList: any = []
   checkList: number[] = [] // 权限选中项
 
-  loading:boolean=false;
-  mounted() {
-    getMenuList(null).then((res: any) => {
-      if (res.result.resultCode === '0') {
-        this.menuList = res.entity;
-        if (res.entity.length > 0) {
-          this.setList(this.menuList);
-        }
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
+  loading: boolean = false;
 
-  @Watch('data')
-  onDataChange() {
-    this.checkList = this.data.menuIdList;
-  }
+  // mounted() {
+  //   menuSelect(null).then((res) => {
+  //     if (res.result.resultCode === '0') {
+  //       this.menuList = res.entity;
+  //       if (res.entity.length > 0) {
+  //         this.setList(this.menuList);
+  //       }
+  //     } else {
+  //       this.$message.error(res.result.resultMessage);
+  //     }
+  //   });
+  // }
+
+  // @Watch('data')
+  // onDataChange() {
+  //   this.checkList = this.data.menuIdList;
+  // }
 
   setList(list: any) {
     return (
@@ -54,6 +55,31 @@ export default class SetModal extends Vue {
               <th>权限列表</th>
             </tr>
           </thead>
+          {/* <tbody>
+            {
+              list.map((item: any, index: number) => item.list.map((items: any, indexs: number) => (
+                <tr>
+                  {
+                    !indexs ? <td
+                      rowspan={item.list.length}>
+                      <el-checkbox label={item.id}>
+                        {item.name}
+                      </el-checkbox>
+                    </td> : null
+                  }
+                  <td><el-checkbox label={items.id}>{items.name}</el-checkbox></td>
+                  <td>
+                    {
+                      items.list.map((three: any, ind: number) => <el-checkbox
+                        label={three.id}>
+                        {three.name}
+                      </el-checkbox>)
+                    }
+                  </td>
+                </tr>
+              )))
+            }
+          </tbody> */}
           <tbody>
             {
               list.map((item: any, index: number) => item.list.map((items: any, indexs: number) => (
@@ -91,7 +117,7 @@ export default class SetModal extends Vue {
   }
 
   onSubmit() {
-    let obj:any={};
+    let obj: any = {};
     obj = {
       roleName: this.data.roleName,
       remark: this.data.remark,
@@ -99,20 +125,20 @@ export default class SetModal extends Vue {
       roleId: this.data.roleId,
     };
     this.loading = true;
-    roleUpdate(obj).then((res) => {
-      if (res.result.resultCode) {
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.success(res.result.resultMessage);
-          this.$emit('refresh');
-        }, 1500);
-      } else {
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.error(res.result.resultMessage);
-        }, 1500);
-      }
-    });
+    // roleUpdate(obj).then((res) => {
+    //   if (res.result.resultCode) {
+    //     setTimeout(() => {
+    //       this.loading = false;
+    //       this.$message.success(res.result.resultMessage);
+    //       this.$emit('refresh');
+    //     }, 1500);
+    //   } else {
+    //     setTimeout(() => {
+    //       this.loading = false;
+    //       this.$message.error(res.result.resultMessage);
+    //     }, 1500);
+    //   }
+    // });
   }
 
   render() {

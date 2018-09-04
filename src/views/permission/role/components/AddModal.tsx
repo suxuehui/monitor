@@ -17,9 +17,6 @@ export default class AddModal extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
   @Prop() private data: any;
-  created() {
-    this.modelForm = JSON.parse(JSON.stringify(this.data));
-  }
   modelForm: any = {
     roleName: '',
     remark: '',
@@ -66,14 +63,14 @@ export default class AddModal extends Vue {
     obj = {
       roleName: this.modelForm.roleName,
       remark: this.modelForm.remark,
+      roleType: 2,
     };
-    if (this.title === '新增') {
+    if (this.title === '新增角色') {
       From.validate((valid: any) => {
         if (valid) {
           this.loading = true;
           roleAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
-              console.log(res);
               setTimeout(() => {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
@@ -88,14 +85,15 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;
       });
     } else {
+      obj.id = this.data.roleId;
       From.validate((valid: any) => {
         if (valid) {
-          obj.roleId = this.data.roleId;
           this.loading = true;
           roleUpdate(obj).then((res) => {
             if (res.result.resultCode) {
@@ -112,6 +110,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;

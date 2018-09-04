@@ -1,18 +1,21 @@
 import request from '@/utils/request';
 
-// 获得全部权限列表
-export async function getMenuList(params: any) {
+// 当前登录用户的菜单权限(仅包含按钮级别)
+export async function getListByUser(params: any) {
   return request({
-    url: '/sys/menu/list',
+    url: '/sys/menu/listByUser',
     method: 'post',
+    fetchType: 'JSON',
     data: params,
   });
 }
-// 设备解绑
-export async function terminalUnbind(params: any) {
+// 添加修改时的下拉菜单下拉选项
+export async function menuSelect(params: any) {
   return request({
-    url: `/device/terminal/unbind/${params}`,
+    url: '/sys/menu/select',
     method: 'post',
+    fetchType: 'JSON',
+    data: params,
   });
 }
 
