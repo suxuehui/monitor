@@ -110,11 +110,12 @@ export default class AddModal extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
-      this.modelForm.cfgName='';
-      this.modelForm.remark='';
-      this.modelForm.productCode='';
-      this.modelForm.cfgParam='';
+      this.modelForm.cfgName = '';
+      this.modelForm.remark = '';
+      this.modelForm.productCode = '';
+      this.modelForm.cfgParam = '';
       this.modelForm.cfgParamAdd = [];
+      this.reBootStatus = '1';
     }, 200);
   }
   reBootStatus: string = '1';
@@ -130,7 +131,7 @@ export default class AddModal extends Vue {
     const cfgParamArr: any = [];
     cfgParamArr.push(`"${this.modelForm.cfgParam}"`);
     this.modelForm.cfgParamAdd.map((item: any, key: number) => {
-      if (item.value !=='') {
+      if (item.value !== '') {
         cfgParamArr.push(`"${item.value}"`);
       }
       return cfgParamArr;
@@ -253,11 +254,11 @@ export default class AddModal extends Vue {
             <el-col span={24}>
               {
                 this.modelForm.cfgParamAdd.map((item: any, index: number) => <el-form-item
-                  label={`配置参数${index+1}`}
+                  label={`配置参数${index + 1}`}
                   key={item.key}
                   // prop={this.modelForm.cfgParamAdd[index].value}
                   prop={`cfgParam${item.key}${index}`}
-                  // rules={this.cfgParamAddRule}
+                // rules={this.cfgParamAddRule}
                 >
                   <el-input
                     id="cfgParam"
