@@ -92,7 +92,6 @@ export default class AddModal extends Vue {
       cfgParam: '',
       cfgParamAdd: [],
     };
-    console.log(1);
   }
 
   addCfgParam() {
@@ -112,6 +111,9 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       From.resetFields();
       this.modelForm.cfgName='';
+      this.modelForm.remark='';
+      this.modelForm.productCode='';
+      this.modelForm.cfgParam='';
       this.modelForm.cfgParamAdd = [];
     }, 200);
   }
@@ -144,7 +146,6 @@ export default class AddModal extends Vue {
       cfgParam: cfgParamStr,
       id: this.data.id ? this.data.id : null,
     };
-    console.log(obj);
     if (this.title === '新增配置') {
       From.validate((valid: any) => {
         if (valid) {
@@ -254,8 +255,8 @@ export default class AddModal extends Vue {
                 this.modelForm.cfgParamAdd.map((item: any, index: number) => <el-form-item
                   label={`配置参数${index+1}`}
                   key={item.key}
-                  prop={this.modelForm.cfgParamAdd[index].value}
-                  // prop={`cfgParam${item.key}${index}`}
+                  // prop={this.modelForm.cfgParamAdd[index].value}
+                  prop={`cfgParam${item.key}${index}`}
                   // rules={this.cfgParamAddRule}
                 >
                   <el-input
