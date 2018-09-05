@@ -149,6 +149,7 @@ export default class Role extends Vue {
     FromTable.reloadTable();
     this.closeModal();
   }
+
   render(h: any) {
     return (
       <div class="member-wrap">

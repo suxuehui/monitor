@@ -9,7 +9,7 @@ import AddModel from './components/Addmodel';
   'add-model': AddModel,
   }
   })
-export default class Model extends Vue {
+export default class CarModel extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
@@ -21,6 +21,7 @@ export default class Model extends Vue {
       options: [],
       props: {},
       itemChange: this.brandLoad,
+      change: this.brandChange,
     },
     {
       key: 'keyword',
@@ -33,7 +34,7 @@ export default class Model extends Vue {
   filterGrade: FilterFormList[] = [];
   // 筛选参数
   filterParams: any = {
-    brandGroup: '',
+    brandGroup: [],
     keyword: '',
   };
   outParams: any = {
@@ -83,10 +84,6 @@ export default class Model extends Vue {
 
   brandList: any = [];
 
-  setData(data:any) {
-    console.log(data);
-  }
-
   mounted() {
     brandAll(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -104,6 +101,13 @@ export default class Model extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+  }
+
+  brandChange(val: any) {
+    this.outParams={
+      brandId: val[0],
+      seriesId: val[1],
+    };
   }
 
   brandLoad(val: any) {
@@ -164,6 +168,10 @@ export default class Model extends Vue {
     this.addTitle = '新增车型';
   }
 
+  clear() {
+    this.outParams={};
+  }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -197,6 +205,7 @@ export default class Model extends Vue {
           dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
+          on-clearOutParams={this.clear}
         />
         <add-model
           ref="addTable"

@@ -9,6 +9,7 @@
       :add-btn="addBtn"
       :export-btn="exportBtn"
       @search="searchFun"
+      @clearOut="clearFun"
       @export="exportBack"
       @setTable="setTable"
       @addFun="addBack"
@@ -27,6 +28,7 @@
       :fetch-type="fetchType"
       :fetch-error="fetchError"
       :table-params="tableParams"
+      :out-params="outParams"
       :default-page-size="defaultPageSize"
       :highlight-current-row="highlightCurrentRow"
       @tableClick="tableClick"
@@ -87,7 +89,8 @@ export default class FilterTable extends Vue {
   // 请求数据方法
   @Prop() private fetchType!: string;
 
-  @Prop({ default: false }) private highlightCurrentRow!: boolean;
+  @Prop({ default: false })
+  private highlightCurrentRow!: boolean;
   // 初始化请求参数
   tableParams: any = Object.assign(this.filterParams, this.outParams);
 
@@ -103,11 +106,18 @@ export default class FilterTable extends Vue {
   searchFun(params: any) {
     this.tableParams = params;
     const table: any = this.$refs.MTable;
+
+    table.clearPageParams();
     // 延迟100ms加载数据
     setTimeout(() => {
       table.reload();
     }, 100);
   }
+  @Emit()
+  clearFun() {
+    this.$emit('clearOutParams');
+  }
+
   @Emit()
   addBack() {
     this.$emit('addBack');

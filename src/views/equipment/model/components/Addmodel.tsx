@@ -52,6 +52,9 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入产品编码', trigger: 'blur' },
     ],
   }
+  cfgParamAddRule = [
+    { required: true, message: '请输入配置参数', trigger: 'blur' },
+  ]
 
   @Watch('data')
   onDataChange() {
@@ -89,6 +92,7 @@ export default class AddModal extends Vue {
       cfgParam: '',
       cfgParamAdd: [],
     };
+    console.log(1);
   }
 
   addCfgParam() {
@@ -97,6 +101,7 @@ export default class AddModal extends Vue {
       key: Date.now(),
     });
   }
+
   deleteCfgParam(key: any) {
     this.modelForm.cfgParamAdd.splice(key, 1);
   }
@@ -106,6 +111,7 @@ export default class AddModal extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.modelForm.cfgName='';
       this.modelForm.cfgParamAdd = [];
     }, 200);
   }
@@ -121,8 +127,12 @@ export default class AddModal extends Vue {
     // 配置参数
     const cfgParamArr: any = [];
     cfgParamArr.push(`"${this.modelForm.cfgParam}"`);
-    this.modelForm.cfgParamAdd.map((item: any, key: number) =>
-      cfgParamArr.push(`"${item.value}"`));
+    this.modelForm.cfgParamAdd.map((item: any, key: number) => {
+      if (item.value !=='') {
+        cfgParamArr.push(`"${item.value}"`);
+      }
+      return cfgParamArr;
+    });
     let cfgParamStr: any = '';
     cfgParamStr = `[${cfgParamArr.join(',')}]`;
 
@@ -134,6 +144,7 @@ export default class AddModal extends Vue {
       cfgParam: cfgParamStr,
       id: this.data.id ? this.data.id : null,
     };
+    console.log(obj);
     if (this.title === '新增配置') {
       From.validate((valid: any) => {
         if (valid) {
@@ -190,13 +201,13 @@ export default class AddModal extends Vue {
   render() {
     return (
       <el-dialog
-        width="540px"
+        width="560px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
+        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="90px" class="model">
           <el-row>
             <el-col span={24}>
               <el-form-item label="配置名称" prop="cfgName">
@@ -241,9 +252,11 @@ export default class AddModal extends Vue {
             <el-col span={24}>
               {
                 this.modelForm.cfgParamAdd.map((item: any, index: number) => <el-form-item
-                  label={`配置参数${index + 1}`}
+                  label={`配置参数${index+1}`}
                   key={item.key}
                   prop={this.modelForm.cfgParamAdd[index].value}
+                  // prop={`cfgParam${item.key}${index}`}
+                  // rules={this.cfgParamAddRule}
                 >
                   <el-input
                     id="cfgParam"

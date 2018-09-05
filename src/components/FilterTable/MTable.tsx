@@ -49,6 +49,8 @@ export default class MTable extends Vue {
   @Prop() private fetchError!: Function;
   // 表格列数据
   @Prop() private tableParams!: any;
+  // 外部参数
+  @Prop() private outParams!: any;
   // 请求类型
   @Prop({ default: 'post' }) private fetchType!: string;
   // 表格分页大小参数
@@ -79,20 +81,24 @@ export default class MTable extends Vue {
     this.getData();
   }
 
+  clearPageParams() {
+    this.pageParams.pageNum = 1;
+  }
+
   getData() {
     this.loading = true;
     request({
       url: this.url,
       method: this.fetchType,
       fetchType: this.dataType,
-      data: Object.assign(this.tableParams, this.pageParams),
+      data: Object.assign(this.tableParams, this.pageParams, this.outParams),
     }).then((res) => {
       this.loading = false;
       const code = this.getValue(this.BackParams.code, res);
       if (code === this.BackParams.codeOK) {
         if (!res.entity) {
-          this.tableData=[];
-          this.dataTotal=0;
+          this.tableData = [];
+          this.dataTotal = 0;
         } else {
           this.tableData = this.getValue(this.BackParams.data, res);
           this.dataTotal = this.getValue(this.BackParams.total, res);
@@ -127,19 +133,19 @@ export default class MTable extends Vue {
   render() {
     return (
       <div class="m-table" >
-        <m-spin show={this.loading}/>
+        <m-spin show={this.loading} />
         <el-table
-        data={this.tableData}
-        on-current-change={this.currentChange}
-        on-selection-change={this.selectChange}
-        highlightCurrentRow={this.highlightCurrentRow}>
+          data={this.tableData}
+          on-current-change={this.currentChange}
+          on-selection-change={this.selectChange}
+          highlightCurrentRow={this.highlightCurrentRow}>
           {
             this.tableList.map((item, index) => {
               if (!item.formatter) {
                 item.formatter = (row: any) => (row[item.prop] !== null ? row[item.prop] : '--');
               }
               return <el-table-column
-              key={index} {...{ props: item }}>
+                key={index} {...{ props: item }}>
               </el-table-column>;
             })
           }
@@ -181,27 +187,27 @@ export default class MTable extends Vue {
       </el-dropdown>;
     }
     return <div class="table-opreat">
-    {
-      this.opreat.map((item, indexs) => {
-        const whiteList = ['red', 'orange'];
-        if (item.disabled && item.disabled(row)) {
-          return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
-            { typeof item.text === 'function' ? item.text(row) : item.text }
-          </a>;
-        } else if (typeof item.color === 'function'
-        && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
-          return <pop-confirm
-            on-confirm={() => this.menuClick(item.key, row)}
-            title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
-            <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
-              { typeof item.text === 'function' ? item.text(row) : item.text }
-            </a>
-          </pop-confirm>;
-        }
-        return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
-      })
-    }
-  </div>;
+      {
+        this.opreat.map((item, indexs) => {
+          const whiteList = ['red', 'orange'];
+          if (item.disabled && item.disabled(row)) {
+            return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
+              {typeof item.text === 'function' ? item.text(row) : item.text}
+            </a>;
+          } else if (typeof item.color === 'function'
+            && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
+            return <pop-confirm
+              on-confirm={() => this.menuClick(item.key, row)}
+              title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
+              <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
+                {typeof item.text === 'function' ? item.text(row) : item.text}
+              </a>
+            </pop-confirm>;
+          }
+          return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
+        })
+      }
+    </div>;
   }
 
   handleSizeChange(val: number) {

@@ -21,14 +21,6 @@ export default class BindLog extends Vue {
   tableParams: any = {}
   // 请求地址
   url: string = `/device/terminal/log/${this.tableParams.imei}`;
-  // 表格数据返回格式
-  tableBackData: object = {
-    code: 'result.resultCode',
-    codeOK: '0',
-    message: 'result.resultMessage',
-    data: '',
-    total: '',
-  }
   opreat: Opreat[] = [];
   // 表格参数
   tableList: tableList[] = [
@@ -48,17 +40,6 @@ export default class BindLog extends Vue {
       pageSize: 10,
       terminalId: this.tableParams.id,
     };
-    getOpsList(obj).then((res) => {
-      if (res.result.resultCode==='0') {
-        console.log(res.entity);
-        // this.tableBackData ={
-        //   data: res.entity.data,
-        //   total: res.entity.total,
-        // };
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
   }
 
   opsPerson(row:any) {
@@ -118,7 +99,6 @@ export default class BindLog extends Vue {
             fetchType='get'
             opreat={this.opreat}
             opreat-width={'180px'}
-            BackParams={this.tableBackData}
             table-params={this.tableParams}
             on-tableClick={this.tableClick}
           />

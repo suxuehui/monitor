@@ -91,6 +91,7 @@ export default class MFilter extends Vue {
   reset(): void {
     this.params = JSON.parse(JSON.stringify(this.initParams));
     this.$emit('search', this.params);
+    this.$emit('clearOut');
   }
   @Emit()
   levelcodeChange(val: any, key: string): void {
@@ -144,7 +145,7 @@ export default class MFilter extends Vue {
           placeholder={item.placeholder}
           props={item.props}
           on-active-item-change={item.itemChange}
-          change={item.change}></el-cascader>;
+          on-change={item.change}></el-cascader>;
         break;
       case 'levelcode':
         itemDom = <el-cascader style="width: 100%;"

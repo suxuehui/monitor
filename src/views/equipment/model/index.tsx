@@ -137,7 +137,6 @@ export default class Member extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          // dataType={'JSON'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />
