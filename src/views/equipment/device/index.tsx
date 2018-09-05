@@ -89,7 +89,7 @@ export default class Device extends Vue {
   ];
   // 筛选参数
   filterParams: any = {
-    levelCode: '1/',
+    levelCode: '0',
     terminalType: 0,
     status: 0,
     online: -1,
@@ -264,7 +264,7 @@ export default class Device extends Vue {
       // 设备类型(全部)
       this.typeList.unshift({
         key: Math.random(),
-        value: 0,
+        value: '0',
         label: '设备类型(全部)',
       });
       this.filterList[1].options = this.typeList;

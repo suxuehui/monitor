@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Tag, Loading } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { roleSelect, userLock, userUnlock, userInfo } from '@/api/permission';
+import { roleSelect, userLock, userUnlock, userInfo, getUserInfo } from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
 import './index.less';
@@ -154,6 +154,9 @@ export default class Member extends Vue {
       this.modelForm = row;
       this.addVisible = true;
       this.addTitle = '编辑成员';
+      userInfo(row.id).then((res) => {
+        console.log(res);
+      });
     } else if (key === 'freeze') {
       // activeStatus 1 正常 2 冻结
       if (row.activeStatus === 1) {

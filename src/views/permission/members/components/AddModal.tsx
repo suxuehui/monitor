@@ -77,20 +77,10 @@ export default class AddModal extends Vue {
   @Watch('data')
   onDataChange() {
     if (this.data.id > 0) {
-      // this.modelForm = JSON.parse(JSON.stringify(this.data));
+      this.modelForm = JSON.parse(JSON.stringify(this.data));
       // this.modelForm.roleIdList = [10];
       const arr: any = [];
       const roleName = this.data.roleNames.indexOf(',') > 0 ? this.data.roleNames.split(',') : this.data.roleNames.split('');
-      const long = roleName.length < this.roleTypeList.length ? this.roleTypeList : roleName;
-      const short = roleName.length < this.roleTypeList.length ? roleName : this.roleTypeList;
-      const str = `,${long.toString()},`;
-      const result = [];
-      for (const i in short) {
-        if (str.indexOf(`,${short[i]},`) >= 0) {
-          result.push(short[i]);
-        }
-      }
-      console.log(this.data);
     } else {
       this.resetData();
     }
