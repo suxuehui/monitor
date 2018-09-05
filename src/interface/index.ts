@@ -5,6 +5,7 @@ export interface FilterFormList {
   type: FilterType;
   label: string;
   placeholder: string | string[];
+  props?:any;
   value?: string[];
   options?: Array<{ value: any, label: string }>;
   change?: Function;

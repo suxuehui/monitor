@@ -64,7 +64,7 @@ export default class Member extends Vue {
   statusDom(row: any) {
     if (row.reboot === 1) {
       return <el-tag size="medium" type="success">是</el-tag>;
-    } else if (row.reboot === 0) {
+    } else if (row.reboot === 2) {
       return <el-tag size="medium" type="danger">否</el-tag>;
     }
     return <el-tag size="medium" type="info">未知</el-tag>;
@@ -110,6 +110,10 @@ export default class Member extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 200);
   }
   // 关闭弹窗时刷新
   refresh(): void {
@@ -138,6 +142,7 @@ export default class Member extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-model
+          ref="addTable"
           data={this.rowData}
           title={this.addTitle}
           visible={this.addVisible}

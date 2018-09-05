@@ -89,24 +89,16 @@ export default class Device extends Vue {
   ];
   // 筛选参数
   filterParams: any = {
-    levelCode: '0',
+    levelCode: null,
     terminalType: 0,
     status: 0,
     online: -1,
     keyword: '',
-    active: 1,
+    // active: 1,
   };
   outParams: any = {};
   // 请求地址
   url: string = '/device/terminal/list';
-  // 表格数据返回格式
-  tableBackData: object = {
-    code: 'result.resultCode',
-    codeOK: '0',
-    message: 'result.resultMessage',
-    data: 'entity',
-    total: 'count',
-  }
   opreat: Opreat[] = [
     {
       key: 'bind',
@@ -248,7 +240,7 @@ export default class Device extends Vue {
       // 所属商户(全部)
       this.shopList.unshift({
         key: Math.random(),
-        value: 0,
+        value: null,
         label: '所属商户(全部)',
       });
       this.filterList[0].options = this.shopList;
@@ -258,13 +250,13 @@ export default class Device extends Vue {
     terminalType(null).then((res) => {
       res.entity.map((item: any) => this.typeList.push({
         key: Math.random(),
-        value: item.enumValue,
+        value: parseInt(item.enumValue, 10),
         label: item.name,
       }));
       // 设备类型(全部)
       this.typeList.unshift({
         key: Math.random(),
-        value: '0',
+        value: 0,
         label: '设备类型(全部)',
       });
       this.filterList[1].options = this.typeList;
@@ -288,7 +280,7 @@ export default class Device extends Vue {
   }
 
   checkLog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei }, params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id }, params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
   }
 
   onlineSelect(row: any) {
@@ -422,6 +414,8 @@ export default class Device extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-modal
+          shopListData={this.shopList}
+          typeListData={this.typeList}
           title={this.addTitle}
           visible={this.addVisible}
           on-close={this.closeModal}

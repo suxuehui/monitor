@@ -2,6 +2,7 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Card, Form, FormItem, Input, Row, Col } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import MTable from '@/components/FilterTable/MTable';
+import { getOpsList } from '@/api/equipment';
 import './index.less';
 
 @Component({
@@ -25,26 +26,47 @@ export default class BindLog extends Vue {
     code: 'result.resultCode',
     codeOK: '0',
     message: 'result.resultMessage',
-    data: 'entity',
-    total: 'count',
+    data: '',
+    total: '',
   }
   opreat: Opreat[] = [];
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName' },
+    { label: '所属商户', prop: 'orgName', formatter: this.opsPerson },
     { label: '安绑员', prop: 'opsRealName' },
     { label: '安绑时间', prop: 'imei' },
     { label: '安装拍照', prop: 'cfgVer' },
     { label: '车架拍照', prop: 'hardVer' },
     { label: '验收记录', prop: 'hostVer' },
   ];
-
-  tableClick() {
-    console.log(1);
-  }
   mounted() {
     this.modelForm = this.$route.params;
     this.tableParams = this.$route.query;
+    const obj: any = {
+      page: false,
+      pageNum: 0,
+      pageSize: 10,
+      terminalId: this.tableParams.id,
+    };
+    getOpsList(obj).then((res) => {
+      if (res.result.resultCode==='0') {
+        console.log(res.entity);
+        // this.tableBackData ={
+        //   data: res.entity.data,
+        //   total: res.entity.total,
+        // };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  opsPerson(row:any) {
+    return 1;
+  }
+
+  tableClick() {
+    console.log(1);
   }
   render(h: any) {
     return (

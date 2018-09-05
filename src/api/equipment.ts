@@ -21,6 +21,7 @@ export async function terminalUnbind(params: any) {
 export async function terminalAdd(params: any) {
   return request({
     url: '/device/terminal/save',
+    fetchType: 'JSON',
     method: 'post',
     data: params,
   });
@@ -85,5 +86,15 @@ export async function clearCfg(params: any) {
     url: '/device/terminal/clearCfg',
     method: 'post',
     data: params,
+  });
+}
+
+// 设备安绑记录
+export async function getOpsList(params: any) {
+  return request({
+    url: '/terminal/ops/list',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
   });
 }

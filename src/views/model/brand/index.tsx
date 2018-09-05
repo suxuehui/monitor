@@ -67,7 +67,7 @@ export default class Brand extends Vue {
   rowData: any = {};
 
   showLogo(row: any) {
-    return row.logo ? <img alt="品牌图片" style="width:60px" src={row.logo} /> : noPic;
+    return row.logo ? <img alt="品牌图片" style="width:60px;maxHeight:36px" src={row.logo} /> : noPic;
   }
 
   // 操作

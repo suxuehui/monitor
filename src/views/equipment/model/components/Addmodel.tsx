@@ -1,5 +1,5 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio } from 'element-ui';
+import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup } from 'element-ui';
 import { configAdd, configUpdate } from '@/api/config';
 
 import './Addmodel.less';
@@ -16,6 +16,7 @@ import './Addmodel.less';
   'el-button': Button,
   'el-option': Option,
   'el-radio': Radio,
+  'el-radio-group': RadioGroup,
   }
   })
 export default class AddModal extends Vue {
@@ -26,7 +27,7 @@ export default class AddModal extends Vue {
 
   modelForm: any = {
     cfgName: '',
-    reboot: 'true',
+    reboot: '1',
     cfgParam: '',
     cfgParamAdd: [],
     remark: '',
@@ -42,7 +43,7 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入配置参数', trigger: 'blur' },
     ],
     reboot: [
-      { required: true, message: '请确认是否重启' },
+      { required: false, message: '请确认是否重启' },
     ],
     remark: [
       { required: false },
@@ -67,12 +68,12 @@ export default class AddModal extends Vue {
       }));
       this.modelForm = {
         cfgName: obj.cfgName,
-        reboot: '',
         remark: obj.remark,
         productCode: obj.productCode,
         cfgParam: cfgParamArr[0],
         cfgParamAdd: cfgParamAddArrEnd,
       };
+      this.reBootStatus = `${this.data.reboot}`;
     } else {
       this.resetData();
     }
@@ -82,7 +83,7 @@ export default class AddModal extends Vue {
   resetData() {
     this.modelForm = {
       cfgName: '',
-      reboot: '',
+      reboot: '1',
       remark: '',
       productCode: '',
       cfgParam: '',
@@ -108,6 +109,11 @@ export default class AddModal extends Vue {
       this.modelForm.cfgParamAdd = [];
     }, 200);
   }
+  reBootStatus: string = '1';
+
+  rebootChange(data: any) {
+    this.reBootStatus = data;
+  }
 
   onSubmit() {
     this.loading = true;
@@ -119,17 +125,10 @@ export default class AddModal extends Vue {
       cfgParamArr.push(`"${item.value}"`));
     let cfgParamStr: any = '';
     cfgParamStr = `[${cfgParamArr.join(',')}]`;
-    // 是否重启
-    let isReBoot: number = 0;
-    if (this.modelForm.reboot === 'true') {
-      isReBoot = 1;
-    } else if (this.modelForm.reboot === 'false') {
-      isReBoot = 2;
-    }
 
     const obj = {
       cfgName: this.modelForm.cfgName,
-      reboot: isReBoot,
+      reboot: this.reBootStatus,
       remark: this.modelForm.remark,
       productCode: this.modelForm.productCode,
       cfgParam: cfgParamStr,
@@ -259,8 +258,10 @@ export default class AddModal extends Vue {
             <el-col span={24}>
               <el-form-item label="是否重启" prop="reboot" class="isStart">
                 <div class="radioGroup">
-                  <el-radio v-model={this.modelForm.reboot} id="availableY" label="true">是</el-radio>
-                  <el-radio v-model={this.modelForm.reboot} id="availableN" label="false">否</el-radio>
+                  <el-radio-group v-model={this.reBootStatus} on-change={this.rebootChange}>
+                    <el-radio id="availableY" label="1">是</el-radio>
+                    <el-radio id="availableN" label="2">否</el-radio>
+                  </el-radio-group>
                 </div>
                 <p class="reStart">( 设备下发配置成功后是否重启设备 )</p>
               </el-form-item>

@@ -13,14 +13,15 @@ export default class Model extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
-    // {
-    //   key: 'brandId',
-    //   type: 'cascader',
-    //   label: '品牌',
-    //   placeholder: '请选择品牌车系',
-    //   options: [],
-    //   itemChange: this.brandLoad,
-    // },
+    {
+      key: 'brandGroup',
+      type: 'cascader',
+      label: '品牌',
+      placeholder: '请选择品牌车系',
+      options: [],
+      props: {},
+      itemChange: this.brandLoad,
+    },
     {
       key: 'keyword',
       type: 'input',
@@ -32,10 +33,13 @@ export default class Model extends Vue {
   filterGrade: FilterFormList[] = [];
   // 筛选参数
   filterParams: any = {
-    brandId: '',
+    brandGroup: '',
     keyword: '',
   };
-  outParams: any = {};
+  outParams: any = {
+    brandId: '',
+    seriesId: '',
+  };
   // 请求地址
   url: string = '/vehicle/model/list';
 
@@ -62,9 +66,14 @@ export default class Model extends Vue {
     { label: '车系名称', prop: 'seriesName', formatter: (row: any) => (row.seriesName ? row.seriesName : '--') },
     { label: '车型名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
     { label: '能源类型', prop: 'energyType', formatter: (row: any) => (row.energyType ? row.energyType : '--') },
-    { label: '油箱容量', prop: 'fuelTankCap', formatter: (row: any) => (row.fuelTankCap ? row.fuelTankCap : '--') },
-    { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? row.vehicleNum : '--') },
+    { label: '油箱容量', prop: 'fuelTankCap', formatter: (row: any) => (row.fuelTankCap ? `${row.fuelTankCap}L` : '--') },
+    { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },
   ];
+
+  props: any = {
+    value: 'value',
+    children: 'name',
+  }
 
   // 新增、编辑
   addVisible: boolean = false;
@@ -74,9 +83,8 @@ export default class Model extends Vue {
 
   brandList: any = [];
 
-  props: any = {
-    value: 'value',
-    children: 'name',
+  setData(data:any) {
+    console.log(data);
   }
 
   mounted() {
@@ -88,9 +96,10 @@ export default class Model extends Vue {
             name: [],
             value: item.id,
           });
-          this.filterList[0].options = this.brandList;
           return true;
         });
+        this.filterList[0].props = this.props;
+        this.filterList[0].options = this.brandList;
       } else {
         this.$message.error(res.result.resultMessage);
       }

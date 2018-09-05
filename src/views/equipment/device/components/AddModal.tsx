@@ -1,6 +1,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
-import { terminalAdd } from '@/api/equipment';
+import { terminalAdd, terminalType } from '@/api/equipment';
+import { getCustomerList } from '@/api/customer';
 
 interface ActiveType { key: number, value: string, label: string }
 
@@ -22,6 +23,8 @@ export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
+  @Prop() private shopListData: any; // 商户
+  @Prop() private typeListData: any; // 设备类型
   @Prop() private data: any;
 
   modelForm: any = {
@@ -43,16 +46,10 @@ export default class AddModal extends Vue {
     ],
   }
 
-  roleTypeList: ActiveType[] = [
-    { key: 0, value: '0', label: '经理0' },
-    { key: 1, value: '1', label: '经理1' },
-    { key: 2, value: '2', label: '经理2' },
-  ]
-
-  terminalList: ActiveType[] = [
-    { key: 0, value: '0', label: 'GL500' },
-    { key: 1, value: '1', label: 'OTU' },
-  ]
+  // 设备类型
+  typeList: any = [];
+  // 门店列表
+  shopList: any = [];
 
   // 重置数据
   resetData() {
@@ -83,7 +80,7 @@ export default class AddModal extends Vue {
       if (valid) {
         this.loading = true;
         terminalAdd(obj).then((res) => {
-          if (res.result.resultCode) {
+          if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
               this.$message.success(res.result.resultMessage);
@@ -126,7 +123,7 @@ export default class AddModal extends Vue {
                   style="width:100%"
                 >
                   {
-                    this.roleTypeList.map((item: any) => (
+                    this.shopListData.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }
@@ -143,7 +140,7 @@ export default class AddModal extends Vue {
                   style="width:100%"
                 >
                   {
-                    this.terminalList.map((item: any) => (
+                    this.typeListData.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }

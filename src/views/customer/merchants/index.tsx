@@ -111,6 +111,7 @@ export default class Merchants extends Vue {
   }
   freezeData: any = {}
 
+  // 是否激活:0-冻结,1-正常
   statusDom(row: any) {
     const type = row.activeStatus ? 'danger' : 'success';
     return <el-tag size="medium" type={type}>{row.activeStatus ? '冻结' : '正常'}</el-tag>;
