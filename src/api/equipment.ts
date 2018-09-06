@@ -6,6 +6,7 @@ export async function terminalBind(params: any) {
     url: '/device/terminal/bind',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 
@@ -13,7 +14,7 @@ export async function terminalBind(params: any) {
 export async function terminalUnbind(params: any) {
   return request({
     url: `/device/terminal/unbind/${params}`,
-    method: 'post',
+    method: 'get',
   });
 }
 
@@ -33,6 +34,7 @@ export async function terminalCheck(params: any) {
     url: '/device/terminal/confirm',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 
@@ -93,6 +95,16 @@ export async function clearCfg(params: any) {
 export async function getOpsList(params: any) {
   return request({
     url: '/terminal/ops/list',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
+  });
+}
+
+// 查询、生成蓝牙鉴权码
+export async function bluetoothInfo(params: any) {
+  return request({
+    url: '/device/terminal/createBluetoothAuthCode',
     method: 'post',
     data: params,
     fetchType: 'JSON',

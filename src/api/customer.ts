@@ -6,7 +6,6 @@ export async function customerAdd(params: any) {
     url: '/customer/org/save',
     method: 'post',
     data: params,
-    fetchType: 'JSON',
   });
 }
 // 商户修改
@@ -14,7 +13,6 @@ export async function customerUpdate(params: any) {
   return request({
     url: '/customer/org/update',
     method: 'post',
-    fetchType: 'JSON',
     data: params,
   });
 }

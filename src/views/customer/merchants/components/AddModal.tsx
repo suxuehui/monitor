@@ -59,26 +59,37 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       if (value) {
         checkOrgName(value).then((res) => {
-          console.log(res);
-          callback();
+          if (res.result.resultCode === '0') {
+            console.log(res);
+            this.$message.success(res.result.resultMessage);
+            callback();
+          } else {
+            callback(new Error(res.result.resultMessage));
+          }
         });
       } else {
         callback(new Error('不能为空'));
       }
-    }, 1500);
+    }, 500);
   }
   // 验证登录账号
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
         userCheck(value).then((res) => {
-          console.log(res);
+          if (res.result.resultCode === '0') {
+            console.log(res);
+            this.$message.success(res.result.resultMessage);
+            callback();
+          } else {
+            callback(new Error(res.result.resultMessage));
+          }
         });
         callback();
       } else {
         callback(new Error('不能为空'));
       }
-    }, 1500);
+    }, 500);
   }
 
   @Watch('data')
@@ -111,6 +122,7 @@ export default class AddModal extends Vue {
   }
 
   onSubmit() {
+    this.loading = true;
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
@@ -122,12 +134,12 @@ export default class AddModal extends Vue {
       contactAddress: this.modelForm.contactAddress,
     };
 
-    if (this.title === '新增') {
+    if (this.title === '新增商户') {
       // 新增
-      this.loading = true;
       From.validate((valid: any) => {
         if (valid) {
           customerAdd(obj).then((res) => {
+            console.log(res);
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
@@ -143,8 +155,10 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
+        this.loading = false;
         return false;
       });
     } else {
@@ -169,8 +183,10 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
+        this.loading = false;
         return false;
       });
     }

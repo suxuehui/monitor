@@ -2,13 +2,13 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Tag, Loading, Button, Switch } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { getCustomerList } from '@/api/customer';
-import { terminalUnbind, terminalType } from '@/api/equipment';
+import { terminalUnbind, terminalType, bluetoothInfo } from '@/api/equipment';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
-import UpdateModal from '@/views/equipment/device/components/UpdateModal';
 import DownModel from './components/DownModel';
 import ClearModel from './components/ClearModel';
+import AuthModel from './components/AuthModel';
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -20,9 +20,9 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   'add-modal': AddModal,
   'bind-modal': BindModal,
   'accept-modal': AcceptModal,
-  'update-modal': UpdateModal,
   'down-model': DownModel,
   'clear-model': ClearModel,
+  'auth-model': AuthModel,
   }
   })
 export default class Device extends Vue {
@@ -99,6 +99,7 @@ export default class Device extends Vue {
   outParams: any = {};
   // 请求地址
   url: string = '/device/terminal/list';
+  // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   opreat: Opreat[] = [
     {
       key: 'bind',
@@ -114,15 +115,7 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      disabled: (row: any) => (row.status === 1 || row.status === 4 || row.status === 5),
-      roles: true,
-    },
-    {
-      key: 'update',
-      rowKey: 'imei',
-      color: 'green',
-      text: '更新',
-      disabled: (row: any) => !((row.cfgVer !== row.upCfgVer) && (row.online)),
+      disabled: (row: any) => (row.status === 1 || row.status === 3 || row.status === 5),
       roles: true,
     },
     {
@@ -164,7 +157,7 @@ export default class Device extends Vue {
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
 
-  // 设备状态 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
+  // 设备状态 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   terminalStatus: TerminalType[] = [
     {
       key: 0, value: 0, label: '全部', color: '',
@@ -176,10 +169,10 @@ export default class Device extends Vue {
       key: 2, value: 2, label: '待验收', color: 'info',
     },
     {
-      key: 3, value: 3, label: '未合格', color: 'warning',
+      key: 3, value: 3, label: '已合格', color: 'success',
     },
     {
-      key: 4, value: 4, label: '已合格', color: 'success',
+      key: 4, value: 4, label: '未合格', color: 'warning',
     },
     {
       key: 5, value: 5, label: '已返厂', color: 'danger',
@@ -195,34 +188,34 @@ export default class Device extends Vue {
   // 新增
   addVisible: boolean = false;
   addTitle: string = '';
+  updateData: any = {}
 
   // 绑定
   bindVisible: boolean = false;
   bindTitle: string = '';
 
+  // 鉴权码
+  authVisible: boolean = false;
+  authData:any={}
+
   // 验收
   acceptVisible: boolean = false;
   acceptTitle: string = '';
-
-  // 更新
-  updateVisible: boolean = false;
-  updateTitle: string = '';
+  acceptData: any = {}
 
   // 下发配置
   downVisible: boolean = false;
   downTitle: string = '下发配置';
+  downData: any = {}
 
   // 清除配置
   clearVisible: boolean = false;
   clearTitle: string = '';
+  clearData: any = {}
 
   modelForm: any = {
     imei: '',
   };
-  updateData: any = {}
-  acceptData: any = {}
-  downData: any = {}
-  clearData: any = {}
 
   // 设备类型
   typeList: any = [];
@@ -298,10 +291,10 @@ export default class Device extends Vue {
         type = <el-tag size="medium" type="info" style="marginRight:5px">待验收</el-tag>;
         break;
       case 3:
-        type = <el-tag size="medium" type="warning" style="marginRight:5px">未合格</el-tag>;
+        type = <el-tag size="medium" type="success" style="marginRight:5px">已合格</el-tag>;
         break;
       case 4:
-        type = <el-tag size="medium" type="success" style="marginRight:5px">已合格</el-tag>;
+        type = <el-tag size="medium" type="warning" style="marginRight:5px">未合格</el-tag>;
         break;
       case 5:
         type = <el-tag size="medium" type="danger" style="marginRight:5px">已返厂</el-tag>;
@@ -334,8 +327,8 @@ export default class Device extends Vue {
           this.bindVisible = true;
           this.bindTitle = '绑定车辆';
         } else {
-          terminalUnbind({ imei: row.imei }).then((res) => {
-            if (res.result.resultCode) {
+          terminalUnbind(row.imei).then((res) => {
+            if (res.result.resultCode === '0') {
               formTable.reloadTable();
               this.$message.success(res.result.resultMessage);
             } else {
@@ -349,13 +342,11 @@ export default class Device extends Vue {
         this.acceptTitle = '安装验收';
         this.acceptVisible = true;
         break;
-      case 'update':
-        this.updateData = row;
-        this.updateTitle = '配置更新';
-        this.updateVisible = true;
-        break;
       case 'authCode':
-        console.log('鉴权码');
+        this.authData = row;
+        this.authVisible = true;
+        this.getAuthCode(row);
+
         break;
       case 'downConfig':
         this.downData = row;
@@ -372,6 +363,18 @@ export default class Device extends Vue {
     }
   }
 
+  getAuthCode(data:any) {
+    const obj:any={
+      cfgName: 'bluetoothAuthCode',
+      id: data.id,
+      imei: data.imei,
+      type: 2,
+    };
+    bluetoothInfo(obj).then((res) => {
+      console.log(res);
+    });
+  }
+
   addModel() {
     this.addVisible = true;
     this.modelForm = null;
@@ -383,9 +386,13 @@ export default class Device extends Vue {
     this.addVisible = false;
     this.bindVisible = false;
     this.acceptVisible = false;
-    this.updateVisible = false;
     this.downVisible = false;
     this.clearVisible = false;
+    this.authVisible=false;
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 200);
   }
   // 关闭弹窗时刷新
   refresh(): void {
@@ -414,6 +421,7 @@ export default class Device extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-modal
+          ref="addTable"
           title={this.addTitle}
           visible={this.addVisible}
           on-close={this.closeModal}
@@ -433,13 +441,12 @@ export default class Device extends Vue {
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></accept-modal>
-        <update-modal
-          data={this.updateData}
-          title={this.updateTitle}
-          visible={this.updateVisible}
-          on-refresh={this.refresh}
+        <auth-model
+          data={this.authData}
+          visible={this.authVisible}
           on-close={this.closeModal}
-        ></update-modal>
+          on-refresh={this.refresh}
+        ></auth-model>
         <down-model
           data={this.downData}
           title={this.downTitle}

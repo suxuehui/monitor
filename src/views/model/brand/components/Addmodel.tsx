@@ -137,6 +137,7 @@ export default class AddModal extends Vue {
           this.loading = false;
           return false;
         }
+        this.loading = false;
         return false;
       });
     } else {
@@ -233,7 +234,4 @@ export default class AddModal extends Vue {
       </div >
     );
   }
-  // renderUpload() {
-
-  // }
 }

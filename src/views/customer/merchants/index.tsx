@@ -43,7 +43,7 @@ export default class Merchants extends Vue {
   filterGrade: FilterFormList[] = [];
   // 筛选参数
   filterParams: any = {
-    activeStatus: '',
+    activeStatus: 0,
     keyword: '',
   };
   outParams: any = {};
@@ -61,39 +61,39 @@ export default class Merchants extends Vue {
     {
       key: 'freeze',
       rowKey: 'manageUser',
-      color: (row: any) => (row.activeStatus ? 'green' : 'red'),
-      text: (row: any) => (row.activeStatus ? '解冻' : '冻结'),
-      msg: (row: any) => (row.activeStatus ? '是否要解冻？' : '是否要冻结？'),
+      color: (row: any) => (row.activeStatus === 2 ? 'green' : 'red'),
+      text: (row: any) => (row.activeStatus === 2 ? '解冻' : '冻结'),
+      msg: (row: any) => (row.activeStatus === 2 ? '是否要解冻？' : '是否要冻结？'),
       roles: true,
     },
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '商户名称', prop: 'orgName' },
-    { label: '登录账号', prop: 'manageUser' },
-    { label: '联系人', prop: 'contactUser' },
-    { label: '联系电话', prop: 'contactPhone' },
-    { label: '联系地址', prop: 'contactAddress' },
+    { label: '商户名称', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
+    { label: '登录账号', prop: 'manageUser', formatter: (row: any) => (row.manageUser ? row.manageUser : '--') },
+    { label: '联系人', prop: 'contactUser', formatter: (row: any) => (row.contactUser ? row.contactUser : '--') },
+    { label: '联系电话', prop: 'contactPhone', formatter: (row: any) => (row.contactPhone ? row.contactPhone : '--') },
+    { label: '联系地址', prop: 'contactAddress', formatter: (row: any) => (row.contactAddress ? row.contactAddress : '--') },
     {
       label: '车辆数',
       prop: 'carNum',
       sortable: true,
       sortBy: 'carNum',
-      formatter: (row:any) => (row.carNum ? `${row.carNum} 辆` : '--'),
+      formatter: (row: any) => (row.carNum ? `${row.carNum} 辆` : '--'),
     },
     {
       label: '设备数',
       prop: 'terminalNum',
       sortable: true,
       sortBy: 'terminalNum',
-      formatter: (row:any) => (row.terminalNum ? `${row.terminalNum} 个` : '--'),
+      formatter: (row: any) => (row.terminalNum ? `${row.terminalNum} 个` : '--'),
     },
     {
       label: '添加时间',
       prop: 'crtTime',
       sortable: true,
       sortBy: 'crtTime',
-      formatter: (row:any) => (row.crtTime ? row.crtTime : '--'),
+      formatter: (row: any) => (row.crtTime ? row.crtTime : '--'),
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
@@ -111,16 +111,16 @@ export default class Merchants extends Vue {
   }
   freezeData: any = {}
 
-  // 是否激活:0-冻结,1-正常
+  // 是否激活:1，正常、激活，2,冻结
   statusDom(row: any) {
-    const type = row.activeStatus ? 'danger' : 'success';
-    return <el-tag size="medium" type={type}>{row.activeStatus ? '冻结' : '正常'}</el-tag>;
+    const type = row.activeStatus === 2 ? 'danger' : 'success';
+    return <el-tag size="medium" type={type}>{row.activeStatus === 2 ? '冻结' : '正常'}</el-tag>;
   }
 
   activeTypes: ActiveType[] = [
-    { key: null, value: null, label: '状态(全部)' },
-    { key: true, value: true, label: '正常' },
-    { key: false, value: false, label: '冻结' },
+    { key: 0, value: 0, label: '状态(全部)' },
+    { key: 1, value: 1, label: '正常' },
+    { key: 2, value: 2, label: '冻结' },
   ]
 
   mounted() {
@@ -144,10 +144,10 @@ export default class Merchants extends Vue {
       this.addVisible = true;
       this.addTitle = '编辑';
     } else if (key === 'freeze') {
-      if (row.activeStatus) {
+      if (row.activeStatus === 2) {
         // 解冻
         customerUnlock(row.id).then((res) => {
-          if (res.result.resultCode) {
+          if (res.result.resultCode === '0') {
             FromTable.reloadTable();
             this.$message.success(res.result.resultMessage);
           } else {
@@ -157,7 +157,7 @@ export default class Merchants extends Vue {
       } else {
         // 冻结
         customerLock(row.id).then((res) => {
-          if (res.result.resultCode) {
+          if (res.result.resultCode === '0') {
             FromTable.reloadTable();
             this.$message.success(res.result.resultMessage);
           } else {
@@ -201,7 +201,6 @@ export default class Merchants extends Vue {
           url={this.url}
           export-btn={true}
           fetch-type={'get'}
-          dataType={'JSON'}
           on-menuClick={this.menuClick}
         />
         <add-modal

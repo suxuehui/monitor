@@ -1,9 +1,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio } from 'element-ui';
+import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup } from 'element-ui';
 import { terminalCheck } from '@/api/equipment';
 import './AcceptModal.less';
-
-interface ActiveType { key: number, value: string, label: string }
 
 @Component({
   components: {
@@ -17,6 +15,7 @@ interface ActiveType { key: number, value: string, label: string }
   'el-select': Select,
   'el-button': Button,
   'el-radio': Radio,
+  'el-radio-group': RadioGroup
   }
   })
 export default class AcceptModal extends Vue {
@@ -26,13 +25,13 @@ export default class AcceptModal extends Vue {
   @Prop() private data: any;
 
   modelForm: any = {
-    logEvent: '',
+    terminalStatus: '',
     remark: '',
   };
 
   loading: boolean = false;
   rules = {
-    logEvent: [
+    terminalStatus: [
       { required: true, message: '请确认是否合格' },
     ],
   }
@@ -40,7 +39,7 @@ export default class AcceptModal extends Vue {
   // 重置数据
   resetData() {
     this.modelForm = {
-      logEvent: '',
+      terminalStatus: '',
       remark: '',
     };
   }
@@ -50,29 +49,31 @@ export default class AcceptModal extends Vue {
     const From: any = this.$refs.modelForm;
     From.resetFields();
     setTimeout(() => {
-      this.loading = false;
       this.resetData();
       this.loading = false;
     }, 200);
+  }
+
+  isOk(val:any) {
+    if (val === '3') {
+      this.modelForm.remark = '';
+    }
   }
 
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
-      plateNum: this.data.plateNum,
+      id: this.data.id,
       imei: this.data.imei,
-      logEvent: this.modelForm.logEvent,
-      vin: this.data.vin,
+      remark: this.modelForm.remark,
+      terminalStatus: parseInt(this.modelForm.terminalStatus, 10),
     };
-    if (this.modelForm.logEvent === 'pass-fail') {
-      obj.remark = this.modelForm.remark;
-    }
     this.loading = true;
     From.validate((valid: any) => {
       if (valid) {
         terminalCheck(obj).then((res) => {
-          if (res.result.resultCode) {
+          if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
               this.$message.success(res.result.resultMessage);
@@ -105,13 +106,15 @@ export default class AcceptModal extends Vue {
         <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="是否合格" prop="logEvent" class="radioGroup">
-                <el-radio v-model={this.modelForm.logEvent} id="logEvent" label="pass">合格</el-radio>
-                <el-radio v-model={this.modelForm.logEvent} id="logEvent" label="pass-fail">不合格</el-radio>
+              <el-form-item label="是否合格" prop="terminalStatus" class="radioGroup">
+                <el-radio-group v-model={this.modelForm.terminalStatus} on-change={this.isOk}>
+                    <el-radio id="availableY" label="3">合格</el-radio>
+                    <el-radio id="availableN" label="4">不合格</el-radio>
+                  </el-radio-group>
               </el-form-item>
             </el-col>
             {
-              this.modelForm.logEvent === 'pass-fail' ?
+              this.modelForm.terminalStatus === '4' ?
                 <el-col span={24}>
                   <el-form-item label="备注" props="remark">
                     <el-input

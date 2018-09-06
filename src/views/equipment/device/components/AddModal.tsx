@@ -49,22 +49,30 @@ export default class AddModal extends Vue {
   // 门店列表
   shopList: any = [];
 
-  mounted() {
+  created() {
     // 门店;
     getCustomerList(null).then((res) => {
-      res.entity.data.map((item: any) => this.shopList.push({
-        key: item.id,
-        value: item.levelcode,
-        label: item.orgName,
-      }));
+      if (res.result.resultCode === '0') {
+        res.entity.data.map((item: any) => this.shopList.push({
+          key: item.id,
+          value: item.levelcode,
+          label: item.orgName,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
     // 设备类型
     terminalType(null).then((res) => {
-      res.entity.map((item: any) => this.typeList.push({
-        key: Math.random(),
-        value: parseInt(item.enumValue, 10),
-        label: item.name,
-      }));
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.typeList.push({
+          key: Math.random(),
+          value: parseInt(item.enumValue, 10),
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
   }
 

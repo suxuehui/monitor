@@ -139,3 +139,12 @@ export async function modelDelete(params: any) {
     data: params,
   });
 }
+// 获取所有车型
+export async function modelAll(params: any) {
+  return request({
+    url: '/vehicle/model/all',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
+  });
+}

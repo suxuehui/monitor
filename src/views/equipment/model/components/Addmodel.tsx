@@ -256,9 +256,7 @@ export default class AddModal extends Vue {
                 this.modelForm.cfgParamAdd.map((item: any, index: number) => <el-form-item
                   label={`配置参数${index + 1}`}
                   key={item.key}
-                  // prop={this.modelForm.cfgParamAdd[index].value}
                   prop={`cfgParam${item.key}${index}`}
-                // rules={this.cfgParamAddRule}
                 >
                   <el-input
                     id="cfgParam"
