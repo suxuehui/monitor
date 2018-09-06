@@ -1,5 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload } from 'element-ui';
+import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader } from 'element-ui';
+import { modelAdd, modelEdit, brandAll, seriesAll } from '@/api/model';
 import './BindModal.less';
 
 interface ActiveType { key: number, value: string, label: string }
@@ -16,7 +17,8 @@ interface ActiveType { key: number, value: string, label: string }
   'el-select': Select,
   'el-button': Button,
   'el-option': Option,
-  'el-upload': Upload
+  'el-upload': Upload,
+  'el-cascader': Cascader,
   }
   })
 export default class BindModal extends Vue {
@@ -29,21 +31,19 @@ export default class BindModal extends Vue {
     levelCode: '',
     terminalType: '',
     imei: '',
+    brandSeries: [],
   };
 
-  roleTypeList: ActiveType[] = [
-    { key: 0, value: '0', label: '经理0' },
-    { key: 1, value: '1', label: '经理1' },
-    { key: 2, value: '2', label: '经理2' },
-  ]
+  brandList: any = [];
+  props: any = {
+    value: 'value',
+    children: 'name',
+  }
 
-  terminalList: ActiveType[] = [
-    { key: 0, value: '0', label: 'GL500' },
-    { key: 1, value: '1', label: 'OTU' },
-  ]
-  // 图片上传
-  dialogImageUrl: string = '';
-  dialogVisible: boolean = false;
+  // 设备类型
+  typeList: any = [];
+  // 门店列表
+  shopList: any = [];
 
   // 重置数据
   resetData() {
@@ -68,18 +68,6 @@ export default class BindModal extends Vue {
     console.log(this.data);
   }
 
-  // 删除
-  handleRemove(file: any, fileList: any) {
-    console.log(file, fileList);
-  }
-
-  // 预览
-  handlePictureCardPreview(file: any) {
-    this.dialogImageUrl = file.url;
-    this.dialogVisible = true;
-  }
-
-
   render() {
     return (
       <div>
@@ -93,12 +81,12 @@ export default class BindModal extends Vue {
           <el-form model={this.modelForm} ref="modelForm" label-width="80px" class="model">
             <el-row>
               <el-col span={24}>
-                <el-form-item label="品牌车型" prop="modelCfgId">
-                  <el-select
+                <el-form-item label="车辆车型" prop="modelCfgId">
+                  {/* <el-select
                     id="modelCfgId"
                     v-model={this.modelForm.modelCfgId}
                     filterable={true}
-                    placeholder="请选择品牌车型"
+                    placeholder="请选择品牌车型车系"
                     style="width:100%"
                   >
                     {
@@ -106,7 +94,16 @@ export default class BindModal extends Vue {
                         <el-option value={item.value} label={item.label} >{item.label}</el-option>
                       ))
                     }
-                  </el-select>
+                  </el-select> */}
+                  {/* <el-cascader
+                    id="brandSeries"
+                    v-model={this.modelForm.brandSeries}
+                    style="width:100%"
+                    placeholder="请选择品牌车系"
+                    options={this.brandList}
+                    on-active-item-change={this.handleItemChange}
+                    props={this.props}
+                  ></el-cascader> */}
                 </el-form-item>
               </el-col>
               <el-col span={24}>
@@ -129,7 +126,7 @@ export default class BindModal extends Vue {
               </el-col>
               <el-col span={24}>
                 <el-form-item label="车架图片" >
-                  <el-upload
+                  {/* <el-upload
                     id="dialogImageUrl"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     list-type="picture"
@@ -138,7 +135,7 @@ export default class BindModal extends Vue {
                     class="uploadPic"
                   >
                     <i class="el-icon-plus"></i>
-                  </el-upload>
+                  </el-upload> */}
                 </el-form-item>
               </el-col>
             </el-row>
@@ -149,9 +146,6 @@ export default class BindModal extends Vue {
               <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
             </el-col>
           </el-row>
-        </el-dialog>
-        <el-dialog >
-          <img width="100%" src={this.dialogImageUrl} alt="" />
         </el-dialog>
       </div >
     );

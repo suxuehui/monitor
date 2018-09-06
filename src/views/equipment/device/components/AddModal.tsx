@@ -23,8 +23,6 @@ export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
-  @Prop() private shopListData: any; // 商户
-  @Prop() private typeListData: any; // 设备类型
   @Prop() private data: any;
 
   modelForm: any = {
@@ -50,6 +48,25 @@ export default class AddModal extends Vue {
   typeList: any = [];
   // 门店列表
   shopList: any = [];
+
+  mounted() {
+    // 门店;
+    getCustomerList(null).then((res) => {
+      res.entity.data.map((item: any) => this.shopList.push({
+        key: item.id,
+        value: item.levelcode,
+        label: item.orgName,
+      }));
+    });
+    // 设备类型
+    terminalType(null).then((res) => {
+      res.entity.map((item: any) => this.typeList.push({
+        key: Math.random(),
+        value: parseInt(item.enumValue, 10),
+        label: item.name,
+      }));
+    });
+  }
 
   // 重置数据
   resetData() {
@@ -123,7 +140,7 @@ export default class AddModal extends Vue {
                   style="width:100%"
                 >
                   {
-                    this.shopListData.map((item: any) => (
+                  this.shopList.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }
@@ -140,7 +157,7 @@ export default class AddModal extends Vue {
                   style="width:100%"
                 >
                   {
-                    this.typeListData.map((item: any) => (
+                    this.typeList.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }
