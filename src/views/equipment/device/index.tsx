@@ -196,7 +196,7 @@ export default class Device extends Vue {
 
   // 鉴权码
   authVisible: boolean = false;
-  authData:any={}
+  authData: any = {}
 
   // 验收
   acceptVisible: boolean = false;
@@ -343,10 +343,8 @@ export default class Device extends Vue {
         this.acceptVisible = true;
         break;
       case 'authCode':
-        this.authData = row;
         this.authVisible = true;
         this.getAuthCode(row);
-
         break;
       case 'downConfig':
         this.downData = row;
@@ -363,15 +361,23 @@ export default class Device extends Vue {
     }
   }
 
-  getAuthCode(data:any) {
-    const obj:any={
+  getAuthCode(data: any) {
+    const obj: any = {
       cfgName: 'bluetoothAuthCode',
       id: data.id,
       imei: data.imei,
-      type: 2,
+      type: 1,
     };
     bluetoothInfo(obj).then((res) => {
-      console.log(res);
+      if (res.result.resultCode === '0') {
+        this.authData = {
+          id: data.id,
+          imei: data.imei,
+          cfgVal: res.entity.length > 0 ? res.entity[0].cfgVal : '暂无蓝牙鉴权码',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
   }
 
@@ -388,7 +394,7 @@ export default class Device extends Vue {
     this.acceptVisible = false;
     this.downVisible = false;
     this.clearVisible = false;
-    this.authVisible=false;
+    this.authVisible = false;
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();
