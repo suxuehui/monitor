@@ -107,7 +107,7 @@ export default function request(options: Option): Promise<any> {
         list: data,
       };
     }
-    if (response.data.result && response.data.result.resultCode === 3) {
+    if (response.data.result && response.data.result.resultMessage === '认证失败') {
       if (config.noLoginList.indexOf(window.location.hash) < 0) {
         router.replace('/login');
       }
@@ -115,7 +115,7 @@ export default function request(options: Option): Promise<any> {
     }
     return Promise.resolve({
       success: true,
-      message: statusText,
+      message: response.data.result.resultMessage || statusText,
       statusCode: status,
       ...data,
     });
@@ -126,7 +126,7 @@ export default function request(options: Option): Promise<any> {
     if (response && response instanceof Object) {
       const { data, statusText } = response;
       statusCode = response.status;
-      msg = data.message || statusText;
+      msg = data.result.resultMessage || statusText;
     } else {
       statusCode = 600;
       msg = error.message || 'Network Error';

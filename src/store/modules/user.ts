@@ -61,25 +61,26 @@ const user = {
   },
   actions: {
     getUserInfo: (context: any) => new Promise((resolve, reject) => {
-      const params = {
-        token: localStorage.getItem('token'),
-      };
       context.commit('LOADING', false);
-      getUserInfo(params).then(({ result, entity }) => {
+      getUserInfo(null).then(({ result, entity }) => {
         context.commit('LOADING', true);
-        if (!result.resultCode) {
+        if (result.resultCode === '0') {
           if (config.noLoginList.indexOf(window.location.hash) > -1) {
-            router.replace({ path: '/login' });
+            router.replace({ path: '/dashboard' });
           }
           const userData: UserData = {
-            username: entity.username,
-            userid: entity.userid,
-            avatarUri: entity.avatar_uri,
-            email: entity.email,
+            username: entity.realName,
+            userid: entity.userId,
+            avatarUri: '',
+            email: entity.remark,
           };
+          const permissions: string[] = [];
+          entity.menus.forEach((item: any, index: number) => {
+            permissions.push(item.url);
+          });
           context.commit('SVAEUSER', userData);
-          context.commit('SAVEROLES', entity.permissions);
-          const getRouter = hasPermission(entity.permissions.permission);
+          context.commit('SAVEROLES', permissions);
+          const getRouter = hasPermission(permissions);
           context.dispatch('GetMenuData', getRouter);
           resolve(entity);
         } else {
