@@ -155,12 +155,12 @@ export default class Member extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
-      this.modelForm = row;
-      this.addVisible = true;
-      this.addTitle = '编辑成员';
       userInfo(row.id).then((res) => {
         if (res.result.resultCode === '0') {
-          this.addRoleList = res.entity.roleIdList;
+          this.modelForm = row;
+          this.modelForm.IdList = res.entity.roleIdList;
+          this.addVisible = true;
+          this.addTitle = '编辑成员';
         } else {
           this.$message.error(res.result.resultMessage);
         }

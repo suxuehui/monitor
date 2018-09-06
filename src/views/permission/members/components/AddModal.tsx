@@ -70,7 +70,6 @@ export default class AddModal extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    this.modelForm.roleIdList=this.roleIds;
   }
 
   roleTypeList: RoleType[] = []
@@ -79,10 +78,8 @@ export default class AddModal extends Vue {
   onDataChange() {
     if (this.data.id > 0) {
       this.modelForm = JSON.parse(JSON.stringify(this.data));
-      // this.modelForm.roleIdList = [10];
-      console.log(this.data);
-      const arr: any = [];
-      const roleName = this.data.roleNames.indexOf(',') > 0 ? this.data.roleNames.split(',') : this.data.roleNames.split('');
+      this.modelForm.roleIdList = this.data.IdList;
+      this.modelForm.password = '********';
     } else {
       this.resetData();
     }
@@ -115,15 +112,16 @@ export default class AddModal extends Vue {
       roleIdList: this.modelForm.roleIdList.join(','),
       realName: this.modelForm.realName,
       username: this.modelForm.userName,
-      password: this.modelForm.password,
+      password: this.modelForm.password !== '********' ? this.modelForm.password : '',
       remark: this.modelForm.remark,
     };
+    console.log(obj);
     if (this.title === '新增成员') {
       // 新增
       From.validate((valid: any) => {
         if (valid) {
           userAdd(obj).then((res) => {
-            if (res.result.resultCode) {
+            if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
@@ -144,7 +142,7 @@ export default class AddModal extends Vue {
       });
     } else {
       // 修改
-      obj.userId=this.data.id;
+      obj.userId = this.data.id;
       From.validate((valid: any) => {
         if (valid) {
           userUpdate(obj).then((res) => {
@@ -168,6 +166,12 @@ export default class AddModal extends Vue {
         return false;
       });
     }
+  }
+
+  change: boolean = false;
+
+  selectChange() {
+    this.change = !this.change;
   }
 
   render() {
@@ -197,7 +201,8 @@ export default class AddModal extends Vue {
                   v-model={this.modelForm.roleIdList}
                   multiple={true}
                   filterable={true}
-                  placeholder="请选择角色类型"
+                  on-change={this.selectChange}
+                  placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
                   style="width:100%"
                 >
                   {
@@ -212,6 +217,7 @@ export default class AddModal extends Vue {
               <el-form-item label="登录账号" prop="userName">
                 <el-input
                   id="userName"
+                  disabled={!!this.data.id}
                   v-model={this.modelForm.userName}
                   placeholder="请输入登录账号"
                 ></el-input>
