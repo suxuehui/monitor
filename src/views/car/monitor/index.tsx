@@ -272,7 +272,7 @@ export default class Monitor extends Vue {
       roles: true,
     },
   ];
-  tableUrl: string = '/monitor/vehicle/monitor/list'; // 表格请求地址
+  tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
   BMapLib: any = null; // 百度地图lib对象
   SMap: any = null; // 当前地图对象实例
@@ -280,7 +280,7 @@ export default class Monitor extends Vue {
   CarPoint: any = null; // 车辆位置
   CarIcon: any = null; // 车辆图标
   CarMarker: object[] = []; // 车辆标记
-  markerClusterer: object = {}; // 标记集合
+  markerClusterer: any = null; // 标记集合
   CarMarkerPos: number = 1; // 车辆坐标
   address: string = '';
   detailShow: boolean = false; // 车辆详情展示
@@ -346,9 +346,11 @@ export default class Monitor extends Vue {
         config.loadMapLib().then((BMapLib: any) => {
           this.BMapLib = BMapLib;
           this.radiusGetData();
+          this.markerClusterer = new this.BMapLib.MarkerClusterer(this.SMap, {
+            markers: this.CarMarker,
+          });
         });
       });
-      // this.CarMarkerPos = this.CarMarker.getPosition();
     });
   }
   radiusGetData = (id?: string) => {
@@ -361,6 +363,10 @@ export default class Monitor extends Vue {
   }
   // 初始化渲染地图车辆
   initMap = (list: MapCarData[], id?: string) => {
+    this.CarMarker = [];
+    if (this.markerClusterer) {
+      this.markerClusterer.clearMarkers(this.CarMarker);
+    }
     list.forEach((item: MapCarData, index: number) => {
       // 如果有id传入，代表表格单选事件，默认打开当前车辆信息窗口
       if (id === item.id) {
@@ -383,7 +389,7 @@ export default class Monitor extends Vue {
       );
       this.CarMarker.push(marker); // 创建标注
     });
-    this.markerClusterer = new this.BMapLib.MarkerClusterer(this.SMap, { markers: this.CarMarker });
+    this.markerClusterer.addMarkers(this.CarMarker);
     this.mapCarData = list;
     // 循环给车辆图标添加点击事件
     this.CarMarker.forEach((item: any, index: number) => {
@@ -410,6 +416,7 @@ export default class Monitor extends Vue {
   }
 
   msgContent(content: any) {
+    console.log(content);
     return `<div class="makerMsg">
       <h3 class="plateNum">车牌号：${content.plateNum}</h3>
       <ul class="msg clearfix">
@@ -475,6 +482,8 @@ export default class Monitor extends Vue {
           this.carDetail = carDetail;
           this.detailShow = true;
         }
+      } else {
+        this.$message.error(res.result.resultMessage || '未知错误');
       }
     });
   }

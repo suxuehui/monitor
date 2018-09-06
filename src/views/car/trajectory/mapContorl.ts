@@ -279,12 +279,6 @@ export default class MapContorl {
       // TrackAction.closemonitorinfobox();
     });
     this.trackInfoBox.open(data.point);
-    // $('#monitorInfoZoomIn').click((e) => {
-    //   TrackAction.triggerswitchmanagetab(1);
-    //   TrackAction.triggersearchentitytrack();
-    //   TrackAction.triggersetdate();
-    //   TrackAction.triggerselecttrack();
-    // });
   }
   /**
   * 删除轨迹点信息覆盖物

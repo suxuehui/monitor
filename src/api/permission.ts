@@ -38,6 +38,7 @@ export async function roleSaveRoleMenu(params: any) {
   return request({
     url: '/sys/role/saveRoleMenu',
     method: 'post',
+    fetchType: 'JSON',
     data: params,
   });
 }

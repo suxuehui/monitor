@@ -3,7 +3,7 @@ import request from '@/utils/request';
 
 export async function vehicleInfo(params: any) {
   return request({
-    url: '/vehicle/info',
+    url: '/vehicle/monitor/info',
     method: 'get',
     data: params,
   });
@@ -11,7 +11,7 @@ export async function vehicleInfo(params: any) {
 
 export async function vehicleUpdate(params: any) {
   return request({
-    url: '/vehicle/edit',
+    url: '/vehicle/monitor/edit',
     method: 'get',
     data: params,
   });
@@ -19,7 +19,7 @@ export async function vehicleUpdate(params: any) {
 
 export async function vehicleDelete(params: any) {
   return request({
-    url: '/vehicle/delete',
+    url: '/vehicle/monitor/delete',
     method: 'get',
     data: params,
   });
@@ -27,7 +27,7 @@ export async function vehicleDelete(params: any) {
 
 export async function vehicleRadiusQuery(params: any) {
   return request({
-    url: '/vehicle/radiusQuery',
+    url: '/vehicle/monitor/radiusQuery',
     method: 'get',
     data: params,
   });

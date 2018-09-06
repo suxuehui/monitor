@@ -7,7 +7,7 @@ import App from '@/App';
 import router from '@/router';
 import store from '@/store';
 import config from '@/utils/config';
-import '@/mock';
+// import '@/mock';
 
 import './styles/global.less';
 
