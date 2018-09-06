@@ -24,6 +24,7 @@ export default class AddModal extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
   @Prop() private data: any;
+  @Prop() private roleIds: any;
 
   created() {
     this.modelForm = JSON.parse(JSON.stringify(this.data));
@@ -34,7 +35,7 @@ export default class AddModal extends Vue {
     roles: {},
     remark: '',
     password: '',
-    roleIdList: '',
+    roleIdList: [],
   };
 
   loading: boolean = false;
@@ -65,11 +66,11 @@ export default class AddModal extends Vue {
           item.label = item.roleName;
         });
         this.roleTypeList = res.entity;
-        console.log(this.roleTypeList);
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
+    this.modelForm.roleIdList=this.roleIds;
   }
 
   roleTypeList: RoleType[] = []
@@ -79,6 +80,7 @@ export default class AddModal extends Vue {
     if (this.data.id > 0) {
       this.modelForm = JSON.parse(JSON.stringify(this.data));
       // this.modelForm.roleIdList = [10];
+      console.log(this.data);
       const arr: any = [];
       const roleName = this.data.roleNames.indexOf(',') > 0 ? this.data.roleNames.split(',') : this.data.roleNames.split('');
     } else {
@@ -106,6 +108,7 @@ export default class AddModal extends Vue {
   }
 
   onSubmit() {
+    this.loading = true;
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
@@ -115,61 +118,56 @@ export default class AddModal extends Vue {
       password: this.modelForm.password,
       remark: this.modelForm.remark,
     };
-    console.log(obj.roleIdList);
-    // if (this.title === '新增成员') {
-    //   // 新增
-    //   console.log(obj);
-    //   // From.validate((valid: any) => {
-    //   //   if (valid) {
-    //   //     this.loading = true;
-    //   //     userAdd(obj).then((res) => {
-    //   //       if (res.result.resultCode) {
-    //   //         setTimeout(() => {
-    //   //           this.loading = false;
-    //   //           this.$message.success(res.result.resultMessage);
-    //   //           From.resetFields();
-    //   //           this.$emit('refresh');
-    //   //         }, 1500);
-    //   //       } else {
-    //   //         setTimeout(() => {
-    //   //           this.loading = false;
-    //   //           this.$message.error(res.result.resultMessage);
-    //   //         }, 1500);
-    //   //       }
-    //   //     });
-    //   //   } else {
-    //   //     return false;
-    //   //   }
-    //   //   return false;
-    //   // });
-    // } else {
-    //   // 修改
-    //   obj.userId=this.data.id;
-    //   console.log(obj);
-    //   // From.validate((valid: any) => {
-    //   //   if (valid) {
-    //   //     this.loading = true;
-    //   //     userUpdate(obj).then((res) => {
-    //   //       if (res.result.resultCode === '0') {
-    //   //         setTimeout(() => {
-    //   //           this.loading = false;
-    //   //           this.$message.success(res.result.resultMessage);
-    //   //           From.resetFields();
-    //   //           this.$emit('refresh');
-    //   //         }, 1500);
-    //   //       } else {
-    //   //         setTimeout(() => {
-    //   //           this.loading = false;
-    //   //           this.$message.error(res.result.resultMessage);
-    //   //         }, 1500);
-    //   //       }
-    //   //     });
-    //   //   } else {
-    //   //     return false;
-    //   //   }
-    //   //   return false;
-    //   // });
-    // }
+    if (this.title === '新增成员') {
+      // 新增
+      From.validate((valid: any) => {
+        if (valid) {
+          userAdd(obj).then((res) => {
+            if (res.result.resultCode) {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
+        } else {
+          return false;
+        }
+        return false;
+      });
+    } else {
+      // 修改
+      obj.userId=this.data.id;
+      From.validate((valid: any) => {
+        if (valid) {
+          userUpdate(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
+        } else {
+          return false;
+        }
+        return false;
+      });
+    }
   }
 
   render() {

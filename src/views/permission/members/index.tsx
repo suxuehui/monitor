@@ -141,6 +141,7 @@ export default class Member extends Vue {
   // 新增、编辑
   addVisible: boolean = false;
   addTitle: string = '';
+  addRoleList: any = [];
 
   modelForm: any = {
     name: '',
@@ -158,7 +159,11 @@ export default class Member extends Vue {
       this.addVisible = true;
       this.addTitle = '编辑成员';
       userInfo(row.id).then((res) => {
-        console.log(res);
+        if (res.result.resultCode === '0') {
+          this.addRoleList = res.entity.roleIdList;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
       });
     } else if (key === 'freeze') {
       // activeStatus 1 正常 2 冻结
@@ -218,6 +223,7 @@ export default class Member extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-modal
+          roleIds={this.addRoleList}
           title={this.addTitle}
           visible={this.addVisible}
           data={this.modelForm}
