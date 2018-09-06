@@ -414,8 +414,6 @@ export default class Device extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-modal
-          shopListData={this.shopList}
-          typeListData={this.typeList}
           title={this.addTitle}
           visible={this.addVisible}
           on-close={this.closeModal}

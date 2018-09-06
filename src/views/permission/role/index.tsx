@@ -36,7 +36,7 @@ export default class Role extends Vue {
   filterGrade: FilterFormList[] = [];
   // 筛选参数
   filterParams: any = {
-    active: '',
+    active: 0,
     roleName: '',
   };
   outParams: any = {};
@@ -86,9 +86,13 @@ export default class Role extends Vue {
     return <el-tag size="medium" type={type}>{row.activeStatus === 1 ? '已启用' : '未启用'}</el-tag>;
   }
 
+  mounted() {
+    this.filterList[0].options = this.activeTypes;
+  }
+
   // 激活状态:1-启用；2-禁用
   activeTypes: ActiveType[] = [
-    { key: null, value: null, label: '全部' },
+    { key: null, value: 0, label: '全部' },
     { key: 1, value: 1, label: '已启用' },
     { key: 2, value: 2, label: '未启用' },
   ]
