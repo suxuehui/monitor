@@ -105,12 +105,6 @@ export default function request(options: Option): Promise<any> {
         list: data,
       };
     }
-    if (data.result && data.result.resultMessage === '认证失败') {
-      if (config.noLoginList.indexOf(window.location.hash) < 0) {
-        router.replace('/login');
-      }
-      return Promise.reject(new Error(response.data.result.resultMessage));
-    }
     return Promise.resolve({
       success: true,
       message: response.data.result.resultMessage || statusText,
@@ -128,6 +122,12 @@ export default function request(options: Option): Promise<any> {
     } else {
       statusCode = 600;
       msg = error.message || 'Network Error';
+    }
+    console.log(statusCode);
+    if (statusCode === 401) {
+      if (config.noLoginList.indexOf(window.location.hash) < 0) {
+        router.push('/login');
+      }
     }
     Message.error(msg);
     return Promise.reject(new Error(msg));
