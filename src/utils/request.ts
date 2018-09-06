@@ -13,9 +13,6 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 const service = axios.create({
   baseURL: process.env.NODE_ENV === 'production' ? '/monitor' : '/api', // api的base_url
   timeout: 20000, // 请求超时时间
-  headers: {
-    token: window.localStorage.getItem('token'),
-  },
 });
 
 const fetch = (options: {
@@ -76,6 +73,7 @@ headers?: any,
       method: method.toLowerCase(),
       headers: {
         'Content-Type': 'application/json',
+        ...options.headers,
       },
       data,
     });
@@ -107,7 +105,7 @@ export default function request(options: Option): Promise<any> {
         list: data,
       };
     }
-    if (response.data.result && response.data.result.resultMessage === '认证失败') {
+    if (data.result && data.result.resultMessage === '认证失败') {
       if (config.noLoginList.indexOf(window.location.hash) < 0) {
         router.replace('/login');
       }
