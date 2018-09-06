@@ -38,7 +38,7 @@ const hasPermission = (permission: string[]) => { // 过滤路由
 
 const user = {
   state: {
-    user: {
+    users: {
       username: '',
       userid: '',
       avatar_uri: '',
@@ -53,7 +53,7 @@ const user = {
       state.roles = roles;
     },
     SVAEUSER: (state: any, userData: UserData) => {
-      state.user = user;
+      state.users = userData;
     },
     LOADING: (state: any, loading: boolean) => {
       state.spinning = loading;
@@ -69,7 +69,7 @@ const user = {
             router.replace({ path: '/dashboard' });
           }
           const userData: UserData = {
-            username: entity.realName,
+            username: entity.userName,
             userid: entity.userId,
             avatarUri: '',
             email: entity.remark,
