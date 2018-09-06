@@ -125,7 +125,10 @@ export default class Member extends Vue {
 
   // 角色
   roleChange(row: any) {
-    const roleTypeOptions: string[] = row.roleNames.indexOf(',') > 0 ? row.roleNames.split(',') : row.roleNames.split('');
+    if (!row.roleNames) {
+      return <el-tag type="info" size="medium" style="marginRight:5px">未知</el-tag>;
+    }
+    const roleTypeOptions: string[] = row.roleNames.indexOf(',') > 0 ? row.roleNames.split(',') : [row.roleNames];
     return roleTypeOptions.map(item =>
       <el-tag size="medium" type='success' style="marginRight:5px">{item}</el-tag>);
   }
