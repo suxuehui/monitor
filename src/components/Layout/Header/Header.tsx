@@ -80,7 +80,6 @@ export default class Header extends Vue {
     this.$store.dispatch('ToggleSideBar');
   }
   render() {
-    const { username } = this;
     const { menuData, sidebar: { opened }, isMobile } = this.$store.state.app;
     this.menuData = menuData;
     return (
@@ -114,8 +113,8 @@ export default class Header extends Vue {
           <li class="user">
             <el-dropdown on-command={this.menuClick} size="medium">
               <span class="el-dropdown-link">
+                <p class="name">{this.$store.getters.username}</p>
                 <i class="iconfont-user"></i>
-                <p class="name">admin</p>
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="1">个人中心</el-dropdown-item>
