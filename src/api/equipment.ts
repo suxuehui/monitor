@@ -13,8 +13,10 @@ export async function terminalBind(params: any) {
 // 设备解绑
 export async function terminalUnbind(params: any) {
   return request({
-    url: `/device/terminal/unbind/${params}`,
-    method: 'get',
+    url: '/device/terminal/unbind',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
   });
 }
 

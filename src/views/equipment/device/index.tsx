@@ -300,7 +300,7 @@ export default class Device extends Vue {
         type = <el-tag size="medium" type="danger" style="marginRight:5px">已返厂</el-tag>;
         break;
       default:
-        type = <el-tag size="medium" type="gray" style="marginRight:5px">未知</el-tag>;
+        type = <el-tag size="medium" type="info" style="marginRight:5px">未知</el-tag>;
     }
     return type;
   }
@@ -327,7 +327,7 @@ export default class Device extends Vue {
           this.bindVisible = true;
           this.bindTitle = '绑定车辆';
         } else {
-          terminalUnbind(row.imei).then((res) => {
+          terminalUnbind({ imei: row.imei }).then((res) => {
             if (res.result.resultCode === '0') {
               formTable.reloadTable();
               this.$message.success(res.result.resultMessage);

@@ -1,7 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
-import { roleSelect, userUpdate, userAdd } from '@/api/permission';
-import { join } from 'path';
+import { roleSelect, userUpdate, userAdd, userCheck } from '@/api/permission';
 
 interface RoleType { key: number, value: string, label: string }
 
@@ -43,18 +42,40 @@ export default class AddModal extends Vue {
     realName: [
       { required: true, message: '请输入成员姓名', trigger: 'blur' },
     ],
-    userName: [
-      { required: true, message: '请输入登录账号', trigger: 'blur' },
-    ],
+    // userName: [
+    //   { validator: this.checkUsername, trigger: 'blur' },
+    // ],
     roleIdList: [
       { required: true, message: '请选择角色类型', trigger: 'change' },
     ],
     password: [
-      { required: false },
+      { required: true },
     ],
     remark: [
       { required: false },
     ],
+  }
+  userNameRule = [
+    { required: true, message: '请输入用户名' },
+    { message: '用户名已存在，请重新输入', validator: this.checkUsername, trigger: 'blur' },
+  ];
+
+  // 验证登录账号
+  checkUsername(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        userCheck(value).then((res) => {
+          if (res.result.resultCode === '0') {
+            callback();
+          } else {
+            callback(new Error());
+          }
+          callback(new Error());
+        });
+      } else {
+        callback(new Error('不能为空'));
+      }
+    }, 500);
   }
 
   mounted() {
@@ -115,7 +136,6 @@ export default class AddModal extends Vue {
       password: this.modelForm.password !== '********' ? this.modelForm.password : '',
       remark: this.modelForm.remark,
     };
-    console.log(obj);
     if (this.title === '新增成员') {
       // 新增
       From.validate((valid: any) => {
@@ -136,6 +156,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;
@@ -161,6 +182,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;
@@ -214,7 +236,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="userName">
+              <el-form-item label="登录账号" prop="userName" rules={this.data.id > 0 ? null : this.userNameRule}>
                 <el-input
                   id="userName"
                   disabled={!!this.data.id}
@@ -245,13 +267,13 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row>
+            <el-col offset={7} span={12}>
+              <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
+              <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+            </el-col>
+          </el-row>
         </el-form>
-        <el-row>
-          <el-col offset={7} span={12}>
-            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-          </el-col>
-        </el-row>
       </el-dialog>
     );
   }

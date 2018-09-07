@@ -142,7 +142,7 @@ export default class Merchants extends Vue {
     if (key === 'edit') {
       this.modelForm = row;
       this.addVisible = true;
-      this.addTitle = '编辑';
+      this.addTitle = '编辑商户';
     } else if (key === 'freeze') {
       if (row.activeStatus === 2) {
         // 解冻
@@ -169,7 +169,6 @@ export default class Merchants extends Vue {
   }
   addModel() {
     this.addVisible = true;
-    this.modelForm = null;
     this.addTitle = '新增商户';
   }
   // 关闭弹窗
@@ -177,6 +176,10 @@ export default class Merchants extends Vue {
     this.addVisible = false;
     this.freezeVisible = false;
     this.setVisible = false;
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 200);
   }
   // 关闭弹窗时刷新
   refresh(): void {
@@ -204,6 +207,7 @@ export default class Merchants extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-modal
+          ref="addTable"
           title={this.addTitle}
           visible={this.addVisible}
           data={this.modelForm}

@@ -1,8 +1,8 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
-import { userCheck } from '@/api/permission';
 
+import { userCheck } from '@/api/permission';
 @Component({
   components: {
   'el-dialog': Dialog,
@@ -34,18 +34,12 @@ export default class AddModal extends Vue {
   loading: boolean = false;
 
   rules = {
-    orgName: [
-      { validator: this.checkName, trigger: 'blur' },
-    ],
     contactUser: [
       { required: true, message: '请输入联系人', trigger: 'blur' },
     ],
-    manageUser: [
-      { validator: this.checkUsername, trigger: 'blur' },
+    password: [
+      { required: true, message: '请输入登录密码', trigger: 'blur' },
     ],
-    // password: [
-    //   { required: false, message: '请输入登录密码', trigger: 'blur' },
-    // ],
     contactPhone: [
       { required: true, message: '请输入联系电话', trigger: 'blur' },
     ],
@@ -53,6 +47,14 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入联系地址', trigger: 'blur' },
     ],
   }
+  orgRule = [
+    { required: true, message: '请输入商户名称' },
+    { validator: this.checkName, trigger: 'blur', message: '商户名称已存在，请重新输入' },
+  ];
+  manageUserRule = [
+    { required: true, message: '请输入登录账号' },
+    { validator: this.checkUsername, trigger: 'blur', message: '登录账号已存在，请重新输入' },
+  ]
 
   // 验证商户名称
   checkName(rule: any, value: string, callback: Function) {
@@ -60,12 +62,11 @@ export default class AddModal extends Vue {
       if (value) {
         checkOrgName(value).then((res) => {
           if (res.result.resultCode === '0') {
-            console.log(res);
-            this.$message.success(res.result.resultMessage);
             callback();
           } else {
-            callback(new Error(res.result.resultMessage));
+            callback(new Error());
           }
+          callback(new Error());
         });
       } else {
         callback(new Error('不能为空'));
@@ -78,14 +79,12 @@ export default class AddModal extends Vue {
       if (value) {
         userCheck(value).then((res) => {
           if (res.result.resultCode === '0') {
-            console.log(res);
-            this.$message.success(res.result.resultMessage);
             callback();
           } else {
-            callback(new Error(res.result.resultMessage));
+            callback(new Error());
           }
+          callback(new Error());
         });
-        callback();
       } else {
         callback(new Error('不能为空'));
       }
@@ -94,8 +93,9 @@ export default class AddModal extends Vue {
 
   @Watch('data')
   onDataChange() {
-    if (this.data) {
+    if (this.data.id > 0) {
       this.modelForm = JSON.parse(JSON.stringify(this.data));
+      this.modelForm.password = '********';
     } else {
       this.resetData();
     }
@@ -122,15 +122,15 @@ export default class AddModal extends Vue {
   }
 
   onSubmit() {
-    this.loading = true;
     let obj: any = {};
     const From: any = this.$refs.modelForm;
+    this.loading = true;
     obj = {
-      orgName: this.modelForm.orgName,
+      orgName: this.modelForm.orgName ? this.modelForm.orgName : '',
       contactUser: this.modelForm.contactUser,
       contactPhone: this.modelForm.contactPhone,
       manageUser: this.modelForm.manageUser,
-      password: this.modelForm.password,
+      password: this.modelForm.password !== '********' ? this.modelForm.password : '',
       contactAddress: this.modelForm.contactAddress,
     };
 
@@ -139,7 +139,6 @@ export default class AddModal extends Vue {
       From.validate((valid: any) => {
         if (valid) {
           customerAdd(obj).then((res) => {
-            console.log(res);
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
@@ -155,24 +154,22 @@ export default class AddModal extends Vue {
             }
           });
         } else {
-          this.loading = false;
           return false;
         }
-        this.loading = false;
         return false;
       });
     } else {
+      obj.id = this.data.id;
       // 修改
       From.validate((valid: any) => {
         if (valid) {
-          obj.roleId = this.data.roleId;
-          this.loading = true;
           customerUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
+                this.resetData();
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -183,10 +180,8 @@ export default class AddModal extends Vue {
             }
           });
         } else {
-          this.loading = false;
           return false;
         }
-        this.loading = false;
         return false;
       });
     }
@@ -204,20 +199,21 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="商户名称" prop="orgName">
+              <el-form-item label="商户名称" prop="orgName" rules={this.data.id > 0 ? null : this.orgRule}>
                 <el-input
                   id="orgName"
                   v-model={this.modelForm.orgName}
+                  disabled={this.title === '编辑商户'}
                   placeholder="请输入商户名称"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser">
+              <el-form-item label="登录账号" prop="manageUser" rules={this.data.id > 0 ? null : this.manageUserRule}>
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
-                  disabled={this.title === '编辑'}
+                  disabled={this.title === '编辑商户'}
                   placeholder="请输入登录账号"
                 ></el-input>
               </el-form-item>
