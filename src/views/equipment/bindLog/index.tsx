@@ -52,19 +52,25 @@ export default class BindLog extends Vue {
 
   opsPerson(row: any) {
     return <div>
-      <p>{`${row.opsOrgName}+${row.opsRealName}`}</p>
+      <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
       <p>{`(${row.opsUsername})`}</p>
     </div>;
   }
 
   showInstallPic(row: any) {
-    const imgArr = row.installUrl.indexOf(',') > 0 ? row.installUrl.split(',') : [row.installUrl];
-    return imgArr.map((item: any) => <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />);
+    if (row.installUrl !== null) {
+      const imgArr = row.installUrl.indexOf(',') > 0 ? row.installUrl.split(',') : [row.installUrl];
+      return imgArr.map((item: any) => <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />);
+    }
+    return '暂无安装图片';
   }
 
   showVinPic(row: any) {
-    const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
-    return imgArr.map((item: any) => <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />);
+    if (row.installUrl !== null) {
+      const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
+      return imgArr.map((item: any) => <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />);
+    }
+    return '暂无车架图片';
   }
 
   checkLog(row: any) {
@@ -74,7 +80,7 @@ export default class BindLog extends Vue {
   checkLogChange(data: any) {
     this.checkLogVisible = true;
     this.checkLogId = data.id;
-    // this.$refs.checkLogModel.$refs.reload();
+    const checkModel:any = this.$refs.checkLogModel;
   }
 
   // 关闭弹窗

@@ -1,11 +1,12 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Tag, Loading, Button, Switch } from 'element-ui';
+import { Tag, Loading, Button, Switch, Popover } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { getCustomerList } from '@/api/customer';
-import { terminalUnbind, terminalType, bluetoothInfo } from '@/api/equipment';
+import { terminalUnbind, terminalType, bluetoothInfo, resetTime } from '@/api/equipment';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
+import PopconfirmBlock from '@/components/Popconfirm/index';
 import DownModel from './components/DownModel';
 import ClearModel from './components/ClearModel';
 import AuthModel from './components/AuthModel';
@@ -23,6 +24,8 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   'down-model': DownModel,
   'clear-model': ClearModel,
   'auth-model': AuthModel,
+  'el-popover': Popover,
+  'popconfirm-block': PopconfirmBlock,
   }
   })
 export default class Device extends Vue {
@@ -222,14 +225,20 @@ export default class Device extends Vue {
   // 门店列表
   shopList: any = [];
 
+  loading: boolean = false;
+
   created() {
     // 门店
     getCustomerList(null).then((res) => {
-      res.entity.data.map((item: any) => this.shopList.push({
-        key: item.id,
-        value: item.levelcode,
-        label: item.orgName,
-      }));
+      if (res.result.resultCode === '0') {
+        res.entity.data.map((item: any) => this.shopList.push({
+          key: item.id,
+          value: item.levelcode,
+          label: item.orgName,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
       // 所属商户(全部)
       this.shopList.unshift({
         key: Math.random(),
@@ -241,11 +250,15 @@ export default class Device extends Vue {
     });
     // 设备类型
     terminalType(null).then((res) => {
-      res.entity.map((item: any) => this.typeList.push({
-        key: Math.random(),
-        value: parseInt(item.enumValue, 10),
-        label: item.name,
-      }));
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.typeList.push({
+          key: Math.random(),
+          value: parseInt(item.enumValue, 10),
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
       // 设备类型(全部)
       this.typeList.unshift({
         key: Math.random(),
@@ -268,8 +281,40 @@ export default class Device extends Vue {
   endDay(row: any) {
     return <div>
       <span style="marginLeft:-6px">{row.serviceEndDay ? `${row.serviceEndDay}天` : '--'}</span>
-      <el-button size="mini" type="text" style="marginLeft:10px">重置</el-button>
+      <popconfirm-block
+        ref={`popBlock${row.id}`}
+        title="确定要重置此设备到期日期吗？"
+        width="225"
+        loading={this.loading}
+        on-confirm={() => this.onResetTime(row)}
+        on-cancel={this.closePop}
+      >
+        <el-button style="marginLeft:10px" type="text" size="small" >重置</el-button>
+      </popconfirm-block>
     </div>;
+  }
+  closePop() {
+    this.loading = false;
+  }
+  onResetTime(data: any) {
+    const popModel: any = this.$refs[`popBlock${data.id}`];
+    const formTable: any = this.$refs.table;
+    this.loading = true;
+    resetTime(data.id).then((res) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          formTable.reloadTable();
+          popModel.closeModel();
+          this.$message.success(res.result.resultMessage);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage ? res.result.resultMessage : '未知错误');
+        }, 1500);
+      }
+    });
   }
 
   checkLog(row: any) {

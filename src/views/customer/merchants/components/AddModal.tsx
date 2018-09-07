@@ -49,11 +49,15 @@ export default class AddModal extends Vue {
   }
   orgRule = [
     { required: true, message: '请输入商户名称' },
-    { validator: this.checkName, trigger: 'blur', message: '商户名称已存在，请重新输入' },
+    {
+      required: true, validator: this.checkName, trigger: 'blur', message: '商户名称已存在，请重新输入',
+    },
   ];
   manageUserRule = [
     { required: true, message: '请输入登录账号' },
-    { validator: this.checkUsername, trigger: 'blur', message: '登录账号已存在，请重新输入' },
+    {
+      required: true, validator: this.checkUsername, trigger: 'blur', message: '登录账号已存在，请重新输入',
+    },
   ]
 
   // 验证商户名称
@@ -118,6 +122,7 @@ export default class AddModal extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.resetData();
     }, 200);
   }
 

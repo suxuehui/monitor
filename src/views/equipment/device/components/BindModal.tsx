@@ -272,7 +272,6 @@ export default class BindModal extends Vue {
         this.loading = false;
         return false;
       }
-      this.loading = false;
       return false;
     });
   }
@@ -287,10 +286,10 @@ export default class BindModal extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
+          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
             <el-row>
               <el-col span={24}>
-                <el-form-item label="车辆车型" prop="modelCfgId">
+                <el-form-item label="车辆车型" prop="carInfo">
                   <el-cascader
                     id="carInfo"
                     v-model={this.modelForm.carInfo}

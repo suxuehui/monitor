@@ -77,6 +77,7 @@ export default class AcceptModal extends Vue {
             setTimeout(() => {
               this.loading = false;
               this.$message.success(res.result.resultMessage);
+              From.resetFields();
               this.$emit('refresh');
             }, 1500);
           } else {

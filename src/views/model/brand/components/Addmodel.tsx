@@ -137,7 +137,6 @@ export default class AddModal extends Vue {
           this.loading = false;
           return false;
         }
-        this.loading = false;
         return false;
       });
     } else {
@@ -167,7 +166,6 @@ export default class AddModal extends Vue {
             return false;
           }
         } else {
-          this.loading = false;
           return false;
         }
         return false;
@@ -185,14 +183,14 @@ export default class AddModal extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
+          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
             <el-row>
               <el-col span={24}>
                 <el-form-item label="品牌名称" prop="name">
                   <el-input
                     id="name"
                     v-model={this.modelForm.name}
-                    placeholder="请输入配置名称"
+                    placeholder="请输入品牌名称"
                   ></el-input>
                 </el-form-item>
               </el-col>

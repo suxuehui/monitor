@@ -112,3 +112,12 @@ export async function bluetoothInfo(params: any) {
     fetchType: 'JSON',
   });
 }
+
+// 重置
+export async function resetTime(params: any) {
+  return request({
+    url: `/device/terminal/reset/${params}`,
+    method: 'put',
+    data: params,
+  });
+}

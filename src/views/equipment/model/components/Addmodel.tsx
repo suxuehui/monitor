@@ -39,9 +39,9 @@ export default class AddModal extends Vue {
     cfgName: [
       { required: true, message: '请输入配置名称', trigger: 'blur' },
     ],
-    cfgParam: [
-      { required: true, message: '请输入配置参数', trigger: 'blur' },
-    ],
+    // cfgParam: [
+    //   { required: true, message: '请输入配置参数', trigger: 'blur' },
+    // ],
     reboot: [
       { required: false, message: '请确认是否重启' },
     ],
@@ -52,9 +52,29 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入产品编码', trigger: 'blur' },
     ],
   }
-  cfgParamAddRule = [
+  cfgParamRule = [
     { required: true, message: '请输入配置参数', trigger: 'blur' },
+    {
+      validator: this.checkCfgParam, trigger: 'blur', message: '配置参数格式错误，请重新输入',
+    },
   ]
+
+  // 验证登录账号
+  checkCfgParam(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        const exp: any = /^[1357]{1}\|{1}[0-9a-zA-Z]+,{1}.+$/;
+        if (exp.test(value)) {
+          callback();
+        } else {
+          callback(new Error());
+        }
+      } else {
+        callback(new Error('不能为空'));
+      }
+    }, 500);
+  }
+
 
   @Watch('data')
   onDataChange() {
@@ -147,57 +167,58 @@ export default class AddModal extends Vue {
       cfgParam: cfgParamStr,
       id: this.data.id ? this.data.id : null,
     };
-    if (this.title === '新增配置') {
-      From.validate((valid: any) => {
-        if (valid) {
-          configAdd(obj).then((res) => {
-            if (res.result.resultCode === '0') {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.success(res.result.resultMessage);
-                From.resetFields();
-                this.modelForm.cfgParamAdd = [];
-                this.$emit('refresh');
-              }, 1500);
-            } else {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.error(res.result.resultMessage);
-              }, 1500);
-            }
-          });
-        } else {
-          this.loading = false;
-          return false;
-        }
-        return false;
-      });
-    } else {
-      From.validate((valid: any) => {
-        if (valid) {
-          configUpdate(obj).then((res) => {
-            if (res.result.resultCode === '0') {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.success(res.result.resultMessage);
-                From.resetFields();
-                this.modelForm.cfgParamAdd = [];
-                this.$emit('refresh');
-              }, 1500);
-            } else {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.error(res.result.resultMessage);
-              }, 1500);
-            }
-          });
-        } else {
-          this.loading = false;
-          return false;
-        }
-        return false;
-      });
-    }
+    console.log(obj);
+    // if (this.title === '新增配置') {
+    //   From.validate((valid: any) => {
+    //     if (valid) {
+    //       configAdd(obj).then((res) => {
+    //         if (res.result.resultCode === '0') {
+    //           setTimeout(() => {
+    //             this.loading = false;
+    //             this.$message.success(res.result.resultMessage);
+    //             From.resetFields();
+    //             this.modelForm.cfgParamAdd = [];
+    //             this.$emit('refresh');
+    //           }, 1500);
+    //         } else {
+    //           setTimeout(() => {
+    //             this.loading = false;
+    //             this.$message.error(res.result.resultMessage);
+    //           }, 1500);
+    //         }
+    //       });
+    //     } else {
+    //       this.loading = false;
+    //       return false;
+    //     }
+    //     return false;
+    //   });
+    // } else {
+    //   From.validate((valid: any) => {
+    //     if (valid) {
+    //       configUpdate(obj).then((res) => {
+    //         if (res.result.resultCode === '0') {
+    //           setTimeout(() => {
+    //             this.loading = false;
+    //             this.$message.success(res.result.resultMessage);
+    //             From.resetFields();
+    //             this.modelForm.cfgParamAdd = [];
+    //             this.$emit('refresh');
+    //           }, 1500);
+    //         } else {
+    //           setTimeout(() => {
+    //             this.loading = false;
+    //             this.$message.error(res.result.resultMessage);
+    //           }, 1500);
+    //         }
+    //       });
+    //     } else {
+    //       this.loading = false;
+    //       return false;
+    //     }
+    //     return false;
+    //   });
+    // }
   }
 
   render() {
@@ -241,7 +262,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="配置参数" prop="cfgParam">
+              <el-form-item label="配置参数" prop="cfgParam" rules={this.cfgParamRule}>
                 <el-input
                   id="cfgParam"
                   v-model={this.modelForm.cfgParam}
@@ -256,11 +277,13 @@ export default class AddModal extends Vue {
                 this.modelForm.cfgParamAdd.map((item: any, index: number) => <el-form-item
                   label={`配置参数${index + 1}`}
                   key={item.key}
-                  prop={`cfgParam${item.key}${index}`}
+                  // prop={this.modelForm.cfgParamAdd[index].value}
+                  prop={`cfgParamAdd.${index}.value`}
+                  rules={this.cfgParamRule}
                 >
                   <el-input
                     id="cfgParam"
-                    v-model={this.modelForm.cfgParamAdd[index].value}
+                    v-model={item.value}
                     placeholder="请输入配置参数"
                   >
                     <el-button slot="append" icon="iconfont-delete icon-close" on-click={() => this.deleteCfgParam(index)}></el-button>

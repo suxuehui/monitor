@@ -104,7 +104,7 @@ export default class CarModel extends Vue {
   }
 
   brandChange(val: any) {
-    this.outParams={
+    this.outParams = {
       brandId: val[0],
       seriesId: val[1],
     };
@@ -169,13 +169,14 @@ export default class CarModel extends Vue {
   }
 
   clear() {
-    this.outParams={};
+    this.outParams = {};
   }
 
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
     const addBlock: any = this.$refs.addTable;
+    this.rowData = {};
     setTimeout(() => {
       addBlock.resetData();
     }, 200);

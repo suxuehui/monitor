@@ -34,13 +34,19 @@ export default class CheckLog extends Vue {
   }
 
   @Watch('data')
-  onDataChange() {
+  onDataChange(data: number) {
     this.tableParams = {
-      opsRecordId: this.data,
+      opsRecordId: data,
       page: true,
       pageNum: 1,
       pageSize: 10,
     };
+    const Table: any = this.$refs.MTable;
+    if (Table) {
+      setTimeout(() => {
+        Table.reload();
+      }, 100);
+    }
   }
 
   closeModal() {

@@ -81,6 +81,8 @@ headers?: any,
   switch (method.toLowerCase()) {
     case 'post':
       return service.post(url, cloneData, { headers: options.headers });
+    case 'put':
+      return service.put(url, cloneData, { headers: options.headers });
     case 'get':
       return service.get(`${url}?${cloneData}`, { headers: options.headers });
     default:

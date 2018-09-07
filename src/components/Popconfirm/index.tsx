@@ -12,30 +12,39 @@ export default class Popconfirm extends Vue {
   @Prop({ default: '操作确认！' }) private title!: string;
   @Prop({ default: '取消' }) private cancelText!: string;
   @Prop({ default: '确定' }) private okText!: string;
-  visable: boolean = false;
+  @Prop({ default: '160' }) private width!: string;
+  @Prop() private loading!: boolean;
+  visible: boolean = false;
+
+  @Emit()
+  closeModel() {
+    this.visible = false;
+  }
 
   @Emit()
   closePop() {
-    this.visable = false;
+    this.visible = false;
     this.$emit('cancel');
   }
+
   @Emit()
   openPop() {
-    this.visable = false;
+    if (this.loading === undefined) {
+      this.visible = false;
+    }
     this.$emit('confirm');
   }
   render() {
     return (
       <el-popover
         placement="top"
-        width="160"
-
-        v-model={this.visable}
+        width={this.width}
+        v-model={this.visible}
         >
         <p class="pop-confirm-text"><i class="el-icon-warning"></i>{this.title}</p>
           <div class="pop-opreat">
             <el-button size="mini" type="text" on-click={this.closePop}>{this.cancelText}</el-button>
-            <el-button type="primary" size="mini" on-click={this.openPop}>{this.okText}</el-button>
+            <el-button type="primary" size="mini" loading={this.loading} on-click={this.openPop}>{this.okText}</el-button>
           </div>
           <span slot="reference">
             {
