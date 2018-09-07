@@ -83,14 +83,14 @@ export default class Member extends Vue {
       configInfo({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
           this.rowData = res.entity;
+          setTimeout(() => {
+            this.addVisible = true;
+            this.addTitle = '修改配置';
+          }, 200);
         } else {
           this.$message.error(res.result.resultMessage);
         }
       });
-      setTimeout(() => {
-        this.addVisible = true;
-        this.addTitle = '修改配置';
-      }, 200);
     } else if (key === 'delete') {
       configDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {

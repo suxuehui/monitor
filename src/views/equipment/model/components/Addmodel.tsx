@@ -167,58 +167,57 @@ export default class AddModal extends Vue {
       cfgParam: cfgParamStr,
       id: this.data.id ? this.data.id : null,
     };
-    console.log(obj);
-    // if (this.title === '新增配置') {
-    //   From.validate((valid: any) => {
-    //     if (valid) {
-    //       configAdd(obj).then((res) => {
-    //         if (res.result.resultCode === '0') {
-    //           setTimeout(() => {
-    //             this.loading = false;
-    //             this.$message.success(res.result.resultMessage);
-    //             From.resetFields();
-    //             this.modelForm.cfgParamAdd = [];
-    //             this.$emit('refresh');
-    //           }, 1500);
-    //         } else {
-    //           setTimeout(() => {
-    //             this.loading = false;
-    //             this.$message.error(res.result.resultMessage);
-    //           }, 1500);
-    //         }
-    //       });
-    //     } else {
-    //       this.loading = false;
-    //       return false;
-    //     }
-    //     return false;
-    //   });
-    // } else {
-    //   From.validate((valid: any) => {
-    //     if (valid) {
-    //       configUpdate(obj).then((res) => {
-    //         if (res.result.resultCode === '0') {
-    //           setTimeout(() => {
-    //             this.loading = false;
-    //             this.$message.success(res.result.resultMessage);
-    //             From.resetFields();
-    //             this.modelForm.cfgParamAdd = [];
-    //             this.$emit('refresh');
-    //           }, 1500);
-    //         } else {
-    //           setTimeout(() => {
-    //             this.loading = false;
-    //             this.$message.error(res.result.resultMessage);
-    //           }, 1500);
-    //         }
-    //       });
-    //     } else {
-    //       this.loading = false;
-    //       return false;
-    //     }
-    //     return false;
-    //   });
-    // }
+    if (this.title === '新增配置') {
+      From.validate((valid: any) => {
+        if (valid) {
+          configAdd(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.modelForm.cfgParamAdd = [];
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
+        } else {
+          this.loading = false;
+          return false;
+        }
+        return false;
+      });
+    } else {
+      From.validate((valid: any) => {
+        if (valid) {
+          configUpdate(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.modelForm.cfgParamAdd = [];
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
+        } else {
+          this.loading = false;
+          return false;
+        }
+        return false;
+      });
+    }
   }
 
   render() {
@@ -230,7 +229,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="90px" class="model">
+        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="90px" class="model">
           <el-row>
             <el-col span={24}>
               <el-form-item label="配置名称" prop="cfgName">

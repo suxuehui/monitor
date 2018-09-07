@@ -92,7 +92,7 @@ export default class DownModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} ref="modelForm" rules={this.rules} label-width="80px" class="model">
+        <el-form model={this.modelForm} status-icon ref="modelForm" rules={this.rules} label-width="80px" class="model">
           <el-form-item label="产品编码" prop="productCode">
             <el-input
               id="productCode"
