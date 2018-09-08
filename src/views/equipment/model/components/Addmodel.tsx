@@ -59,11 +59,11 @@ export default class AddModal extends Vue {
     },
   ]
 
-  // 验证登录账号
+  // 验证配置参数
   checkCfgParam(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        const exp: any = /^[1357]{1}\|{1}[0-9a-zA-Z]+,{1}.+$/;
+        const exp: any = /^[1357]{1}\|{1}[0-9a-zA-Z]+,{1}[^\u4e00-\u9fa5，！、·‘；】【、。，’]+$/;
         if (exp.test(value)) {
           callback();
         } else {
