@@ -304,9 +304,11 @@ export default class Device extends Vue {
       if (res.result.resultCode === '0') {
         setTimeout(() => {
           this.loading = false;
-          formTable.reloadTable();
           popModel.closeModel();
-          this.$message.success(res.result.resultMessage);
+          setTimeout(() => {
+            formTable.reloadTable();
+            this.$message.success(res.result.resultMessage);
+          }, 200);
         }, 1500);
       } else {
         setTimeout(() => {

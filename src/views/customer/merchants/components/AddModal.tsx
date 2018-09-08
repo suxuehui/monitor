@@ -59,6 +59,7 @@ export default class AddModal extends Vue {
       required: true, validator: this.checkUsername, trigger: 'blur', message: '登录账号已存在，请重新输入',
     },
   ]
+  ruleStatus: boolean = true;
 
   // 验证商户名称
   checkName(rule: any, value: string, callback: Function) {
@@ -96,10 +97,11 @@ export default class AddModal extends Vue {
   }
 
   @Watch('data')
-  onDataChange() {
-    if (this.data.id > 0) {
-      this.modelForm = JSON.parse(JSON.stringify(this.data));
+  onDataChange(data: any) {
+    if (data.id > 0) {
+      this.modelForm = JSON.parse(JSON.stringify(data));
       this.modelForm.password = '********';
+      this.ruleStatus = false;
     } else {
       this.resetData();
     }
@@ -122,6 +124,7 @@ export default class AddModal extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.ruleStatus = true;
       this.resetData();
     }, 200);
   }
@@ -149,6 +152,7 @@ export default class AddModal extends Vue {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
+                this.ruleStatus = true;
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -174,6 +178,7 @@ export default class AddModal extends Vue {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
+                this.ruleStatus = true;
                 this.resetData();
                 this.$emit('refresh');
               }, 1500);
@@ -204,7 +209,7 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="商户名称" prop="orgName" rules={this.data.id > 0 ? null : this.orgRule}>
+              <el-form-item label="商户名称" prop="orgName" rules={!this.ruleStatus ? null : this.orgRule}>
                 <el-input
                   id="orgName"
                   v-model={this.modelForm.orgName}
@@ -214,7 +219,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser" rules={this.data.id > 0 ? null : this.manageUserRule}>
+              <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}

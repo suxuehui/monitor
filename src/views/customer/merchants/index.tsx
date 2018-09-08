@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col } from 'element-ui';
-import { customerLock, customerUnlock } from '@/api/customer';
+import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';
 
 
@@ -143,6 +143,13 @@ export default class Merchants extends Vue {
       this.modelForm = row;
       this.addVisible = true;
       this.addTitle = '编辑商户';
+      customerInfo(row.id).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.modelForm = res.entity;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     } else if (key === 'freeze') {
       if (row.activeStatus === 2) {
         // 解冻

@@ -75,6 +75,7 @@ export default class AddModal extends Vue {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
+                this.resetData();
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -99,6 +100,8 @@ export default class AddModal extends Vue {
             if (res.result.resultCode) {
               setTimeout(() => {
                 this.loading = false;
+                From.resetFields();
+                this.resetData();
                 this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
               }, 1500);

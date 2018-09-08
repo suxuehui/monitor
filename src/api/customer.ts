@@ -45,3 +45,11 @@ export async function getCustomerList(params: any) {
     fetchType: 'JSON',
   });
 }
+
+// 商户详情
+export async function customerInfo(params: any) {
+  return request({
+    url: `/customer/org/detail/${params}`,
+    method: 'get',
+  });
+}
