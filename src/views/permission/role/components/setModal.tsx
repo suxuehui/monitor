@@ -37,12 +37,19 @@ export default class SetModal extends Vue {
 
   @Watch('data')
   onDataChange(data: any) {
+    const trees: any = this.$refs.tree;
+    if (trees) {
+      trees.setCheckedKeys([]);
+    }
     this.checkList = [];
     roleInfo({ roleId: data.roleId }).then((res) => {
       const { result: { resultCode, resultMessage }, entity } = res;
       if (resultCode === '0') {
         if (entity.menuIds) {
           this.checkList = entity.menuIds.split(',');
+          if (trees) {
+            trees.setCheckedKeys(this.checkList);
+          }
         }
       } else {
         this.$message.error(resultMessage || '未知错误');
