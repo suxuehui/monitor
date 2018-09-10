@@ -35,16 +35,16 @@ export default class AddModal extends Vue {
 
   rules = {
     contactUser: [
-      { required: true, message: '请输入联系人', trigger: 'blur' },
+      // { required: true, message: '请输入联系人', trigger: 'blur' },
     ],
     password: [
       { required: true, message: '请输入登录密码', trigger: 'blur' },
     ],
     contactPhone: [
-      { required: true, message: '请输入联系电话', trigger: 'blur' },
+      // { required: true, message: '请输入联系电话', trigger: 'blur' },
     ],
     contactAddress: [
-      { required: true, message: '请输入联系地址', trigger: 'blur' },
+      // { required: true, message: '请输入联系地址', trigger: 'blur' },
     ],
   }
   orgRule = [
