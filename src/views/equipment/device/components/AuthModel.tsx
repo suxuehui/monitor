@@ -34,10 +34,9 @@ export default class AuthModel extends Vue {
       imei: this.data.imei,
     };
     createBluetooth(obj).then((res) => {
-      console.log(res);
       if (res.result.resultCode === '0') {
         setTimeout(() => {
-          this.newCfgVal = res.entity[0].cfgVal;
+          this.newCfgVal = res.entity;
           this.loading = false;
           this.$message.success(res.result.resultMessage);
         }, 1500);

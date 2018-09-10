@@ -414,7 +414,6 @@ export default class Device extends Vue {
       imei: data.imei,
     };
     getBluetooth(obj).then((res) => {
-      console.log(res);
       if (res.result.resultCode === '0') {
         this.authData = {
           id: data.id,
