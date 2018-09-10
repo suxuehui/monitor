@@ -144,6 +144,7 @@ export default class MFilter extends Vue {
           v-model={this.params[item.key]}
           placeholder={item.placeholder}
           props={item.props}
+          change-on-select
           on-active-item-change={item.itemChange}
           on-change={item.change}></el-cascader>;
         break;

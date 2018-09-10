@@ -4,6 +4,7 @@ import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
 import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
 import { vehicleModelUpdate } from '@/api/car';
 import { gpsToAddress, queryAddress } from '@/api/app';
+import { allList } from '@/api/model';
 import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import './index.less';
@@ -49,6 +50,11 @@ export default class Monitor extends Vue {
       key: 'levelcode',
       type: 'levelcode',
       label: '所属门店',
+      props: {
+        value: 'id',
+        children: 'children',
+        label: 'name',
+      },
       placeholder: '请选择门店',
       options: [],
     },
@@ -58,6 +64,11 @@ export default class Monitor extends Vue {
       label: '品牌车型',
       placeholder: '品牌车型',
       options: [],
+      props: {
+        value: 'id',
+        children: 'children',
+        label: 'name',
+      },
       change: this.selectBrandModel,
     },
     {
@@ -352,7 +363,23 @@ export default class Monitor extends Vue {
         });
       });
     });
+    allList(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.filterList[1].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+    // orgTree(null).then((res) => {
+    //   if (res.result.resultCode === '0') {
+    //     this.filterList[0].options = res.entity;
+    //   } else {
+    //     this.$message.error(res.result.resultMessage);
+    //   }
+    // });
   }
+
+
   radiusGetData = (id?: string) => {
     // 获取地图车辆
     vehicleRadiusQuery({ radius: this.radius, ...this.mapCenter }).then((res) => {
@@ -496,10 +523,10 @@ export default class Monitor extends Vue {
     }
     return <el-tag size="small" type="danger">离线</el-tag>;
   }
-  // 选择品牌车型
+  // 获取车系/车型
   selectBrandModel(value: string[]) {
-    console.log(value);
   }
+
   // 格式化能源类型
   formatEnergy(row: any) {
     let type;

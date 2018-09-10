@@ -1,6 +1,7 @@
 import { menuItem, routerItem } from '@/interface';
 import utils from '@/utils';
 import router from '@/router';
+import qs from 'qs';
 // 循环匹配当前路由数据
 function findMenu(
   data: any,
@@ -99,7 +100,9 @@ const app = {
         return item;
       });
       if (!haveMenu) {
-        resultData = findMenu(menuData, ArrPath.routeArr, tabList, tabActiveKey, ArrPath.params);
+        const rep = /\?.+/g;
+        const query = window.location.href.match(rep);
+        resultData = findMenu(menuData, ArrPath.routeArr, tabList, tabActiveKey, ArrPath.params, qs.parse(query ? query[0].substring(1, query[0].length) : ''));
         if (resultData.tabActiveKey) {
           context.dispatch('addKeep', resultData.key);
         }
