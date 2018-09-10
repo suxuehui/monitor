@@ -37,7 +37,7 @@ export default class AddModal extends Vue {
 
   rules = {
     name: [
-      { required: true, message: '请输入配置名称', trigger: 'blur' },
+      { required: true, message: '请输入车系名称', trigger: 'blur' },
     ],
     description: [
       { required: false },

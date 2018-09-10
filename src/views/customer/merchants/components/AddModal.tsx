@@ -1,8 +1,9 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
 
 import { userCheck } from '@/api/permission';
+import { emit } from 'cluster';
 @Component({
   components: {
   'el-dialog': Dialog,
@@ -35,34 +36,38 @@ export default class AddModal extends Vue {
 
   rules = {
     contactUser: [
-      // { required: true, message: '请输入联系人', trigger: 'blur' },
+      { required: true, message: '请输入联系人', trigger: 'blur' },
     ],
     password: [
       { required: true, message: '请输入登录密码', trigger: 'blur' },
     ],
     contactPhone: [
-      // { required: true, message: '请输入联系电话', trigger: 'blur' },
+      { required: true, message: '请输入联系电话', trigger: 'blur' },
     ],
     contactAddress: [
-      // { required: true, message: '请输入联系地址', trigger: 'blur' },
+      { required: true, message: '请输入联系地址', trigger: 'blur' },
     ],
   }
   orgRule = [
-    { required: true, trigger: 'blur', message: '请输入商户名称' },
+    { required: true, message: '请输入商户名称', trigger: 'blur' },
     {
-      validator: this.checkName, trigger: 'blur', message: '商户名称已存在，请重新输入',
+      validator: this.checkName, trigger: 'blur',
     },
   ];
   manageUserRule = [
-    // { required: true, trigger: 'blur', message: '请输入登录账号' },
-    // {
-    //   validator: this.checkName, message: '登录账号已存在，请重新输入',
-    // },
+    { required: true, message: '请输入登录账号', trigger: 'blur' },
+    {
+      validator: this.checkUsername, trigger: 'blur',
+    },
   ]
   ruleStatus: boolean = true;
 
   // 验证商户名称
+  @Emit()
   checkName(rule: any, value: string, callback: Function) {
+    if (!value) {
+      callback(new Error('商户名称不能为空'));
+    }
     setTimeout(() => {
       if (value) {
         checkOrgName(value).then((res) => {
@@ -79,10 +84,13 @@ export default class AddModal extends Vue {
     }, 500);
   }
   // 验证登录账号
+  @Emit()
   checkUsername(rule: any, value: string, callback: Function) {
+    if (!value) {
+      callback(new Error('登录账号不能为空'));
+    }
     setTimeout(() => {
       if (value) {
-        console.log(value);
         userCheck(value).then((res) => {
           if (res.result.resultCode === '0') {
             callback();
@@ -142,7 +150,7 @@ export default class AddModal extends Vue {
       password: this.modelForm.password !== '********' ? this.modelForm.password : '',
       contactAddress: this.modelForm.contactAddress,
     };
-    console.log(this.modelForm.manageUser);
+    console.log(obj);
 
     if (this.title === '新增商户') {
       // 新增
@@ -221,11 +229,11 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser" rules={this.ruleStatus ? this.manageUserRule : null}>
+              <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
-                  disabled={this.title === '编辑商户'}
+                  disabled={this.title === '登录账号'}
                   placeholder="请输入登录账号"
                 ></el-input>
               </el-form-item>
