@@ -53,9 +53,9 @@ export default class AddModal extends Vue {
   selectStatus: boolean = false;
 
   @Watch('data')
-  onDataChange() {
-    if (this.data.id > 0) {
-      this.modelForm = this.data;
+  onDataChange(data:any) {
+    if (data.id > 0) {
+      this.modelForm = data;
       this.selectStatus = true;
     } else {
       this.resetData();
@@ -95,7 +95,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       From.resetFields();
       this.resetData();
-    }, 200);
+    }, 500);
   }
 
   onSubmit() {
@@ -180,7 +180,7 @@ export default class AddModal extends Vue {
                   filterable={true}
                   placeholder="请选择品牌"
                   style="width:100%"
-                  // disabled={this.selectStatus}
+                  disabled={this.selectStatus}
                 >
                   {
                     this.brandList.map((item: any) => (

@@ -166,6 +166,7 @@ export default class AddModal extends Vue {
             return false;
           }
         } else {
+          this.loading = false;
           return false;
         }
         return false;
