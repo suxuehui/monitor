@@ -48,16 +48,16 @@ export default class AddModal extends Vue {
     ],
   }
   orgRule = [
-    { required: true, message: '请输入商户名称' },
+    { required: true, trigger: 'blur', message: '请输入商户名称' },
     {
-      required: true, validator: this.checkName, trigger: 'blur', message: '商户名称已存在，请重新输入',
+      validator: this.checkName, trigger: 'blur', message: '商户名称已存在，请重新输入',
     },
   ];
   manageUserRule = [
-    { required: true, message: '请输入登录账号' },
-    {
-      required: true, validator: this.checkUsername, trigger: 'blur', message: '登录账号已存在，请重新输入',
-    },
+    // { required: true, trigger: 'blur', message: '请输入登录账号' },
+    // {
+    //   validator: this.checkName, message: '登录账号已存在，请重新输入',
+    // },
   ]
   ruleStatus: boolean = true;
 
@@ -82,6 +82,7 @@ export default class AddModal extends Vue {
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
+        console.log(value);
         userCheck(value).then((res) => {
           if (res.result.resultCode === '0') {
             callback();
@@ -141,6 +142,7 @@ export default class AddModal extends Vue {
       password: this.modelForm.password !== '********' ? this.modelForm.password : '',
       contactAddress: this.modelForm.contactAddress,
     };
+    console.log(this.modelForm.manageUser);
 
     if (this.title === '新增商户') {
       // 新增
@@ -219,7 +221,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
+              <el-form-item label="登录账号" prop="manageUser" rules={this.ruleStatus ? this.manageUserRule : null}>
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
