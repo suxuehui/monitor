@@ -2,7 +2,7 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Tag, Loading, Button, Switch, Popover } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { getCustomerList } from '@/api/customer';
-import { terminalUnbind, terminalType, bluetoothInfo, resetTime } from '@/api/equipment';
+import { terminalUnbind, terminalType, getBluetooth, resetTime } from '@/api/equipment';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
@@ -126,7 +126,6 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '鉴权码',
-      disabled: (row: any) => (row.online !== 1),
       roles: true,
     },
     {
@@ -413,9 +412,9 @@ export default class Device extends Vue {
       cfgName: 'bluetoothAuthCode',
       id: data.id,
       imei: data.imei,
-      type: 1,
     };
-    bluetoothInfo(obj).then((res) => {
+    getBluetooth(obj).then((res) => {
+      console.log(res);
       if (res.result.resultCode === '0') {
         this.authData = {
           id: data.id,

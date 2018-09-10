@@ -133,7 +133,9 @@ export default class FilterTable extends Vue {
   }
   @Emit()
   setTable(list: Array<string>) {
+    // this.tableList=list;
     console.log(list);
+    console.log(this.tableList);
   }
   @Emit()
   tableClick(key: string, row: any) {

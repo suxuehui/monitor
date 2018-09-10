@@ -103,8 +103,17 @@ export async function getOpsList(params: any) {
   });
 }
 
-// 查询、生成蓝牙鉴权码
-export async function bluetoothInfo(params: any) {
+// 查询蓝牙鉴权码
+export async function getBluetooth(params: any) {
+  return request({
+    url: '/device/terminal/getBluetoothAuthCode',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
+  });
+}
+// 生成蓝牙鉴权码
+export async function createBluetooth(params: any) {
   return request({
     url: '/device/terminal/createBluetoothAuthCode',
     method: 'post',

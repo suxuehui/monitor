@@ -17,8 +17,8 @@ module.exports = {
     proxy: {
       '/api': {
         // target: 'http://192.168.1.240:3000/mock/11', // mock地址
-        target: 'http://192.168.6.234:5555/monitor/', // 测试环境地址
-        // target: 'http://192.168.6.194:5555/monitor/', // 开发环境地址
+        // target: 'http://192.168.6.232:5555/monitor/', // 测试环境地址
+        target: 'http://192.168.6.194:5555/monitor/', // 开发环境地址
         changeOrigin: true,
         pathRewrite: {
           '^/api': '',
@@ -26,8 +26,8 @@ module.exports = {
       },
       '/rootApi': {
         // target: 'http://192.168.1.240:3000/mock/11', // mock地址
-        target: 'http://192.168.6.234:5555/', // 测试环境地址
-        // target: 'http://192.168.6.194:5555/', // 开发环境地址
+        // target: 'http://192.168.6.232:5555/', // 测试环境地址
+        target: 'http://192.168.6.194:5555/', // 开发环境地址
         changeOrigin: true,
         pathRewrite: {
           '^/rootApi': '',

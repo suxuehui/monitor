@@ -1,6 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
-import { bluetoothInfo } from '@/api/equipment';
+import { createBluetooth } from '@/api/equipment';
 import './AuthModel.less';
 @Component({
   components: {
@@ -32,9 +32,9 @@ export default class AuthModel extends Vue {
       cfgName: 'bluetoothAuthCode',
       id: this.data.id,
       imei: this.data.imei,
-      type: 2,
     };
-    bluetoothInfo(obj).then((res) => {
+    createBluetooth(obj).then((res) => {
+      console.log(res);
       if (res.result.resultCode === '0') {
         setTimeout(() => {
           this.newCfgVal = res.entity[0].cfgVal;

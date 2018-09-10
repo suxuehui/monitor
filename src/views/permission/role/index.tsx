@@ -50,6 +50,7 @@ export default class Role extends Vue {
       color: 'blue',
       text: '编辑',
       roles: true,
+      disabled: (row: any) => (row.roleType !== 2),
     },
     {
       key: 'freeze',
@@ -58,6 +59,7 @@ export default class Role extends Vue {
       text: (row: any) => (row.activeStatus === 1 ? '禁用' : '启用'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要禁用？' : '是否要启用？'),
       roles: true,
+      disabled: (row: any) => (row.roleType !== 2),
     },
     {
       key: 'setAuth',
@@ -65,6 +67,7 @@ export default class Role extends Vue {
       color: 'blue',
       text: '设置权限',
       roles: true,
+      disabled: (row: any) => (row.roleType !== 2),
     },
   ];
   // 表格参数
