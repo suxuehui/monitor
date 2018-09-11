@@ -10,6 +10,7 @@ import PopconfirmBlock from '@/components/Popconfirm/index';
 import DownModel from './components/DownModel';
 import ClearModel from './components/ClearModel';
 import AuthModel from './components/AuthModel';
+import UnbindModel from './components/UnbindModel';
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -24,6 +25,7 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   'down-model': DownModel,
   'clear-model': ClearModel,
   'auth-model': AuthModel,
+  'unbind-model': UnbindModel,
   'el-popover': Popover,
   'popconfirm-block': PopconfirmBlock,
   }
