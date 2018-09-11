@@ -71,27 +71,28 @@ export default class Trajectory extends Vue {
   outParams : any = {
     startTime: '',
     endTime: '',
+
   }
   backParams : object = {
     code: 'result.resultCode',
     codeOK: '0',
     message: 'result.resultMessage',
-    data: 'entity',
-    total: 'count',
+    data: 'entity.data',
+    total: 'entity.count',
   };
   tableList : tableList[] = [
     {
       label: '车牌号',
-      prop: 'plateNum',
+      prop: 'platenum',
     }, {
-      label: '时间',
-      prop: 'startTime',
+      label: '开始时间',
+      prop: 'starttime',
     }, {
       label: '起点',
-      prop: 'startAddress',
+      prop: 'startaddr',
     }, {
       label: '终点',
-      prop: 'endAddress',
+      prop: 'endaddr',
     }, {
       label: '里程',
       prop: 'mileage',
@@ -102,7 +103,7 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '用时',
-      prop: 'minutes',
+      prop: 'period',
       formatter(row : any) {
         return row.minutes
           ? `${row.minutes}分钟`
@@ -110,7 +111,7 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '耗油',
-      prop: 'oil',
+      prop: 'fuelcons',
       formatter(row : any) {
         return row.oil
           ? `${row.oil}L`
@@ -118,7 +119,7 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '耗电',
-      prop: 'consuElectric',
+      prop: 'powercons',
       formatter(row : any) {
         return row.consuElectric
           ? `${row.consuElectric}%`
@@ -126,7 +127,7 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '平均油耗',
-      prop: 'avgOil',
+      prop: 'avgfuelcons',
       formatter(row : any) {
         return row.avgOil
           ? `${row.avgOil}L/km`
@@ -134,7 +135,7 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '平均速度',
-      prop: 'avgSpeed',
+      prop: 'avgspeed',
       formatter(row : any) {
         return row.avgSpeed
           ? `${row.avgSpeed}km/h`
@@ -142,7 +143,7 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '最高速度',
-      prop: 'maxSpeed',
+      prop: 'maxspeed',
       formatter(row : any) {
         return row.maxSpeed
           ? `${row.maxSpeed}km`
@@ -206,7 +207,8 @@ export default class Trajectory extends Vue {
   first = true;
 
   created() {
-    this.tableUrl = `/device/trip/list/${this.$route.params.id}`;
+    this.tableUrl = '/device/trip/list';
+    this.outParams.vehicleId = this.$route.params.id;
   }
   canvasLayer: any = null;
   canvasLayerBack: any = null;
@@ -663,6 +665,8 @@ export default class Trajectory extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
+            dataType={'JSON'}
+            fetchType={'post'}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}

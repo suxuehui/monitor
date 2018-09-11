@@ -40,8 +40,9 @@ export default class Monitor extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
-  outParams: object = {
+  outParams: any = {
     brandId: '',
+    seriesId: '',
     modelId: '',
   }
   // data
@@ -525,6 +526,9 @@ export default class Monitor extends Vue {
   }
   // 获取车系/车型
   selectBrandModel(value: string[]) {
+    this.outParams.brandId = value[0] ? value[0] : '';
+    this.outParams.seriesId = value[1] ? value[1] : '';
+    this.outParams.modelId = value[2] ? value[2] : '';
   }
 
   // 格式化能源类型
