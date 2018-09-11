@@ -144,11 +144,12 @@ export default class Member extends Vue {
   addRoleList: any = [];
 
   modelForm: any = {
-    name: '',
-    account: '',
+    realName: '',
+    userName: '',
     roles: {},
     remark: '',
     password: '',
+    roleIdList: [],
   };
 
   // 操作

@@ -170,7 +170,7 @@ export default class AddModal extends Vue {
     this.modelForm = {
       name: '',
       energyType: '',
-      fuelTankCap: 1,
+      fuelTankCap: null,
       brandSeries: [],
     };
     this.selectStatus = false;

@@ -65,42 +65,34 @@ export default class AddModal extends Vue {
   // 验证商户名称
   @Emit()
   checkName(rule: any, value: string, callback: Function) {
-    if (!value) {
-      callback(new Error('商户名称不能为空'));
-    }
     setTimeout(() => {
       if (value) {
         checkOrgName(value).then((res) => {
           if (res.result.resultCode === '0') {
             callback();
           } else {
-            callback(new Error());
+            callback(new Error('商户名已存在，请重新输入'));
           }
-          callback(new Error());
         });
       } else {
-        callback(new Error('不能为空'));
+        callback(new Error('商户名不能为空'));
       }
     }, 500);
   }
   // 验证登录账号
   @Emit()
   checkUsername(rule: any, value: string, callback: Function) {
-    if (!value) {
-      callback(new Error('登录账号不能为空'));
-    }
     setTimeout(() => {
       if (value) {
         userCheck(value).then((res) => {
           if (res.result.resultCode === '0') {
             callback();
           } else {
-            callback(new Error());
+            callback(new Error('登录账号已存在，请重新输入'));
           }
-          callback(new Error());
         });
       } else {
-        callback(new Error('不能为空'));
+        callback(new Error('登录账号不能为空'));
       }
     }, 500);
   }
@@ -150,7 +142,6 @@ export default class AddModal extends Vue {
       password: this.modelForm.password !== '********' ? this.modelForm.password : '',
       contactAddress: this.modelForm.contactAddress,
     };
-    console.log(obj);
 
     if (this.title === '新增商户') {
       // 新增
@@ -173,6 +164,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;
@@ -200,6 +192,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;
@@ -233,7 +226,7 @@ export default class AddModal extends Vue {
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
-                  disabled={this.title === '登录账号'}
+                  disabled={this.title === '编辑商户'}
                   placeholder="请输入登录账号"
                 ></el-input>
               </el-form-item>

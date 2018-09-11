@@ -37,6 +37,11 @@ export default class AddModal extends Vue {
     roleIdList: [],
   };
 
+  roleTypeList: RoleType[] = []
+  isInstaller: boolean = false;
+  isPhoneNumber: boolean = false;
+  phoneNumber: string = '';
+
   loading: boolean = false;
   rules = {
     realName: [
@@ -46,18 +51,18 @@ export default class AddModal extends Vue {
     //   { validator: this.checkUsername, trigger: 'blur' },
     // ],
     roleIdList: [
-      { required: true, message: '请选择角色类型', trigger: 'change' },
+      { required: true, message: '请选择角色类型' },
     ],
     password: [
-      { required: true },
+      { required: true, message: '请输入登录密码', trigger: 'blur' },
     ],
     remark: [
       { required: false },
     ],
   }
   userNameRule = [
-    { required: true, message: '请输入用户名' },
-    { message: '用户名已存在，请重新输入', validator: this.checkUsername, trigger: 'blur' },
+    { required: true, message: '请输入登录账号' },
+    { validator: this.checkUsername, trigger: 'blur' },
   ];
 
   // 验证登录账号
@@ -65,15 +70,24 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       if (value) {
         userCheck(value).then((res) => {
+          this.phoneNumber = value;
           if (res.result.resultCode === '0') {
-            callback();
+            if (this.isInstaller) {
+              const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+              if (exp.test(value)) {
+                callback();
+              } else {
+                callback(new Error('安装员登录账号必须为手机号'));
+              }
+            } else {
+              callback();
+            }
           } else {
-            callback(new Error());
+            callback(new Error('登录账号已存在，不能为空'));
           }
-          callback(new Error());
         });
       } else {
-        callback(new Error('不能为空'));
+        callback(new Error('登录账号不能为空'));
       }
     }, 500);
   }
@@ -92,8 +106,6 @@ export default class AddModal extends Vue {
       }
     });
   }
-
-  roleTypeList: RoleType[] = []
 
   @Watch('data')
   onDataChange() {
@@ -121,6 +133,7 @@ export default class AddModal extends Vue {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
+      From.clearValidate();
       From.resetFields();
     }, 200);
   }
@@ -144,8 +157,10 @@ export default class AddModal extends Vue {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
-                this.$message.success(res.result.resultMessage);
+                this.modelForm.roleIdList = [];
+                From.clearValidate();
                 From.resetFields();
+                this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -170,8 +185,10 @@ export default class AddModal extends Vue {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
-                this.$message.success(res.result.resultMessage);
+                this.modelForm.roleIdList = [];
+                From.clearValidate();
                 From.resetFields();
+                this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -192,8 +209,24 @@ export default class AddModal extends Vue {
 
   change: boolean = false;
 
-  selectChange() {
+  selectChange(val: any) {
+    console.log(val);
     this.change = !this.change;
+    val.forEach((element: any) => {
+      if (element === 3) {
+        this.isInstaller = true;
+      }
+    });
+    if (this.phoneNumber) {
+      const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+      if (exp.test(this.phoneNumber)) {
+        console.log(1);
+        this.isPhoneNumber = true;
+      } else {
+        this.isPhoneNumber = false;
+        this.$message.error('安装员登录账号必须为手机号,请重新输入');
+      }
+    }
   }
 
   render() {
@@ -223,6 +256,7 @@ export default class AddModal extends Vue {
                   v-model={this.modelForm.roleIdList}
                   multiple={true}
                   filterable={true}
+                  disabled={this.data.id > 0}
                   on-change={this.selectChange}
                   placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
                   style="width:100%"
