@@ -32,11 +32,12 @@ export default class BindLog extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
-    { label: '安绑员', prop: 'opsRealName', formatter: this.opsPerson },
-    { label: '安绑时间', prop: 'crtTime', formatter: (row: any) => (row.crtTime ? row.crtTime : '--') },
-    { label: '安装拍照', prop: 'installUrl', formatter: this.showInstallPic },
-    { label: '车架拍照', prop: 'vinUrl', formatter: this.showVinPic },
-    { label: '验收记录', prop: 'hostVer', formatter: this.checkLog },
+    { label: '操作人员', prop: 'opsRealName', formatter: this.opsPerson },
+    { label: '操作时间', prop: 'opsRealName', formatter: this.opsPerson },
+    { label: '操作时间', prop: 'crtTime', formatter: (row: any) => (row.crtTime ? row.crtTime : '--') },
+    { label: '安装图片', prop: 'installUrl', formatter: this.showInstallPic },
+    { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },
+    { label: '操作', prop: 'hostVer', formatter: this.checkLog },
   ];
   created() {
     // id、imei
@@ -87,7 +88,7 @@ export default class BindLog extends Vue {
   }
 
   checkLog(row: any) {
-    return <a class="check-link" on-click={() => this.checkLogChange(row)}>查看</a>;
+    return <a class="check-link" on-click={() => this.checkLogChange(row)}>验收记录</a>;
   }
 
   checkLogChange(data: any) {
