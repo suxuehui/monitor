@@ -25,6 +25,7 @@ export default class BindLog extends Vue {
     pageNum: 1,
     pageSize: 5,
   }
+  defaultPageSize: any = null;
   url: string = '/terminal/ops/list';
   opreat: Opreat[] = [];
   // 表格参数
@@ -49,6 +50,7 @@ export default class BindLog extends Vue {
       pageSize: 5,
       terminalId: this.$route.query.id,
     };
+    this.defaultPageSize = 5;
     console.log(this.tableParams);
   }
 
@@ -71,7 +73,7 @@ export default class BindLog extends Vue {
   }
 
   showVinPic(row: any) {
-    if (row.installUrl !== null) {
+    if (row.vinUrl !== null) {
       const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
       return imgArr.map((item: any) => <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />);
     }
@@ -85,7 +87,7 @@ export default class BindLog extends Vue {
   checkLogChange(data: any) {
     this.checkLogVisible = true;
     this.checkLogId = data.id;
-    const checkModel:any = this.$refs.checkLogModel;
+    const checkModel: any = this.$refs.checkLogModel;
   }
 
   // 关闭弹窗
@@ -149,6 +151,7 @@ export default class BindLog extends Vue {
               opreat={this.opreat}
               opreat-width={'180px'}
               on-tableClick={this.tableClick}
+              defaultPageSize={this.defaultPageSize}
             />
           </div>
         </el-card>

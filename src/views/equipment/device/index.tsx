@@ -279,7 +279,7 @@ export default class Device extends Vue {
 
   endDay(row: any) {
     return <div>
-      <span style="marginLeft:-6px">{row.serviceEndDay ? `${row.serviceEndDay}天` : '--'}</span>
+      <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
       <popconfirm-block
         ref={`popBlock${row.id}`}
         title="确定要重置此设备到期日期吗？"
