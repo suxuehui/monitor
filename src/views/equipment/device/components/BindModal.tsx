@@ -323,8 +323,11 @@ export default class BindModal extends Vue {
               <el-col span={24}>
                 <el-form-item label="车架图片" >
                   <upload-Model
-                    class="uploadBlock"
                     ref="uploadModel"
+                    class="uploadBlock"
+                    name="file"
+                    listType="picture-card"
+                    autoUpload={true}
                     url={this.uploadUrl}
                     logoUrl={this.logoUrl}
                     headers={this.headers}

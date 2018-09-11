@@ -36,6 +36,7 @@ export default class AddModal extends Vue {
   dialogVisible: boolean = false;
   headers: any = '';
   uploadUrl: string = '';
+  fileName: string = '';
 
   rules = {
     name: [
@@ -72,6 +73,7 @@ export default class AddModal extends Vue {
       token: window.localStorage.getItem('token'),
     };
     this.uploadUrl = process.env.NODE_ENV === 'production' ? '/verify/file/upload' : '/rootApi/verify/file/upload';
+    this.fileName = `${new Date().getTime()}`;
   }
 
   // 重置数据
@@ -101,6 +103,8 @@ export default class AddModal extends Vue {
     if (response.result.resultCode === '0') {
       this.$message.success('图片上传成功');
       this.modelForm.logo = response.entity;
+    } else {
+      this.$message.error(response.result.resultMessage);
     }
   }
 
@@ -199,6 +203,9 @@ export default class AddModal extends Vue {
                 <el-form-item label="品牌图标" prop="logo">
                   <upload-Model
                     ref="uploadModel"
+                    name="file"
+                    listType="picture-card"
+                    autoUpload={true}
                     url={this.uploadUrl}
                     logoUrl={this.logoUrl}
                     headers={this.headers}
