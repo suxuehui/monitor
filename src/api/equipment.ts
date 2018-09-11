@@ -130,3 +130,12 @@ export async function resetTime(params: any) {
     data: params,
   });
 }
+
+// 查询车辆详情
+export async function terminalInfo(params: any) {
+  return request({
+    url: `/device/terminal/info/${params}`,
+    method: 'get',
+    data: params,
+  });
+}

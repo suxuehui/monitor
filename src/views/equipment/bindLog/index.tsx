@@ -1,6 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Card, Form, FormItem, Input, Row, Col } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
 import './index.less';
@@ -38,11 +39,6 @@ export default class BindLog extends Vue {
     { label: '验收记录', prop: 'hostVer', formatter: this.checkLog },
   ];
   created() {
-    // 所属商户、车牌号、车架号
-    this.modelForm = this.$route.params;
-    this.modelForm.orgName = this.modelForm.orgName !== null ? this.modelForm.orgName : '--';
-    this.modelForm.plateNum = this.modelForm.plateNum !== null ? this.modelForm.plateNum : '--';
-    this.modelForm.vin = this.modelForm.vin !== null ? this.modelForm.vin : '--';
     // id、imei
     this.tableParams = {
       page: true,
@@ -51,7 +47,17 @@ export default class BindLog extends Vue {
       terminalId: this.$route.query.id,
     };
     this.defaultPageSize = 5;
-    console.log(this.tableParams);
+    terminalInfo(this.$route.query.id).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.modelForm = {
+          orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
+          plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
+          vin: res.entity.vin !== null ? res.entity.vin : '--',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   checkLogVisible: boolean = false;

@@ -197,6 +197,9 @@ export default class Device extends Vue {
   // 绑定
   bindVisible: boolean = false;
   bindTitle: string = '';
+  // 解绑
+  unbindVisible: boolean = false;
+  unbindData: any = {}
 
   // 鉴权码
   authVisible: boolean = false;
@@ -321,7 +324,10 @@ export default class Device extends Vue {
   }
 
   checkLog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id }, params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
+    // this.$router.push({
+    //  name: '安绑记录', query: { imei: row.imei, id: row.id },
+    // params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
   }
 
   onlineSelect(row: any) {
@@ -375,14 +381,8 @@ export default class Device extends Vue {
           this.bindVisible = true;
           this.bindTitle = '绑定车辆';
         } else {
-          terminalUnbind({ imei: row.imei }).then((res) => {
-            if (res.result.resultCode === '0') {
-              formTable.reloadTable();
-              this.$message.success(res.result.resultMessage);
-            } else {
-              this.$message.error(res.result.resultMessage);
-            }
-          });
+          this.unbindVisible = true;
+          this.unbindData = row;
         }
         break;
       case 'accept':
@@ -442,6 +442,7 @@ export default class Device extends Vue {
     this.downVisible = false;
     this.clearVisible = false;
     this.authVisible = false;
+    this.unbindVisible = false;
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();
@@ -500,6 +501,12 @@ export default class Device extends Vue {
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></auth-model>
+        <unbind-model
+          data={this.unbindData}
+          visible={this.unbindVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        ></unbind-model>
         <down-model
           data={this.downData}
           title={this.downTitle}
