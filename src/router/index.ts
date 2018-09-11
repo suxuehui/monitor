@@ -216,7 +216,7 @@ export const asyncRouterMap: routerItem[] = [
     component: getComponent('data/index'),
     icon: 'chart',
     permission: [
-      '/data/driving/list',
+      '/statistics/driving/list',
     ],
     children: [
       {

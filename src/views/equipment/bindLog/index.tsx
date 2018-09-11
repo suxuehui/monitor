@@ -20,7 +20,11 @@ const noPic = require('@/assets/noPic.png');
   })
 export default class BindLog extends Vue {
   modelForm: any = {}
-  tableParams: any = {}
+  tableParams: any = {
+    page: true,
+    pageNum: 1,
+    pageSize: 5,
+  }
   url: string = '/terminal/ops/list';
   opreat: Opreat[] = [];
   // 表格参数
@@ -42,9 +46,10 @@ export default class BindLog extends Vue {
     this.tableParams = {
       page: true,
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 5,
       terminalId: this.$route.query.id,
     };
+    console.log(this.tableParams);
   }
 
   checkLogVisible: boolean = false;
