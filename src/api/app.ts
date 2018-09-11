@@ -2,6 +2,15 @@ import axios from 'axios';
 import request from '@/utils/request';
 import qs from 'qs';
 
+// 商户树状数据
+export async function orgTree(params: any) {
+  return request({
+    url: '/customer/org/querySelfAndChildren',
+    method: 'get',
+    data: params,
+  });
+}
+
 export async function login(params: any, token: string) {
   return request({
     url: '/sys/login',
