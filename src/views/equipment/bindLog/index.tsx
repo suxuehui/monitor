@@ -33,9 +33,9 @@ export default class BindLog extends Vue {
   opreat: Opreat[] = [];
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName' },
+    { label: '所属商户', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
     { label: '操作人员', prop: 'opsRealName', formatter: this.opsPerson },
-    { label: '操作类型', prop: 'opsType' },
+    { label: '操作类型', prop: 'opsType', formatter: (row: any) => (row.opsType ? row.opsType : '--') },
     { label: '操作时间', prop: 'crtTime' },
     { label: '安装图片', prop: 'installUrl', formatter: this.showInstallPic },
     { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },

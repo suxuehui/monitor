@@ -22,7 +22,7 @@ export default class CheckLog extends Vue {
     { label: '验收员', prop: 'orgName', formatter: this.acceptPerson },
     { label: '提交时间', prop: 'createTime' },
     { label: '验收时间', prop: 'acceptTime' },
-    { label: '验收状态', prop: 'acceptStatus' },
+    { label: '验收状态', prop: 'acceptStatus', formatter: (row: any) => (row.acceptStatus ? row.acceptStatus : '--') },
     { label: '备注', prop: 'remark' },
   ];
 
