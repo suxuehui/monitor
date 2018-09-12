@@ -118,8 +118,8 @@ const app = {
       tabList = tabList.filter((item: any, index: number) => {
         if (item.name === name) {
           // 关闭tab后，页面跳转到前一个TAB，特殊情况是关闭第一个TAB应该打开第二个TAB
-          resultData.tabActiveKey = index ? tabList[index - 1].name : tabList[index + 1].name;
-          router.push({ name: resultData.tabActiveKey });
+          const onTab = index ? tabList[index - 1] : tabList[index + 1];
+          router.push({ name: onTab.name, query: onTab.query, params: onTab.params });
           keepList.splice(keepList.indexOf(item.meta.key), 1);
           context.commit('KEEP_CHANGE', keepList);
           return false;

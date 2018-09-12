@@ -421,7 +421,7 @@ export default class Trajectory extends Vue {
   getPlateNum() {
     return this.plateNum;
   }
-
+  // 根据速度获取相应颜色
   getColorBySpeed = (speed: number) => {
     let color = '';
     let red: string | number = 0;
