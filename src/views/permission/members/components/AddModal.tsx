@@ -41,6 +41,7 @@ export default class AddModal extends Vue {
   isInstaller: boolean = false;
   isPhoneNumber: boolean = false;
   phoneNumber: string = '';
+  noClick: boolean = false;
 
   loading: boolean = false;
   rules = {
@@ -114,6 +115,7 @@ export default class AddModal extends Vue {
       this.modelForm.roleIdList = this.data.IdList;
       this.modelForm.password = '********';
       this.isAdmin = data.IdList.toString() === '1';
+      this.phoneNumber = this.data.userName;
     } else {
       this.resetData();
     }
@@ -129,7 +131,7 @@ export default class AddModal extends Vue {
       remark: '',
       password: '',
     };
-    this.isAdmin=false;
+    this.isAdmin = false;
   }
 
   closeModal() {
@@ -182,7 +184,7 @@ export default class AddModal extends Vue {
     } else {
       // 修改
       obj.userId = this.data.id;
-      delete obj.roleIdList;
+      // delete obj.roleIdList;
       From.validate((valid: any) => {
         if (valid) {
           userUpdate(obj).then((res) => {
@@ -194,7 +196,7 @@ export default class AddModal extends Vue {
                 From.resetFields();
                 this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
-                this.isAdmin=false;
+                this.isAdmin = false;
               }, 1500);
             } else {
               setTimeout(() => {
@@ -219,15 +221,23 @@ export default class AddModal extends Vue {
     val.forEach((element: any) => {
       if (element === 3) {
         this.isInstaller = true;
+        this.noClick = true;
+      } else {
+        this.isInstaller = false;
+        this.noClick = false;
       }
     });
-    if (this.phoneNumber) {
-      const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
-      if (exp.test(this.phoneNumber)) {
-        this.isPhoneNumber = true;
-      } else {
-        this.isPhoneNumber = false;
-        this.$message.error('安装员登录账号必须为手机号,请重新输入');
+    if (this.isInstaller) {
+      if (this.phoneNumber) {
+        const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+        if (exp.test(this.phoneNumber)) {
+          this.isPhoneNumber = true;
+          this.noClick = false;
+        } else {
+          this.isPhoneNumber = false;
+          this.noClick = true;
+          this.$message.error('安装员登录账号必须为手机号,请重新输入');
+        }
       }
     }
   }
@@ -271,7 +281,7 @@ export default class AddModal extends Vue {
                       v-model={this.modelForm.roleIdList}
                       multiple={true}
                       filterable={true}
-                      disabled={this.data.id > 0}
+                      disabled={this.data.id === 1}
                       on-change={this.selectChange}
                       placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
                       style="width:100%"
@@ -285,26 +295,6 @@ export default class AddModal extends Vue {
                   </el-form-item>
                 </el-col>
             }
-            {/* <el-col span={12}>
-              <el-form-item label="角色类型" prop="roleIdList">
-                <el-select
-                  id="roleIdList"
-                  v-model={this.modelForm.roleIdList}
-                  multiple={true}
-                  filterable={true}
-                  disabled={this.data.id > 0}
-                  on-change={this.selectChange}
-                  placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
-                  style="width:100%"
-                >
-                  {
-                    this.roleTypeList.map((item: any) => (
-                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                    ))
-                  }
-                </el-select>
-              </el-form-item>
-            </el-col> */}
             <el-col span={12}>
               <el-form-item label="登录账号" prop="userName" rules={this.data.id > 0 ? null : this.userNameRule}>
                 <el-input
@@ -339,7 +329,7 @@ export default class AddModal extends Vue {
           </el-row>
           <el-row>
             <el-col offset={7} span={12}>
-              <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
+              <el-button size="small" type="primary" id="submit" disable={this.noClick} loading={this.loading} on-click={this.onSubmit}>提交</el-button>
               <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
             </el-col>
           </el-row>

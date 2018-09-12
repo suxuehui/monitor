@@ -35,7 +35,7 @@ export default class AcceptModal extends Vue {
       { required: true, message: '请确认是否合格', trigger: 'blur' },
     ],
     remark: [
-      { required: true, message: '请确认是否合格', trigger: 'blur' },
+      { required: true, message: '请输入不合格备注', trigger: 'blur' },
     ],
   }
 
@@ -72,7 +72,7 @@ export default class AcceptModal extends Vue {
       remark: this.modelForm.remark,
       terminalStatus: parseInt(this.modelForm.terminalStatus, 10),
     };
-    this.loading = true;
+    // this.loading = true;
     From.validate((valid: any) => {
       if (valid) {
         // terminalCheck(obj).then((res) => {
