@@ -95,7 +95,8 @@ export default class MFilter extends Vue {
   }
   @Emit()
   levelcodeChange(val: any, key: string): void {
-    this.params[key] = val.pop();
+    const value = JSON.parse(JSON.stringify(val));
+    this.params[key] = value.pop();
   }
   @Emit()
   openSetting(): void {
@@ -151,9 +152,12 @@ export default class MFilter extends Vue {
       case 'levelcode':
         itemDom = <el-cascader style="width: 100%;"
           id={item.key}
+          props={item.props}
+          change-on-select
           options={item.options}
+          v-model={this.params[`${item.key}Arr`]}
           placeholder={item.placeholder}
-          change={(e: Array<string>) => this.levelcodeChange(e, item.key)}></el-cascader>;
+          on-change={(e: Array<string>) => this.levelcodeChange(e, item.key)}></el-cascader>;
         break;
       case 'datetime':
         itemDom = <el-date-picker

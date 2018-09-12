@@ -5,8 +5,8 @@ import qs from 'qs';
 // 商户树状数据
 export async function orgTree(params: any) {
   return request({
-    url: '/customer/org/querySelfAndChildren',
-    method: 'get',
+    url: '/customer/org/queryAllOrgOfFormat',
+    method: 'post',
     data: params,
   });
 }
