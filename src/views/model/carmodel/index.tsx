@@ -20,8 +20,8 @@ export default class CarModel extends Vue {
       placeholder: '请选择品牌车系',
       options: [],
       props: {},
-      itemChange: this.brandLoad,
-      change: this.brandChange,
+      // itemChange: this.brandLoad,
+      change: this.brandLoad,
     },
     {
       key: 'keyword',
@@ -111,6 +111,10 @@ export default class CarModel extends Vue {
   }
 
   brandLoad(val: any) {
+    this.outParams = {
+      brandId: val[0],
+      seriesId: val[1] ? val[0] : null,
+    };
     const obj = {
       brandId: val[0],
     };
