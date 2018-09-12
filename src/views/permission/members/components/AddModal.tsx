@@ -37,6 +37,12 @@ export default class AddModal extends Vue {
     roleIdList: [],
   };
 
+  roleTypeList: RoleType[] = []
+  isInstaller: boolean = false;
+  isPhoneNumber: boolean = false;
+  phoneNumber: string = '';
+  noClick: boolean = false;
+
   loading: boolean = false;
   rules = {
     realName: [
@@ -46,18 +52,18 @@ export default class AddModal extends Vue {
     //   { validator: this.checkUsername, trigger: 'blur' },
     // ],
     roleIdList: [
-      { required: true, message: '请选择角色类型', trigger: 'change' },
+      { required: true, message: '请选择角色类型' },
     ],
     password: [
-      { required: true },
+      { required: true, message: '请输入登录密码', trigger: 'blur' },
     ],
     remark: [
       { required: false },
     ],
   }
   userNameRule = [
-    { required: true, message: '请输入用户名' },
-    { message: '用户名已存在，请重新输入', validator: this.checkUsername, trigger: 'blur' },
+    { required: true, message: '请输入登录账号' },
+    { validator: this.checkUsername, trigger: 'blur' },
   ];
 
   // 验证登录账号
@@ -65,15 +71,24 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       if (value) {
         userCheck(value).then((res) => {
+          this.phoneNumber = value;
           if (res.result.resultCode === '0') {
-            callback();
+            if (this.isInstaller) {
+              const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+              if (exp.test(value)) {
+                callback();
+              } else {
+                callback(new Error('安装员登录账号必须为手机号'));
+              }
+            } else {
+              callback();
+            }
           } else {
-            callback(new Error());
+            callback(new Error('登录账号已存在，不能为空'));
           }
-          callback(new Error());
         });
       } else {
-        callback(new Error('不能为空'));
+        callback(new Error('登录账号不能为空'));
       }
     }, 500);
   }
@@ -93,18 +108,19 @@ export default class AddModal extends Vue {
     });
   }
 
-  roleTypeList: RoleType[] = []
-
   @Watch('data')
-  onDataChange() {
+  onDataChange(data: any) {
     if (this.data.id > 0) {
       this.modelForm = JSON.parse(JSON.stringify(this.data));
       this.modelForm.roleIdList = this.data.IdList;
       this.modelForm.password = '********';
+      this.isAdmin = data.IdList.toString() === '1';
+      this.phoneNumber = this.data.userName;
     } else {
       this.resetData();
     }
   }
+  isAdmin: boolean = false;
 
   // 重置数据
   resetData() {
@@ -115,12 +131,14 @@ export default class AddModal extends Vue {
       remark: '',
       password: '',
     };
+    this.isAdmin = false;
   }
 
   closeModal() {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
+      From.clearValidate();
       From.resetFields();
     }, 200);
   }
@@ -144,8 +162,10 @@ export default class AddModal extends Vue {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
-                this.$message.success(res.result.resultMessage);
+                this.modelForm.roleIdList = [];
+                From.clearValidate();
                 From.resetFields();
+                this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -164,15 +184,19 @@ export default class AddModal extends Vue {
     } else {
       // 修改
       obj.userId = this.data.id;
+      // delete obj.roleIdList;
       From.validate((valid: any) => {
         if (valid) {
           userUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
-                this.$message.success(res.result.resultMessage);
+                this.modelForm.roleIdList = [];
+                From.clearValidate();
                 From.resetFields();
+                this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
+                this.isAdmin = false;
               }, 1500);
             } else {
               setTimeout(() => {
@@ -192,8 +216,30 @@ export default class AddModal extends Vue {
 
   change: boolean = false;
 
-  selectChange() {
+  selectChange(val: any) {
     this.change = !this.change;
+    val.forEach((element: any) => {
+      if (element === 3) {
+        this.isInstaller = true;
+        this.noClick = true;
+      } else {
+        this.isInstaller = false;
+        this.noClick = false;
+      }
+    });
+    if (this.isInstaller) {
+      if (this.phoneNumber) {
+        const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+        if (exp.test(this.phoneNumber)) {
+          this.isPhoneNumber = true;
+          this.noClick = false;
+        } else {
+          this.isPhoneNumber = false;
+          this.noClick = true;
+          this.$message.error('安装员登录账号必须为手机号,请重新输入');
+        }
+      }
+    }
   }
 
   render() {
@@ -216,25 +262,39 @@ export default class AddModal extends Vue {
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col span={12}>
-              <el-form-item label="角色类型" prop="roleIdList">
-                <el-select
-                  id="roleIdList"
-                  v-model={this.modelForm.roleIdList}
-                  multiple={true}
-                  filterable={true}
-                  on-change={this.selectChange}
-                  placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
-                  style="width:100%"
-                >
-                  {
-                    this.roleTypeList.map((item: any) => (
-                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                    ))
-                  }
-                </el-select>
-              </el-form-item>
-            </el-col>
+            {
+              this.isAdmin ?
+                <el-col span={12}>
+                  <el-form-item label="角色类型" prop="roleIdList1">
+                    <el-input
+                      id="roleIdList1"
+                      disabled={true}
+                      v-model={this.modelForm.roleNames}
+                      placeholder="请输入角色类型"
+                    ></el-input>
+                  </el-form-item>
+                </el-col> :
+                <el-col span={12}>
+                  <el-form-item label="角色类型" prop="roleIdList">
+                    <el-select
+                      id="roleIdList"
+                      v-model={this.modelForm.roleIdList}
+                      multiple={true}
+                      filterable={true}
+                      disabled={this.data.id === 1}
+                      on-change={this.selectChange}
+                      placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
+                      style="width:100%"
+                    >
+                      {
+                        this.roleTypeList.map((item: any) => (
+                          <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                        ))
+                      }
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+            }
             <el-col span={12}>
               <el-form-item label="登录账号" prop="userName" rules={this.data.id > 0 ? null : this.userNameRule}>
                 <el-input
@@ -269,7 +329,7 @@ export default class AddModal extends Vue {
           </el-row>
           <el-row>
             <el-col offset={7} span={12}>
-              <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
+              <el-button size="small" type="primary" id="submit" disable={this.noClick} loading={this.loading} on-click={this.onSubmit}>提交</el-button>
               <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
             </el-col>
           </el-row>

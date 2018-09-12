@@ -10,6 +10,7 @@ import PopconfirmBlock from '@/components/Popconfirm/index';
 import DownModel from './components/DownModel';
 import ClearModel from './components/ClearModel';
 import AuthModel from './components/AuthModel';
+import UnbindModel from './components/UnbindModel';
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -24,6 +25,7 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   'down-model': DownModel,
   'clear-model': ClearModel,
   'auth-model': AuthModel,
+  'unbind-model': UnbindModel,
   'el-popover': Popover,
   'popconfirm-block': PopconfirmBlock,
   }
@@ -195,6 +197,9 @@ export default class Device extends Vue {
   // 绑定
   bindVisible: boolean = false;
   bindTitle: string = '';
+  // 解绑
+  unbindVisible: boolean = false;
+  unbindData: any = {}
 
   // 鉴权码
   authVisible: boolean = false;
@@ -279,7 +284,7 @@ export default class Device extends Vue {
 
   endDay(row: any) {
     return <div>
-      <span style="marginLeft:-6px">{row.serviceEndDay ? `${row.serviceEndDay}天` : '--'}</span>
+      <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
       <popconfirm-block
         ref={`popBlock${row.id}`}
         title="确定要重置此设备到期日期吗？"
@@ -319,7 +324,10 @@ export default class Device extends Vue {
   }
 
   checkLog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id }, params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
+    // this.$router.push({
+    //  name: '安绑记录', query: { imei: row.imei, id: row.id },
+    // params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
   }
 
   onlineSelect(row: any) {
@@ -373,14 +381,8 @@ export default class Device extends Vue {
           this.bindVisible = true;
           this.bindTitle = '绑定车辆';
         } else {
-          terminalUnbind({ imei: row.imei }).then((res) => {
-            if (res.result.resultCode === '0') {
-              formTable.reloadTable();
-              this.$message.success(res.result.resultMessage);
-            } else {
-              this.$message.error(res.result.resultMessage);
-            }
-          });
+          this.unbindVisible = true;
+          this.unbindData = row;
         }
         break;
       case 'accept':
@@ -414,7 +416,6 @@ export default class Device extends Vue {
       imei: data.imei,
     };
     getBluetooth(obj).then((res) => {
-      console.log(res);
       if (res.result.resultCode === '0') {
         this.authData = {
           id: data.id,
@@ -441,6 +442,7 @@ export default class Device extends Vue {
     this.downVisible = false;
     this.clearVisible = false;
     this.authVisible = false;
+    this.unbindVisible = false;
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();
@@ -499,6 +501,12 @@ export default class Device extends Vue {
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></auth-model>
+        <unbind-model
+          data={this.unbindData}
+          visible={this.unbindVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        ></unbind-model>
         <down-model
           data={this.downData}
           title={this.downTitle}

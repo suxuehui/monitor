@@ -1,6 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Card, Form, FormItem, Input, Row, Col } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
 import './index.less';
@@ -20,31 +21,44 @@ const noPic = require('@/assets/noPic.png');
   })
 export default class BindLog extends Vue {
   modelForm: any = {}
-  tableParams: any = {}
+  tableParams: any = {
+    page: true,
+    pageNum: 1,
+    pageSize: 5,
+  }
+  defaultPageSize: any = null;
   url: string = '/terminal/ops/list';
   opreat: Opreat[] = [];
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
-    { label: '安绑员', prop: 'opsRealName', formatter: this.opsPerson },
-    { label: '安绑时间', prop: 'crtTime', formatter: (row: any) => (row.crtTime ? row.crtTime : '--') },
-    { label: '安装拍照', prop: 'installUrl', formatter: this.showInstallPic },
-    { label: '车架拍照', prop: 'vinUrl', formatter: this.showVinPic },
-    { label: '验收记录', prop: 'hostVer', formatter: this.checkLog },
+    { label: '操作人员', prop: 'opsRealName', formatter: this.opsPerson },
+    { label: '操作时间', prop: 'opsRealName', formatter: this.opsPerson },
+    { label: '操作时间', prop: 'crtTime', formatter: (row: any) => (row.crtTime ? row.crtTime : '--') },
+    { label: '安装图片', prop: 'installUrl', formatter: this.showInstallPic },
+    { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },
+    { label: '操作', prop: 'hostVer', formatter: this.checkLog },
   ];
   created() {
-    // 所属商户、车牌号、车架号
-    this.modelForm = this.$route.params;
-    this.modelForm.orgName = this.modelForm.orgName !== null ? this.modelForm.orgName : '--';
-    this.modelForm.plateNum = this.modelForm.plateNum !== null ? this.modelForm.plateNum : '--';
-    this.modelForm.vin = this.modelForm.vin !== null ? this.modelForm.vin : '--';
     // id、imei
     this.tableParams = {
       page: true,
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 5,
       terminalId: this.$route.query.id,
     };
+    this.defaultPageSize = 5;
+    terminalInfo(this.$route.query.id).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.modelForm = {
+          orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
+          plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
+          vin: res.entity.vin !== null ? res.entity.vin : '--',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   checkLogVisible: boolean = false;
@@ -66,7 +80,7 @@ export default class BindLog extends Vue {
   }
 
   showVinPic(row: any) {
-    if (row.installUrl !== null) {
+    if (row.vinUrl !== null) {
       const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
       return imgArr.map((item: any) => <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />);
     }
@@ -74,13 +88,13 @@ export default class BindLog extends Vue {
   }
 
   checkLog(row: any) {
-    return <a class="check-link" on-click={() => this.checkLogChange(row)}>查看</a>;
+    return <a class="check-link" on-click={() => this.checkLogChange(row)}>验收记录</a>;
   }
 
   checkLogChange(data: any) {
     this.checkLogVisible = true;
     this.checkLogId = data.id;
-    const checkModel:any = this.$refs.checkLogModel;
+    const checkModel: any = this.$refs.checkLogModel;
   }
 
   // 关闭弹窗
@@ -144,6 +158,7 @@ export default class BindLog extends Vue {
               opreat={this.opreat}
               opreat-width={'180px'}
               on-tableClick={this.tableClick}
+              defaultPageSize={this.defaultPageSize}
             />
           </div>
         </el-card>

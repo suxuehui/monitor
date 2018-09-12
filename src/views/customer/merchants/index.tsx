@@ -103,11 +103,11 @@ export default class Merchants extends Vue {
   modelTitle: string = '';
   modelForm: any = {
     orgName: '',
-    contacts: '',
-    mgrUsername: '',
+    contactUser: '',
+    manageUser: '',
     password: '',
-    phone: '',
-    address: '',
+    contactPhone: '',
+    contactAddress: '',
   }
   freezeData: any = {}
 

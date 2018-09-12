@@ -1,8 +1,9 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
 
 import { userCheck } from '@/api/permission';
+import { emit } from 'cluster';
 @Component({
   components: {
   'el-dialog': Dialog,
@@ -48,20 +49,21 @@ export default class AddModal extends Vue {
     ],
   }
   orgRule = [
-    { required: true, message: '请输入商户名称' },
+    { required: true, message: '请输入商户名称', trigger: 'blur' },
     {
-      required: true, validator: this.checkName, trigger: 'blur', message: '商户名称已存在，请重新输入',
+      validator: this.checkName, trigger: 'blur',
     },
   ];
   manageUserRule = [
-    { required: true, message: '请输入登录账号' },
+    { required: true, message: '请输入登录账号', trigger: 'blur' },
     {
-      required: true, validator: this.checkUsername, trigger: 'blur', message: '登录账号已存在，请重新输入',
+      validator: this.checkUsername, trigger: 'blur',
     },
   ]
   ruleStatus: boolean = true;
 
   // 验证商户名称
+  @Emit()
   checkName(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
@@ -69,16 +71,16 @@ export default class AddModal extends Vue {
           if (res.result.resultCode === '0') {
             callback();
           } else {
-            callback(new Error());
+            callback(new Error('商户名已存在，请重新输入'));
           }
-          callback(new Error());
         });
       } else {
-        callback(new Error('不能为空'));
+        callback(new Error('商户名不能为空'));
       }
     }, 500);
   }
   // 验证登录账号
+  @Emit()
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
@@ -86,12 +88,11 @@ export default class AddModal extends Vue {
           if (res.result.resultCode === '0') {
             callback();
           } else {
-            callback(new Error());
+            callback(new Error('登录账号已存在，请重新输入'));
           }
-          callback(new Error());
         });
       } else {
-        callback(new Error('不能为空'));
+        callback(new Error('登录账号不能为空'));
       }
     }, 500);
   }
@@ -163,6 +164,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;
@@ -190,6 +192,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
+          this.loading = false;
           return false;
         }
         return false;

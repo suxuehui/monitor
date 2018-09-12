@@ -98,6 +98,7 @@ export default class Member extends Vue {
       text: (row: any) => (row.activeStatus === 1 ? '冻结' : '解冻'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要冻结？' : '是否要解冻？'),
       roles: true,
+      disabled: (row: any) => (row.userName === 'admin'),
     },
   ];
   // 表格参数
@@ -144,11 +145,12 @@ export default class Member extends Vue {
   addRoleList: any = [];
 
   modelForm: any = {
-    name: '',
-    account: '',
+    realName: '',
+    userName: '',
     roles: {},
     remark: '',
     password: '',
+    roleIdList: [],
   };
 
   // 操作

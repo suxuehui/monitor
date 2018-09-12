@@ -32,7 +32,10 @@ export default class AcceptModal extends Vue {
   loading: boolean = false;
   rules = {
     terminalStatus: [
-      { required: true, message: '请确认是否合格' },
+      { required: true, message: '请确认是否合格', trigger: 'blur' },
+    ],
+    remark: [
+      { required: true, message: '请输入不合格备注', trigger: 'blur' },
     ],
   }
 
@@ -69,24 +72,25 @@ export default class AcceptModal extends Vue {
       remark: this.modelForm.remark,
       terminalStatus: parseInt(this.modelForm.terminalStatus, 10),
     };
-    this.loading = true;
+    // this.loading = true;
     From.validate((valid: any) => {
       if (valid) {
-        terminalCheck(obj).then((res) => {
-          if (res.result.resultCode === '0') {
-            setTimeout(() => {
-              this.loading = false;
-              this.$message.success(res.result.resultMessage);
-              From.resetFields();
-              this.$emit('refresh');
-            }, 1500);
-          } else {
-            setTimeout(() => {
-              this.loading = false;
-              this.$message.error(res.result.resultMessage);
-            }, 1500);
-          }
-        });
+        // terminalCheck(obj).then((res) => {
+        //   if (res.result.resultCode === '0') {
+        //     setTimeout(() => {
+        //       this.loading = false;
+        //       this.$message.success(res.result.resultMessage);
+        //       From.resetFields();
+        //       this.$emit('refresh');
+        //     }, 1500);
+        //   } else {
+        //     setTimeout(() => {
+        //       this.loading = false;
+        //       this.$message.error(res.result.resultMessage);
+        //     }, 1500);
+        //   }
+        // });
+        console.log(obj);
       } else {
         this.loading = false;
         return false;
