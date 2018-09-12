@@ -1,6 +1,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Dialog, Row, Col } from 'element-ui';
-import './CheckPicModel.less';
+// import './CheckPicModel.less';
 @Component({
   components: {
   'el-dialog': Dialog,
@@ -30,8 +30,8 @@ export default class UnbindModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <div class="box">
-          <img alt="安装图片" src={this.data} />
+        <div style="margin: 0 auto;height: 200px;textAlign:center">
+          <img alt="安装图片" src={this.data} style="maxWidth: 100%;maxHeight: 100%;"/>
         </div>
       </el-dialog>
     );

@@ -20,10 +20,10 @@ export default class CheckLog extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '验收员', prop: 'orgName', formatter: this.acceptPerson },
-    { label: '提交时间', prop: 'createTime', formatter: (row: any) => (row.createTime ? row.createTime : '--') },
-    { label: '验收时间', prop: 'acceptTime', formatter: (row: any) => (row.acceptTime ? row.acceptTime : '--') },
-    { label: '验收状态', prop: 'acceptStatus', formatter: (row: any) => (row.acceptStatus ? row.acceptStatus : '--') },
-    { label: '备注', prop: 'remark', formatter: (row: any) => (row.remark ? row.remark : '--') },
+    { label: '提交时间', prop: 'createTime' },
+    { label: '验收时间', prop: 'acceptTime' },
+    { label: '验收状态', prop: 'acceptStatus' },
+    { label: '备注', prop: 'remark' },
   ];
 
   acceptPerson(row: any) {

@@ -131,10 +131,9 @@ export default class Member extends Vue {
     const roleTypeOptions: string[] = row.roleNames.indexOf(',') > 0 ? row.roleNames.split(',') : [row.roleNames];
     return <el-tooltip
       class="item"
-      effect="light"
-      content={roleTypeOptions.map(item =>
-        <el-tag size="medium" type='info' style="marginRight:5px;color=#333333" color="white">{item}</el-tag>)}
-      placement="top-start">
+      effect="dark"
+      content={roleTypeOptions.join(', ')}
+      placement="top">
       <el-tag type="success">查看</el-tag>
     </el-tooltip>;
   }

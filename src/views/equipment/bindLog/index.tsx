@@ -84,8 +84,8 @@ export default class BindLog extends Vue {
     if (row.installUrl !== null) {
       const imgArr = row.installUrl.indexOf(',') > 0 ? row.installUrl.split(',') : [row.installUrl];
       return imgArr.map((item: any, index: number) =>
-        <div on-click={() => this.clickInstall(item, index)}>
-          <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />
+        <div on-click={() => this.clickInstall(item, index)} class="pic">
+          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
         </div>);
     }
     return '暂无安装图片';
@@ -95,8 +95,8 @@ export default class BindLog extends Vue {
     if (row.vinUrl !== null) {
       const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
       return imgArr.map((item: any, index: number) =>
-        <div on-click={() => this.clickInstall(item, index)}>
-          <img alt="安装图片" style="width:60px;maxHeight:36px;marginRight:5px" src={item} />
+        <div on-click={() => this.clickInstall(item, index)} class="pic">
+          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
         </div>);
     }
     return '暂无车架图片';
