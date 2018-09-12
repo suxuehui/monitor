@@ -27,10 +27,11 @@ export default class CheckLog extends Vue {
   ];
 
   acceptPerson(row: any) {
-    return <div>
-      <p>{`${row.acceptOrgName ? row.acceptOrgName : '--'}+${row.acceptRealName ? row.acceptRealName : '--'}`}</p>
-      <p>{`(${row.acceptUsername ? row.acceptUsername : '--'})`}</p>
-    </div>;
+    return row.acceptOrgName && row.acceptRealName && row.acceptUsername ?
+      <div>
+        <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
+        <p>{`(${row.acceptUsername})`}</p>
+      </div> : '--';
   }
 
   @Watch('data')

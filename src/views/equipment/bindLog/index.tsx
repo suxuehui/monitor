@@ -74,10 +74,11 @@ export default class BindLog extends Vue {
   checkPicTitle: string = '';
 
   opsPerson(row: any) {
-    return <div>
-      <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
-      <p>{`(${row.opsUsername})`}</p>
-    </div>;
+    return row.opsOrgName && row.opsRealName && row.opsUsername ?
+      <div>
+        <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
+        <p>{`(${row.opsUsername})`}</p>
+      </div> : '--';
   }
 
   showInstallPic(row: any) {
