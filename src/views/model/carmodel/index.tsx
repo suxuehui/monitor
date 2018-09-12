@@ -65,7 +65,7 @@ export default class CarModel extends Vue {
   tableList: tableList[] = [
     { label: '品牌名称', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
     { label: '车系名称', prop: 'seriesName', formatter: (row: any) => (row.seriesName ? row.seriesName : '--') },
-    { label: '车型名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
+    { label: '车型名称', prop: 'name' },
     { label: '能源类型', prop: 'energyType', formatter: (row: any) => (row.energyType ? row.energyType : '--') },
     { label: '油箱容量', prop: 'fuelTankCap', formatter: (row: any) => (row.fuelTankCap ? `${row.fuelTankCap}L` : '--') },
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },

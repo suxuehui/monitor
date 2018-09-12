@@ -28,8 +28,8 @@ export default class CheckLog extends Vue {
 
   acceptPerson(row: any) {
     return <div>
-      <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
-      <p>{`(${row.acceptUsername})`}</p>
+      <p>{`${row.acceptOrgName ? row.acceptOrgName : '--'}+${row.acceptRealName ? row.acceptRealName : '--'}`}</p>
+      <p>{`(${row.acceptUsername ? row.acceptUsername : '--'})`}</p>
     </div>;
   }
 
@@ -43,9 +43,11 @@ export default class CheckLog extends Vue {
     };
     const Table: any = this.$refs.MTable;
     if (Table) {
-      setTimeout(() => {
-        Table.reload();
-      }, 100);
+      if (data > 0) {
+        setTimeout(() => {
+          Table.reload();
+        }, 300);
+      }
     }
   }
 

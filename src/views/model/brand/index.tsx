@@ -1,6 +1,6 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
-import { Tag } from 'element-ui';
+import { Tag, Tooltip } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
 import AddModel from './components/Addmodel';
 
@@ -8,6 +8,7 @@ const noPic = require('@/assets/noPic.png');
 @Component({
   components: {
   'el-tag': Tag,
+  'el-tooltip': Tooltip,
   'add-model': AddModel,
   }
   })
@@ -54,7 +55,7 @@ export default class Brand extends Vue {
   tableList: tableList[] = [
     { label: '品牌图标', prop: 'logo', formatter: this.showLogo },
     { label: '品牌名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
-    { label: '品牌描述', prop: 'description', formatter: (row: any) => (row.description ? row.description : '--') },
+    { label: '品牌描述', prop: 'description' },
     { label: '车系数量', prop: 'seriesNum', formatter: (row: any) => (row.seriesNum ? row.seriesNum : '--') },
     { label: '车型数量', prop: 'modelNum', formatter: (row: any) => (row.modelNum ? row.modelNum : '--') },
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? row.vehicleNum : '--') },

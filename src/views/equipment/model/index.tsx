@@ -55,9 +55,9 @@ export default class Member extends Vue {
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '配置名称', prop: 'cfgName', formatter: (row: any) => (row.cfgName ? row.cfgName : '--') },
-    { label: '产品编码', prop: 'productCode', formatter: (row: any) => (row.productCode ? row.productCode : '--') },
-    { label: '配置描述', prop: 'remark', formatter: (row: any) => (row.remark ? row.remark : '--') },
+    { label: '配置名称', prop: 'cfgName' },
+    { label: '产品编码', prop: 'productCode' },
+    { label: '配置描述', prop: 'remark' },
     { label: '是否重启', prop: 'reboot', formatter: this.statusDom },
   ];
 

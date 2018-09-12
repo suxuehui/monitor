@@ -143,9 +143,11 @@ export default class MTable extends Vue {
           {
             this.tableList.map((item, index) => {
               if (!item.formatter) {
-                item.formatter = (row: any) => <el-tooltip effect="dark" content={ row[item.prop] !== null ? row[item.prop] : '--' } placement="top">
-                    <p class="text-over">{ row[item.prop] !== null ? row[item.prop] : '--' }</p>
-                  </el-tooltip>;
+                item.formatter = (row: any) =>
+                (row[item.prop] !== null && row[item.prop] !== ''?
+                <el-tooltip effect="dark" content={ row[item.prop] !== null ? `${row[item.prop]}` : '--' } placement="top">
+                    <p class="text-over">{ row[item.prop] !== null ? `${row[item.prop]}` : '--' }</p>
+                  </el-tooltip>:'--');
               }
               return <el-table-column
                 key={index} {...{ props: item }}>

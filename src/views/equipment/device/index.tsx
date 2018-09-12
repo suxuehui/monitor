@@ -149,12 +149,12 @@ export default class Device extends Vue {
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
-    { label: '设备类型', prop: 'terminalTypeName', formatter: (row: any) => (row.terminalTypeName ? row.terminalTypeName : '--') },
-    { label: 'imei号', prop: 'imei', formatter: (row: any) => (row.imei ? row.imei : '--') },
-    { label: '配置名称', prop: 'cfgName', formatter: (row: any) => (row.cfgName ? row.cfgName : '--') },
-    { label: '产品编码', prop: 'productCode', formatter: (row: any) => (row.productCode ? row.productCode : '--') },
-    { label: '当前车辆', prop: 'plateNum', formatter: (row: any) => (row.plateNum ? row.plateNum : '--') },
+    { label: '所属商户', prop: 'orgName' },
+    { label: '设备类型', prop: 'terminalTypeName' },
+    { label: 'imei号', prop: 'imei' },
+    { label: '配置名称', prop: 'cfgName' },
+    { label: '产品编码', prop: 'productCode' },
+    { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },

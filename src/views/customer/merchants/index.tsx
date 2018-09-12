@@ -69,11 +69,11 @@ export default class Merchants extends Vue {
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '商户名称', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
-    { label: '登录账号', prop: 'manageUser', formatter: (row: any) => (row.manageUser ? row.manageUser : '--') },
-    { label: '联系人', prop: 'contactUser', formatter: (row: any) => (row.contactUser ? row.contactUser : '--') },
-    { label: '联系电话', prop: 'contactPhone', formatter: (row: any) => (row.contactPhone ? row.contactPhone : '--') },
-    { label: '联系地址', prop: 'contactAddress', formatter: (row: any) => (row.contactAddress ? row.contactAddress : '--') },
+    { label: '商户名称', prop: 'orgName' },
+    { label: '登录账号', prop: 'manageUser' },
+    { label: '联系人', prop: 'contactUser' },
+    { label: '联系电话', prop: 'contactPhone' },
+    { label: '联系地址', prop: 'contactAddress' },
     {
       label: '车辆数',
       prop: 'carNum',

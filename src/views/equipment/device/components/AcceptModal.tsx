@@ -1,4 +1,4 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup } from 'element-ui';
 import { terminalCheck } from '@/api/equipment';
 import './AcceptModal.less';
@@ -32,12 +32,12 @@ export default class AcceptModal extends Vue {
   loading: boolean = false;
   rules = {
     terminalStatus: [
-      { required: true, message: '请确认是否合格', trigger: 'blur' },
-    ],
-    remark: [
-      { required: true, message: '请输入不合格备注', trigger: 'blur' },
+      { required: true, message: '请确认是否合格', trigger: 'change' },
     ],
   }
+  remarkRule = [
+    { required: true, message: '备注不能为空！', trigger: 'change' },
+  ]
 
   // 重置数据
   resetData() {
@@ -57,40 +57,33 @@ export default class AcceptModal extends Vue {
     }, 200);
   }
 
-  isOk(val:any) {
-    if (val === '3') {
-      this.modelForm.remark = '';
-    }
-  }
-
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
+    this.loading = true;
     obj = {
       id: this.data.id,
       imei: this.data.imei,
-      remark: this.modelForm.remark,
+      remark: parseInt(this.modelForm.terminalStatus, 10) === 4 ? this.modelForm.remark : '',
       terminalStatus: parseInt(this.modelForm.terminalStatus, 10),
     };
-    // this.loading = true;
     From.validate((valid: any) => {
       if (valid) {
-        // terminalCheck(obj).then((res) => {
-        //   if (res.result.resultCode === '0') {
-        //     setTimeout(() => {
-        //       this.loading = false;
-        //       this.$message.success(res.result.resultMessage);
-        //       From.resetFields();
-        //       this.$emit('refresh');
-        //     }, 1500);
-        //   } else {
-        //     setTimeout(() => {
-        //       this.loading = false;
-        //       this.$message.error(res.result.resultMessage);
-        //     }, 1500);
-        //   }
-        // });
-        console.log(obj);
+        terminalCheck(obj).then((res) => {
+          if (res.result.resultCode === '0') {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.success(res.result.resultMessage);
+              From.resetFields();
+              this.$emit('refresh');
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
       } else {
         this.loading = false;
         return false;
@@ -108,20 +101,23 @@ export default class AcceptModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
+        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
               <el-form-item label="是否合格" prop="terminalStatus" class="radioGroup">
-                <el-radio-group v-model={this.modelForm.terminalStatus} on-change={this.isOk}>
-                    <el-radio id="availableY" label="3">合格</el-radio>
-                    <el-radio id="availableN" label="4">不合格</el-radio>
-                  </el-radio-group>
+                <el-radio-group v-model={this.modelForm.terminalStatus} >
+                  <el-radio id="availableY" label="3">合格</el-radio>
+                  <el-radio id="availableN" label="4">不合格</el-radio>
+                </el-radio-group>
               </el-form-item>
             </el-col>
             {
               this.modelForm.terminalStatus === '4' ?
                 <el-col span={24}>
-                  <el-form-item label="备注" props="remark">
+                  <el-form-item
+                    label="备注"
+                    prop="remark"
+                    rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
                     <el-input
                       id="remark"
                       v-model={this.modelForm.remark}

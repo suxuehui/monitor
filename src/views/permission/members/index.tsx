@@ -1,5 +1,5 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Tag, Loading } from 'element-ui';
+import { Tag, Loading, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { roleSelect, userLock, userUnlock, userInfo, getUserInfo } from '@/api/permission';
 
@@ -13,6 +13,7 @@ interface ActiveType { key: any, value: any, label: string }
   components: {
   'el-tag': Tag,
   'add-modal': AddModal,
+  'el-tooltip': Tooltip,
   }
   })
 export default class Member extends Vue {
@@ -103,23 +104,21 @@ export default class Member extends Vue {
   ];
   // 表格参数
   tableList: tableList[] = [
-    { label: '成员姓名', prop: 'realName', formatter: (row: any) => (row.realName ? row.realName : '--') },
-    { label: '登录账号', prop: 'userName', formatter: (row: any) => (row.userName ? row.userName : '--') },
+    { label: '成员姓名', prop: 'realName' },
+    { label: '登录账号', prop: 'userName' },
     { label: '角色类型', prop: 'roleNames', formatter: this.roleChange },
-    { label: '备注', prop: 'remark', formatter: (row: any) => (row.remark ? row.remark : '--') },
+    { label: '备注', prop: 'remark' },
     {
       label: '添加时间',
       prop: 'crtTime',
       sortable: true,
       sortBy: 'crtTime',
-      formatter: (row: any) => (row.crtTime ? row.crtTime : '--'),
     },
     {
       label: '最后登录',
       prop: 'lastLoginTime',
       sortable: true,
       sortBy: 'lastLoginTime',
-      formatter: (row: any) => (row.lastLoginTime ? row.lastLoginTime : '--'),
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
@@ -130,8 +129,14 @@ export default class Member extends Vue {
       return <el-tag type="info" size="medium" style="marginRight:5px">未知</el-tag>;
     }
     const roleTypeOptions: string[] = row.roleNames.indexOf(',') > 0 ? row.roleNames.split(',') : [row.roleNames];
-    return roleTypeOptions.map(item =>
-      <el-tag size="medium" type='success' style="marginRight:5px">{item}</el-tag>);
+    return <el-tooltip
+      class="item"
+      effect="light"
+      content={roleTypeOptions.map(item =>
+        <el-tag size="medium" type='info' style="marginRight:5px;color=#333333" color="white">{item}</el-tag>)}
+      placement="top-start">
+      <el-tag type="success">查看</el-tag>
+    </el-tooltip>;
   }
 
   statusDom(row: any) {
