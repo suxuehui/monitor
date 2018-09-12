@@ -3,7 +3,7 @@ import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem } from 'elemen
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
 import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
 import { vehicleModelUpdate } from '@/api/car';
-import { gpsToAddress, queryAddress } from '@/api/app';
+import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { allList } from '@/api/model';
 import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
@@ -48,13 +48,13 @@ export default class Monitor extends Vue {
   // data
   filterList: FilterFormList[] = [
     {
-      key: 'levelcode',
+      key: 'levelCode',
       type: 'levelcode',
       label: '所属门店',
       props: {
-        value: 'id',
+        value: 'levelCode',
         children: 'children',
-        label: 'name',
+        label: 'orgName',
       },
       placeholder: '请选择门店',
       options: [],
@@ -374,13 +374,13 @@ export default class Monitor extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    // orgTree(null).then((res) => {
-    //   if (res.result.resultCode === '0') {
-    //     this.filterList[0].options = res.entity;
-    //   } else {
-    //     this.$message.error(res.result.resultMessage);
-    //   }
-    // });
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.filterList[0].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
 
