@@ -51,6 +51,7 @@ export default class Monitor extends Vue {
       key: 'levelCode',
       type: 'levelcode',
       label: '所属门店',
+      filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
