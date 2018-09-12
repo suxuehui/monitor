@@ -3,6 +3,7 @@ import { Tag, Loading, Button, Switch, Popover } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { getCustomerList } from '@/api/customer';
 import { terminalUnbind, terminalType, getBluetooth, resetTime } from '@/api/equipment';
+import { orgTree } from '@/api/app';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
@@ -36,8 +37,14 @@ export default class Device extends Vue {
   filterList: FilterFormList[] = [
     {
       key: 'levelCode',
-      type: 'select',
+      type: 'levelcode',
       label: '所属商户',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
       placeholder: '请选择所属商户',
       options: [],
     },
@@ -59,8 +66,14 @@ export default class Device extends Vue {
   filterGrade: FilterFormList[] = [
     {
       key: 'levelCode',
-      type: 'select',
+      type: 'levelcode',
       label: '所属商户',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
       placeholder: '请选择所属商户',
       options: [],
     },
@@ -233,24 +246,13 @@ export default class Device extends Vue {
 
   created() {
     // 门店
-    getCustomerList(null).then((res) => {
+    orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
-        res.entity.data.map((item: any) => this.shopList.push({
-          key: item.id,
-          value: item.levelcode,
-          label: item.orgName,
-        }));
+        this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
-      // 所属商户(全部)
-      this.shopList.unshift({
-        key: Math.random(),
-        value: null,
-        label: '所属商户(全部)',
-      });
-      this.filterList[0].options = this.shopList;
-      this.filterGrade[0].options = this.shopList;
     });
     // 设备类型
     terminalType(null).then((res) => {

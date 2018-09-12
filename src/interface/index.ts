@@ -7,6 +7,7 @@ export interface FilterFormList {
   placeholder: string | string[];
   props?:any;
   value?: string[];
+  filterable?: boolean;
   options?: Array<{ value: any, label: string }>;
   change?: Function;
   itemChange?: Function;
