@@ -12,7 +12,8 @@ export async function vehicleInfo(params: any) {
 export async function vehicleUpdate(params: any) {
   return request({
     url: '/vehicle/monitor/edit',
-    method: 'get',
+    method: 'post',
+    fetchType: 'JSON',
     data: params,
   });
 }
@@ -20,7 +21,7 @@ export async function vehicleUpdate(params: any) {
 export async function vehicleDelete(params: any) {
   return request({
     url: '/vehicle/monitor/delete',
-    method: 'get',
+    method: 'post',
     data: params,
   });
 }

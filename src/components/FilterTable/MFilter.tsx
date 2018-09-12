@@ -90,8 +90,8 @@ export default class MFilter extends Vue {
   @Emit()
   reset(): void {
     this.params = JSON.parse(JSON.stringify(this.initParams));
-    this.$emit('search', this.params);
     this.$emit('clearOut');
+    this.$emit('search', this.params);
   }
   @Emit()
   levelcodeChange(val: any, key: string): void {

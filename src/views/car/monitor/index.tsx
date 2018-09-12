@@ -1,8 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
-import { vehicleModelUpdate } from '@/api/car';
+import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate } from '@/api/monitor';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { allList } from '@/api/model';
 import config from '@/utils';
@@ -285,6 +284,7 @@ export default class Monitor extends Vue {
       rowKey: 'vin',
       color: 'red',
       text: '删除',
+      msg: '确定删除？',
       roles: true,
     },
   ];
@@ -384,6 +384,13 @@ export default class Monitor extends Vue {
     });
   }
 
+  clearOutParams() {
+    this.outParams = {
+      brandId: '',
+      seriesId: '',
+      modelId: '',
+    };
+  }
 
   radiusGetData = (id?: string) => {
     // 获取地图车辆
@@ -605,9 +612,12 @@ export default class Monitor extends Vue {
         };
         break;
       case 'delete':
-        vehicleDelete(row.id).then((res) => {
+        vehicleDelete({
+          id: row.id,
+        }).then((res) => {
           if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
+            this.reloadTable();
           } else {
             this.$message.error(res.result.resultMessage);
           }
@@ -622,6 +632,11 @@ export default class Monitor extends Vue {
       default:
         break;
     }
+  }
+
+  reloadTable() {
+    const MapTable: any = this.$refs.mapTable;
+    MapTable.reloadTable();
   }
 
   renderStatus(value: boolean | string | number, unit?: string) {
@@ -641,12 +656,19 @@ export default class Monitor extends Vue {
   }
   // 单击表格-选择车辆
   currentChange = (val: any) => {
-    this.mapCenter = {
-      lat: val.lat,
-      lng: val.lng,
-    };
-    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
-    this.radiusGetData(val.id);
+    if (val) {
+      if (val.lat && val.lng) {
+        this.mapCenter = {
+          lat: val.lat,
+          lng: val.lng,
+        };
+        this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+        this.radiusGetData(val.id);
+      } else {
+        this.$message.error('车辆暂无定位');
+        this.radiusGetData(val.id);
+      }
+    }
   }
   // 地址搜索
   searchAddress(val: string, cb: any) {
@@ -711,9 +733,11 @@ export default class Monitor extends Vue {
   updateCar() {
     (this.$refs.editForm as Form).validate((valid) => {
       if (valid) {
-        vehicleModelUpdate(this.editForm).then((res) => {
+        vehicleUpdate(this.editForm).then((res) => {
           if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
+            this.editDialog = false;
+            this.reloadTable();
           } else {
             this.$message.error(res.result.resultMessage);
           }
@@ -798,13 +822,15 @@ export default class Monitor extends Vue {
         </div>
         <div class={['car-table', this.locChange ? 'table-active' : '']}>
           <filter-table
-            class="map-table"
+            ref="mapTable"
+            class="mapTable"
             filter-list={this.filterList}
             filter-grade={[]}
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
             data-type={'JSON'}
+            on-clearOutParams={this.clearOutParams}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
