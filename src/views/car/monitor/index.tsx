@@ -283,6 +283,7 @@ export default class Monitor extends Vue {
       rowKey: 'vin',
       color: 'red',
       text: '删除',
+      msg: '确定删除？',
       roles: true,
     },
   ];

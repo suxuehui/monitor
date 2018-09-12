@@ -206,6 +206,15 @@ export default class MTable extends Vue {
                 {typeof item.text === 'function' ? item.text(row) : item.text}
               </a>
             </pop-confirm>;
+          } else if (typeof item.color === 'string'
+          && whiteList.indexOf(item.color) >= 0) {
+            return <pop-confirm
+            on-confirm={() => this.menuClick(item.key, row)}
+            title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
+            <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${item.color}`}>
+              {typeof item.text === 'function' ? item.text(row) : item.text}
+            </a>
+          </pop-confirm>;
           }
           return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
         })
