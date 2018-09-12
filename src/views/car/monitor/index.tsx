@@ -198,8 +198,11 @@ export default class Monitor extends Vue {
       prop: 'otuImei',
     },
     {
-      label: '品牌车型',
+      label: '品牌车系',
       prop: 'brandName',
+      formatter(row: any) {
+        return row.brandName !== null ? `${row.brandName}-${row.seriesName}` : '--';
+      },
     },
     {
       label: '能源类型',
