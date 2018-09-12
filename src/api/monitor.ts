@@ -12,7 +12,7 @@ export async function vehicleInfo(params: any) {
 export async function vehicleUpdate(params: any) {
   return request({
     url: '/vehicle/monitor/edit',
-    method: 'get',
+    method: 'post',
     data: params,
   });
 }

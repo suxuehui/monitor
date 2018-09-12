@@ -1,8 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
-import { vehicleModelUpdate } from '@/api/car';
+import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate } from '@/api/monitor';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { allList } from '@/api/model';
 import config from '@/utils';
@@ -607,6 +606,8 @@ export default class Monitor extends Vue {
         vehicleDelete(row.id).then((res) => {
           if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
+            const MapTable: any = this.$refs.mapTable;
+            MapTable.reload();
           } else {
             this.$message.error(res.result.resultMessage);
           }
@@ -710,9 +711,10 @@ export default class Monitor extends Vue {
   updateCar() {
     (this.$refs.editForm as Form).validate((valid) => {
       if (valid) {
-        vehicleModelUpdate(this.editForm).then((res) => {
+        vehicleUpdate(this.editForm).then((res) => {
           if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
+            this.editDialog = false;
           } else {
             this.$message.error(res.result.resultMessage);
           }
@@ -797,7 +799,7 @@ export default class Monitor extends Vue {
         </div>
         <div class={['car-table', this.locChange ? 'table-active' : '']}>
           <filter-table
-            class="map-table"
+            class="mapTable"
             filter-list={this.filterList}
             filter-grade={[]}
             filter-params={this.filterParams}
