@@ -36,8 +36,24 @@ export default class AcceptModal extends Vue {
     ],
   }
   remarkRule = [
-    { required: true, message: '备注不能为空！', trigger: 'change' },
+    { required: true, validator: this.checkRule, trigger: 'blur' },
   ]
+
+  // 验证备注
+  checkRule(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        const exp: any = /^\s+$/;
+        if (!exp.test(value)) {
+          callback();
+        } else {
+          callback(new Error('备注不能为空！'));
+        }
+      } else {
+        callback(new Error('备注不能为空！'));
+      }
+    }, 500);
+  }
 
   // 重置数据
   resetData() {
@@ -69,21 +85,22 @@ export default class AcceptModal extends Vue {
     };
     From.validate((valid: any) => {
       if (valid) {
-        terminalCheck(obj).then((res) => {
-          if (res.result.resultCode === '0') {
-            setTimeout(() => {
-              this.loading = false;
-              this.$message.success(res.result.resultMessage);
-              From.resetFields();
-              this.$emit('refresh');
-            }, 1500);
-          } else {
-            setTimeout(() => {
-              this.loading = false;
-              this.$message.error(res.result.resultMessage);
-            }, 1500);
-          }
-        });
+        // terminalCheck(obj).then((res) => {
+        //   if (res.result.resultCode === '0') {
+        //     setTimeout(() => {
+        //       this.loading = false;
+        //       this.$message.success(res.result.resultMessage);
+        //       From.resetFields();
+        //       this.$emit('refresh');
+        //     }, 1500);
+        //   } else {
+        //     setTimeout(() => {
+        //       this.loading = false;
+        //       this.$message.error(res.result.resultMessage);
+        //     }, 1500);
+        //   }
+        // });
+        console.log(obj);
       } else {
         this.loading = false;
         return false;
@@ -94,48 +111,48 @@ export default class AcceptModal extends Vue {
 
   render() {
     return (
-      <el-dialog
-        width="540px"
-        title={this.title}
-        visible={this.visible}
-        before-close={this.closeModal}
-        close-on-click-modal={false}
-      >
-        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
-          <el-row>
-            <el-col span={24}>
-              <el-form-item label="是否合格" prop="terminalStatus" class="radioGroup">
-                <el-radio-group v-model={this.modelForm.terminalStatus} >
-                  <el-radio id="availableY" label="3">合格</el-radio>
-                  <el-radio id="availableN" label="4">不合格</el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </el-col>
-            {
-              this.modelForm.terminalStatus === '4' ?
-                <el-col span={24}>
-                  <el-form-item
-                    label="备注"
-                    prop="remark"
-                    rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
-                    <el-input
-                      id="remark"
-                      v-model={this.modelForm.remark}
-                      type="textarea"
-                      placeholder="请填写不合格备注"
-                    ></el-input>
-                  </el-form-item>
-                </el-col> : null
-            }
-          </el-row>
-        </el-form>
+    <el-dialog
+      width="540px"
+      title={this.title}
+      visible={this.visible}
+      before-close={this.closeModal}
+      close-on-click-modal={false}
+    >
+      <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
         <el-row>
-          <el-col offset={7} span={12}>
-            <el-button size="small" id="submit" type="primary" loading={this.loading} on-click={this.onSubmit}>确认</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+          <el-col span={24}>
+            <el-form-item label="是否合格" prop="terminalStatus" class="radioGroup">
+              <el-radio-group v-model={this.modelForm.terminalStatus} >
+                <el-radio id="availableY" label="3">合格</el-radio>
+                <el-radio id="availableN" label="4">不合格</el-radio>
+              </el-radio-group>
+            </el-form-item>
           </el-col>
+          {
+            this.modelForm.terminalStatus === '4' ?
+              <el-col span={24}>
+                <el-form-item
+                  label="备注"
+                  prop="remark"
+                  rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
+                  <el-input
+                    id="remark"
+                    v-model={this.modelForm.remark}
+                    type="textarea"
+                    placeholder="请填写不合格备注"
+                  ></el-input>
+                </el-form-item>
+              </el-col> : null
+          }
         </el-row>
-      </el-dialog>
+      </el-form>
+      <el-row>
+        <el-col offset={7} span={12}>
+          <el-button size="small" id="submit" type="primary" loading={this.loading} on-click={this.onSubmit}>确认</el-button>
+          <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
     );
   }
 }

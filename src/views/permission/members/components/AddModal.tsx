@@ -151,7 +151,7 @@ export default class AddModal extends Vue {
       roleIdList: this.modelForm.roleIdList.join(','),
       realName: this.modelForm.realName,
       username: this.modelForm.userName,
-      password: this.modelForm.password !== '********' ? this.modelForm.password : '',
+      password: this.modelForm.password,
       remark: this.modelForm.remark,
     };
     if (this.title === '新增成员') {
@@ -184,7 +184,10 @@ export default class AddModal extends Vue {
     } else {
       // 修改
       obj.userId = this.data.id;
-      // delete obj.roleIdList;
+      if (obj.password ==='********') {
+        delete obj.password;
+      }
+      console.log(obj);
       From.validate((valid: any) => {
         if (valid) {
           userUpdate(obj).then((res) => {

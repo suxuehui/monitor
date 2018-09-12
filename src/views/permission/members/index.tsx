@@ -134,7 +134,7 @@ export default class Member extends Vue {
       effect="dark"
       content={roleTypeOptions.join(', ')}
       placement="top">
-      <el-tag type="success">查看</el-tag>
+      <el-tag type="success">{roleTypeOptions.join(', ')}</el-tag>
     </el-tooltip>;
   }
 
