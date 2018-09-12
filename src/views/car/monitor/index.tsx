@@ -383,6 +383,13 @@ export default class Monitor extends Vue {
     });
   }
 
+  clearOutParams() {
+    this.outParams = {
+      brandId: '',
+      seriesId: '',
+      modelId: '',
+    };
+  }
 
   radiusGetData = (id?: string) => {
     // 获取地图车辆
@@ -822,6 +829,7 @@ export default class Monitor extends Vue {
             back-params={this.backParams}
             add-btn={false}
             data-type={'JSON'}
+            on-clearOutParams={this.clearOutParams}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
