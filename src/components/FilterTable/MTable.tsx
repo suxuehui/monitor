@@ -1,6 +1,6 @@
-import { Component, Prop, Emit, Vue, Inject, Provide } from 'vue-property-decorator';
-import { Table, TableColumn, Pagination, Tag, Dropdown, DropdownItem, DropdownMenu } from 'element-ui';
-import { tableList, Opreat, Directives } from '@/interface';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Table, TableColumn, Pagination, Dropdown, DropdownItem, DropdownMenu, Tooltip } from 'element-ui';
+import { tableList, Opreat } from '@/interface';
 import request from '@/utils/request';
 import Popconfirm from '@/components/Popconfirm';
 import Spin from '@/components/Spin';
@@ -12,6 +12,7 @@ import './MTable.less';
   'el-table-column': TableColumn,
   'pop-confirm': Popconfirm,
   'el-pagination': Pagination,
+  'el-tooltip': Tooltip,
   'm-spin': Spin,
   'el-dropdown': Dropdown,
   'el-dropdown-item': DropdownItem,
@@ -142,7 +143,9 @@ export default class MTable extends Vue {
           {
             this.tableList.map((item, index) => {
               if (!item.formatter) {
-                item.formatter = (row: any) => (row[item.prop] !== null ? row[item.prop] : '--');
+                item.formatter = (row: any) => <el-tooltip effect="dark" content={ row[item.prop] !== null ? row[item.prop] : '--' } placement="top">
+                    <p class="text-over">{ row[item.prop] !== null ? row[item.prop] : '--' }</p>
+                  </el-tooltip>;
               }
               return <el-table-column
                 key={index} {...{ props: item }}>
