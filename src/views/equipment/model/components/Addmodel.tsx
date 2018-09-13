@@ -77,7 +77,7 @@ export default class AddModal extends Vue {
 
 
   @Watch('data')
-  onDataChange() {
+  onDataChange(data: any) {
     if (this.data.id > 0) {
       const obj = JSON.parse(JSON.stringify(this.data));
       // 配置参数
@@ -170,6 +170,7 @@ export default class AddModal extends Vue {
     if (this.title === '新增配置') {
       From.validate((valid: any) => {
         if (valid) {
+          delete obj.id;
           configAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {

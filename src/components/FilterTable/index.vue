@@ -89,10 +89,14 @@ export default class FilterTable extends Vue {
   // 请求数据方法
   @Prop() private fetchType!: string;
 
-  @Prop({ default: false })
-  private highlightCurrentRow!: boolean;
+  @Prop({ default: false }) private highlightCurrentRow!: boolean;
   // 初始化请求参数
   tableParams: any = Object.assign(this.filterParams, this.outParams);
+
+  created() {
+    console.log(this.tableList);
+    // window.localStorage.setItem()
+  }
 
   reloadTable() {
     const table: any = this.$refs.MTable;
