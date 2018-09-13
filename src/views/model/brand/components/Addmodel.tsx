@@ -72,7 +72,7 @@ export default class AddModal extends Vue {
     this.headers = {
       token: window.localStorage.getItem('token'),
     };
-    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/verify/file/upload' : '/rootApi/verify/file/upload';
+    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/zuul/verify/file/upload' : '/rootApi/zuul/verify/file/upload';
     this.fileName = `${new Date().getTime()}`;
   }
 
