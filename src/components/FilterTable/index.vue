@@ -153,6 +153,11 @@ export default class FilterTable extends Vue {
   setTable(list: Array<string>) {
     const filterList = this.defalutTableList.filter((item, index) => list.indexOf(item.prop) > -1);
     this.changeTableList = filterList;
+    // console.log(filterList);
+    // if (filterList.length === 0) {
+    //   this.$message.error('表格不能为空，请重新选择');
+    // } else {
+    // }
   }
   @Emit()
   tableClick(key: string, row: any) {

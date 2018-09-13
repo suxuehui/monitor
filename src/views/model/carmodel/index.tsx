@@ -208,6 +208,7 @@ export default class CarModel extends Vue {
           table-list={this.tableList}
           url={this.url}
           dataType={'JSON'}
+          localName={'carmodel'}
           export-btn={true}
           on-menuClick={this.menuClick}
           on-clearOutParams={this.clear}

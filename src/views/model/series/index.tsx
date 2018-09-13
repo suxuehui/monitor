@@ -151,6 +151,7 @@ export default class Series extends Vue {
           add-btn={true}
           opreatWidth={'180px'}
           on-addBack={this.addModel}
+          localName={'series'}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}

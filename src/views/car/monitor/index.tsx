@@ -846,6 +846,7 @@ export default class Monitor extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             export-btn={true}
+            localName={'monitor'}
             on-menuClick={this.menuClick}
             table-list={this.tableList}
             default-page-size={5}

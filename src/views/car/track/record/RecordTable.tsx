@@ -81,6 +81,7 @@ export default class Equipment extends Vue {
           on-menuClick={this.menuClick}
           table-list={this.tableList}
           url={this.tableUrl}
+          localName={'recordTable'}
           dataType={'JSON'}
           opreat={this.opreat}
           out-params={this.outParams}

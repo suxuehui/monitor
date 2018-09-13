@@ -152,6 +152,7 @@ export default class Driving extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           dataType={'JSON'}
+          localName={'driving'}
           add-btn={false}
           opreat={this.opreat}
           out-params={this.outParams}

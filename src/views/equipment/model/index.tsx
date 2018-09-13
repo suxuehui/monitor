@@ -132,6 +132,7 @@ export default class Member extends Vue {
           filter-params={this.filterParams}
           add-btn={true}
           opreatWidth={'180px'}
+          localName={'model'}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}

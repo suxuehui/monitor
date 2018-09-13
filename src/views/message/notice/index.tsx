@@ -130,6 +130,7 @@ export default class Alarm extends Vue {
           url={this.url}
           dataType={'JSON'}
           export-btn={true}
+          localName={'notice'}
           on-menuClick={this.menuClick}
         />
         <add-modal

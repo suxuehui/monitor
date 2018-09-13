@@ -565,6 +565,7 @@ render() {
             url={this.tableUrl}
             dataType={'JSON'}
             fetchType={'get'}
+            localName={'eleFence'}
             opreat={this.opreat}
             out-params={this.outParams}
             opreat-width="150px"

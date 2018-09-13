@@ -671,9 +671,11 @@ export default class Trajectory extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             export-btn={true}
+            localName={'trajectory'}
             table-list={this.tableList}
             url={this.tableUrl}
-            opreat-width="150px"></filter-table>
+            opreat-width="150px">
+          </filter-table>
         </div>
       </div>
     );

@@ -475,6 +475,7 @@ export default class Device extends Vue {
           filter-params={this.filterParams}
           add-btn={true}
           data-type={'JSON'}
+          localName={'device'}
           on-addBack={this.addModel}
           opreat={this.opreat}
           opreatWidth={'150px'}

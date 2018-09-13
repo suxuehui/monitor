@@ -209,6 +209,7 @@ export default class Merchants extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
+          localName={'merchants'}
           export-btn={true}
           fetch-type={'get'}
           on-menuClick={this.menuClick}

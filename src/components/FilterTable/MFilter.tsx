@@ -59,6 +59,9 @@ export default class MFilter extends Vue {
   @Prop() private tableList!: tableList[];
   @Prop({ default: '100px' }) private labelWidth!: string;
 
+  // 按钮是否能点击
+  @Prop({ default: true }) private btnFalse!: boolean;
+
   @Prop() private localName!: string;
   // data
   params: any = JSON.parse(JSON.stringify(this.filterParams));
@@ -284,7 +287,7 @@ export default class MFilter extends Vue {
             }
             <div class="dialog-footer">
               <el-button size="mini" on-click={this.closeModal}>取 消</el-button>
-              <el-button size="mini" type="primary" on-click={this.setTable}>保 存</el-button>
+              <el-button size="mini" type="primary" disabled={!this.btnFalse} on-click={this.setTable}>保 存</el-button>
             </div>
           </el-checkbox-group>
         </el-dialog>
@@ -293,9 +296,13 @@ export default class MFilter extends Vue {
   }
 
   setTable() {
-    window.localStorage.setItem(this.localName, this.checkList.join(','));
-    this.$emit('setTable', this.checkList);
-    this.setModel = false;
+    if (this.checkList.length > 0) {
+      window.localStorage.setItem(this.localName, this.checkList.join(','));
+      this.$emit('setTable', this.checkList);
+      this.setModel = false;
+    } else {
+      this.$message.error('表格不能为空，请重新选择');
+    }
   }
 
   btnElement(isNormal: boolean): JSX.Element {

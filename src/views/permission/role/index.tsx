@@ -172,6 +172,7 @@ export default class Role extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
+          localName={'role'}
           export-btn={true}
           on-menuClick={this.menuClick}
         />

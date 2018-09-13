@@ -157,6 +157,7 @@ export default class Alarm extends Vue {
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
+          localName={'alarm'}
           url={this.url}
           dataType={'JSON'}
           opreatWidth='180px'

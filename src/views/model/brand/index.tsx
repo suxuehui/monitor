@@ -128,6 +128,7 @@ export default class Brand extends Vue {
           filter-params={this.filterParams}
           add-btn={true}
           opreatWidth={'180px'}
+          localName={'brand'}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}
