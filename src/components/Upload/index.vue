@@ -14,7 +14,7 @@
     :on-remove="handleRemove"
     :on-exceed="handleExceed"
   >
-    <i class="el-icon-plus" />
+    <i v-if="showUpBtn" class="el-icon-plus"/>
   </el-upload>
 </template>
 
@@ -22,7 +22,7 @@
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface/index';
 import { Upload } from 'element-ui';
-
+import './index.less';
 @Component({
   components: {
   "el-upload": Upload
@@ -50,6 +50,9 @@ export default class FilterTable extends Vue {
   // 是否显示已上传文件列表
   @Prop({ default: true }) private showList!: boolean;
 
+  // 是否显示上传按钮
+  @Prop({ default: true }) private showUpBtn!: boolean;
+
   // 文件列表类型 text/picture/picture-card
   @Prop({ default: 'picture-card' }) private listType!: string;
 
@@ -76,4 +79,5 @@ export default class FilterTable extends Vue {
 </script>
 
 <style scoped lang="less">
+
 </style>

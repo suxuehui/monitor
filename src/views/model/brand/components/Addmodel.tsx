@@ -51,6 +51,7 @@ export default class AddModal extends Vue {
   }
 
   logoUrl: any = [];
+  showUpBtn: boolean = true;
   @Watch('data')
   onDataChange() {
     if (this.data.id > 0) {
@@ -63,6 +64,7 @@ export default class AddModal extends Vue {
         name: this.data.name,
         url: this.data.logo,
       });
+      this.showUpBtn = false;
     } else {
       this.resetData();
     }
@@ -97,12 +99,14 @@ export default class AddModal extends Vue {
   removeBack(file: any, fileList: any) {
     this.modelForm.logo = '';
     this.$message.error('图片已删除，请重新上传');
+    this.showUpBtn = true;
   }
 
   successBack(response: any, file: any, fileList: any) {
     if (response.result.resultCode === '0') {
       this.$message.success('图片上传成功');
       this.modelForm.logo = response.entity;
+      this.showUpBtn = false;
     } else {
       this.$message.error(response.result.resultMessage);
     }
@@ -129,6 +133,7 @@ export default class AddModal extends Vue {
                 From.resetFields();
                 upModel.$children[0].clearFiles();
                 this.$emit('refresh');
+                this.showUpBtn = true;
               }, 1500);
             } else {
               setTimeout(() => {
@@ -154,6 +159,7 @@ export default class AddModal extends Vue {
                   this.loading = false;
                   this.$message.success(res.result.resultMessage);
                   From.resetFields();
+                  this.showUpBtn = true;
                   upModel.$children[0].clearFiles();
                   this.$emit('refresh');
                 }, 1500);
@@ -204,10 +210,11 @@ export default class AddModal extends Vue {
                   <upload-Model
                     ref="uploadModel"
                     name="file"
-                    listType="picture-card"
+                    listType="picture"
                     autoUpload={true}
                     url={this.uploadUrl}
                     logoUrl={this.logoUrl}
+                    showUpBtn={this.showUpBtn}
                     headers={this.headers}
                     on-successBack={this.successBack}
                     on-removeBack={this.removeBack}
