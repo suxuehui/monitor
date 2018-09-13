@@ -1,6 +1,6 @@
 const Logo = require('../assets/logo.svg');
 
-const API = process.env.NODE_ENV === 'production' ? '' : '/api';
+const API = process.env.NODE_ENV === 'production' ? '/monitor' : '/api';
 
 const config = {
   name: '共享车监控系统',
