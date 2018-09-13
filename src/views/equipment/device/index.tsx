@@ -107,7 +107,7 @@ export default class Device extends Vue {
   ];
   // 筛选参数
   filterParams: any = {
-    levelCode: null,
+    levelCode: '',
     terminalType: 0,
     status: 0,
     online: -1,
@@ -249,10 +249,15 @@ export default class Device extends Vue {
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
         // 若无下级门店，删除下一级门店
-        res.entity.forEach((item:any) => {
+        res.entity.forEach((item: any) => {
           if (item.children.length === 0) {
             delete item.children;
           }
+        });
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '全部',
         });
         this.filterList[0].options = res.entity;
         this.filterGrade[0].options = res.entity;

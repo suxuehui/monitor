@@ -383,6 +383,11 @@ export default class Monitor extends Vue {
             delete item.children;
           }
         });
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '全部',
+        });
         this.filterList[0].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
