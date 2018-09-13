@@ -248,6 +248,12 @@ export default class Device extends Vue {
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
+        // 若无下级门店，删除下一级门店
+        res.entity.forEach((item:any) => {
+          if (item.children.length === 0) {
+            delete item.children;
+          }
+        });
         this.filterList[0].options = res.entity;
         this.filterGrade[0].options = res.entity;
       } else {
@@ -326,9 +332,6 @@ export default class Device extends Vue {
   }
 
   checkLog(row: any) {
-    // this.$router.push({
-    //  name: '安绑记录', query: { imei: row.imei, id: row.id },
-    // params: { orgName: row.orgName, plateNum: row.plateNum, vin: row.vin } });
     this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
   }
 
