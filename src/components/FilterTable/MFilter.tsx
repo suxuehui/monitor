@@ -58,6 +58,8 @@ export default class MFilter extends Vue {
   // tablelist 参数
   @Prop() private tableList!: tableList[];
   @Prop({ default: '100px' }) private labelWidth!: string;
+
+  @Prop() private localName!: string;
   // data
   params: any = JSON.parse(JSON.stringify(this.filterParams));
   // 初始化表格筛选参数
@@ -73,13 +75,24 @@ export default class MFilter extends Vue {
   showGrade: boolean = false;
   // 高级筛选高度
   tableMarginTop: number = 0;
+
+  constructor(props: any) {
+    super(props);
+    const self = this;
+    const saveList = window.localStorage.getItem(this.localName);
+    if (saveList) {
+      this.checkList = saveList.split(',');
+    }
+  }
   created() {
-    this.tableList.map((item) => {
-      if (item.prop) {
-        this.checkList.push(item.prop);
-      }
-      return false;
-    });
+    if (!this.checkList) {
+      this.tableList.map((item) => {
+        if (item.prop) {
+          this.checkList.push(item.prop);
+        }
+        return false;
+      });
+    }
   }
 
   // methods
@@ -280,7 +293,9 @@ export default class MFilter extends Vue {
   }
 
   setTable() {
+    window.localStorage.setItem(this.localName, this.checkList.join(','));
     this.$emit('setTable', this.checkList);
+    this.setModel = false;
   }
 
   btnElement(isNormal: boolean): JSX.Element {

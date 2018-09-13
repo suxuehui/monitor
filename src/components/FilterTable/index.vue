@@ -5,9 +5,10 @@
       :filter-list="filterList"
       :filter-grade="filterGrade"
       :filter-params="filterParams"
-      :table-list="tableList"
+      :table-list="defalutTableList"
       :add-btn="addBtn"
       :export-btn="exportBtn"
+      :local-name="localName"
       @search="searchFun"
       @clearOut="clearFun"
       @export="exportBack"
@@ -17,14 +18,13 @@
     />
     <m-table
       ref="MTable"
-      :table-list="tableList"
+      :table-list="changeTableList"
       :url="url"
       :data-type="dataType"
       :row-key="rowKey"
       :opreat="opreat"
       :opreat-width="opreatWidth"
       :back-params="BackParams"
-      :local-name="localName"
       :fetch-type="fetchType"
       :fetch-error="fetchError"
       :table-params="tableParams"
@@ -79,7 +79,7 @@ export default class FilterTable extends Vue {
   // 操作栏width
   @Prop() private opreatWidth!: string;
   // 本地存储字段名
-  @Prop() private localName!: string;
+  @Prop({ default: 'filterTable' }) private localName!: string;
   // 请求错误回调事件
   @Prop() private fetchError!: string;
   // 默认分页数量
@@ -93,6 +93,24 @@ export default class FilterTable extends Vue {
   private highlightCurrentRow!: boolean;
   // 初始化请求参数
   tableParams: any = Object.assign(this.filterParams, this.outParams);
+
+  defalutTableList: tableList[] = this.tableList.filter(item => true);
+
+  changeTableList: tableList[];
+
+  constructor(props: any) {
+    super(props);
+    const self = this;
+    const saveList = window.localStorage.getItem(this.localName);
+    if (saveList) {
+      const checkList = saveList.split(',');
+      const filterList = this.defalutTableList.filter((item, index) =>
+        checkList.indexOf(item.prop) > -1);
+      this.changeTableList = filterList;
+    } else {
+      this.changeTableList = this.tableList.filter(item => true);
+    }
+  }
 
   reloadTable() {
     const table: any = this.$refs.MTable;
@@ -133,9 +151,8 @@ export default class FilterTable extends Vue {
   }
   @Emit()
   setTable(list: Array<string>) {
-    // this.tableList=list;
-    console.log(list);
-    console.log(this.tableList);
+    const filterList = this.defalutTableList.filter((item, index) => list.indexOf(item.prop) > -1);
+    this.changeTableList = filterList;
   }
   @Emit()
   tableClick(key: string, row: any) {
