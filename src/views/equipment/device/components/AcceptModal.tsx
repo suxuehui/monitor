@@ -85,22 +85,21 @@ export default class AcceptModal extends Vue {
     };
     From.validate((valid: any) => {
       if (valid) {
-        // terminalCheck(obj).then((res) => {
-        //   if (res.result.resultCode === '0') {
-        //     setTimeout(() => {
-        //       this.loading = false;
-        //       this.$message.success(res.result.resultMessage);
-        //       From.resetFields();
-        //       this.$emit('refresh');
-        //     }, 1500);
-        //   } else {
-        //     setTimeout(() => {
-        //       this.loading = false;
-        //       this.$message.error(res.result.resultMessage);
-        //     }, 1500);
-        //   }
-        // });
-        console.log(obj);
+        terminalCheck(obj).then((res) => {
+          if (res.result.resultCode === '0') {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.success(res.result.resultMessage);
+              From.resetFields();
+              this.$emit('refresh');
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
       } else {
         this.loading = false;
         return false;
