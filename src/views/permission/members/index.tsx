@@ -201,7 +201,7 @@ export default class Member extends Vue {
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();
-    }, 800);
+    }, 200);
   }
   // 关闭弹窗时刷新
   refresh(): void {
