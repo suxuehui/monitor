@@ -107,9 +107,10 @@ export default class AddModal extends Vue {
       description: this.modelForm.description,
       id: this.data.id > 0 ? this.data.id : null,
     };
-    if (this.title === '新增车系') {
-      From.validate((valid: any) => {
-        if (valid) {
+    From.validate((valid: any) => {
+      if (valid) {
+        if (this.title === '新增车系') {
+          delete obj.id;
           seriesAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -127,15 +128,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
-          this.loading = false;
-          return false;
-        }
-        return false;
-      });
-    } else {
-      obj.id = this.data.id;
-      From.validate((valid: any) => {
-        if (valid) {
+          obj.id = this.data.id;
           seriesEdit(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -152,13 +145,13 @@ export default class AddModal extends Vue {
               }, 1500);
             }
           });
-        } else {
-          this.loading = false;
-          return false;
         }
+      } else {
+        this.loading = false;
         return false;
-      });
-    }
+      }
+      return false;
+    });
   }
 
   render() {

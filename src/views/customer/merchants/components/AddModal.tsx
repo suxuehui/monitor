@@ -139,14 +139,13 @@ export default class AddModal extends Vue {
       contactUser: this.modelForm.contactUser,
       contactPhone: this.modelForm.contactPhone,
       manageUser: this.modelForm.manageUser,
-      password: this.modelForm.password !== '********' ? this.modelForm.password : '',
+      password: this.modelForm.password,
       contactAddress: this.modelForm.contactAddress,
     };
-
-    if (this.title === '新增商户') {
-      // 新增
-      From.validate((valid: any) => {
-        if (valid) {
+    From.validate((valid: any) => {
+      if (valid) {
+        if (this.title === '新增商户') {
+          // 新增
           customerAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -164,16 +163,10 @@ export default class AddModal extends Vue {
             }
           });
         } else {
-          this.loading = false;
-          return false;
-        }
-        return false;
-      });
-    } else {
-      obj.id = this.data.id;
-      // 修改
-      From.validate((valid: any) => {
-        if (valid) {
+          obj.id = this.data.id;
+          if (obj.password === '********') {
+            delete obj.password;
+          }
           customerUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -191,13 +184,13 @@ export default class AddModal extends Vue {
               }, 1500);
             }
           });
-        } else {
-          this.loading = false;
-          return false;
         }
+      } else {
+        this.loading = false;
         return false;
-      });
-    }
+      }
+      return false;
+    });
   }
 
   render() {

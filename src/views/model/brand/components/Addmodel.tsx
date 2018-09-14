@@ -122,9 +122,9 @@ export default class AddModal extends Vue {
       logo: this.modelForm.logo,
       description: this.modelForm.description,
     };
-    if (this.title === '新增品牌') {
-      From.validate((valid: any) => {
-        if (valid) {
+    From.validate((valid: any) => {
+      if (valid) {
+        if (this.title === '新增品牌') {
           brandAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -143,15 +143,7 @@ export default class AddModal extends Vue {
             }
           });
         } else {
-          this.loading = false;
-          return false;
-        }
-        return false;
-      });
-    } else {
-      obj.id = this.data.id;
-      From.validate((valid: any) => {
-        if (valid) {
+          obj.id = this.data.id;
           if (this.modelForm.logo !== '') {
             brandEdit(obj).then((res) => {
               if (res.result.resultCode === '0') {
@@ -175,13 +167,13 @@ export default class AddModal extends Vue {
             this.loading = false;
             return false;
           }
-        } else {
-          this.loading = false;
-          return false;
         }
+      } else {
+        this.loading = false;
         return false;
-      });
-    }
+      }
+      return false;
+    });
   }
 
   render() {

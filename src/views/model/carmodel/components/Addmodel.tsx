@@ -205,9 +205,10 @@ export default class AddModal extends Vue {
       energyType: this.modelForm.energyType,
       fuelTankCap: this.oilInput ? this.modelForm.fuelTankCap : '',
     };
-    if (this.title === '新增车型') {
-      From.validate((valid: any) => {
-        if (valid) {
+    From.validate((valid: any) => {
+      if (valid) {
+        if (this.title === '新增车型') {
+          delete obj.id;
           modelAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -225,14 +226,6 @@ export default class AddModal extends Vue {
             }
           });
         } else {
-          this.loading = false;
-          return false;
-        }
-        return false;
-      });
-    } else {
-      From.validate((valid: any) => {
-        if (valid) {
           modelEdit(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -249,13 +242,13 @@ export default class AddModal extends Vue {
               }, 1500);
             }
           });
-        } else {
-          this.loading = false;
-          return false;
         }
+      } else {
+        this.loading = false;
         return false;
-      });
-    }
+      }
+      return false;
+    });
   }
 
   render() {
