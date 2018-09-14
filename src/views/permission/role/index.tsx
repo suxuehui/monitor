@@ -74,7 +74,13 @@ export default class Role extends Vue {
   tableList: tableList[] = [
     { label: '角色名称', prop: 'roleName' },
     { label: '职能描述', prop: 'remark' },
-    { label: '成员数量', prop: 'countUser', formatter: (row: any) => (row.countUser ? row.countUser : '--') },
+    {
+      label: '成员数量',
+      prop: 'countUser',
+      sortable: true,
+      sortBy: 'countUser',
+      formatter: (row: any) => (row.countUser ? row.countUser : '--'),
+    },
     {
       label: '添加时间',
       prop: 'crtTime',
