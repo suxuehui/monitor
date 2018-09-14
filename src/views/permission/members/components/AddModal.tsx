@@ -51,9 +51,9 @@ export default class AddModal extends Vue {
     // userName: [
     //   { validator: this.checkUsername, trigger: 'blur' },
     // ],
-    roleIdList: [
-      { required: true, message: '请选择角色类型' },
-    ],
+    // roleIdList: [
+    //   { required: true, message: '请选择角色类型' },
+    // ],
     password: [
       { required: true, message: '请输入登录密码', trigger: 'blur' },
     ],
@@ -64,6 +64,10 @@ export default class AddModal extends Vue {
   userNameRule = [
     { required: true, message: '请输入登录账号' },
     { validator: this.checkUsername, trigger: 'blur' },
+  ];
+
+  roleIdRule = [
+    { required: true, message: '请选择角色类型' },
   ];
 
   // 验证登录账号
@@ -111,10 +115,11 @@ export default class AddModal extends Vue {
   @Watch('data')
   onDataChange(data: any) {
     if (this.data.id > 0) {
+      this.modelForm = {};
       this.modelForm = JSON.parse(JSON.stringify(this.data));
       this.modelForm.roleIdList = this.data.IdList;
       this.modelForm.password = '********';
-      this.isAdmin = data.IdList.toString() === '1';
+      this.isAdmin = this.data.IdList.toString() === '1';
       this.phoneNumber = this.data.userName;
     } else {
       this.resetData();
@@ -154,10 +159,9 @@ export default class AddModal extends Vue {
       password: this.modelForm.password,
       remark: this.modelForm.remark,
     };
-    if (this.title === '新增成员') {
-      // 新增
-      From.validate((valid: any) => {
-        if (valid) {
+    From.validate((valid: any) => {
+      if (valid) {
+        if (this.title === '新增成员') {
           userAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -176,20 +180,11 @@ export default class AddModal extends Vue {
             }
           });
         } else {
-          this.loading = false;
-          return false;
-        }
-        return false;
-      });
-    } else {
-      // 修改
-      obj.userId = this.data.id;
-      if (obj.password ==='********') {
-        delete obj.password;
-      }
-      console.log(obj);
-      From.validate((valid: any) => {
-        if (valid) {
+          // 修改
+          obj.userId = this.data.id;
+          if (obj.password === '********') {
+            delete obj.password;
+          }
           userUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -208,13 +203,13 @@ export default class AddModal extends Vue {
               }, 1500);
             }
           });
-        } else {
-          this.loading = false;
-          return false;
         }
+      } else {
+        this.loading = false;
         return false;
-      });
-    }
+      }
+      return false;
+    });
   }
 
   change: boolean = false;
@@ -278,7 +273,7 @@ export default class AddModal extends Vue {
                   </el-form-item>
                 </el-col> :
                 <el-col span={12}>
-                  <el-form-item label="角色类型" prop="roleIdList">
+                  <el-form-item label="角色类型" prop="roleIdList" rules={this.visible ? this.roleIdRule : null}>
                     <el-select
                       id="roleIdList"
                       v-model={this.modelForm.roleIdList}

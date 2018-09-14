@@ -125,7 +125,11 @@ export default class Role extends Vue {
     if (key === 'edit') {
       this.addTitle = '编辑角色';
       this.addVisible = true;
-      this.modelForm = row;
+      this.modelForm = {
+        roleId: row.roleId,
+        roleName: row.roleName,
+        remark: row.remark,
+      };
     } else if (key === 'freeze') {
       roleUpdateStatus({ roleId: row.roleId }).then((res) => {
         if (res.result.resultCode === '0') {

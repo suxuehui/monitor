@@ -148,14 +148,7 @@ export default class Member extends Vue {
   addTitle: string = '';
   addRoleList: any = [];
 
-  modelForm: any = {
-    realName: '',
-    userName: '',
-    roles: {},
-    remark: '',
-    password: '',
-    roleIdList: [],
-  };
+  modelForm: any = {};
 
   // 操作
   menuClick(key: string, row: any) {
@@ -163,10 +156,10 @@ export default class Member extends Vue {
     if (key === 'edit') {
       userInfo(row.id).then((res) => {
         if (res.result.resultCode === '0') {
-          this.modelForm = row;
-          this.modelForm.IdList = res.entity.roleIdList;
           this.addVisible = true;
           this.addTitle = '编辑成员';
+          this.modelForm = row;
+          this.modelForm.IdList = res.entity.roleIdList;
         } else {
           this.$message.error(res.result.resultMessage);
         }
@@ -204,6 +197,11 @@ export default class Member extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
+    this.modelForm = {};
+    const addBlock: any = this.$refs.addTable;
+    setTimeout(() => {
+      addBlock.resetData();
+    }, 800);
   }
   // 关闭弹窗时刷新
   refresh(): void {
@@ -230,6 +228,7 @@ export default class Member extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-modal
+          ref="addTable"
           roleIds={this.addRoleList}
           title={this.addTitle}
           visible={this.addVisible}
