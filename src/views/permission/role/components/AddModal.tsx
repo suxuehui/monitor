@@ -88,7 +88,7 @@ export default class AddModal extends Vue {
         } else {
           obj.id = this.data.roleId;
           roleUpdate(obj).then((res) => {
-            if (res.result.resultCode) {
+            if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;
                 From.resetFields();
