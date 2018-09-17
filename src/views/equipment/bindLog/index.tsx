@@ -153,7 +153,7 @@ export default class BindLog extends Vue {
                 <el-form-item label="车牌号" prop="plateNum">
                   <el-input
                     v-model={this.modelForm.plateNum}
-                    placeholder="请选择品牌车型"
+                    placeholder="请输入车牌号"
                     disabled
                   ></el-input>
                 </el-form-item>
@@ -162,7 +162,7 @@ export default class BindLog extends Vue {
                 <el-form-item label="车架号" prop="vin">
                   <el-input
                     v-model={this.modelForm.vin}
-                    placeholder="请选择品牌车型"
+                    placeholder="请输入车架号"
                     disabled
                   ></el-input>
                 </el-form-item>

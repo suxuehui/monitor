@@ -1,9 +1,9 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem } from 'element-ui';
+import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
 import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate } from '@/api/monitor';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
-import { allList } from '@/api/model';
+import { allList, brandAll, seriesAll, modelAll } from '@/api/model';
 import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import './index.less';
@@ -21,6 +21,7 @@ const pointIcon = require('@/assets/point.png');
   'el-tag': Tag,
   'el-autocomplete': Autocomplete,
   'el-dialog': Dialog,
+  'el-cascader': Cascader,
   }
   })
 export default class Monitor extends Vue {
@@ -212,37 +213,27 @@ export default class Monitor extends Vue {
     {
       label: '剩余油量',
       prop: 'leftOil',
-      formatter(row: any) {
-        return row.leftOil !== null ? `${row.leftOil}L` : '--';
-      },
+      formatter: (row: any) => this.changeStatus(row.leftOil, 'L'),
     },
     {
       label: '剩余电量',
       prop: 'leftElectricPercent',
-      formatter(row: any) {
-        return row.leftElectricPercent !== null ? `${row.leftElectricPercent}%` : '--';
-      },
+      formatter: (row: any) => this.changeStatus(row.leftElectricPercent, '%'),
     },
     {
       label: '续航里程',
       prop: 'leftMileage',
-      formatter(row: any) {
-        return row.leftMileage !== null ? `${row.leftMileage}km` : '未知';
-      },
+      formatter: (row: any) => this.changeStatus(row.leftMileage, 'km'),
     },
     {
       label: '累计里程',
       prop: 'totalMileage',
-      formatter(row: any) {
-        return row.totalMileage !== null ? `${row.totalMileage}km` : '--';
-      },
+      formatter: (row: any) => this.changeStatus(row.totalMileage, 'km'),
     },
     {
       label: '电瓶电压',
       prop: 'voltage',
-      formatter(row: any) {
-        return row.voltage !== null ? `${row.voltage}V` : '--';
-      },
+      formatter: (row: any) => this.changeStatus(row.voltage, 'V'),
     },
     {
       label: '无位置变化',
@@ -257,6 +248,13 @@ export default class Monitor extends Vue {
       formatter: this.onlineFormat,
     },
   ];
+
+  changeStatus(data: any, unit: string) {
+    if (data) {
+      return data > 0 ? data + unit : '未知';
+    }
+    return '--';
+  }
   opreat: Opreat[] = [
     {
       key: 'edit',
@@ -371,24 +369,33 @@ export default class Monitor extends Vue {
     allList(null).then((res) => {
       if (res.result.resultCode === '0') {
         this.filterList[1].options = res.entity;
+        this.brandList = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
-        // 若无下级门店，删除下一级门店
-        res.entity.forEach((item:any) => {
-          if (item.children.length === 0) {
-            delete item.children;
-          }
-        });
         res.entity.unshift({
           id: Math.random(),
           levelCode: '',
           orgName: '全部',
         });
         this.filterList[0].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+    brandAll(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any, index: number) => {
+          this.brandList.push({
+            label: item.name,
+            name: [],
+            value: item.id,
+          });
+          return true;
+        });
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -612,15 +619,16 @@ export default class Monitor extends Vue {
     this.locChange = false;
   }
 
+
   menuClick(key: string, row: any): void {
     switch (key) {
       case 'edit':
         this.editDialog = true;
-        this.editForm = {
-          id: row.id,
-          plateNum: row.plateNum,
-          vin: row.vin,
-        };
+        // this.editForm = {
+        //   id: row.id,
+        //   plateNum: row.plateNum,
+        //   vin: row.vin,
+        // };
         break;
       case 'delete':
         vehicleDelete({
@@ -726,37 +734,146 @@ export default class Monitor extends Vue {
   editForm: {
     plateNum: string,
     vin: string,
-    id: number
+    id: number,
+    brandSeries: any
   } = {
     plateNum: '',
     vin: '',
     id: 0,
+    brandSeries: [],
   }
   editRules: any = {
     plateNum: [
-      { required: true, message: '请输入活动名称', trigger: 'blur' },
+      { required: true, message: '请输入车牌号', trigger: 'blur' },
     ],
     vin: [
-      { required: true, message: '请选择活动区域', trigger: 'blur' },
+      { required: true, message: '请输入车架号', trigger: 'blur' },
+    ],
+    brandSeries: [
+      { required: true, message: '请选择品牌车型', trigger: 'change' },
     ],
   };
 
   updateCar() {
     (this.$refs.editForm as Form).validate((valid) => {
       if (valid) {
-        vehicleUpdate(this.editForm).then((res) => {
-          if (res.result.resultCode === '0') {
-            this.$message.success(res.result.resultMessage);
-            this.editDialog = false;
-            this.reloadTable();
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
+        console.log(this.editForm);
+        // vehicleUpdate(this.editForm).then((res) => {
+        //   if (res.result.resultCode === '0') {
+        //     this.$message.success(res.result.resultMessage);
+        //     this.editDialog = false;
+        //     this.reloadTable();
+        //   } else {
+        //     this.$message.error(res.result.resultMessage);
+        //   }
+        // });
         return true;
       }
       return false;
     });
+  }
+
+  brandList: any = [];
+  // 品牌、车系、车型
+  brandId: number = 1;
+  seriesId: number = 1;
+  modelId: number = 1;
+
+  // 车型列表
+  modelList: any = []
+  props: any = {
+    value: 'value',
+    children: 'name',
+  }
+
+  handleItemChange(val: any) {
+    const obj: any = {
+      brandId: val[0],
+    };
+    if (val.length === 1) {
+      this.getSeries(obj, val[0]);
+    } else if (val.length === 2) {
+      const obj1: any = {
+        brandId: val[0],
+        seriesId: val[1],
+      };
+      this.getModel(obj1, val);
+    }
+  }
+
+  // 品牌查车系
+  getSeries(obj: any, val: number) {
+    seriesAll(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.brandList.map((item: any, index: number) => {
+          this.brandList[index].name = [];
+          if (val === item.value) {
+            // this.brandName = item.label;
+            setTimeout(() => {
+              if (res.entity !== null && res.entity.length > 0) {
+                res.entity.map((items: any) => {
+                  this.brandList[index].name.push({
+                    label: items.name,
+                    value: items.id,
+                    name: [],
+                  });
+                  return true;
+                });
+              } else {
+                this.brandList[index].name.push({
+                  label: '暂无车系可供选择',
+                  value: Math.random(),
+                  disabled: true,
+                });
+              }
+            }, 100);
+          }
+          return true;
+        });
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  // 车系查车型
+  getModel(data: any, val: any) {
+    modelAll(data).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.brandList.map((item: any, index: number) => {
+          item.name.map((items: any, key: number) => {
+            if (val[1] === items.value) {
+              // this.seriesName = items.label;
+              if (res.entity !== null && res.entity.length > 0) {
+                res.entity.map((it: any) => {
+                  this.brandList[index].name[key].name.push({
+                    label: it.name,
+                    value: it.id,
+                  });
+                  return true;
+                });
+              } else {
+                this.brandList[index].name[key].name.push({
+                  label: '暂无车型可供选择',
+                  value: Math.random(),
+                  disabled: true,
+                });
+                return false;
+              }
+            }
+            return true;
+          });
+          return true;
+        });
+        this.modelList = res.entity;
+      }
+    });
+  }
+
+  handleCarChange(val: any) {
+    this.brandId = parseInt(val[0], 10);
+    this.seriesId = parseInt(val[1], 10);
+    this.modelId = parseInt(val[2], 10);
   }
 
   render() {
@@ -859,15 +976,28 @@ export default class Monitor extends Vue {
         <el-dialog
           title="编辑车辆"
           visible={this.editDialog}
-          width="400px"
+          width="420px"
           before-close={this.closeEdit}
+          close-on-click-modal={false}
         >
           <el-form
             model={this.editForm}
             rules={this.editRules}
             ref="editForm"
-            label-width="70px"
+            label-width="80px"
           >
+            <el-form-item label="品牌车型" prop="brandSeries">
+              <el-cascader
+                id="brandSeries"
+                v-model={this.editForm.brandSeries}
+                style="width:100%"
+                placeholder="请选择品牌车型"
+                options={this.brandList}
+                on-active-item-change={this.handleItemChange}
+                on-change={this.handleCarChange}
+                props={this.props}
+              ></el-cascader>
+            </el-form-item>
             <el-form-item label="车牌号" prop="plateNum">
               <el-input v-model={this.editForm.plateNum}></el-input>
             </el-form-item>

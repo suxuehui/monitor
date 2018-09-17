@@ -54,7 +54,7 @@ export async function getCodeImg(params: any) {
 export async function getUserInfo(params: any) {
   return request({
     url: '/sys/user/info',
-    method: 'get',
+    method: 'post',
     data: params,
   });
 }

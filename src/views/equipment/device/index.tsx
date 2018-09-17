@@ -248,12 +248,12 @@ export default class Device extends Vue {
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
-        // 若无下级门店，删除下一级门店
-        res.entity.forEach((item: any) => {
-          if (item.children.length === 0) {
-            delete item.children;
-          }
-        });
+        // // 若无下级门店，删除下一级门店
+        // res.entity.forEach((item: any) => {
+        //   if (item.children.length === 0) {
+        //     delete item.children;
+        //   }
+        // });
         res.entity.unshift({
           id: Math.random(),
           levelCode: '',

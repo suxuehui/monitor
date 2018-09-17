@@ -1,6 +1,5 @@
 import request from '@/utils/request';
 
-// 品牌管理
 // 全列表
 export async function allList(params: any) {
   return request({
