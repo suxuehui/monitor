@@ -115,6 +115,7 @@ export default class Login extends Vue {
             }).catch((error) => {
               this.$message.error(error);
             });
+            this.$store.dispatch('ClearTable');
           }
         }).catch((err) => {
           this.loading = false;

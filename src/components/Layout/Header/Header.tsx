@@ -68,6 +68,7 @@ export default class Header extends Vue {
       case '2':
         break;
       case '3':
+        this.$store.dispatch('ClearTable');
         localStorage.removeItem('token');
         this.$router.push('/login');
         break;

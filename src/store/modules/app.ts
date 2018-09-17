@@ -64,6 +64,11 @@ const app = {
     ISMOBILE: (state: any, isMobile: boolean) => {
       state.isMobile = isMobile;
     },
+    CLEARTABLE: (state:any) => {
+      state.keepList=[];
+      state.tabList=[];
+      state.tabActiveKey='';
+    },
   },
   actions: {
     ChangeMobile: (context: any, isMobile: boolean) => {
@@ -83,6 +88,10 @@ const app = {
         keepList.push(name);
       }
       await context.commit('KEEP_CHANGE', keepList);
+    },
+    // 清除列表
+    ClearTable: (context: any) => {
+      context.commit('CLEARTABLE');
     },
     AddTabPane: (context: any, url: string) => new Promise((resolve, reject) => {
       const {
