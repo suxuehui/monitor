@@ -55,7 +55,7 @@ export default class AddModal extends Vue {
   cfgParamRule = [
     { required: true, message: '请输入配置参数', trigger: 'blur' },
     {
-      validator: this.checkCfgParam, trigger: 'blur', message: '配置参数格式错误，请重新输入',
+      validator: this.checkCfgParam, trigger: 'blur',
     },
   ]
 
@@ -67,7 +67,7 @@ export default class AddModal extends Vue {
         if (exp.test(value)) {
           callback();
         } else {
-          callback(new Error());
+          callback(new Error('配置参数格式错误，请重新输入'));
         }
       } else {
         callback(new Error('不能为空'));

@@ -1,4 +1,4 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader } from 'element-ui';
 import { allList } from '@/api/model';
 import { vehicleUpdate } from '@/api/monitor';
@@ -66,10 +66,48 @@ export default class EditModel extends Vue {
     ],
     vin: [
       { required: true, message: '请输入车架号', trigger: 'blur' },
+      {
+        validator: this.checkVinRule, trigger: 'blur',
+      },
     ],
     plateNum: [
       { required: true, message: '请输入车牌号', trigger: 'blur' },
+      {
+        validator: this.checkPlateNum, trigger: 'blur',
+      },
     ],
+  }
+  // 验证车架号
+  @Emit()
+  checkVinRule(rule: any, value: string, callback: Function) {
+    if (value) {
+      const upperVin = value.toUpperCase();
+      // 车架号不包含I\O\Q
+      if (upperVin.indexOf('O') >= 0 || upperVin.indexOf('I') >= 0 || upperVin.indexOf('Q') >= 0) {
+        callback(new Error('车架号输入不合法，请重新输入'));
+      } else if (upperVin.length === 17) {
+        callback();
+      } else {
+        callback(new Error('车架号长度为17位，请重新输入'));
+      }
+    } else {
+      callback(new Error('车架号不能为空，请输入'));
+    }
+  }
+
+  // 验证车牌号
+  @Emit()
+  checkPlateNum(rule: any, value: string, callback: Function) {
+    if (value) {
+      const exp: any = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/;
+      if (exp.test(value)) {
+        callback();
+      } else {
+        callback(new Error('车牌号输入不合法，请重新输入'));
+      }
+    } else {
+      callback(new Error('车牌号不能为空，请输入'));
+    }
   }
 
   created() {
@@ -98,8 +136,8 @@ export default class EditModel extends Vue {
 
   handleChangeModel(val: any) {
     this.brandId = val[0] ? parseInt(val[0], 10) : null;
-    this.seriesId = val[1] ? parseInt(val[1], 10) : null;
-    this.modelId = val[2] ? parseInt(val[2], 10) : null;
+    this.seriesId = val[1] ? parseInt(val[1], 10) : -1;
+    this.modelId = val[2] ? parseInt(val[2], 10) : -1;
   }
 
   // 重置数据
@@ -138,6 +176,11 @@ export default class EditModel extends Vue {
     }
     From.validate((valid: any) => {
       if (valid) {
+        if (this.seriesId === -1 || this.modelId === -1) {
+          this.$message.error('车辆车系车型数据不全，请验证后重新选择');
+          this.loading = false;
+          return false;
+        }
         vehicleUpdate(obj).then((res) => {
           if (res.result.resultCode === '0') {
             setTimeout(() => {

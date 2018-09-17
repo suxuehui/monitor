@@ -67,7 +67,7 @@ export default class AddModal extends Vue {
   ];
 
   roleIdRule = [
-    { required: true, message: '请选择角色类型' },
+    { required: true, message: '请选择角色类型', trigger: 'change' },
   ];
 
   // 验证登录账号
@@ -184,6 +184,10 @@ export default class AddModal extends Vue {
           obj.userId = this.data.id;
           if (obj.password === '********') {
             delete obj.password;
+          } else if (obj.password === '') {
+            this.$message.error('密码不能为空！');
+            this.loading = false;
+            return false;
           }
           userUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
