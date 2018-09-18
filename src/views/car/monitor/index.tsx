@@ -1,5 +1,5 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader } from 'element-ui';
+import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
 import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate } from '@/api/monitor';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
@@ -22,6 +22,7 @@ const pointIcon = require('@/assets/point.png');
   'el-tag': Tag,
   'el-autocomplete': Autocomplete,
   'el-dialog': Dialog,
+  'el-tooltip': Tooltip,
   'el-cascader': Cascader,
   'edit-model': EditModel,
   }
@@ -203,9 +204,10 @@ export default class Monitor extends Vue {
     {
       label: '品牌车系',
       prop: 'brandName',
-      formatter(row: any) {
-        return row.brandName !== null ? `${row.brandName}-${row.seriesName}` : '--';
-      },
+      // formatter(row: any) {
+      //   return row.brandName !== null ? `${row.brandName}-${row.seriesName}` : '--';
+      // },
+      formatter: this.brandChange,
     },
     {
       label: '能源类型',
@@ -250,12 +252,18 @@ export default class Monitor extends Vue {
       formatter: this.onlineFormat,
     },
   ];
+  brandChange(row:any) {
+    const str= `${row.brandName}--${row.seriesName}--${row.modelName}`;
+    return row.brandName ?
+      <el-tooltip class="item" effect="dark" content={str} placement="top">
+        <div>
+          <p>{str}</p>
+        </div>
+      </el-tooltip>: '--';
+  }
 
   changeStatus(data: any, unit: string) {
-    if (data) {
-      return data > 0 ? data + unit : '未知';
-    }
-    return '--';
+    return data > 0 ? data + unit : '--';
   }
   opreat: Opreat[] = [
     {
