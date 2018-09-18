@@ -1,7 +1,11 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Card, Input, Row, Col, Checkbox } from 'element-ui';
-import { getAlarmSetting, getAlarmModelList } from '@/api/system';
+import { Card, Input, Row, Form, Col, Checkbox, Button, FormItem } from 'element-ui';
+import { getAlarmSetting, getAlarmModelList, saveAlarmModelList } from '@/api/system';
 import './index.less';
+
+interface Params {
+  [key: string]: any
+}
 
 @Component({
   components: {
@@ -9,14 +13,22 @@ import './index.less';
   'el-input': Input,
   'el-row': Row,
   'el-col': Col,
-  'el-checkbox': Checkbox
+  'el-checkbox': Checkbox,
+  'el-button': Button,
+  'el-form': Form,
+  'el-form-item': FormItem,
   }
   })
 export default class Setting extends Vue {
   alarmModelList: any = [];
   alarmValueList: any = [];
 
+  loading: boolean = false;
+
   created() {
+    this.initData();
+  }
+  initData() {
     getAlarmModelList(null).then((res: any) => {
       if (res.result.resultCode === '0') {
         this.alarmModelList = res.entity;
@@ -33,7 +45,7 @@ export default class Setting extends Vue {
     });
   }
 
-  contentRender(str: string, params: object) {
+  contentRender(field: string, str: string, ind: number) {
     const regular = /\[input\(\w*\)\]/g;
     // 分割字符串和替换掉input框
     const content: string[] = str.split(regular);
@@ -47,16 +59,71 @@ export default class Setting extends Vue {
       }
     } while (on != null);
     // 循环字符串，并在字符串中间插入input框
-    console.log(result);
-    // v-model={params[/\(\w*\)/g.exec(result[index]) ? /\(\w*\)/g.exec(result[index]) : 'null']}
-    return content.map((item, index) => (
-      <span>
-        {item}
-        {
-          result[index] && (index !== content.length - 1) ? <el-input class="alarm-input"></el-input> : null
-        }
-      </span>
-    ));
+    return content.map((item, index) => {
+      let val: any = '';
+      if (index !== content.length - 1) {
+        val = /\(\w*\)/g.exec(result[index]);
+        val = val ? val[0] : '';
+      }
+      return (
+        <span>
+          {item}
+          {
+            result[index] && (index !== content.length - 1) ? <el-input
+              size='mini'
+              type="number"
+              value={this.alarmValueList[ind][val.substring(1, val.length - 1)]}
+              on-change={(e: any) => this.inputChange(e, ind, val.substring(1, val.length - 1))}
+              class="alarm-input"></el-input> : null
+          }
+        </span>
+      );
+    });
+  }
+
+  inputChange(e: any, ind: number, key: string) {
+    this.alarmValueList[ind][key] = parseInt(e, 10);
+  }
+
+  checkBoxChange(e:any, data: any, indx:number) {
+    this.alarmValueList.forEach((item:any) => {
+      if (item.alarmCfgModelId === data.id) {
+        item.enable = e;
+      }
+    });
+  }
+
+  findValue(id: number, value: string) {
+    const line = this.alarmValueList.filter((item: any) => item.alarmCfgModelId === id);
+    return line[0][value];
+  }
+
+  onSubmit() {
+    this.loading = true;
+    const obj: any = [];
+    this.alarmValueList.forEach((item: any) => {
+      obj.push({
+        alarmCfgModelId: item.alarmCfgModelId,
+        enable: item.enable,
+        fieldThreshold: item.fieldThreshold,
+        fqcy: item.fqcy,
+        maxFqcy: item.maxFqcy,
+      });
+    });
+    saveAlarmModelList(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          this.initData();
+          this.$message.success(res.result.resultMessage);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage);
+        }, 1500);
+      }
+    });
   }
 
   render(h: any) {
@@ -69,12 +136,23 @@ export default class Setting extends Vue {
           </div>
           {
             alarmModelList.length && alarmValueList.length ? alarmModelList.map((item: any, index: number) => <div class="item">
-              <el-checkbox checked></el-checkbox> <span class="itemTitle">{item.alarmTypeName}:</span>
-              {this.contentRender(item.content, alarmValueList.filter((items: any) =>
-                items.field === item.field)[0])
+              <el-checkbox
+                on-change={(e:any) => this.checkBoxChange(e, item, index)}
+                checked={this.findValue(item.id, 'enable')}
+              ></el-checkbox> <span class="itemTitle">{item.alarmTypeName}:</span>
+              {
+                alarmValueList.map((items: any, indexs: number) => {
+                  if (items.alarmCfgModelId === item.id) {
+                    return this.contentRender(item.field, item.content, indexs);
+                  }
+                  return '';
+                })
               }
             </div>) : null
           }
+          <div class="bottom-btn">
+            <el-button on-click={this.onSubmit} loading={this.loading} type="primary">保存</el-button>
+          </div>
         </el-card>
       </div>
     );

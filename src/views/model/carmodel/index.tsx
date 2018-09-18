@@ -103,17 +103,10 @@ export default class CarModel extends Vue {
     });
   }
 
-  brandChange(val: any) {
-    this.outParams = {
-      brandId: val[0],
-      seriesId: val[1],
-    };
-  }
-
   brandLoad(val: any) {
     this.outParams = {
       brandId: val[0],
-      seriesId: val[1] ? val[0] : null,
+      seriesId: val[1] ? val[1] : null,
     };
     const obj = {
       brandId: val[0],

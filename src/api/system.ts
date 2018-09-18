@@ -22,7 +22,8 @@ export async function getAlarmModelList(params: any) {
 export async function saveAlarmModelList(params: any) {
   return request({
     url: '/system/cfg/save',
-    method: 'get',
+    method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }

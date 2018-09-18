@@ -123,7 +123,7 @@ export default class EditModel extends Vue {
   @Watch('data')
   onDataChange() {
     this.modelForm = {
-      vin: this.data.vin,
+      vin: this.data.vin.toUpperCase(),
       plateNum: this.data.plateNum,
       carInfo: [],
     };
@@ -162,7 +162,7 @@ export default class EditModel extends Vue {
     const From: any = this.$refs.modelForm;
     const obj: any = {
       plateNum: this.modelForm.plateNum,
-      vin: this.modelForm.vin,
+      vin: this.modelForm.vin.toUpperCase(),
       id: this.data.id,
     };
     if (this.data.carCode.join('/') === this.modelForm.carInfo.join('/')) {
