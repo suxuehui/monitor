@@ -16,7 +16,7 @@ export default class Setting extends Vue {
   alarmModelList: any = [];
   alarmValueList: any = [];
 
-  mounted() {
+  created() {
     getAlarmModelList(null).then((res: any) => {
       if (res.result.resultCode === '0') {
         this.alarmModelList = res.entity;
