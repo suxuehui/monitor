@@ -93,7 +93,6 @@ export default class Merchants extends Vue {
       prop: 'crtTime',
       sortable: true,
       sortBy: 'crtTime',
-      formatter: (row: any) => (row.crtTime ? row.crtTime : '--'),
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];

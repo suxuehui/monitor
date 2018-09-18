@@ -61,7 +61,7 @@ export default class EleFence extends Vue {
       // });
     });
   }
-  tableUrl: string = '/monitor/vehicle/fence/list'; // 表格请求地址
+  tableUrl: string = '/vehicle/fence/list'; // 表格请求地址
   outParams: any = {}
   // 表格参数
   filterList: FilterFormList[] = [
@@ -564,7 +564,6 @@ render() {
             table-list={this.tableList}
             url={this.tableUrl}
             dataType={'JSON'}
-            fetchType={'get'}
             localName={'eleFence'}
             opreat={this.opreat}
             out-params={this.outParams}

@@ -126,7 +126,7 @@ export async function createBluetooth(params: any) {
 export async function resetTime(params: any) {
   return request({
     url: `/device/terminal/reset/${params}`,
-    method: 'put',
+    method: 'get',
     data: params,
   });
 }

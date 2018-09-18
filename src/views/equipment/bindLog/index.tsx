@@ -1,5 +1,5 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Card, Form, FormItem, Input, Row, Col } from 'element-ui';
+import { Card, Form, FormItem, Input, Row, Col, Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
@@ -19,6 +19,8 @@ const noPic = require('@/assets/noPic.png');
   "m-table": MTable,
   'checkLog-model': CheckLogModel,
   'checkPic-model': CheckPicModel,
+  'el-tag': Tag,
+  'el-tooltip': Tooltip,
   }
   })
 export default class BindLog extends Vue {
@@ -33,9 +35,9 @@ export default class BindLog extends Vue {
   opreat: Opreat[] = [];
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName', formatter: (row: any) => (row.orgName ? row.orgName : '--') },
+    { label: '所属商户', prop: 'orgName' },
     { label: '操作人员', prop: 'opsRealName', formatter: this.opsPerson },
-    { label: '操作类型', prop: 'opsType', formatter: (row: any) => (row.opsType ? row.opsType : '--') },
+    { label: '操作类型', prop: 'opsType', formatter: this.typeChange },
     { label: '操作时间', prop: 'crtTime' },
     { label: '安装图片', prop: 'installUrl', formatter: this.showInstallPic },
     { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },
@@ -74,11 +76,14 @@ export default class BindLog extends Vue {
   checkPicTitle: string = '';
 
   opsPerson(row: any) {
+    const str= `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
     return row.opsOrgName && row.opsRealName && row.opsUsername ?
-      <div>
-        <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
-        <p>{`(${row.opsUsername})`}</p>
-      </div> : '--';
+      <el-tooltip class="item" effect="dark" content={str} placement="top">
+        <div>
+          <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
+          <p>{`(${row.opsUsername})`}</p>
+        </div>
+      </el-tooltip>: '--';
   }
 
   showInstallPic(row: any) {
@@ -90,6 +95,22 @@ export default class BindLog extends Vue {
         </div>);
     }
     return '暂无安装图片';
+  }
+
+  typeChange(row: any) {
+    let type;
+    switch (row.opsType) {
+      case '解绑':
+        type = <el-tag type="danger">解绑</el-tag>;
+        break;
+      case '安绑':
+        type = <el-tag type="success">安绑</el-tag>;
+        break;
+      default:
+        type = <el-tag type="info">未知状态</el-tag>;
+        break;
+    }
+    return type;
   }
 
   showVinPic(row: any) {
