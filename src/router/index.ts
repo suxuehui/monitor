@@ -21,13 +21,10 @@ export const constantRouterMap: routerItem[] & RouterOptions['routes'] = [
     path: '*', name: '404', component: getComponent('error/404.vue'),
   },
   {
-    path: '/401', name: '401', component: getComponent('error/401.vue'),
-  },
-  {
-    path: '/dashboard',
-    name: '系统主页',
-    component: getComponent('dashboard/index'),
-    meta: { key: 'Dashboard' },
+    path: '/401',
+    name: '401',
+    component: getComponent('error/401.vue'),
+    meta: { key: '401' },
   },
 ];
 

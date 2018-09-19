@@ -110,11 +110,7 @@ export default class Login extends Vue {
           } else {
             this.$message.success(resultMessage);
             localStorage.setItem('token', entity);
-            this.$store.dispatch('getUserInfo').then(() => {
-              this.$router.push('/');
-            }).catch((error) => {
-              this.$message.error(error);
-            });
+            this.$store.dispatch('getUserInfo');
             this.$store.dispatch('ClearTable');
           }
         }).catch((err) => {

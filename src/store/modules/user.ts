@@ -32,8 +32,7 @@ function filterAsyncRouter(
 
 const hasPermission = (permission: string[]) => { // 过滤路由
   const filterRouter = filterAsyncRouter(lodash.cloneDeep(asyncRouterMap), permission);
-  // 添加路由的时候排除掉dashboard
-  router.addRoutes(filterRouter.filter(item => item.path !== '/dashboard'));
+  router.addRoutes(filterRouter);
   return filterRouter;
 };
 
@@ -66,12 +65,6 @@ const user = {
       getUserInfo(null).then(({ result, entity }) => {
         context.commit('LOADING', true);
         if (result.resultCode === '0') {
-          if (config.noLoginList.indexOf(window.location.hash) > -1) {
-            router.replace({ path: '/dashboard' });
-          }
-          // if (entity.menus === null) {
-          //   console.log(1);
-          // }
           const userData: UserData = {
             username: entity.userName,
             userid: entity.userId,
@@ -88,6 +81,9 @@ const user = {
           context.commit('SAVEROLES', permissions);
           const getRouter = hasPermission(permissions);
           context.dispatch('GetMenuData', getRouter);
+          if (config.noLoginList.indexOf(window.location.hash) > -1) {
+            router.replace({ path: '/dashboard' });
+          }
           resolve(entity);
         } else {
           reject(result.resultMessage);
