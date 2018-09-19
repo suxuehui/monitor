@@ -1,3 +1,4 @@
+import lodash from 'lodash';
 import { getUserInfo } from '@/api/app';
 import config from '@/utils/config';
 import router, { asyncRouterMap, constantRouterMap } from '@/router';
@@ -30,7 +31,7 @@ function filterAsyncRouter(
 }
 
 const hasPermission = (permission: string[]) => { // 过滤路由
-  const filterRouter = filterAsyncRouter(asyncRouterMap, permission);
+  const filterRouter = filterAsyncRouter(lodash.cloneDeep(asyncRouterMap), permission);
   // 添加路由的时候排除掉dashboard
   router.addRoutes(filterRouter.filter(item => item.path !== '/dashboard'));
   return filterRouter;
@@ -75,9 +76,11 @@ const user = {
             email: entity.remark,
           };
           const permissions: string[] = [];
-          entity.menus.forEach((item: any, index: number) => {
-            permissions.push(item.url);
-          });
+          if (entity.menus) {
+            entity.menus.forEach((item: any, index: number) => {
+              permissions.push(item.url);
+            });
+          }
           context.commit('SVAEUSER', userData);
           context.commit('SAVEROLES', permissions);
           const getRouter = hasPermission(permissions);

@@ -45,7 +45,7 @@ export default class Driving extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/driving/list';
+  url: string = '/statistics/driving/list';
 
   opreat: Opreat[] = [];
   // 表格参数
