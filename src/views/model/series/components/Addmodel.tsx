@@ -1,6 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option } from 'element-ui';
-import { seriesAdd, seriesEdit, brandAll } from '@/api/model';
+import { seriesAdd, seriesEdit } from '@/api/model';
 import './Addmodel.less';
 @Component({
   components: {
@@ -21,6 +21,7 @@ export default class AddModal extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
   @Prop() private data: any;
+  @Prop() private brandAddList: any; // 品牌列表
 
   modelForm: any = {
     name: '',
@@ -47,9 +48,6 @@ export default class AddModal extends Vue {
     ],
   }
 
-  // 品牌列表
-  brandList: any = [];
-
   selectStatus: boolean = false;
 
   @Watch('data')
@@ -61,21 +59,6 @@ export default class AddModal extends Vue {
       this.resetData();
     }
   }
-
-  created() {
-    brandAll(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.map((item: any) => this.brandList.push({
-          key: item.id,
-          value: item.id,
-          label: item.name,
-        }));
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
-
 
   // 重置数据
   resetData() {
@@ -176,7 +159,7 @@ export default class AddModal extends Vue {
                   disabled={this.selectStatus}
                 >
                   {
-                    this.brandList.map((item: any) => (
+                    this.brandAddList.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }

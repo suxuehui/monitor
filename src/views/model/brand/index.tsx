@@ -1,5 +1,5 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import { Component, Vue } from 'vue-property-decorator';
+import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag, Tooltip } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
 import AddModel from './components/Addmodel';

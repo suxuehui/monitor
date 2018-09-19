@@ -71,6 +71,7 @@ export default class Series extends Vue {
 
   rowData: any = {};
   brandList: any = [];
+  brandAddList: any = [];
 
   created() {
     brandAll(null).then((res) => {
@@ -83,6 +84,7 @@ export default class Series extends Vue {
       } else {
         this.$message.error(res.result.resultMessage);
       }
+      this.brandAddList = this.brandList.filter((item:any) => item);
       // 所有品牌
       this.brandList.unshift({
         key: Math.random(),
@@ -163,6 +165,7 @@ export default class Series extends Vue {
         <add-model
           ref="addTable"
           data={this.rowData}
+          brandAddList={this.brandAddList}
           title={this.addTitle}
           visible={this.addVisible}
           on-close={this.closeModal}

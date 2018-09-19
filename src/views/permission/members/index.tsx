@@ -69,6 +69,7 @@ export default class Member extends Vue {
           item.label = item.roleName;
         });
         this.roleTypeList = res.entity;
+        this.roleTypeAddList = res.entity.filter((item:any) => item);
         // 所有品牌
         this.roleTypeList.unshift({
           key: Math.random(),
@@ -83,6 +84,7 @@ export default class Member extends Vue {
   }
 
   roleTypeList: RoleType[] = []
+  roleTypeAddList: RoleType[] = []
 
   opreat: Opreat[] = [
     {
@@ -230,6 +232,7 @@ export default class Member extends Vue {
         <add-modal
           ref="addTable"
           roleIds={this.addRoleList}
+          roleAddList={this.roleTypeAddList}
           title={this.addTitle}
           visible={this.addVisible}
           data={this.modelForm}

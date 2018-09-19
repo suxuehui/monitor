@@ -1,6 +1,6 @@
 import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option, Cascader } from 'element-ui';
-import { modelAdd, modelEdit, brandAll, seriesAll } from '@/api/model';
+import { modelAdd, modelEdit, seriesAll } from '@/api/model';
 import './Addmodel.less';
 
 interface ActiveType { key: number, value: number, label: string }
@@ -24,6 +24,7 @@ export default class AddModal extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
   @Prop() private data: any;
+  @Prop() private brandAddList: any; // 品牌列表
 
   modelForm: any = {
     name: '',
@@ -45,9 +46,6 @@ export default class AddModal extends Vue {
     energyType: [
       { required: true, message: '请选择能源类型' },
     ],
-    // fuelTankCap: [
-    //   { required: true, message: '请输入油箱容量' },
-    // ],
     name: [
       { required: true, message: '请输入车型名称', trigger: 'blur' },
     ],
@@ -58,8 +56,6 @@ export default class AddModal extends Vue {
       validator: this.checkTank, trigger: 'blur',
     },
   ]
-
-  brandList: any = [];
 
   props: any = {
     value: 'value',
@@ -92,23 +88,6 @@ export default class AddModal extends Vue {
     }, 500);
   }
 
-  mounted() {
-    brandAll(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.map((item: any, index: number) => {
-          this.brandList.push({
-            label: item.name,
-            name: [],
-            value: item.id,
-          });
-          return true;
-        });
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
-
   handleItemChange(val: any) {
     const obj = {
       brandId: val[0],
@@ -118,20 +97,20 @@ export default class AddModal extends Vue {
   getSeries(obj: any, val: number) {
     seriesAll(obj).then((res) => {
       if (res.result.resultCode === '0') {
-        this.brandList.map((item: any, index: number) => {
-          this.brandList[index].name = [];
+        this.brandAddList.map((item: any, index: number) => {
+          this.brandAddList[index].name = [];
           if (val === item.value) {
             setTimeout(() => {
               if (res.entity.length > 0) {
                 res.entity.map((items: any) => {
-                  this.brandList[index].name.push({
+                  this.brandAddList[index].name.push({
                     label: items.name,
                     value: items.id,
                   });
                   return true;
                 });
               } else {
-                this.brandList[index].name.push({
+                this.brandAddList[index].name.push({
                   label: '暂无车系可供选择',
                   value: Math.random(),
                   disabled: true,
@@ -269,7 +248,7 @@ export default class AddModal extends Vue {
                   v-model={this.modelForm.brandSeries}
                   style="width:100%"
                   placeholder="请选择品牌车系"
-                  options={this.brandList}
+                  options={this.brandAddList}
                   disabled={this.selectStatus}
                   on-active-item-change={this.handleItemChange}
                   props={this.props}

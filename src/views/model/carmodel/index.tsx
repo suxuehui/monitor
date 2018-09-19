@@ -1,5 +1,5 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import { Component, Vue } from 'vue-property-decorator';
+import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import { modelInfo, modelDelete, brandAll, seriesAll } from '@/api/model';
 import AddModel from './components/Addmodel';
@@ -20,7 +20,6 @@ export default class CarModel extends Vue {
       placeholder: '请选择品牌车系',
       options: [],
       props: {},
-      // itemChange: this.brandLoad,
       change: this.brandLoad,
     },
     {
@@ -83,6 +82,7 @@ export default class CarModel extends Vue {
   rowData: any = {};
 
   brandList: any = [];
+  brandAddList: any = [];
 
   mounted() {
     brandAll(null).then((res) => {
@@ -97,6 +97,7 @@ export default class CarModel extends Vue {
         });
         this.filterList[0].props = this.props;
         this.filterList[0].options = this.brandList;
+        this.brandAddList = this.brandList.filter((item:any) => item);
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -208,6 +209,7 @@ export default class CarModel extends Vue {
         />
         <add-model
           ref="addTable"
+          brandAddList={this.brandAddList}
           data={this.rowData}
           title={this.addTitle}
           visible={this.addVisible}

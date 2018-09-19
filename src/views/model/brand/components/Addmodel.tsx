@@ -1,6 +1,5 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload } from 'element-ui';
-import { uploadFile } from '@/api/app';
 import { brandAdd, brandEdit } from '@/api/model';
 import UploadBlock from '@/components/Upload/index.vue';
 

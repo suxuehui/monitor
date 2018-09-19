@@ -1,8 +1,7 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Tag, Loading, Button, Switch, Popover } from 'element-ui';
+import { Component, Vue } from 'vue-property-decorator';
+import { Tag, Button, Popover } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { getCustomerList } from '@/api/customer';
-import { terminalUnbind, terminalType, getBluetooth, resetTime } from '@/api/equipment';
+import { terminalType, getBluetooth, resetTime } from '@/api/equipment';
 import { orgTree } from '@/api/app';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
@@ -248,12 +247,6 @@ export default class Device extends Vue {
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
-        // // 若无下级门店，删除下一级门店
-        // res.entity.forEach((item: any) => {
-        //   if (item.children.length === 0) {
-        //     delete item.children;
-        //   }
-        // });
         res.entity.unshift({
           id: Math.random(),
           levelCode: '',

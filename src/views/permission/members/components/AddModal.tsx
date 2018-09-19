@@ -23,6 +23,7 @@ export default class AddModal extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
   @Prop() private data: any;
+  @Prop() private roleAddList: any;
   @Prop() private roleIds: any;
 
   created() {
@@ -37,7 +38,6 @@ export default class AddModal extends Vue {
     roleIdList: [],
   };
 
-  roleTypeList: RoleType[] = []
   isInstaller: boolean = false;
   isPhoneNumber: boolean = false;
   phoneNumber: string = '';
@@ -95,21 +95,6 @@ export default class AddModal extends Vue {
         callback(new Error('登录账号不能为空'));
       }
     }, 500);
-  }
-
-  mounted() {
-    roleSelect(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.forEach((item: any) => {
-          item.key = parseInt(item.id, 10);
-          item.value = item.id;
-          item.label = item.roleName;
-        });
-        this.roleTypeList = res.entity;
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
   }
 
   @Watch('data')
@@ -289,7 +274,7 @@ export default class AddModal extends Vue {
                       style="width:100%"
                     >
                       {
-                        this.roleTypeList.map((item: any) => (
+                        this.roleAddList.map((item: any) => (
                           <el-option value={item.value} label={item.label} >{item.label}</el-option>
                         ))
                       }
