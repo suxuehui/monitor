@@ -1,5 +1,5 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Tag, Loading, Tooltip } from 'element-ui';
+import { Component, Vue } from 'vue-property-decorator';
+import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { roleSelect, userLock, userUnlock, userInfo, getUserInfo } from '@/api/permission';
 

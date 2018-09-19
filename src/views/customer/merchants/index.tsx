@@ -1,5 +1,5 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import { Component, Vue } from 'vue-property-decorator';
+import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col } from 'element-ui';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';

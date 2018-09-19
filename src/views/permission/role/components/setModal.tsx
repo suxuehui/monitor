@@ -1,7 +1,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Dialog, Input, Button, Form, Tree } from 'element-ui';
 import { roleSaveRoleMenu, roleInfo } from '@/api/permission';
-import { getListByUser, menuSelect } from '@/api/menu';
+import { menuSelect } from '@/api/menu';
 import './setModal.less';
 
 @Component({

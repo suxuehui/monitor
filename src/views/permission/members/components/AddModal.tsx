@@ -1,6 +1,6 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
-import { roleSelect, userUpdate, userAdd, userCheck } from '@/api/permission';
+import { userUpdate, userAdd, userCheck } from '@/api/permission';
 
 interface RoleType { key: number, value: string, label: string }
 

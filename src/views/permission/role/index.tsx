@@ -1,8 +1,7 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import { Component, Vue } from 'vue-property-decorator';
+import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import { roleUpdateStatus } from '@/api/permission';
-import { getListByUser, menuSelect } from '@/api/menu';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
 

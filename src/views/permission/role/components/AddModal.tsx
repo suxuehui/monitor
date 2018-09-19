@@ -1,5 +1,5 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
+import { Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
 import { roleAdd, roleUpdate } from '@/api/permission';
 @Component({
   components: {

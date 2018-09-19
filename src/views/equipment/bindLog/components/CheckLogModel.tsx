@@ -1,6 +1,6 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Dialog } from 'element-ui';
-import { FilterFormList, tableList, Opreat } from '@/interface';
+import { tableList, Opreat } from '@/interface';
 import MTable from '@/components/FilterTable/MTable';
 import './CheckLogModel.less';
 @Component({

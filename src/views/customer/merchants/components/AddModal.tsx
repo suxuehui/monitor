@@ -3,7 +3,6 @@ import { Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
 
 import { userCheck } from '@/api/permission';
-import { emit } from 'cluster';
 @Component({
   components: {
   'el-dialog': Dialog,

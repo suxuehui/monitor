@@ -1,7 +1,6 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import { Component, Vue } from 'vue-property-decorator';
+import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { getCustomerList } from '@/api/customer';
 import { configDelete, configInfo } from '@/api/config';
 import AddModel from '@/views/equipment/model/components/Addmodel';
 

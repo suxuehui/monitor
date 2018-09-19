@@ -1,6 +1,6 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { Card, Form, FormItem, Input, Row, Col, Tag, Tooltip } from 'element-ui';
-import { FilterFormList, tableList, Opreat } from '@/interface';
+import { tableList, Opreat } from '@/interface';
 import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';

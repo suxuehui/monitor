@@ -1,6 +1,5 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Dialog, Row, Col } from 'element-ui';
-// import './CheckPicModel.less';
 @Component({
   components: {
   'el-dialog': Dialog,
