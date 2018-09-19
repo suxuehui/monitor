@@ -135,6 +135,7 @@ export default class EditModel extends Vue {
   }
 
   handleChangeModel(val: any) {
+    console.log(val);
     this.brandId = val[0] ? parseInt(val[0], 10) : null;
     this.seriesId = val[1] ? parseInt(val[1], 10) : -1;
     this.modelId = val[2] ? parseInt(val[2], 10) : -1;
@@ -168,7 +169,7 @@ export default class EditModel extends Vue {
     if (this.data.carCode.join('/') === this.modelForm.carInfo.join('/')) {
       obj.brandId = this.oldBrandId;
       obj.seriesId = this.oldSeriesId;
-      obj.modelId = this.oldBrandId;
+      obj.modelId = this.oldModelId;
     } else {
       obj.brandId = this.brandId;
       obj.seriesId = this.seriesId;

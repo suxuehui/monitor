@@ -69,6 +69,9 @@ const user = {
           if (config.noLoginList.indexOf(window.location.hash) > -1) {
             router.replace({ path: '/dashboard' });
           }
+          // if (entity.menus === null) {
+          //   console.log(1);
+          // }
           const userData: UserData = {
             username: entity.userName,
             userid: entity.userId,
