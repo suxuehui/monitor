@@ -83,11 +83,12 @@ export default class Login extends Vue {
   imgToken = '';
   loading = false;
   created() {
-    getAuthCodeToken(null).then((res) => {
-      this.imgToken = res.entity;
-      localStorage.setItem('token', res.entity);
-      this.getCodeImg();
-    });
+    // getAuthCodeToken(null).then((res) => {
+    //   this.imgToken = res.entity;
+    //   localStorage.setItem('token', res.entity);
+    //   this.getCodeImg();
+    // });
+    this.initToken();
   }
   getCodeImg() {
     getAuthCode({ account: this.imgToken }, this.imgToken).then((response) => {
@@ -96,6 +97,15 @@ export default class Login extends Vue {
       }
     });
   }
+
+  initToken() {
+    getAuthCodeToken(null).then((res) => {
+      this.imgToken = res.entity;
+      localStorage.setItem('token', res.entity);
+      this.getCodeImg();
+    });
+  }
+
   @Emit()
   submitForm() {
     (this.$refs.loginForm as Form).validate((valid: boolean) => {

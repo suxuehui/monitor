@@ -1,9 +1,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
 import { terminalAdd, terminalType } from '@/api/equipment';
-import { getCustomerList } from '@/api/customer';
-
-interface ActiveType { key: number, value: string, label: string }
+import { orgTree } from '@/api/app';
 
 @Component({
   components: {
@@ -50,12 +48,12 @@ export default class AddModal extends Vue {
   shopList: any = [];
 
   created() {
-    // 门店;
-    getCustomerList(null).then((res) => {
+    // 门店
+    orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
-        res.entity.data.map((item: any) => this.shopList.push({
+        res.entity.map((item: any) => this.shopList.push({
           key: item.id,
-          value: item.levelcode,
+          value: item.levelCode,
           label: item.orgName,
         }));
       } else {
