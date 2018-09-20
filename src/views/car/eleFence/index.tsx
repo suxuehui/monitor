@@ -1,6 +1,6 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { Input, Button, Tag, Pagination, Autocomplete } from 'element-ui';
+import { Input, Button, Tag, Pagination, Autocomplete, Tooltip } from 'element-ui';
 import { enableFence, disableFence, deleteFence, getFenceDetail } from '@/api/fence';
 import { gpsToAddress, queryAddress } from '@/api/app';
 import config from '@/utils';
@@ -18,6 +18,7 @@ const carIcon = require('@/assets/point.png');
   'el-tag': Tag,
   'el-pagination': Pagination,
   'el-autocomplete': Autocomplete,
+  'el-tooltip': Tooltip,
   }
   })
 export default class EleFence extends Vue {
@@ -111,7 +112,7 @@ export default class EleFence extends Vue {
     },
     {
       label: '所在地区',
-      prop: 'areaValue',
+      prop: 'area',
     },
     {
       label: '围栏地址',
@@ -124,7 +125,7 @@ export default class EleFence extends Vue {
     },
     {
       label: '监控时段',
-      prop: 'time',
+      prop: 'beginTime',
       formatter(row: any) {
         return `每天${row.beginTime}~${row.endTime}`;
       },
@@ -183,13 +184,13 @@ export default class EleFence extends Vue {
   formatAlarmType(row: any) {
     let type;
     switch (row.alarmType) {
-      case 1:
+      case '1':
         type = <el-tag size="small" type="warning">驶入监控</el-tag>;
         break;
-      case 2:
+      case '2':
         type = <el-tag size="small" type="success">驶出监控</el-tag>;
         break;
-      case 3:
+      case '3':
         type = <el-tag size="small" type="info">驶入驶出监控</el-tag>;
         break;
       default:
@@ -355,32 +356,33 @@ export default class EleFence extends Vue {
   }
 
   currentChange = (val: any) => {
-    this.getDetail(val.id);
-    this.mapCenter = {
-      lat: val.lat,
-      lng: val.lng,
-    };
-    // 点击设点
-    const pt = new this.BMap.Point(val.lng, val.lat);
-    const myIcon = new this.BMap.Icon(carIcon, new this.BMap.Size(32, 32));
-    const point = new this.BMap.Marker(pt, { icon: myIcon });
-    // 清除之前所涉标点
-    this.SMap.clearOverlays();
-    // 新建点
-    this.SMap.addOverlay(point);
-    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
-    // 新建圆圈、多边形、矩形
-    this.remark(val);
-    const opts = {
-      width: 200, // 信息窗口宽度
-      // offset: { height: -10, width: -10 },
-      title: '围栏名称：', // 信息窗口标题
-    };
-    const infoWindow = new this.BMap.InfoWindow(val.name, opts);
-    this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    point.addEventListener('click', () => {
-      this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    });
+    // this.getDetail(val.id);
+    console.log(val);
+    // this.mapCenter = {
+    //   lat: val.lat,
+    //   lng: val.lng,
+    // };
+    // // 点击设点
+    // const pt = new this.BMap.Point(val.lng, val.lat);
+    // const myIcon = new this.BMap.Icon(carIcon, new this.BMap.Size(32, 32));
+    // const point = new this.BMap.Marker(pt, { icon: myIcon });
+    // // 清除之前所涉标点
+    // this.SMap.clearOverlays();
+    // // 新建点
+    // this.SMap.addOverlay(point);
+    // this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+    // // 新建圆圈、多边形、矩形
+    // this.remark(val);
+    // const opts = {
+    //   width: 200, // 信息窗口宽度
+    //   // offset: { height: -10, width: -10 },
+    //   title: '围栏名称：', // 信息窗口标题
+    // };
+    // const infoWindow = new this.BMap.InfoWindow(val.name, opts);
+    // this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+    // point.addEventListener('click', () => {
+    //   this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+    // });
   }
 
   remark(data: any) {
