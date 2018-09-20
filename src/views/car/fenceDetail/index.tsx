@@ -257,10 +257,10 @@ export default class FenceDetail extends Vue {
   }
 
   created() {
-    getCarList(null).then((res) => {
-      this.total = res.count;
-      this.tableData = res.entity;
-    });
+    // getCarList(null).then((res) => {
+    //   this.total = res.count;
+    //   this.tableData = res.entity;
+    // });
   }
 
   // 获取地址

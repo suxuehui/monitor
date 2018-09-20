@@ -74,7 +74,7 @@ export const asyncRouterMap: routerItem[] = [
         path: 'fenceDetail/:eleFenceId',
         name: '围栏详情',
         component: getComponent('car/fenceDetail/index'),
-        permission: '/vehicle/fence/detail/{eleFenceId}',
+        permission: true,
         meta: { key: 'FenceDetail' },
         hidden: true,
       },

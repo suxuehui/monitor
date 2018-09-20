@@ -41,7 +41,6 @@ export default class AddModal extends Vue {
   isInstaller: boolean = false;
   isPhoneNumber: boolean = false;
   phoneNumber: string = '';
-  noClick: boolean = false;
 
   loading: boolean = false;
   rules = {
@@ -67,8 +66,19 @@ export default class AddModal extends Vue {
   ];
 
   roleIdRule = [
-    { required: true, message: '请选择角色类型', trigger: 'change' },
+    { required: true, message: '请选择角色类型' },
+    // { validator: this.checkRole, trigger: 'change' },
   ];
+
+  // 检测角色
+  checkRole(rule: any, value: string, callback: Function) {
+    if (value) {
+      console.log('---');
+      console.log(this.roleLen);
+    } else {
+      callback(new Error('成员角色不能为空'));
+    }
+  }
 
   // 验证登录账号
   checkUsername(rule: any, value: string, callback: Function) {
@@ -106,11 +116,42 @@ export default class AddModal extends Vue {
       this.modelForm.password = '********';
       this.isAdmin = this.data.IdList.toString() === '1';
       this.phoneNumber = this.data.userName;
+      this.roleLen = this.data.IdList.length;
+      console.log(`一开始角色长度:${this.roleLen}`);
     } else {
       this.resetData();
     }
   }
   isAdmin: boolean = false;
+
+  // 编辑时角色数组长度
+  roleLen: number = 0;
+
+  // 角色删除时调用
+  removeTag(val: any) {
+  }
+
+  selectChange(val: any) {
+    this.change = !this.change;
+    val.forEach((element: any) => {
+      if (element === 3) {
+        this.isInstaller = true;
+      } else {
+        this.isInstaller = false;
+      }
+    });
+    if (this.isInstaller) {
+      if (this.phoneNumber) {
+        const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+        if (exp.test(this.phoneNumber)) {
+          this.isPhoneNumber = true;
+        } else {
+          this.isPhoneNumber = false;
+          this.$message.error('安装员登录账号必须为手机号,请重新输入');
+        }
+      }
+    }
+  }
 
   // 重置数据
   resetData() {
@@ -167,6 +208,11 @@ export default class AddModal extends Vue {
         } else {
           // 修改
           obj.userId = this.data.id;
+          if (this.modelForm.roleIdList.length === 0) {
+            this.$message.error('成员角色不能为空！');
+            this.loading = false;
+            return false;
+          }
           if (obj.password === '********') {
             delete obj.password;
           } else if (obj.password === '') {
@@ -203,31 +249,6 @@ export default class AddModal extends Vue {
 
   change: boolean = false;
 
-  selectChange(val: any) {
-    this.change = !this.change;
-    val.forEach((element: any) => {
-      if (element === 3) {
-        this.isInstaller = true;
-        this.noClick = true;
-      } else {
-        this.isInstaller = false;
-        this.noClick = false;
-      }
-    });
-    if (this.isInstaller) {
-      if (this.phoneNumber) {
-        const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
-        if (exp.test(this.phoneNumber)) {
-          this.isPhoneNumber = true;
-          this.noClick = false;
-        } else {
-          this.isPhoneNumber = false;
-          this.noClick = true;
-          this.$message.error('安装员登录账号必须为手机号,请重新输入');
-        }
-      }
-    }
-  }
 
   render() {
     return (
@@ -270,6 +291,7 @@ export default class AddModal extends Vue {
                       filterable={true}
                       disabled={this.data.id === 1}
                       on-change={this.selectChange}
+                      on-remove-tag={this.removeTag}
                       placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
                       style="width:100%"
                     >
@@ -316,7 +338,7 @@ export default class AddModal extends Vue {
           </el-row>
           <el-row>
             <el-col offset={7} span={12}>
-              <el-button size="small" type="primary" id="submit" disable={this.noClick} loading={this.loading} on-click={this.onSubmit}>提交</el-button>
+              <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
               <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
             </el-col>
           </el-row>
