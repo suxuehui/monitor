@@ -1,6 +1,5 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
-import { getUserInfo } from '@/api/permission';
 import { noticeAdd } from '@/api/message';
 import './AddModal.less';
 
@@ -24,16 +23,8 @@ export default class AddModal extends Vue {
 
   // 编辑器
   editor: any = null;
-  // 登录用户名
-  userName: string = '';
   noticeTitle: any = '';
   loading: boolean = false;
-
-  mounted() {
-    getUserInfo(null).then((res) => {
-      this.userName = res.entity.userName;
-    });
-  }
 
   // 重置数据
   resetData() {
@@ -51,32 +42,36 @@ export default class AddModal extends Vue {
   }
 
   onSubmit() {
+    this.loading = true;
     let obj: any = {};
     obj = {
       content: this.editor.txt.html(),
-      publisher: this.userName,
       title: this.noticeTitle,
     };
-    this.loading = true;
     const contentLength = this.editor.txt.html().replace(/<[^>]+>/g, '');
-    if (contentLength > 0 && this.noticeTitle) {
-      noticeAdd(obj).then((res) => {
-        if (res.result.resultCode) {
-          setTimeout(() => {
-            this.loading = false;
-            this.resetData();
-            this.$message.success(res.result.resultMessage);
-            this.$emit('refresh');
-          }, 1500);
-        } else {
-          setTimeout(() => {
-            this.loading = false;
-            this.$message.error(res.result.resultMessage);
-          }, 1500);
-        }
-      });
+    if (this.noticeTitle) {
+      if (contentLength) {
+        noticeAdd(obj).then((res) => {
+          if (res.result.resultCode === '0') {
+            setTimeout(() => {
+              this.loading = false;
+              this.resetData();
+              this.$message.success(res.result.resultMessage);
+              this.$emit('refresh');
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
+      } else {
+        this.$message.error('请填写内容');
+        this.loading = false;
+      }
     } else {
-      this.$message.error('请填写完成');
+      this.$message.error('请填写标题');
       this.loading = false;
     }
   }

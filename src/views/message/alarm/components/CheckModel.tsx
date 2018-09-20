@@ -13,7 +13,9 @@ export default class CheckModel extends Vue {
 
   closeModal() {
     this.$emit('close');
-    this.data.solution = '';
+    setTimeout(() => {
+      this.data = '';
+    }, 200);
   }
 
   render() {
@@ -26,7 +28,7 @@ export default class CheckModel extends Vue {
         close-on-click-modal={false}
       >
         <div class="container">
-          {this.data.solution}
+          {this.data}
         </div>
       </el-dialog>
     );

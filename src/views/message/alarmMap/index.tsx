@@ -43,7 +43,7 @@ export default class AlarmMap extends Vue {
           width: 200, // 信息窗口宽度
           title: '告警地点：', // 信息窗口标题
         };
-        const infoWindow = new this.BMap.InfoWindow(response.result.formatted_address, opts);
+        const infoWindow = new this.BMap.InfoWindow(`${response.result.formatted_address}${response.result.sematic_description}`, opts);
         this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
         marker2.addEventListener('click', () => {
           this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
@@ -52,11 +52,11 @@ export default class AlarmMap extends Vue {
     });
   }
 
-  msgContent(content: any) {
-    return `<div class="makerMsg">
-      <h3 class="plateNum">${content}</h3>
-    </div>`;
-  }
+  // msgContent(content: any) {
+  //   return `<div class="makerMsg">
+  //     <h3 class="plateNum">${content}</h3>
+  //   </div>`;
+  // }
 
   render() {
     return (

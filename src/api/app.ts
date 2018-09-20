@@ -67,6 +67,15 @@ export async function getMenu(params: any) {
   });
 }
 
+// 字典表
+export async function getDict(params: any) {
+  return request({
+    url: '/dict/list',
+    method: 'get',
+    data: params,
+  });
+}
+
 export async function uploadFile(params: any) {
   return axios({
     url: '/verify/file/upload',

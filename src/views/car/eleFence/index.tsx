@@ -392,15 +392,15 @@ export default class EleFence extends Vue {
       this.rectInMap(data);
     }
   }
-  circleInMap=(lng:number, lat:number, radius:number) => {
-    const point:any = new this.BMap.Point(lng, lat);
-    const circle:any = new this.BMap.Circle(point, radius, this.styleOptions);
+  circleInMap = (lng: number, lat: number, radius: number) => {
+    const point: any = new this.BMap.Point(lng, lat);
+    const circle: any = new this.BMap.Circle(point, radius, this.styleOptions);
     const marker = new this.BMap.Marker(point);
     this.SMap.clearOverlays();
     this.SMap.addOverlay(marker);
     this.SMap.addOverlay(circle);
   }
-  polygonInMap=(data:any) => {
+  polygonInMap = (data: any) => {
     const polyPointArr: any = [];
     data.latLngArray.forEach((itm: any) => {
       const point = new this.BMap.Point(itm.lng, itm.lat);
@@ -410,7 +410,7 @@ export default class EleFence extends Vue {
     this.SMap.clearOverlays();
     this.SMap.addOverlay(ret);
   }
-  rectInMap=(data:any) => {
+  rectInMap = (data: any) => {
     const polyPointArr: any = [];
     data.latLngArray.forEach((itm: any) => {
       const point = new this.BMap.Point(itm.lng, itm.lat);
@@ -457,7 +457,7 @@ export default class EleFence extends Vue {
   searchAddress(val: string, cb: any) {
     queryAddress(val).then((res) => {
       if (res.status === 0) {
-        const nameList: {value: any, lat: number, lng: number}[] = [];
+        const nameList: { value: any, lat: number, lng: number }[] = [];
         res.result.forEach((item: any, index: number) => {
           nameList.push({
             value: item.name,
@@ -469,23 +469,23 @@ export default class EleFence extends Vue {
       }
     });
   }
-// 选择地址，跳转到相应位置，并查询周围车辆
-setAddress = (val: any) => {
-  this.mapCenter = {
-    lat: val.lat,
-    lng: val.lng,
-  };
-  this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
-}
+  // 选择地址，跳转到相应位置，并查询周围车辆
+  setAddress = (val: any) => {
+    this.mapCenter = {
+      lat: val.lat,
+      lng: val.lng,
+    };
+    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+  }
 
 
   // 新增
-addModel() {
-  this.$router.push({ name: '围栏详情' });
-}
+  addModel() {
+    this.$router.push({ name: '围栏详情' });
+  }
 
-render() {
-  return (
+  render() {
+    return (
       <div class="monitor-wrap">
         <div id="map"></div>
         {/* 搜索 */}
@@ -572,6 +572,6 @@ render() {
           </filter-table>
         </div>
       </div>
-  );
-}
+    );
+  }
 }

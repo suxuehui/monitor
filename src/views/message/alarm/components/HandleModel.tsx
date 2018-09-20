@@ -18,7 +18,9 @@ export default class HandleModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop() private data: any;
 
-  modelForm: any = {};
+  modelForm: any = {
+    solution: '',
+  };
   loading: boolean = false;
 
   rules = {
@@ -44,16 +46,22 @@ export default class HandleModel extends Vue {
 
   onSubmit() {
     let obj: any = {};
+    this.loading = true;
     const From: any = this.$refs.modelForm;
     obj = {
       id: this.data.id,
       solution: this.modelForm.solution,
     };
+    const contentLength = obj.solution.replace(/\s+/g, '').length;
     From.validate((valid: any) => {
       if (valid) {
-        this.loading = true;
+        if (contentLength === 0) {
+          this.$message.error('内容不能全为空，请重新输入');
+          this.loading = false;
+          return false;
+        }
         handleAlarm(obj).then((res) => {
-          if (res.result.resultCode) {
+          if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
               this.$message.success(res.result.resultMessage);
@@ -67,6 +75,7 @@ export default class HandleModel extends Vue {
           }
         });
       } else {
+        this.loading = false;
         return false;
       }
       return false;
@@ -88,7 +97,7 @@ export default class HandleModel extends Vue {
               v-model={this.modelForm.solution}
               type="textarea"
               rows="4"
-              placeholder="请输入处理方法或结果"
+              placeholder="请输入处理意见或处理结果"
             ></el-input>
           </el-form-item>
         </el-form>

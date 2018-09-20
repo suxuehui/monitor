@@ -204,9 +204,6 @@ export default class Monitor extends Vue {
     {
       label: '品牌车系',
       prop: 'brandName',
-      // formatter(row: any) {
-      //   return row.brandName !== null ? `${row.brandName}-${row.seriesName}` : '--';
-      // },
       formatter: this.brandChange,
     },
     {

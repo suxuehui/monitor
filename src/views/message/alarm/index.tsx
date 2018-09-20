@@ -1,7 +1,8 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { getCustomerList } from '@/api/customer';
+import { orgTree, getDict } from '@/api/app';
+import { getSolution } from '@/api/message';
 import HandleModel from '@/views/message/alarm/components/HandleModel';
 import CheckModel from '@/views/message/alarm/components/CheckModel';
 import './index.less';
@@ -20,10 +21,16 @@ export default class Alarm extends Vue {
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'shopName',
-      type: 'select',
-      label: '商户',
-      placeholder: '请选择商户',
+      key: 'levelcode',
+      type: 'levelcode',
+      label: '所属商户',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择所属商户',
       options: [],
     },
     {
@@ -52,6 +59,7 @@ export default class Alarm extends Vue {
   filterGrade: FilterFormList[] = [];
   // 筛选参数
   filterParams: any = {
+    levelcode: '',
     status: '',
     queryStartTime: '',
     queryEndTime: '',
@@ -60,7 +68,7 @@ export default class Alarm extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/msg/alarm/list';
+  url: string = '/message/alarm/list';
 
   opreat: Opreat[] = [
     {
@@ -77,7 +85,7 @@ export default class Alarm extends Vue {
     { label: '车牌号', prop: 'plateNum' },
     { label: '车架号', prop: 'vin' },
     { label: '告警类型', prop: 'alarmTypeName' },
-    { label: '告警时间', prop: 'msgTime' },
+    { label: '告警时间', prop: 'formatMsgTime' },
     { label: '告警内容', prop: 'content' },
     { label: '地点', prop: 'address', formatter: this.checkLoc },
     { label: '状态', prop: 'status', formatter: this.statusDom },
@@ -101,17 +109,46 @@ export default class Alarm extends Vue {
     { key: false, value: false, label: '未处理' },
   ]
 
-  mounted() {
-    this.filterList[2].options = this.activeTypes;
-    getCustomerList(null).then((res) => {
-      console.log(res);
-      res.entity.data.forEach((element: any) => {
-        element.key = element.orgName;
-        element.value = element.id;
-        element.label = element.orgName;
-      });
-      this.filterList[0].options = res.entity.data;
+  alarmType: any = [];
+
+  created() {
+    // 门店搜索
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.unshift({
+          id: Math.random(),
+          levelcode: '',
+          orgName: '全部',
+        });
+        this.filterList[0].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
+    // 告警类型
+    getDict({ type: 'Alarm.Type' }).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.alarmType.push({
+          key: item.enumid,
+          value: item.enumvalue,
+          label: item.name,
+        }));
+        // 设备类型(全部)
+        this.alarmType.unshift({
+          key: Math.random(),
+          value: '',
+          label: '告警类型(全部)',
+        });
+        this.filterList[1].options = this.alarmType;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  mounted() {
+    // 处理状态
+    this.filterList[2].options = this.activeTypes;
   }
 
   modelForm: any = {};
@@ -123,10 +160,15 @@ export default class Alarm extends Vue {
 
   // 操作
   menuClick(key: string, row: any) {
-    if (row.status) {
-      this.checkData = row;
-      this.checkVisible = true;
-      console.log(row);
+    if (row.status === true) {
+      getSolution({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.checkData = res.entity;
+          this.checkVisible = true;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     } else {
       this.modelForm = row;
       this.handleVisible = true;
@@ -134,8 +176,10 @@ export default class Alarm extends Vue {
   }
   // 关闭弹窗
   closeModal(): void {
-    this.handleVisible = false;
+    this.checkData = '';
     this.checkVisible = false;
+    this.modelForm = {};
+    this.handleVisible = false;
   }
 
   // 关闭弹窗时刷新

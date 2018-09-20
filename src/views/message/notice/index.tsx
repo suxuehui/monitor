@@ -32,7 +32,7 @@ export default class Alarm extends Vue {
   };
   outParams: any = {};
   // 请求地址
-  url: string = '/msg/notice/list';
+  url: string = '/message/notice/list';
 
   opreat: Opreat[] = [
     {
