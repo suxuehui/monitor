@@ -52,7 +52,7 @@ export default class AddModal extends Vue {
     const content2 = content1.replace(/&nbsp;/g, ''); // 删除&nbsp;
     const content3 = content2.replace(/^\s+|\s+$/g, ''); // 删除空格
     if (this.noticeTitle) {
-      if (content3 === 0) {
+      if (content3 > 0) {
         noticeAdd(obj).then((res) => {
           if (res.result.resultCode === '0') {
             setTimeout(() => {
