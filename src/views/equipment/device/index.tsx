@@ -134,8 +134,9 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      disabled: (row: any) =>
-        (row.status === 1 || row.status === 3 || row.status === 5 || row.online === 2),
+      // disabled: (row: any) =>
+      //   (row.status === 1 || row.status === 3 || row.status === 5 || row.online === 2),
+      disabled: this.acceptDisable,
       roles: true,
     },
     {
@@ -162,6 +163,16 @@ export default class Device extends Vue {
       roles: true,
     },
   ];
+  acceptDisable(row:any) {
+    // 是否在线
+    if (row.online === 1) {
+      if (row.status === 1 || row.status === 3 || row.status === 5) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
 
   bindDisable(row:any) {
     // 是否在线
