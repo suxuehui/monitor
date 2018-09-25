@@ -117,7 +117,7 @@ export default class Device extends Vue {
   // 请求地址
   url: string = '/device/terminal/list';
   // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
-  // 网络状态online 1-在线，2-离线
+  // 网络状态online 1-在线，0-离线
   opreat: Opreat[] = [
     {
       key: 'bind',
@@ -125,7 +125,8 @@ export default class Device extends Vue {
       color: (row: any) => (row.status === 1 ? 'green' : 'red'),
       text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
       msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
-      disabled: (row: any) => (row.online !==1),
+      // disabled: (row: any) => (!(row.status === 1 && row.online === 1)),
+      disabled: this.bindDisable,
       roles: true,
     },
     {
@@ -133,7 +134,8 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      disabled: (row: any) => (row.status === 1 || row.status === 3 || row.status === 5),
+      disabled: (row: any) =>
+        (row.status === 1 || row.status === 3 || row.status === 5 || row.online === 2),
       roles: true,
     },
     {
@@ -160,6 +162,17 @@ export default class Device extends Vue {
       roles: true,
     },
   ];
+
+  bindDisable(row:any) {
+    // 是否在线
+    if (row.online === 1) {
+      return false;
+    }
+    if (row.status === 1) {
+      return true;
+    }
+    return false;
+  }
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
@@ -167,7 +180,7 @@ export default class Device extends Vue {
     { label: 'imei号', prop: 'imei' },
     { label: '配置名称', prop: 'cfgName' },
     { label: '产品编码', prop: 'productCode' },
-    { label: '当前车辆', prop: 'plateNum', formatter: (row: any) => (row.plateNum ? row.plateNum : '--') },
+    { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
