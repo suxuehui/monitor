@@ -117,6 +117,7 @@ export default class Device extends Vue {
   // 请求地址
   url: string = '/device/terminal/list';
   // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
+  // 网络状态online 1-在线，2-离线
   opreat: Opreat[] = [
     {
       key: 'bind',
@@ -124,7 +125,7 @@ export default class Device extends Vue {
       color: (row: any) => (row.status === 1 ? 'green' : 'red'),
       text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
       msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
-      disabled: (row: any) => (row.status === 5),
+      disabled: (row: any) => (row.online !==1),
       roles: true,
     },
     {
