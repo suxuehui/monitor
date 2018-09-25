@@ -107,7 +107,8 @@ export default class BindModal extends Vue {
 
   @Watch('data')
   onDataChange() {
-    this.resetData();
+    // this.resetData();
+    this.showUpBtn = true;
   }
 
   handleItemChange(val: any) {
