@@ -53,3 +53,12 @@ export async function updateFence(params: any) {
     data: params,
   });
 }
+
+// 获得围栏监控车辆
+export async function getFenceCars(params: any) {
+  return request({
+    url: '/vehicle/fence/vehicleList',
+    method: 'post',
+    data: params,
+  });
+}

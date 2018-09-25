@@ -48,9 +48,11 @@ export default class AddModal extends Vue {
       content: this.editor.txt.html(),
       title: this.noticeTitle,
     };
-    const contentLength = this.editor.txt.html().replace(/<[^>]+>/g, '');
+    const content1 = this.editor.txt.html().replace(/<[^>]+>/g, ''); // 获取内容
+    const content2 = content1.replace(/&nbsp;/g, ''); // 删除&nbsp;
+    const content3 = content2.replace(/^\s+|\s+$/g, ''); // 删除空格
     if (this.noticeTitle) {
-      if (contentLength) {
+      if (content3 === 0) {
         noticeAdd(obj).then((res) => {
           if (res.result.resultCode === '0') {
             setTimeout(() => {

@@ -26,6 +26,11 @@ export const constantRouterMap: routerItem[] & RouterOptions['routes'] = [
     component: getComponent('error/401.vue'),
     meta: { key: '401' },
   },
+  // {
+  //   path: '/dashboard',
+  //   name: '系统主页',
+  //   component: getComponent('dashboard/index'),
+  // },
 ];
 
 export const asyncRouterMap: routerItem[] = [

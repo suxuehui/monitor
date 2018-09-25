@@ -127,19 +127,18 @@ export default class BindModal extends Vue {
   getSeries(obj: any, val: number) {
     seriesAll(obj).then((res) => {
       if (res.result.resultCode === '0') {
-        this.brandList.map((item: any, index: number) => {
+        this.brandList.forEach((item: any, index: number) => {
           this.brandList[index].name = [];
           if (val === item.value) {
             this.brandName = item.label;
             setTimeout(() => {
               if (res.entity !== null && res.entity.length > 0) {
-                res.entity.map((items: any) => {
+                res.entity.forEach((items: any) => {
                   this.brandList[index].name.push({
                     label: items.name,
                     value: items.id,
                     name: [],
                   });
-                  return true;
                 });
               } else {
                 this.brandList[index].name.push({
@@ -150,7 +149,6 @@ export default class BindModal extends Vue {
               }
             }, 100);
           }
-          return true;
         });
       } else {
         this.$message.error(res.result.resultMessage);
@@ -167,12 +165,11 @@ export default class BindModal extends Vue {
             if (val[1] === items.value) {
               this.seriesName = items.label;
               if (res.entity !== null && res.entity.length > 0) {
-                res.entity.map((it: any) => {
+                res.entity.forEach((it: any) => {
                   this.brandList[index].name[key].name.push({
                     label: it.name,
                     value: it.id,
                   });
-                  return true;
                 });
               } else {
                 this.brandList[index].name[key].name.push({
@@ -217,8 +214,10 @@ export default class BindModal extends Vue {
   closeModal() {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
+    const upModel: any = this.$refs.uploadModel;
     setTimeout(() => {
       From.resetFields();
+      upModel.$children[0].clearFiles();
     }, 200);
   }
 
@@ -326,7 +325,7 @@ export default class BindModal extends Vue {
                     ref="uploadModel"
                     class="uploadBlock"
                     name="file"
-                    listType="picture-card"
+                    listType="picture"
                     autoUpload={true}
                     url={this.uploadUrl}
                     logoUrl={this.logoUrl}
