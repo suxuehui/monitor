@@ -63,6 +63,8 @@ export default class BindModal extends Vue {
   seriesName: string = '';
   modelName: string = '';
 
+  showUpBtn: boolean = true;
+
   // 车型列表
   modelList: any = []
 
@@ -193,7 +195,7 @@ export default class BindModal extends Vue {
     this.brandId = parseInt(val[0], 10);
     this.seriesId = parseInt(val[1], 10);
     this.modelId = parseInt(val[2], 10);
-    this.modelList.map((item:any) => {
+    this.modelList.map((item: any) => {
       if (item.id === this.modelId) {
         this.modelName = item.name;
       }
@@ -215,6 +217,7 @@ export default class BindModal extends Vue {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
     const upModel: any = this.$refs.uploadModel;
+    this.showUpBtn = true;
     setTimeout(() => {
       From.resetFields();
       upModel.$children[0].clearFiles();
@@ -224,12 +227,16 @@ export default class BindModal extends Vue {
   removeBack(file: any, fileList: any) {
     this.modelForm.url = '';
     this.$message.error('图片已删除，请重新上传');
+    this.showUpBtn = true;
   }
 
   successBack(response: any, file: any, fileList: any) {
     if (response.result.resultCode === '0') {
       this.$message.success('图片上传成功');
       this.modelForm.url = response.entity;
+      this.showUpBtn = false;
+    } else {
+      this.$message.error(response.result.resultMessage);
     }
   }
 
@@ -327,6 +334,7 @@ export default class BindModal extends Vue {
                     name="file"
                     listType="picture"
                     autoUpload={true}
+                    showUpBtn={this.showUpBtn}
                     url={this.uploadUrl}
                     logoUrl={this.logoUrl}
                     headers={this.headers}
