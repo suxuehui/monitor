@@ -17,7 +17,6 @@ const options = {
   height: '3px',
 };
 
-
 Vue.prototype.$ELEMENT = { size: 'small', zIndex: 3000 };
 
 // Vue.use(VueInsProgressBar, options);

@@ -1,5 +1,6 @@
 // 筛选表单
 type FilterType = 'input' | 'select' | 'cascader' | 'levelcode' | 'datetime' | 'date' | 'datetimerange' | 'checkboxButton';
+
 export interface FilterFormList {
   key: string;
   type: FilterType;

@@ -135,6 +135,12 @@ export default class MFilter extends Vue {
     this.$emit('addFun');
   }
 
+  @Emit()
+  downloadFun(): void {
+    // this.$emit('addFun');
+    console.log(1);
+  }
+
   formItem(item: FilterFormList, index: number, grade?: boolean) {
     let itemDom = null;
     switch (item.type) {
@@ -311,14 +317,14 @@ export default class MFilter extends Vue {
         <el-button type="primary" on-click={this.onSearch} size="mini" id="tableSearch" icon="el-icon-search">搜索</el-button>
         <el-button type="primary" on-click={this.reset} size="mini" id="tableReset" icon="el-icon-refresh">重置</el-button>
         {
-          this.filterGrade.length ? <a on-click={() => this.gradeSwitch(isNormal)} class="grade-btn">{isNormal ? '普通' : '高级'}搜索{isNormal ? <i class="iconfont-down"></i> : <i class="iconfont-up"></i>}</a> : null
+          this.filterGrade.length ? <a on-click={() => this.gradeSwitch(isNormal)} class="grade-btn">{!isNormal ? '普通' : '高级'}搜索{isNormal ? <i class="iconfont-down"></i> : <i class="iconfont-up"></i>}</a> : null
         }
         <div class="right-btn">
           {
             this.addBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableAdd' : 'tableAdd2'} size="mini" icon="el-icon-plus">新增</el-button> : null
           }
           {
-            this.exportBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableExport' : 'tableExport2'} size="mini" icon="el-icon-download" circle></el-button> : null
+            this.exportBtn ? <el-button on-click={this.downloadFun} id={isNormal ? 'tableExport' : 'tableExport2'} size="mini" icon="el-icon-download" circle></el-button> : null
           }
           <el-button on-click={this.openSetting} id="tableSet" icon="el-icon-setting" size="mini" circle></el-button>
         </div>
