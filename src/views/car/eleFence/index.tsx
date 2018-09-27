@@ -151,31 +151,7 @@ export default class EleFence extends Vue {
       formatter: this.formatStatus,
     },
   ];
-  opreat: Opreat[] = [
-    {
-      key: 'edit',
-      rowKey: 'id',
-      color: 'blue',
-      text: '编辑',
-      roles: true,
-    },
-    {
-      key: 'use',
-      rowKey: 'id',
-      color: (row: any) => (row.isactive ? 'red' : 'green'),
-      text: (row: any) => (row.isactive ? '关闭' : '启用'),
-      msg: (row: any) => (row.isactive ? '是否要关闭？' : '是否要启用？'),
-      roles: true,
-    },
-    {
-      key: 'delete',
-      rowKey: 'id',
-      color: (row: any) => (row.active ? 'green' : 'red'),
-      text: (row: any) => (row.active ? '删除' : '删除'),
-      msg: (row: any) => (row.active ? '是否要删除？' : '是否要删除？'),
-      roles: true,
-    },
-  ];
+  opreat: Opreat[] = [];
   filterParams: object = {
     areaValue: '',
     levelCode: '',
@@ -614,12 +590,6 @@ export default class EleFence extends Vue {
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
   }
 
-
-  // 新增
-  addModel() {
-    this.$router.push({ name: '围栏详情' });
-  }
-
   render() {
     return (
       <div class="monitor-wrap">
@@ -691,13 +661,12 @@ export default class EleFence extends Vue {
             filter-grade={[]}
             filter-params={this.filterParams}
             back-params={this.backParams}
-            add-btn={true}
-            on-addBack={this.addModel}
+            add-btn={false}
             export-btn={true}
             defaultPageSize={5}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
-            on-menuClick={this.menuClick}
+            // on-menuClick={this.menuClick}
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'eleFence'}
