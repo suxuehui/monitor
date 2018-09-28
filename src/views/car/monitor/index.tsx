@@ -324,6 +324,7 @@ export default class Monitor extends Vue {
     { label: '充电状态:', prop: 'chargeLight' },
     { label: '引擎盖:', prop: 'hood' },
     { label: '后备箱:', prop: 'trunk' },
+    { label: '天窗状态', prop: 'skyWindow' },
     { label: '左前车门:', prop: 'leftFrontDoor' },
     { label: '右前车门:', prop: 'rightFrontDoor' },
     { label: '左后车门:', prop: 'leftRearDoor' },
