@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate } from '@/api/monitor';
+import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate, controlCar } from '@/api/monitor';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { allList, brandAll } from '@/api/model';
 import config from '@/utils';
@@ -321,10 +321,11 @@ export default class Monitor extends Vue {
     { label: '总灯状态:', prop: 'allLight' },
     // { label: '大灯状态:', prop: 'bigLight' },
     // { label: '小灯状态:', prop: 'smallLight' },
+    { label: '设防状态:', prop: 'defenceStatus' },
     { label: '充电状态:', prop: 'chargeLight' },
     { label: '引擎盖:', prop: 'hood' },
     { label: '后备箱:', prop: 'trunk' },
-    { label: '天窗状态', prop: 'skyWindow' },
+    { label: '天窗状态:', prop: 'skyWindow' },
     { label: '左前车门:', prop: 'leftFrontDoor' },
     { label: '右前车门:', prop: 'rightFrontDoor' },
     { label: '左后车门:', prop: 'leftRearDoor' },
@@ -446,7 +447,8 @@ export default class Monitor extends Vue {
     this.CarMarker.forEach((item: any, index: number) => {
       item.addEventListener('click', () => {
         this.openMsg(this.mapCarData[index]);
-        this.getCarDetail(this.mapCarData[index].id);
+        // this.getCarDetail(this.mapCarData[index].id);
+        this.getCarDetail('28');
       });
     });
   }
@@ -744,6 +746,20 @@ export default class Monitor extends Vue {
     this.closeModal();
   }
 
+  controlLoading: boolean[] = [false, false, false, false, false, false, false]
+  // 车辆控制
+  controlCar(type: string, index: number): void {
+    this.controlLoading[index] = true;
+    controlCar({ imei: this.carDetail.otuImei, cmd: type }).then((res: any) => {
+      this.controlLoading[index] = false;
+      if (res.result.resultCode === '0') {
+        this.$message.success(res.result.resultMessage);
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
   render() {
     const { carDetail } = this;
     return (
@@ -781,13 +797,15 @@ export default class Monitor extends Vue {
           </div>
           <div class="car-control">
             <div class="left">
-              <el-button class="fire" size="mini">点火</el-button>
-              <el-button class="unfire" size="mini">熄火</el-button>
+              <el-button class="fire" size="mini" loading={this.controlLoading[0]} on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
+              <el-button class="unfire" size="mini" loading={this.controlLoading[1]} on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
             </div>
             <div class="right">
-              <el-button class="lock" type="text" icon="iconfont-lock" size="mini">上锁</el-button>
-              <el-button class="unlock" type="text" icon="iconfont-unlock" size="mini">解锁</el-button>
-              <el-button class="find" type="text" icon="iconfont-wifi" size="mini">寻车</el-button>
+              <el-button class="lock" type="text" size="mini" loading={this.controlLoading[2]} on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
+              <el-button class="lock" type="text" size="mini" loading={this.controlLoading[3]} on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
+              <el-button class="lock" type="text" icon="iconfont-lock" loading={this.controlLoading[4]} size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
+              <el-button class="unlock" type="text" icon="iconfont-unlock" loading={this.controlLoading[5]} size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
+              <el-button class="find" type="text" icon="iconfont-wifi" loading={this.controlLoading[6]} size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
             </div>
           </div>
           <div class="car-address">
