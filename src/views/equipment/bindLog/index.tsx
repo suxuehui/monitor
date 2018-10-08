@@ -49,7 +49,7 @@ export default class BindLog extends Vue {
       page: true,
       pageNum: 1,
       pageSize: 5,
-      terminalId: this.$route.query.id,
+      imei: this.$route.query.imei,
     };
     this.defaultPageSize = 5;
     if (this.$route.query.id) {
