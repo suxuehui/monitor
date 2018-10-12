@@ -634,11 +634,20 @@ export default class EleFence extends Vue {
           </div>
           <div class="car-detail">
             <ul class="line">
-              {
+              {/* {
                 this.carList.length > 0 ?
                   this.carList.forEach((item: any) => <li class="item">
                     <span class="label">{item.id}</span>
                   </li>) : null
+              } */}
+              {
+                this.carList.length > 0 ?
+                  this.carList.map((item: any) => <li class="item">
+                    <span class="label">{item.platenum}</span>
+                  </li>) :
+                  <li class="item">
+                    <span class="label">暂无监控车辆</span>
+                  </li>
               }
             </ul>
             <el-pagination
