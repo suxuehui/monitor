@@ -152,6 +152,7 @@ export default class MFilter extends Vue {
         itemDom = <el-select
           style="width: 100%;"
           id={item.key}
+          clearable={true}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}>
           {
@@ -163,6 +164,7 @@ export default class MFilter extends Vue {
       case 'cascader':
         itemDom = <el-cascader style="width: 100%;"
           id={item.key}
+          clearable={true}
           options={item.options}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}
