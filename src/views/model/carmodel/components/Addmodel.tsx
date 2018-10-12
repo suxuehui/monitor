@@ -52,6 +52,7 @@ export default class AddModal extends Vue {
   }
   fuelTankCapRule = [
     { required: true, message: '请输入油箱容量' },
+    { max: 5, message: '请输入正确的油箱容量' },
     {
       validator: this.checkTank, trigger: 'blur',
     },
