@@ -142,10 +142,6 @@ export default class EleFence extends Vue {
       },
     },
     {
-      label: '备注',
-      prop: 'remark',
-    },
-    {
       label: '状态',
       prop: 'available',
       formatter: this.formatStatus,
@@ -391,57 +387,21 @@ export default class EleFence extends Vue {
     return type;
   }
 
-  menuClick(key: string, row: any) {
-    const FromTable: any = this.$refs.table;
-    if (key === 'edit') {
-      this.$router.push({ name: '围栏详情', params: { eleFenceId: row.id } });
-    } else if (key === 'use') {
-      if (row.isactive) {
-        // 禁用
-        disableFence({ eleFenceId: row.id }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      } else {
-        // 启用
-        enableFence({ eleFenceId: row.id }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      }
-    } else if (key === 'delete') {
-      // 删除
-      deleteFence({ eleFenceId: row.id }).then((res) => {
-        if (res.result.resultCode) {
-          FromTable.reloadTable();
-          this.$message.success(res.result.resultMessage);
-        } else {
-          this.$message.error(res.result.resultMessage);
-        }
-      });
-    }
-  }
+  menuClick(key: string, row: any) {}
 
   // 查询监控车辆列表
   getCarList(id: string) {
     const obj = {
       fenceId: id,
-      pageSize: 10,
+      pageSize: 87,
       pageNum: 1,
       page: true,
     };
     getFenceCars(obj).then((res) => {
       if (res.result.resultCode === '0') {
+        this.carList = [];
         this.carList = res.entity.data;
-        this.total = res.entity.count;
+        this.pageSize = parseInt(res.entity.count, 10);
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -620,12 +580,6 @@ export default class EleFence extends Vue {
           </div>
           <div class="car-detail">
             <ul class="line">
-              {/* {
-                this.carList.length > 0 ?
-                  this.carList.forEach((item: any) => <li class="item">
-                    <span class="label">{item.id}</span>
-                  </li>) : null
-              } */}
               {
                 this.carList.length > 0 ?
                   this.carList.map((item: any) => <li class="item">
@@ -641,7 +595,7 @@ export default class EleFence extends Vue {
               small
               background
               page-size={this.pageSize}
-              pager-count={this.pageCount}
+              // pager-count={this.pageCount}
               layout="prev, pager, next"
               total={this.total}
             >
