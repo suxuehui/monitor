@@ -157,9 +157,11 @@ export default class Header extends Vue {
                 <i class="iconfont-user"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="1">个人中心</el-dropdown-item>
-                <el-dropdown-item command="2">修改密码</el-dropdown-item>
-                <el-dropdown-item command="3" divided><font color="red">退出登录</font></el-dropdown-item>
+                {/* <el-dropdown-item command="1">个人中心</el-dropdown-item> */}
+                {/* <el-dropdown-item command="2">修改密码</el-dropdown-item> */}
+                {/* <el-dropdown-item command="3" divided>
+              <font color="red">退出登录</font></el-dropdown-item> */}
+                <el-dropdown-item command="3"><font color="red">退出登录</font></el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </li>

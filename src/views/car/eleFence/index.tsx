@@ -441,7 +441,6 @@ export default class EleFence extends Vue {
     getFenceCars(obj).then((res) => {
       if (res.result.resultCode === '0') {
         this.carList = res.entity.data;
-        console.log(this.carList);
         this.total = res.entity.count;
       } else {
         this.$message.error(res.result.resultMessage);
@@ -494,14 +493,9 @@ export default class EleFence extends Vue {
 
   remark(data: any) {
     if (data.fenceType === '1') {
-      console.log('圆形');
       this.circleInMap(data.lng, data.lat, data.radius);
-    } else if (data.fenceType === '0') {
-      console.log('多边形');
-      this.polygonInMap(data);
     } else if (data.fenceType === '2') {
-      this.rectInMap(data);
-      console.log('矩形');
+      this.polygonInMap(data);
     }
   }
   circleInMap = (lng: number, lat: number, radius: number) => {
@@ -514,25 +508,17 @@ export default class EleFence extends Vue {
   }
   polygonInMap = (data: any) => {
     const polyPointArr: any = [];
-    data.latLngArray.forEach((itm: any) => {
+    JSON.parse(data.latLngArray).forEach((itm: any) => {
       const point = new this.BMap.Point(itm.lng, itm.lat);
       polyPointArr.push(point);
     });
     const ret = new this.BMap.Polygon(polyPointArr, this.styleOptions); // 创建多边形
+    const point: any = new this.BMap.Point(data.lng, data.lat);
+    const marker = new this.BMap.Marker(point);
     this.SMap.clearOverlays();
+    this.SMap.addOverlay(marker);
     this.SMap.addOverlay(ret);
   }
-  rectInMap = (data: any) => {
-    const polyPointArr: any = [];
-    data.latLngArray.forEach((itm: any) => {
-      const point = new this.BMap.Point(itm.lng, itm.lat);
-      polyPointArr.push(point);
-    });
-    const ret = new this.BMap.Polygon(polyPointArr, this.styleOptions); // 创建矩形
-    this.SMap.clearOverlays();
-    this.SMap.addOverlay(ret);
-  }
-
 
   // 定位至当前位置
   getNowPosition = () => {
