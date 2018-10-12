@@ -1,6 +1,7 @@
 import { Component, Prop, Emit, Vue, Watch } from 'vue-property-decorator';
 import { Badge, Dropdown, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem, Popover } from 'element-ui';
 import { menuItem, routerItem } from '@/interface';
+import { noticeNotHandled, getNotHandled } from '@/api/message';
 import utils from '@/utils';
 import MenuList from '@/components/Layout/Sidebar/MenuList';
 import './Header.less';
@@ -59,6 +60,35 @@ export default class Header extends Vue {
     });
   }
 
+  // 告警、通知
+  infoLen: number = 1;
+  alarmLen: number = 1;
+
+  created() {
+    this.getNotice();
+    this.timeGet();
+  }
+
+  getNotice() {
+    noticeNotHandled({ status: 1 }).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.infoLen = res.entity;
+      }
+    });
+    getNotHandled({ status: 1 }).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.alarmLen = res.entity;
+      }
+    });
+  }
+
+  // 每30s拉取一次
+  timeGet() {
+    setInterval(() => {
+      this.getNotice();
+    }, 30000);
+  }
+
   @Emit()
   menuClick(type: string): void {
     const self = this;
@@ -75,6 +105,14 @@ export default class Header extends Vue {
         break;
     }
   }
+
+  checkInfo() {
+    this.$router.push({ name: '通知公告' });
+  }
+  checkAlarm() {
+    this.$router.push({ name: '告警消息' });
+  }
+
   @Emit()
   switchSidebar(): void {
     this.$store.dispatch('ToggleSideBar');
@@ -87,13 +125,13 @@ export default class Header extends Vue {
         <div class="header-left">
           {
             isMobile ? <el-popover
-            placement="bottom"
-            title=""
-            width="300"
-            trigger="click">
-            <menu-list bgColor="#fff" txtColor="#898989" />
-            <i slot="reference" class="menu-btn iconfont-listMenu"></i>
-          </el-popover> : <i class={`menu-btn iconfont-${opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
+              placement="bottom"
+              title=""
+              width="300"
+              trigger="click">
+              <menu-list bgColor="#fff" txtColor="#898989" />
+              <i slot="reference" class="menu-btn iconfont-listMenu"></i>
+            </el-popover> : <i class={`menu-btn iconfont-${opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
           }
           <el-breadcrumb class="header-bread" separator="/">
             {
@@ -103,12 +141,14 @@ export default class Header extends Vue {
         </div>
         <ul class="header-menu">
           <li>
-            <el-badge value={12} class="item">
-              <i class="iconfont-email"></i>
+            <el-badge value={this.infoLen === 0 ? '' : this.infoLen} max={9} class="item">
+              <i class="iconfont-email" on-click={this.checkInfo}></i>
             </el-badge>
           </li>
           <li>
-            <i class="iconfont-bell"></i>
+            <el-badge value={this.alarmLen === 0 ? '' : this.alarmLen} max={9} class="item">
+              <i class="iconfont-bell" on-click={this.checkAlarm}></i>
+            </el-badge>
           </li>
           <li class="user">
             <el-dropdown on-command={this.menuClick} size="medium">
