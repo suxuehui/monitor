@@ -123,7 +123,7 @@ export default class EleFence extends Vue {
     },
     {
       label: '所在地区',
-      prop: 'area',
+      prop: 'areaText',
     },
     {
       label: '围栏地址',
