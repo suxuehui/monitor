@@ -37,15 +37,27 @@ export default class AddModal extends Vue {
     contactUser: [
       { required: true, message: '请输入联系人', trigger: 'blur' },
     ],
-    password: [
-      { required: true, message: '请输入登录密码', trigger: 'blur' },
-    ],
     contactPhone: [
       { required: true, message: '请输入联系电话', trigger: 'blur' },
     ],
     contactAddress: [
       { required: true, message: '请输入联系地址', trigger: 'blur' },
     ],
+  }
+  passwordRule = [
+    {
+      validator: this.checkPassword, trigger: 'blur',
+    },
+  ];
+  @Emit()
+  checkPassword(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (this.modelForm.password) {
+        callback();
+      } else {
+        callback(new Error('登录密码不能为空'));
+      }
+    }, 500);
   }
   orgRule = [
     { required: true, message: '请输入商户名称', trigger: 'blur' },
@@ -224,7 +236,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录密码" prop="password">
+              <el-form-item label="登录密码" prop="password" rules={this.passwordRule}>
                 <el-input
                   id="password"
                   v-model={this.modelForm.password}
