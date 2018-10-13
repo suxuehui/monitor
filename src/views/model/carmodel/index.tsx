@@ -153,7 +153,7 @@ export default class CarModel extends Vue {
     } else if (key === 'delete') {
       modelDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
-          FromTable.reloadTable();
+          FromTable.reloadTable(key);
           this.$message.success(res.result.resultMessage);
         } else {
           this.$message.error(res.result.resultMessage);

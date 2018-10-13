@@ -78,9 +78,11 @@ export default class MTable extends Vue {
     this.getData();
   }
 
-  reload() {
-    if (this.pageParams.pageNum !== 1) {
-      this.pageParams.pageNum = this.pageParams.pageNum-1;
+  reload(type:string) {
+    if (type === 'delete' && this.tableData.length === 1) {
+      if (this.pageParams.pageNum !== 1) {
+        this.pageParams.pageNum = this.pageParams.pageNum-1;
+      }
     }
     this.getData();
   }

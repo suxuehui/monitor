@@ -214,31 +214,43 @@ export default class Monitor extends Vue {
     {
       label: '剩余油量',
       prop: 'leftOil',
+      sortable: true,
+      sortBy: 'leftOil',
       formatter: (row: any) => this.changeStatus(row.leftOil, 'L'),
     },
     {
       label: '剩余电量',
       prop: 'leftElectricPercent',
+      sortable: true,
+      sortBy: 'leftElectricPercent',
       formatter: (row: any) => this.changeStatus(row.leftElectricPercent, '%'),
     },
     {
       label: '续航里程',
       prop: 'leftMileage',
+      sortable: true,
+      sortBy: 'leftMileage',
       formatter: (row: any) => this.changeStatus(row.leftMileage, 'km'),
     },
     {
       label: '累计里程',
       prop: 'totalMileage',
+      sortable: true,
+      sortBy: 'totalMileage',
       formatter: (row: any) => this.changeStatus(row.totalMileage, 'km'),
     },
     {
       label: '电瓶电压',
       prop: 'voltage',
+      sortable: true,
+      sortBy: 'voltage',
       formatter: (row: any) => this.changeStatus(row.voltage, 'V'),
     },
     {
       label: '无位置变化',
       prop: 'minutes',
+      sortable: true,
+      sortBy: 'minutes',
       formatter(row: any) {
         return row.minutes !== null ? `${row.minutes}分钟` : '--';
       },

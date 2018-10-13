@@ -112,11 +112,11 @@ export default class FilterTable extends Vue {
     }
   }
 
-  reloadTable() {
+  reloadTable(type?:string) {
     const table: any = this.$refs.MTable;
     // 延迟100ms加载数据
     setTimeout(() => {
-      table.reload();
+      table.reload(type);
     }, 100);
   }
 

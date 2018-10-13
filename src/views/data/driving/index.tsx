@@ -1,6 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
+import { orgTree } from '@/api/app';
 import './index.less';
 
 @Component({
@@ -14,9 +15,15 @@ export default class Driving extends Vue {
   filterList: FilterFormList[] = [
     {
       key: 'shopName',
-      type: 'select',
-      label: '商户',
-      placeholder: '请选择商户',
+      type: 'levelcode',
+      label: '所属门店',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择所属门店',
       options: [],
     },
     {
@@ -143,6 +150,21 @@ export default class Driving extends Vue {
       },
     },
   ];
+  created() {
+    // 门店
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '全部',
+        });
+        this.filterList[0].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
 
   render(h: any) {
     return (

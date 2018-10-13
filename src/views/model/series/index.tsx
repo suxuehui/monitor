@@ -114,7 +114,7 @@ export default class Series extends Vue {
       seriesDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
           this.$message.success(res.result.resultMessage);
-          FromTable.reloadTable();
+          FromTable.reloadTable(key);
         } else {
           this.$message.error(res.result.resultMessage);
         }
