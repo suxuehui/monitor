@@ -99,6 +99,7 @@ export default class Alarm extends Vue {
       noticeDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode) {
           FromTable.reloadTable();
+          this.$store.dispatch('getNotice');
           this.$message.success(res.result.resultMessage);
         } else {
           this.$message.error(res.result.resultMessage);
