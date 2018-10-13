@@ -58,6 +58,7 @@ export default class AddModal extends Vue {
             setTimeout(() => {
               this.loading = false;
               this.resetData();
+              this.$store.dispatch('getNotice');
               this.$message.success(res.result.resultMessage);
               this.$emit('refresh');
             }, 1500);
