@@ -33,3 +33,11 @@ export async function vehicleRadiusQuery(params: any) {
     data: params,
   });
 }
+
+export async function controlCar(params: any) {
+  return request({
+    url: '/vehicle/monitor/control',
+    method: 'get',
+    data: params,
+  });
+}

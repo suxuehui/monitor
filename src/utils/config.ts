@@ -3,8 +3,8 @@ const Logo = require('../assets/logo.svg');
 const API = process.env.NODE_ENV === 'production' ? '/monitor' : '/api';
 
 const config = {
-  name: '共享车监控系统',
-  footerText: '共享车监控系统  © 2017 桴之科',
+  name: '桴之科监控系统',
+  footerText: '桴之科监控系统  © 2017 桴之科',
   logo: Logo,
   icon: '/favicon.ico',
   API,

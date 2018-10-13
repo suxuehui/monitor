@@ -102,11 +102,15 @@ export default class MFilter extends Vue {
   @Emit()
   onSearch(): void {
     this.$emit('search', this.params);
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
   }
   @Emit()
   reset(): void {
     this.params = JSON.parse(JSON.stringify(this.initParams));
     this.$emit('clearOut');
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
     this.$emit('search', this.params);
   }
   @Emit()
@@ -152,6 +156,7 @@ export default class MFilter extends Vue {
         itemDom = <el-select
           style="width: 100%;"
           id={item.key}
+          clearable={true}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}>
           {
@@ -163,6 +168,7 @@ export default class MFilter extends Vue {
       case 'cascader':
         itemDom = <el-cascader style="width: 100%;"
           id={item.key}
+          clearable={true}
           options={item.options}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}

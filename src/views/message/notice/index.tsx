@@ -1,7 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag, Tooltip } from 'element-ui';
-import { noticeDelete } from '@/api/message';
+import { noticeDelete, noticeView } from '@/api/message';
 import AddModal from '@/views/message/notice/components/AddModal';
 import CheckModel from '@/views/message/notice/components/CheckModel';
 
@@ -88,10 +88,18 @@ export default class Alarm extends Vue {
     if (key === 'check') {
       this.checkData = row;
       this.checkVisible = true;
+      noticeView({ id: row.id }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.$store.dispatch('getNotice');
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     } else if (key === 'delete') {
       noticeDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode) {
           FromTable.reloadTable();
+          this.$store.dispatch('getNotice');
           this.$message.success(res.result.resultMessage);
         } else {
           this.$message.error(res.result.resultMessage);

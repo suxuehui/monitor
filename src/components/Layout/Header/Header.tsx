@@ -1,6 +1,6 @@
 import { Component, Prop, Emit, Vue, Watch } from 'vue-property-decorator';
 import { Badge, Dropdown, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem, Popover } from 'element-ui';
-import { menuItem, routerItem } from '@/interface';
+import { routerItem } from '@/interface';
 import utils from '@/utils';
 import MenuList from '@/components/Layout/Sidebar/MenuList';
 import './Header.less';
@@ -59,6 +59,19 @@ export default class Header extends Vue {
     });
   }
 
+  created() {
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
+  }
+
+  // 每30s拉取一次
+  timeGet() {
+    setInterval(() => {
+      this.$store.dispatch('getNotice');
+      this.$store.dispatch('getAlarm');
+    }, 30000);
+  }
+
   @Emit()
   menuClick(type: string): void {
     const self = this;
@@ -75,6 +88,14 @@ export default class Header extends Vue {
         break;
     }
   }
+
+  checkInfo() {
+    this.$router.push({ name: '通知公告' });
+  }
+  checkAlarm() {
+    this.$router.push({ name: '告警消息' });
+  }
+
   @Emit()
   switchSidebar(): void {
     this.$store.dispatch('ToggleSideBar');
@@ -87,13 +108,13 @@ export default class Header extends Vue {
         <div class="header-left">
           {
             isMobile ? <el-popover
-            placement="bottom"
-            title=""
-            width="300"
-            trigger="click">
-            <menu-list bgColor="#fff" txtColor="#898989" />
-            <i slot="reference" class="menu-btn iconfont-listMenu"></i>
-          </el-popover> : <i class={`menu-btn iconfont-${opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
+              placement="bottom"
+              title=""
+              width="300"
+              trigger="click">
+              <menu-list bgColor="#fff" txtColor="#898989" />
+              <i slot="reference" class="menu-btn iconfont-listMenu"></i>
+            </el-popover> : <i class={`menu-btn iconfont-${opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
           }
           <el-breadcrumb class="header-bread" separator="/">
             {
@@ -103,12 +124,14 @@ export default class Header extends Vue {
         </div>
         <ul class="header-menu">
           <li>
-            <el-badge value={12} class="item">
-              <i class="iconfont-email"></i>
+            <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
+              <i class="iconfont-email" on-click={this.checkInfo}></i>
             </el-badge>
           </li>
           <li>
-            <i class="iconfont-bell"></i>
+            <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
+              <i class="iconfont-bell" on-click={this.checkAlarm}></i>
+            </el-badge>
           </li>
           <li class="user">
             <el-dropdown on-command={this.menuClick} size="medium">
@@ -117,9 +140,11 @@ export default class Header extends Vue {
                 <i class="iconfont-user"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="1">个人中心</el-dropdown-item>
-                <el-dropdown-item command="2">修改密码</el-dropdown-item>
-                <el-dropdown-item command="3" divided><font color="red">退出登录</font></el-dropdown-item>
+                {/* <el-dropdown-item command="1">个人中心</el-dropdown-item> */}
+                {/* <el-dropdown-item command="2">修改密码</el-dropdown-item> */}
+                {/* <el-dropdown-item command="3" divided>
+              <font color="red">退出登录</font></el-dropdown-item> */}
+                <el-dropdown-item command="3"><font color="red">退出登录</font></el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </li>

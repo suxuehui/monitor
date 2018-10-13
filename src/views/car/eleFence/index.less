@@ -71,7 +71,7 @@
         }
       }
       .bottom {
-        margin-top: 5px;
+        margin-top: 10px;
         display: flex;
         justify-content: space-between;
         span {
@@ -124,6 +124,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        height: 18px;
         .icon {
           position: absolute;
           top: 1px;
@@ -131,7 +132,9 @@
           font-size: 14px;
         }
         span {
-          margin-left: -128px;
+          position: absolute;
+          top: 0px;
+          left: 16px;
         }
       }
       .time {
@@ -159,10 +162,10 @@
         height: 100%;
         display: inline-block;
         .item {
-          display: inline-block;
+          list-style: none;
+          float: left;
           width: 90px;
           margin-top: 10px;
-          text-align: center;
         }
       }
       .pageSet {

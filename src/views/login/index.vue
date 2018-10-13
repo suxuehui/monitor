@@ -1,6 +1,6 @@
 <template>
   <div class="loginWrap">
-    <h2 class="loginTxt">欢迎使用<br>共享车监控系统</h2>
+    <h2 class="loginTxt">欢迎使用<br>桴之科监控系统</h2>
     <div class="loginForm">
       <div class="logo">
         <img alt="logo" src="../../assets/logo.svg">

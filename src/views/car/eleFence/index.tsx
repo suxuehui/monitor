@@ -123,7 +123,7 @@ export default class EleFence extends Vue {
     },
     {
       label: '所在地区',
-      prop: 'area',
+      prop: 'areaText',
     },
     {
       label: '围栏地址',
@@ -140,10 +140,6 @@ export default class EleFence extends Vue {
       formatter(row: any) {
         return `每天${row.beginTime}~${row.endTime}`;
       },
-    },
-    {
-      label: '备注',
-      prop: 'remark',
     },
     {
       label: '状态',
@@ -352,6 +348,12 @@ export default class EleFence extends Vue {
   // 围栏详情
   fenceDetail: any = {}
 
+  clear() {
+    this.outParams = {
+      area: '',
+    };
+  }
+
   // 地图搜索
   search(): void {
     console.log(this.address);
@@ -391,58 +393,21 @@ export default class EleFence extends Vue {
     return type;
   }
 
-  menuClick(key: string, row: any) {
-    const FromTable: any = this.$refs.table;
-    if (key === 'edit') {
-      this.$router.push({ name: '围栏详情', params: { eleFenceId: row.id } });
-    } else if (key === 'use') {
-      if (row.isactive) {
-        // 禁用
-        disableFence({ eleFenceId: row.id }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      } else {
-        // 启用
-        enableFence({ eleFenceId: row.id }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      }
-    } else if (key === 'delete') {
-      // 删除
-      deleteFence({ eleFenceId: row.id }).then((res) => {
-        if (res.result.resultCode) {
-          FromTable.reloadTable();
-          this.$message.success(res.result.resultMessage);
-        } else {
-          this.$message.error(res.result.resultMessage);
-        }
-      });
-    }
-  }
+  menuClick(key: string, row: any) {}
 
   // 查询监控车辆列表
   getCarList(id: string) {
     const obj = {
       fenceId: id,
-      pageSize: 10,
+      pageSize: 87,
       pageNum: 1,
       page: true,
     };
     getFenceCars(obj).then((res) => {
       if (res.result.resultCode === '0') {
+        this.carList = [];
         this.carList = res.entity.data;
-        console.log(this.carList);
-        this.total = res.entity.count;
+        this.pageSize = parseInt(res.entity.count, 10);
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -494,14 +459,9 @@ export default class EleFence extends Vue {
 
   remark(data: any) {
     if (data.fenceType === '1') {
-      console.log('圆形');
       this.circleInMap(data.lng, data.lat, data.radius);
-    } else if (data.fenceType === '0') {
-      console.log('多边形');
-      this.polygonInMap(data);
     } else if (data.fenceType === '2') {
-      this.rectInMap(data);
-      console.log('矩形');
+      this.polygonInMap(data);
     }
   }
   circleInMap = (lng: number, lat: number, radius: number) => {
@@ -514,25 +474,17 @@ export default class EleFence extends Vue {
   }
   polygonInMap = (data: any) => {
     const polyPointArr: any = [];
-    data.latLngArray.forEach((itm: any) => {
+    JSON.parse(data.latLngArray).forEach((itm: any) => {
       const point = new this.BMap.Point(itm.lng, itm.lat);
       polyPointArr.push(point);
     });
     const ret = new this.BMap.Polygon(polyPointArr, this.styleOptions); // 创建多边形
+    const point: any = new this.BMap.Point(data.lng, data.lat);
+    const marker = new this.BMap.Marker(point);
     this.SMap.clearOverlays();
+    this.SMap.addOverlay(marker);
     this.SMap.addOverlay(ret);
   }
-  rectInMap = (data: any) => {
-    const polyPointArr: any = [];
-    data.latLngArray.forEach((itm: any) => {
-      const point = new this.BMap.Point(itm.lng, itm.lat);
-      polyPointArr.push(point);
-    });
-    const ret = new this.BMap.Polygon(polyPointArr, this.styleOptions); // 创建矩形
-    this.SMap.clearOverlays();
-    this.SMap.addOverlay(ret);
-  }
-
 
   // 定位至当前位置
   getNowPosition = () => {
@@ -636,9 +588,12 @@ export default class EleFence extends Vue {
             <ul class="line">
               {
                 this.carList.length > 0 ?
-                  this.carList.forEach((item: any) => <li class="item">
-                    <span class="label">{item.id}</span>
-                  </li>) : null
+                  this.carList.map((item: any) => <li class="item">
+                    <span class="label">{item.platenum}</span>
+                  </li>) :
+                  <li class="item">
+                    <span class="label">暂无监控车辆</span>
+                  </li>
               }
             </ul>
             <el-pagination
@@ -646,7 +601,7 @@ export default class EleFence extends Vue {
               small
               background
               page-size={this.pageSize}
-              pager-count={this.pageCount}
+              // pager-count={this.pageCount}
               layout="prev, pager, next"
               total={this.total}
             >
@@ -667,6 +622,7 @@ export default class EleFence extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             // on-menuClick={this.menuClick}
+            on-clearOutParams={this.clear}
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'eleFence'}
