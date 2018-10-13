@@ -90,7 +90,7 @@ export default class Alarm extends Vue {
       this.checkVisible = true;
       noticeView({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
-          console.log(this.$refs.table);
+          this.$store.dispatch('getNotice');
         } else {
           this.$message.error(res.result.resultMessage);
         }

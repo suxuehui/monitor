@@ -1,7 +1,6 @@
 import { Component, Prop, Emit, Vue, Watch } from 'vue-property-decorator';
 import { Badge, Dropdown, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem, Popover } from 'element-ui';
-import { menuItem, routerItem } from '@/interface';
-import { noticeNotHandled, getNotHandled } from '@/api/message';
+import { routerItem } from '@/interface';
 import utils from '@/utils';
 import MenuList from '@/components/Layout/Sidebar/MenuList';
 import './Header.less';
@@ -60,32 +59,16 @@ export default class Header extends Vue {
     });
   }
 
-  // 告警、通知
-  infoLen: number = 1;
-  alarmLen: number = 1;
-
   created() {
-    this.getNotice();
-    this.timeGet();
-  }
-
-  getNotice() {
-    noticeNotHandled({ status: 1 }).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.infoLen = res.entity;
-      }
-    });
-    getNotHandled({ status: 1 }).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.alarmLen = res.entity;
-      }
-    });
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
   }
 
   // 每30s拉取一次
   timeGet() {
     setInterval(() => {
-      this.getNotice();
+      this.$store.dispatch('getNotice');
+      this.$store.dispatch('getAlarm');
     }, 30000);
   }
 
@@ -141,12 +124,12 @@ export default class Header extends Vue {
         </div>
         <ul class="header-menu">
           <li>
-            <el-badge value={this.infoLen === 0 ? '' : this.infoLen} max={9} class="item">
+            <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
               <i class="iconfont-email" on-click={this.checkInfo}></i>
             </el-badge>
           </li>
           <li>
-            <el-badge value={this.alarmLen === 0 ? '' : this.alarmLen} max={9} class="item">
+            <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
               <i class="iconfont-bell" on-click={this.checkAlarm}></i>
             </el-badge>
           </li>
