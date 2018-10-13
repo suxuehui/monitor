@@ -86,18 +86,18 @@ export default class Trajectory extends Vue {
       prop: 'platenum',
     }, {
       label: '开始时间',
-      prop: 'starttime',
+      prop: 'startTime',
     }, {
       label: '起点',
-      prop: 'startaddr',
+      prop: 'startAddr',
     }, {
       label: '终点',
-      prop: 'endaddr',
+      prop: 'endAddr',
     }, {
       label: '里程',
       prop: 'mileage',
       formatter(row : any) {
-        return row.mileage
+        return row.mileage !== null
           ? `${row.mileage}km`
           : '未知';
       },
@@ -105,47 +105,47 @@ export default class Trajectory extends Vue {
       label: '用时',
       prop: 'period',
       formatter(row : any) {
-        return row.minutes
-          ? `${row.minutes}分钟`
+        return row.period !== null
+          ? `${row.period}分钟`
           : '未知';
       },
     }, {
       label: '耗油',
-      prop: 'fuelcons',
+      prop: 'fuelCons',
       formatter(row : any) {
-        return row.oil
-          ? `${row.oil}L`
+        return row.fuelCons !== null
+          ? `${row.fuelCons}L`
           : '未知';
       },
     }, {
       label: '耗电',
-      prop: 'powercons',
+      prop: 'powerCons',
       formatter(row : any) {
-        return row.consuElectric
-          ? `${row.consuElectric}%`
+        return row.powerCons !== null
+          ? `${row.powerCons}%`
           : '未知';
       },
     }, {
-      label: '平均油耗',
-      prop: 'avgfuelcons',
+      label: '平均油耗(L/100km)',
+      prop: 'avgfuelCons',
       formatter(row : any) {
-        return row.avgOil
-          ? `${row.avgOil}L/km`
+        return row.avgfuelCons !== null
+          ? row.avgfuelCons
           : '未知';
       },
     }, {
       label: '平均速度',
-      prop: 'avgspeed',
+      prop: 'avgSpeed',
       formatter(row : any) {
-        return row.avgSpeed
+        return row.avgSpeed !== null
           ? `${row.avgSpeed}km/h`
           : '未知';
       },
     }, {
       label: '最高速度',
-      prop: 'maxspeed',
+      prop: 'maxSpeed',
       formatter(row : any) {
-        return row.maxSpeed
+        return row.maxSpeed !== null
           ? `${row.maxSpeed}km`
           : '未知';
       },
@@ -213,6 +213,7 @@ export default class Trajectory extends Vue {
   canvasLayer: any = null;
   canvasLayerBack: any = null;
   CanvasLayerPointer: any = null;
+  canvasBehavior: any = null;
   pointCollection: any = [];
   /**
    * view内部，绘制轨迹线路
@@ -235,11 +236,12 @@ export default class Trajectory extends Vue {
     }
     for (let i = 0; i < data.length; i+=1) {
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
-      tempPoint.speed = data[i].obdspeed ? data[i].obdspeed : data[i].gpsspeed;
-      tempPoint.uTCTime = data[i].uTCTime;
+      tempPoint.speed = data[i].obdSpeed ? data[i].obdSpeed : data[i].gpsSpeed;
+      tempPoint.uTCTime = data[i].utctime;
       tempPoint.direction = data[i].direction;
       tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
       tempPoint.lnglat = `${data[i].lng.toFixed(2)},${data[i].lat.toFixed(2)}`;
+      tempPoint.event = data[i].events;
       totalPoints.push(tempPoint);
     }
     if (that.first) {
@@ -301,20 +303,16 @@ export default class Trajectory extends Vue {
       if (totalPoints.length !== 0) {
         const lineObj = {};
         let pixelPart = 0;
-        const pixelPartUnit = 40;
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           const pixel = self.SMap.pointToPixel(totalPoints[i]);
           const nextPixel = self.SMap.pointToPixel(totalPoints[i + 1]);
-          pixelPart += (((nextPixel.x - pixel.x) ** 2) + ((nextPixel.y - pixel.y) ** 2)) ** 0.5;
-          if (pixelPart <= pixelPartUnit) {
-            // continue;
-          }
-          pixelPart = 0;
-          ctx.beginPath();
-          // 根据渲染像素距离渲染箭头
-          if (Math.abs(nextPixel.x - pixel.x) > 10 || Math.abs(nextPixel.y - pixel.y) > 10) {
-            // 箭头一共需要5个点：起点、终点、中心点、箭头端点1、箭头端点2
 
+          ctx.beginPath();
+          pixelPart += Math.abs(nextPixel.x - pixel.x) + Math.abs(nextPixel.y - pixel.y);
+          // 根据渲染像素距离渲染箭头
+          if (pixelPart > 40) {
+            // 箭头一共需要5个点：起点、终点、中心点、箭头端点1、箭头端点2
+            pixelPart = 0;
             const midPixel = new self.BMap.Pixel(
               (pixel.x + nextPixel.x) / 2,
               (pixel.y + nextPixel.y) / 2,
@@ -368,11 +366,83 @@ export default class Trajectory extends Vue {
         }
       }
     }
+    function renderBehavior() {
+      const Map = ['', '震', '碰', '碰', '翻', '加', '减', '弯'];
+      const ColorMap = ['', '#52c41a', '#fa8c16', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2'];
+      const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      const mulPoint: { x: number, y: number, event: string[] }[] = [];
+      function addPoint(x: number, y: number, text: string, color: string, fontSize: string, type: 'one' | 'mul') {
+        ctx.beginPath();
+        ctx.arc(x, y, 9, 0, 2*Math.PI);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.stroke();
+        ctx.font = `bold ${fontSize} arial`;
+        ctx.fillStyle = '#fff';
+        ctx.fillText(text, type === 'one' ? x - 5.5 : x - 4, y + 4);
+      }
+      function hoverMul(x: number, y: number, event: string[]) {
+        let py = 0;
+        event.forEach((item) => {
+          addPoint(x + py, y - 30, Map[parseInt(item, 10)], ColorMap[parseInt(item, 10)], '12px', 'one');
+          py += 30;
+        });
+      }
+      function removeMul(x: number, y: number, num: number) {
+        ctx.clearRect(x - 10, y - 40, num * 30, 20);
+      }
+      function iconRender(x: number, y: number, url: string) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, x, y);
+        };
+        img.src = url;
+      }
+      if (totalPoints.length !== 0) {
+        const oneXY = self.SMap.pointToPixel(totalPoints[0]);
+        iconRender(oneXY.x - 13, oneXY.y - 26, require('@/assets/start.png'));
+        const endXY = self.SMap.pointToPixel(totalPoints[totalPoints.length -1]);
+        iconRender(endXY.x - 13, endXY.y - 26, require('@/assets/end.png'));
+        for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
+          if (totalPoints[i].event && totalPoints[i].event[0] !== '0') {
+            const pixel = self.SMap.pointToPixel(totalPoints[i]);
+            if (totalPoints[i].event.length === 1) {
+              addPoint(pixel.x, pixel.y, Map[parseInt(totalPoints[i].event[0], 10)], ColorMap[parseInt(totalPoints[i].event[0], 10)], '12px', 'one');
+            } else {
+              addPoint(pixel.x, pixel.y, totalPoints[i].event.length, '#faad14', '14px', 'mul');
+              mulPoint.push({
+                x: pixel.x,
+                y: pixel.y,
+                event: totalPoints[i].event,
+              });
+            }
+          }
+        }
+        if (mulPoint.length) {
+          self.canvasBehavior.canvas.addEventListener('mousemove', (e: MouseEvent) => {
+            mulPoint.forEach((item) => {
+              if (Math.abs(e.pageX - item.x - 200) < 5 && Math.abs(e.pageY - item.y - 100) < 5) {
+                hoverMul(item.x, item.y, item.event);
+              } else {
+                removeMul(item.x, item.y, item.event.length);
+              }
+            });
+          });
+        }
+      }
+    }
     if (totalPoints.length > 0) {
       if (this.canvasLayer || this.canvasLayerBack || this.CanvasLayerPointer) {
         this.SMap.removeOverlay(this.CanvasLayerPointer);
         this.SMap.removeOverlay(this.canvasLayer);
         this.SMap.removeOverlay(this.canvasLayerBack);
+        this.SMap.removeOverlay(this.canvasBehavior);
       }
       // 轨迹边框渲染
       this.canvasLayerBack = new this.CanvasLayer({
@@ -388,6 +458,11 @@ export default class Trajectory extends Vue {
       this.CanvasLayerPointer = new this.CanvasLayer({
         map: this.SMap,
         update: updatePointer,
+      });
+      // 驾驶行为层
+      this.canvasBehavior = new this.CanvasLayer({
+        map: this.SMap,
+        update: renderBehavior,
       });
     }
     const options = {
@@ -499,27 +574,45 @@ export default class Trajectory extends Vue {
     this.locChange = false;
   }
   plateNum = '';
+
+  behaivorData: { num: number, txt: string }[] = []
   // 表格单选
   currentChange(val: any) {
-    this.plateNum = val.plateNum;
+    this.behaivorData = [
+      { num: 0, txt: '轻震动' },
+      { num: 0, txt: '轻碰撞' },
+      { num: 0, txt: '重碰撞' },
+      { num: 0, txt: '重翻滚' },
+      { num: 0, txt: '急加速' },
+      { num: 0, txt: '急减速' },
+      { num: 0, txt: '急转弯' },
+    ];
+    this.plateNum = val.platenum;
     // 如果有播放状态则清除播放
     if (this.playStatus) {
       this.getMapContorl().clearPlay();
       this.clearPlay();
     }
-    tripGPS({ id: val.id }).then((res) => {
+    tripGPS({ id: val.tripId }).then((res) => {
       if (res.result.resultCode === '0') {
         let data = res.entity;
         data = data.map((item: any, index: number) => {
           const point = coordTrasns.transToBaidu(item, 'gcj02ll');
           item.lat = point.lat;
           item.lng = point.lng;
+          if (item.events) {
+            item.events.forEach((items: string) => {
+              if (items !== '0') {
+                this.behaivorData[parseInt(items, 10) - 1].num += 1;
+              }
+            });
+          }
           return item;
         });
         this.currentTrackData = data;
         this.trackView(data);
         // 设置轨迹播放时间-1小时轨迹播放时长为1分钟
-        this.playTime = this.timeFormat(val.minutes);
+        this.playTime = this.timeFormat(val.period);
         this.defaultTime = this.playTime;
       }
     });
@@ -580,14 +673,14 @@ export default class Trajectory extends Vue {
     this.getMapContorl().jumpPlay(val);
   }
   clearPlay() {
-    this.trackPlay();
+    // this.trackPlay();
     this.playOnTime = 0;
     this.firstPlay = true;
   }
   playChange(val: number) {
     this.playTime = this.timeFormat(this.playTimeNumber(this.defaultTime) / val);
     this.clearPlay();
-    this.trackPlay();
+    // this.trackPlay();
     this.getMapContorl().playSetTime(this.playTimeNumber(this.defaultTime) / val);
   }
   /**
@@ -596,6 +689,14 @@ export default class Trajectory extends Vue {
   render() {
     return (
       <div class="trajectory-wrap">
+        <ul class="behavior-list">
+          {
+            this.behaivorData && this.behaivorData.map(item => <li>
+            <span class="number">{item.num}</span>
+            <span className="txt">{item.txt}</span>
+          </li>)
+          }
+        </ul>
         <div id="map"></div>
         {
           this.currentTrackData.length ?

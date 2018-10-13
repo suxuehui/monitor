@@ -2,6 +2,63 @@
   height: e('calc(100vh - 98px)');
   overflow: hidden;
   position: relative;
+  .behavior-list {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    z-index: 9999;
+    list-style: none;
+    li {
+      background-color: #333;
+      color: #fff;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      text-align: center;
+      padding: 4px;
+      border: 1px solid #000;
+      .number {
+        display: block;
+      }
+      .txt {
+        display: block;
+      }
+      &:nth-child(1) {
+        background-color: #f6ffed;
+        border-color: #b7eb8f;
+        color: #52c41a;
+      }
+      &:nth-child(2) {
+        background-color: #fff7e6;
+        border-color: #ffd591;
+        color: #fa8c16;
+      }
+      &:nth-child(3) {
+        background-color: #fff1f0;
+        border-color: #ffa39e;
+        color: #f5222d;
+      }
+      &:nth-child(4) {
+        background-color: #fff0f6;
+        border-color: #ffadd2;
+        color: #eb2f96;
+      }
+      &:nth-child(5) {
+        background-color: #e6f7ff;
+        border-color: #91d5ff;
+        color: #1890ff;
+      }
+      &:nth-child(6) {
+        background-color: #f0f5ff;
+        border-color: #adc6ff;
+        color: #2f54eb;
+      }
+      &:nth-child(7) {
+        background-color: #e6fffb;
+        border-color: #87e8de;
+        color: #13c2c2;
+      }
+    }
+  }
   #map {
     height: e('calc(100vh - 98px)');
   }

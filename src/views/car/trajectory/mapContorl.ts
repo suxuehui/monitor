@@ -346,7 +346,7 @@ export default class MapContorl {
           ['定位', data.lnglat],
           ['地址', address],
           ['速度', `${data.speed}km/h`],
-          ['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')],
+          ['定位时间', data.uTCTime],
         ];
         this.setTrackInfoBox({
           plateNum: data.plateNum,
