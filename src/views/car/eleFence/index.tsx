@@ -348,6 +348,12 @@ export default class EleFence extends Vue {
   // 围栏详情
   fenceDetail: any = {}
 
+  clear() {
+    this.outParams = {
+      area: '',
+    };
+  }
+
   // 地图搜索
   search(): void {
     console.log(this.address);
@@ -616,6 +622,7 @@ export default class EleFence extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             // on-menuClick={this.menuClick}
+            on-clearOutParams={this.clear}
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'eleFence'}
