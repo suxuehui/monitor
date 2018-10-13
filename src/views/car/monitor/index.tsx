@@ -447,8 +447,8 @@ export default class Monitor extends Vue {
     this.CarMarker.forEach((item: any, index: number) => {
       item.addEventListener('click', () => {
         this.openMsg(this.mapCarData[index]);
-        // this.getCarDetail(this.mapCarData[index].id);
-        this.getCarDetail('28');
+        this.getCarDetail(this.mapCarData[index].id);
+        // this.getCarDetail('28');
       });
     });
   }
