@@ -261,14 +261,14 @@ export default class Monitor extends Vue {
       formatter: this.onlineFormat,
     },
   ];
-  brandChange(row:any) {
-    const str= `${row.brandName}--${row.seriesName}--${row.modelName}`;
+  brandChange(row: any) {
+    const str = `${row.brandName}--${row.seriesName}--${row.modelName}`;
     return row.brandName ?
       <el-tooltip class="item" effect="dark" content={str} placement="top">
         <div>
           <p>{str}</p>
         </div>
-      </el-tooltip>: '--';
+      </el-tooltip> : '--';
   }
 
   changeStatus(data: any, unit: string) {
@@ -320,28 +320,26 @@ export default class Monitor extends Vue {
   carDetail: any = {}; // 车辆详情数据
   locChange: boolean = false; // 底部表格开关
   carDetailArr: any = [
-    { label: '卫星星数:', prop: 'star', unit: '' },
+    { label: '卫星星数:', prop: 'star', unit: '颗' },
     { label: '网络质量:', prop: 'gsm', unit: '' },
     { label: 'ACC状态:', prop: 'acc' },
     { label: '引擎状态:', prop: 'engine' },
-    { label: '排挡档位:', prop: 'gear', unit: '' },
+    { label: '排挡档位:', prop: 'gear', unit: '档' },
     { label: '电瓶电压:', prop: 'voltage', unit: 'V' },
     { label: '剩余油量:', prop: 'leftOil', unit: 'L' },
     { label: '剩余电量:', prop: 'leftElectricPercent', unit: '%' },
     { label: '累计里程:', prop: 'totalMileage', unit: 'km' },
     { label: '续航里程:', prop: 'leftMileage', unit: 'km' },
-    { label: '总灯状态:', prop: 'allLight' },
-    // { label: '大灯状态:', prop: 'bigLight' },
-    // { label: '小灯状态:', prop: 'smallLight' },
     { label: '设防状态:', prop: 'defenceStatus' },
     { label: '充电状态:', prop: 'chargeLight' },
+    { label: '车灯状态:', prop: 'allLight' },
+    { label: '天窗状态:', prop: 'skyWindow' },
     { label: '引擎盖:', prop: 'hood' },
     { label: '后备箱:', prop: 'trunk' },
-    { label: '天窗状态:', prop: 'skyWindow' },
-    { label: '左前车门:', prop: 'leftFrontDoor' },
-    { label: '右前车门:', prop: 'rightFrontDoor' },
-    { label: '左后车门:', prop: 'leftRearDoor' },
-    { label: '右后车门:', prop: 'rightRearDoor' },
+    { label: '左前车门:', prop: 'leftFrontDoor', unit: 'leftFrontLock' },
+    { label: '右前车门:', prop: 'rightFrontDoor', unit: 'rightFrontLock' },
+    { label: '左后车门:', prop: 'leftRearDoor', unit: 'leftRearLock' },
+    { label: '右后车门:', prop: 'rightRearDoor', unit: 'rightRearLock' },
     { label: '左前车窗:', prop: 'leftFrontWindow' },
     { label: '右前车窗:', prop: 'rightFrontWindow' },
     { label: '左后车窗:', prop: 'leftRearWindow' },
@@ -421,7 +419,9 @@ export default class Monitor extends Vue {
     // 获取地图车辆
     vehicleRadiusQuery({ radius: this.radius, ...this.mapCenter }).then((res) => {
       if (res.result.resultCode === '0') {
-        this.initMap(res.entity, id);
+        if (res.entity) {
+          this.initMap(res.entity, id);
+        }
       }
     });
   }
@@ -460,7 +460,6 @@ export default class Monitor extends Vue {
       item.addEventListener('click', () => {
         this.openMsg(this.mapCarData[index]);
         this.getCarDetail(this.mapCarData[index].id);
-        // this.getCarDetail('28');
       });
     });
   }
@@ -481,7 +480,6 @@ export default class Monitor extends Vue {
   }
 
   msgContent(content: any) {
-    console.log(content);
     return `<div class="makerMsg">
       <h3 class="plateNum">车牌号：${content.plateNum}</h3>
       <ul class="msg clearfix">
@@ -593,8 +591,17 @@ export default class Monitor extends Vue {
     console.log(this.address);
   }
 
+  // 清除覆盖物
+  clear=() => {
+    this.SMap.clearOverlays();
+  }
+
   // 刷新
   refresh(): void {
+    this.radiusGetData();
+    const MapTable: any = this.$refs.mapTable;
+    this.clear();
+    MapTable.reloadTable();
   }
 
   // 关闭详情
@@ -603,12 +610,14 @@ export default class Monitor extends Vue {
   }
 
   // 增加zoom
-  zoomAdd(): any {
-    this.SMapZoom += 1;
+  zoomAdd = () => {
+    const newZoom = this.SMap.getZoom() + 1;
+    this.SMap.setZoom(newZoom);
   }
   // 减少zoom
-  zoomReduce(): any {
-    this.SMapZoom -= 1;
+  zoomReduce = () => {
+    const newZoom = this.SMap.getZoom() - 1;
+    this.SMap.setZoom(newZoom);
   }
 
   // 定位
@@ -616,7 +625,28 @@ export default class Monitor extends Vue {
     console.log(e);
   }
 
-  setCenter(): void {
+
+  // 到当前定位
+  nowMk: any = '';
+  nowPosition: any = {};
+  setCenter = () => {
+    // 创建查询对象
+    const geolocation = new this.BMap.Geolocation();
+    if (this.nowPosition.lat) {
+      this.SMap.addOverlay(this.nowMk);
+      this.SMap.panTo(this.nowPosition, { noAnimation: false });
+    } else {
+      geolocation.getCurrentPosition((r: any) => {
+        if (geolocation.getStatus() === 0) {
+          this.nowMk = new this.BMap.Marker(r.point);
+          this.nowPosition = r.point;
+          this.SMap.addOverlay(this.nowMk);
+          this.SMap.panTo(this.nowPosition.lat ? this.nowPosition : r.point);
+        } else {
+          this.$message.error('定位失败');
+        }
+      });
+    }
   }
 
   // 表格显示隐藏
@@ -667,13 +697,33 @@ export default class Monitor extends Vue {
     MapTable.reloadTable();
   }
 
-  renderStatus(value: boolean | string | number, unit?: string) {
+  renderStatus(value: boolean | string | number, data: any, unit?: any) {
     const gettype = Object.prototype.toString;
+    // 油量%
+    if (unit === 'L' && typeof value === 'number' && typeof data.fuelTankCap === 'number') {
+      const num = value ? value + unit : '未知';
+      let num2: string = '未知';
+      const str = (value / data.fuelTankCap) * 100;
+      if (data.fuelTankCap !== 0) {
+        num2 = value ? `${str.toFixed(2)}%` : '未知';
+      }
+      return `${num2} (${num})`;
+    }
+    // 左前车门
+    if (unit === 'leftFrontLock') {
+      return this.setDoorStatus(data.leftFrontDoor, data.leftFrontLock);
+    } else if (unit === 'rightFrontLock') {
+      return this.setDoorStatus(data.rightFrontDoor, data.rightFrontLock);
+    } else if (unit === 'leftRearLock') {
+      return this.setDoorStatus(data.leftRearDoor, data.leftRearLock);
+    } else if (unit === 'rightRearLock') {
+      return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
+    }
     switch (gettype.call(value)) {
       case '[object Boolean]':
-        return value ? '开' : '关';
+        return value ? '开启' : '关闭';
       case '[object String]':
-        return value;
+        return value ? value + unit : value;
       case '[object Number]':
         return unit ? value + unit : value;
       case '[object Null]':
@@ -682,6 +732,14 @@ export default class Monitor extends Vue {
         return value;
     }
   }
+
+  // 车门关闭、锁状态
+  setDoorStatus(doorStatus: boolean, lockStatus: boolean) {
+    const str1 = doorStatus ? '关闭' : '开启';
+    const str2 = lockStatus ? '已上锁' : '未上锁';
+    return `${str1}；${str2}`;
+  }
+
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
@@ -692,6 +750,7 @@ export default class Monitor extends Vue {
         };
         this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
         this.radiusGetData(val.id);
+        this.getCarDetail(val.id);
       } else {
         this.$message.error('车辆暂无定位');
         this.radiusGetData(val.id);
@@ -730,6 +789,7 @@ export default class Monitor extends Vue {
         icon: new this.BMap.Icon(pointIcon, new this.BMap.Size(28, 40)),
       },
     );
+    this.SMap.clearOverlays();
     this.SMap.addOverlay(marker); // 创建标注
   }
   // 编辑开关
@@ -765,6 +825,7 @@ export default class Monitor extends Vue {
     controlCar({ imei: this.carDetail.otuImei, cmd: type }).then((res: any) => {
       this.controlLoading[index] = false;
       if (res.result.resultCode === '0') {
+        this.getCarDetail(this.carDetail.id);
         this.$message.success(res.result.resultMessage);
       } else {
         this.$message.error(res.result.resultMessage);
@@ -840,7 +901,7 @@ export default class Monitor extends Vue {
               {
                 this.carDetailArr.map((item: any) => <li class="item">
                   <span class="label">{item.label}</span>
-                  <span class="val">{this.renderStatus(carDetail[item.prop], item.unit)}</span>
+                  <span class="val">{this.renderStatus(carDetail[item.prop], carDetail, item.unit)}</span>
                 </li>)
               }
             </ul>

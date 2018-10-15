@@ -318,13 +318,13 @@ export default class Device extends Vue {
       <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
       <popconfirm-block
         ref={`popBlock${row.id}`}
-        title="确定要重置此设备到期日期吗？"
+        title="确定要对此设备进行续期（365天）吗？"
         width="225"
         loading={this.loading}
         on-confirm={() => this.onResetTime(row)}
         on-cancel={this.closePop}
       >
-        <el-button style="marginLeft:10px" disabled={row.status !== 3 } type="text" size="small" >重置</el-button>
+        <el-button style="marginLeft:10px" disabled={row.status !== 3 } type="text" size="small" >续期</el-button>
       </popconfirm-block>
     </div>;
   }

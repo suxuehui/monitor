@@ -393,7 +393,7 @@ export default class EleFence extends Vue {
     return type;
   }
 
-  menuClick(key: string, row: any) {}
+  menuClick(key: string, row: any) { }
 
   // 查询监控车辆列表
   getCarList(id: string) {
@@ -563,7 +563,7 @@ export default class EleFence extends Vue {
           }
         </div>
         {/* 详情 */}
-        <div class={['car-detail-box', this.detailShow ? 'detail-active' : '']} >
+        <div class={['car-detail-box1', this.detailShow ? 'detail-active' : '']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
           <div class="car-info">
             <div class="top">
@@ -587,25 +587,27 @@ export default class EleFence extends Vue {
           <div class="car-detail">
             <ul class="line">
               {
-                this.carList.length > 0 ?
+                this.carList ?
                   this.carList.map((item: any) => <li class="item">
                     <span class="label">{item.platenum}</span>
                   </li>) :
-                  <li class="item">
-                    <span class="label">暂无监控车辆</span>
-                  </li>
+                  '暂无监控车辆'
               }
             </ul>
-            <el-pagination
-              class="pageSet"
-              small
-              background
-              page-size={this.pageSize}
-              // pager-count={this.pageCount}
-              layout="prev, pager, next"
-              total={this.total}
-            >
-            </el-pagination>
+            {
+              this.carList ?
+                <el-pagination
+                  class="pageSet"
+                  small
+                  background
+                  page-size={this.pageSize}
+                  // pager-count={this.pageCount}
+                  layout="prev, pager, next"
+                  total={this.total}
+                >
+                </el-pagination> : ''
+            }
+
           </div>
         </div>
         <div ref="tableList" id="TableList" class={['car-table', this.locChange ? 'table-active' : '']}>
