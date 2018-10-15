@@ -93,6 +93,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       upModel.$children[0].clearFiles();
     }, 200);
+    this.loading = false;
   }
 
   removeBack(file: any, fileList: any) {

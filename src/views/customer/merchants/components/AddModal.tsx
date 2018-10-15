@@ -53,12 +53,22 @@ export default class AddModal extends Vue {
   checkPassword(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (this.modelForm.password) {
-        callback();
+        if (this.isChineseChar(this.modelForm.password)) {
+          callback(new Error('登录密码格式有误，请重新输入'));
+        } else {
+          callback();
+        }
       } else {
         callback(new Error('登录密码不能为空'));
       }
     }, 500);
   }
+
+  isChineseChar(str: any) {
+    const reg = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
+    return reg.test(str);
+  }
+
   orgRule = [
     { required: true, message: '请输入商户名称', trigger: 'blur' },
     {
@@ -78,13 +88,19 @@ export default class AddModal extends Vue {
   checkName(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        checkOrgName(value).then((res) => {
-          if (res.result.resultCode === '0') {
-            callback();
-          } else {
-            callback(new Error('商户名已存在，请重新输入'));
-          }
-        });
+        if (this.data.orgName !== value) {
+          // 商户名变化重新判定
+          checkOrgName(value).then((res) => {
+            if (res.result.resultCode === '0') {
+              callback();
+            } else {
+              callback(new Error('商户名已存在，请重新输入'));
+            }
+          });
+        } else {
+          // 商户名未变，直接通过
+          callback();
+        }
       } else {
         callback(new Error('商户名不能为空'));
       }
@@ -139,6 +155,7 @@ export default class AddModal extends Vue {
       this.ruleStatus = true;
       this.resetData();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {
@@ -216,11 +233,11 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="商户名称" prop="orgName" rules={!this.ruleStatus ? null : this.orgRule}>
+              <el-form-item label="商户名称" prop="orgName" rules={this.orgRule}>
                 <el-input
                   id="orgName"
                   v-model={this.modelForm.orgName}
-                  disabled={this.title === '编辑商户'}
+                  // disabled={this.title === '编辑商户'}
                   placeholder="请输入商户名称"
                 ></el-input>
               </el-form-item>

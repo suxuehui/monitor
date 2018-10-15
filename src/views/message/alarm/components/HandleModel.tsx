@@ -42,6 +42,7 @@ export default class HandleModel extends Vue {
     setTimeout(() => {
       From.resetFields();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {

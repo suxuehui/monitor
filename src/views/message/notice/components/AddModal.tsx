@@ -39,6 +39,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       this.resetData();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {

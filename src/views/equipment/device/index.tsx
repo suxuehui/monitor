@@ -324,7 +324,7 @@ export default class Device extends Vue {
         on-confirm={() => this.onResetTime(row)}
         on-cancel={this.closePop}
       >
-        <el-button style="marginLeft:10px" type="text" size="small" >重置</el-button>
+        <el-button style="marginLeft:10px" disabled={row.status !== 3 } type="text" size="small" >重置</el-button>
       </popconfirm-block>
     </div>;
   }
@@ -475,6 +475,7 @@ export default class Device extends Vue {
     setTimeout(() => {
       addBlock.resetData();
     }, 200);
+    this.loading = false;
   }
   // 关闭弹窗时刷新
   refresh(): void {

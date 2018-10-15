@@ -49,6 +49,7 @@ export default class DeployModel extends Vue {
     setTimeout(() => {
       From.resetFields();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {

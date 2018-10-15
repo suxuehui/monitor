@@ -22,6 +22,7 @@ export default class AuthModel extends Vue {
     setTimeout(() => {
       this.newCfgVal = '';
     }, 200);
+    this.loading = false;
   }
 
   newCfgVal: string = ''

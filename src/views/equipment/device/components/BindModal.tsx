@@ -223,6 +223,7 @@ export default class BindModal extends Vue {
       From.resetFields();
       upModel.$children[0].clearFiles();
     }, 200);
+    this.loading = false;
   }
 
   removeBack(file: any, fileList: any) {

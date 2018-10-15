@@ -79,6 +79,7 @@ export default class AddModal extends Vue {
       From.resetFields();
       this.resetData();
     }, 500);
+    this.loading = false;
   }
 
   onSubmit() {

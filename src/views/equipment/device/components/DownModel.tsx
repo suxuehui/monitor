@@ -41,6 +41,7 @@ export default class DownModel extends Vue {
     setTimeout(() => {
       From.resetFields();
     }, 200);
+    this.loading = false;
   }
 
   closePop() {

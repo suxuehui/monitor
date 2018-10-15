@@ -137,6 +137,7 @@ export default class AddModal extends Vue {
       this.modelForm.cfgParamAdd = [];
       this.reBootStatus = '1';
     }, 200);
+    this.loading = false;
   }
   reBootStatus: string = '1';
 

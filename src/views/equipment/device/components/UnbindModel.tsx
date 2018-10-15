@@ -19,6 +19,7 @@ export default class UnbindModel extends Vue {
 
   closeModal() {
     this.$emit('close');
+    this.loading = false;
   }
 
   newCfgVal: string = ''
