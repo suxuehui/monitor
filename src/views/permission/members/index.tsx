@@ -93,6 +93,7 @@ export default class Member extends Vue {
       color: 'blue',
       text: '编辑',
       roles: true,
+      disabled: (row: any) => (row.userName === 'admin'),
     },
     {
       key: 'freeze',

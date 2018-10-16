@@ -60,6 +60,8 @@ export default class MTable extends Vue {
   @Prop({ default: 10 }) private defaultPageSize!: number;
 
   @Prop() private highlightCurrentRow!: boolean;
+
+  @Prop() private headerAlign!:string;
   // data
   tableData: any = [];
   pageParams: {

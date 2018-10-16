@@ -625,6 +625,7 @@ export default class EleFence extends Vue {
             on-currentChange={this.currentChange}
             // on-menuClick={this.menuClick}
             on-clearOutParams={this.clear}
+            headerAlign={'center'}
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'eleFence'}

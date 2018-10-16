@@ -318,7 +318,7 @@ export default class Device extends Vue {
       <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
       <popconfirm-block
         ref={`popBlock${row.id}`}
-        title="确定要对此设备进行续期（365天）吗？"
+        title="确定要对此设备进行续期1年？"
         width="225"
         loading={this.loading}
         on-confirm={() => this.onResetTime(row)}

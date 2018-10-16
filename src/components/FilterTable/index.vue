@@ -25,6 +25,7 @@
       :opreat="opreat"
       :opreat-width="opreatWidth"
       :back-params="BackParams"
+      :header-align="headerAlign"
       :fetch-type="fetchType"
       :fetch-error="fetchError"
       :table-params="tableParams"
@@ -88,6 +89,8 @@ export default class FilterTable extends Vue {
   @Prop() private BackParams!: object;
   // 请求数据方法
   @Prop() private fetchType!: string;
+
+  @Prop() private headerAlign!: string;
 
   @Prop({ default: false })
   private highlightCurrentRow!: boolean;
