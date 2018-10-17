@@ -266,8 +266,8 @@ export default class Monitor extends Vue {
     const str = `${parseInt(day, 10)}天${parseInt(hour, 10)}小时${parseInt(min, 10)}分钟`;
     return row.minutes !== null ?
       <el-tooltip class="item" effect="dark" content={str} placement="top">
-       <span>{str}</span>
-      </el-tooltip>: '--';
+        <span>{str}</span>
+      </el-tooltip> : '--';
   }
 
   brandChange(row: any) {
@@ -704,6 +704,7 @@ export default class Monitor extends Vue {
 
   // 新增、导出按钮展示
   exportBtn: boolean = true;
+  controlBtn: boolean = true;
 
   // 权限设置
   created() {
@@ -712,11 +713,13 @@ export default class Monitor extends Vue {
       '/vehicle/monitor/edit',
       '/device/trip/list',
       '/vehicle/monitor/delete',
+      '/vehicle/monitor/control',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]);
       this.opreat[2].roles = !!(res[1]);
       this.opreat[3].roles = !!(res[2]);
+      this.controlBtn = !!(res[3]);
     });
   }
 
@@ -900,19 +903,22 @@ export default class Monitor extends Vue {
               <span>imei号：{carDetail.otuImei}</span>
             </div>
           </div>
-          <div class="car-control">
-            <div class="left">
-              <el-button class="fire" size="mini" loading={this.controlLoading[0]} on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
-              <el-button class="unfire" size="mini" loading={this.controlLoading[1]} on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
-            </div>
-            <div class="right">
-              <el-button class="lock" type="text" size="mini" loading={this.controlLoading[2]} on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
-              <el-button class="lock" type="text" size="mini" loading={this.controlLoading[3]} on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
-              <el-button class="lock" type="text" icon="iconfont-lock" loading={this.controlLoading[4]} size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
-              <el-button class="unlock" type="text" icon="iconfont-unlock" loading={this.controlLoading[5]} size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
-              <el-button class="find" type="text" icon="iconfont-wifi" loading={this.controlLoading[6]} size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
-            </div>
-          </div>
+          {
+            this.controlBtn ?
+              <div class="car-control">
+                <div class="left">
+                  <el-button class="fire" size="mini" loading={this.controlLoading[0]} on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
+                  <el-button class="unfire" size="mini" loading={this.controlLoading[1]} on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
+                </div>
+                <div class="right">
+                  <el-button class="lock" type="text" size="mini" loading={this.controlLoading[2]} on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
+                  <el-button class="lock" type="text" size="mini" loading={this.controlLoading[3]} on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
+                  <el-button class="lock" type="text" icon="iconfont-lock" loading={this.controlLoading[4]} size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
+                  <el-button class="unlock" type="text" icon="iconfont-unlock" loading={this.controlLoading[5]} size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
+                  <el-button class="find" type="text" icon="iconfont-wifi" loading={this.controlLoading[6]} size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
+                </div>
+              </div> : null
+          }
           <div class="car-address">
             <div class="loc">
               <i class="iconfont-location icon"></i>
