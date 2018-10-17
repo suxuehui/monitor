@@ -60,10 +60,22 @@ export default class Header extends Vue {
       return true;
     });
   }
+  // 通知、告警按钮展示
+  showNotice: boolean = true;
+  showAlarm: boolean = true;
 
   created() {
     this.$store.dispatch('getNotice');
     this.$store.dispatch('getAlarm');
+    const getNowRoles: string[] = [
+      // 操作
+      '/message/notice/list',
+      '/message/alarm/list',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.showNotice = !!(res[0]);
+      this.showAlarm = !!(res[1]);
+    });
   }
 
   // 每30s拉取一次
@@ -138,16 +150,22 @@ export default class Header extends Vue {
             </el-breadcrumb>
           </div>
           <ul class="header-menu">
-            <li>
-              <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
-                <i class="iconfont-email" on-click={this.checkInfo}></i>
-              </el-badge>
-            </li>
-            <li>
-              <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
-                <i class="iconfont-bell" on-click={this.checkAlarm}></i>
-              </el-badge>
-            </li>
+            {
+              this.showNotice ?
+                <li>
+                  <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
+                    <i class="iconfont-email" on-click={this.checkInfo}></i>
+                  </el-badge>
+                </li> : null
+            }
+            {
+              this.showAlarm ?
+                <li>
+                  <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
+                    <i class="iconfont-bell" on-click={this.checkAlarm}></i>
+                  </el-badge>
+                </li> : null
+            }
             <li class="user">
               <el-dropdown on-command={this.menuClick} size="medium">
                 <span class="el-dropdown-link">

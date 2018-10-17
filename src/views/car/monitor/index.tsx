@@ -251,10 +251,7 @@ export default class Monitor extends Vue {
       prop: 'minutes',
       sortable: true,
       sortBy: 'minutes',
-      formatter: (row: any) => this.changeMinutes(row),
-      // formatter(row: any) {
-      //   return row.minutes !== null ? `${row.minutes}分钟` : '--';
-      // },
+      formatter: this.changeMinutes,
     },
     {
       label: '网络状态',
@@ -263,30 +260,15 @@ export default class Monitor extends Vue {
     },
   ];
   changeMinutes(row: any) {
-    if (row.minutes) {
-      return `${row.minutes}分钟`;
-    }
-    return '--';
+    const day: any = row.minutes / 60 / 24;
+    const hour: any = (row.minutes / 60) % 24;
+    const min: any = row.minutes % 60;
+    const str = `${parseInt(day, 10)}天${parseInt(hour, 10)}小时${parseInt(min, 10)}分钟`;
+    return row.minutes !== null ?
+      <el-tooltip class="item" effect="dark" content={str} placement="top">
+       <span>{str}</span>
+      </el-tooltip>: '--';
   }
-
-  // 修改
-  // timeStamp(StatusMinute: number) {
-  //   const day = parseInt(StatusMinute / 60 / 24, 10);
-  //   const hour = parseInt(StatusMinute / 60 % 24, 10);
-  //   const min = parseInt(StatusMinute % 60, 10);
-  //   const str;
-  //   if (day > 0) {
-  //     str = `${day}天`;
-  //   }
-  //   if (hour > 0) {
-  //     str += `${hour}小时`;
-  //   }
-  //   if (min > 0) {
-  //     str += `${parseFloat(min)}分钟`;
-  //   }
-  //   return StatusMinute;
-  // }
-
 
   brandChange(row: any) {
     const str = `${row.brandName}--${row.seriesName}--${row.modelName}`;
@@ -732,7 +714,6 @@ export default class Monitor extends Vue {
       '/vehicle/monitor/delete',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      console.log(res);
       this.opreat[0].roles = !!(res[0]);
       this.opreat[2].roles = !!(res[1]);
       this.opreat[3].roles = !!(res[2]);

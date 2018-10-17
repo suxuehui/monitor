@@ -99,17 +99,17 @@ export default class AddModal extends Vue {
           this.phoneNumber = value;
           if (res.result.resultCode === '0') {
             if (this.isInstaller) {
-              const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+              const exp: any = /^[1][3,4,5,7,8,9][0-9]{9}$/;
               if (exp.test(value)) {
                 callback();
               } else {
-                callback(new Error('安装员登录账号必须为手机号'));
+                callback(new Error('安装员登录账号必须为手机号,请核实后输入'));
               }
             } else {
               callback();
             }
           } else {
-            callback(new Error('登录账号已存在，不能为空'));
+            callback(new Error('登录账号已存在'));
           }
         });
       } else {
