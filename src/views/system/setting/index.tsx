@@ -25,8 +25,19 @@ export default class Setting extends Vue {
 
   loading: boolean = false;
 
+  // 编辑按钮
+  saveBtn: boolean = true;
+  // 权限设置
   created() {
     this.initData();
+    const getNowRoles: string[] = [
+      // 操作
+      '/system/cfg/save',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      console.log(res);
+      this.saveBtn = !!(res[0]);
+    });
   }
   initData() {
     getAlarmModelList(null).then((res: any) => {
@@ -85,8 +96,8 @@ export default class Setting extends Vue {
     this.alarmValueList[ind][key] = parseInt(e, 10);
   }
 
-  checkBoxChange(e:any, data: any, indx:number) {
-    this.alarmValueList.forEach((item:any) => {
+  checkBoxChange(e: any, data: any, indx: number) {
+    this.alarmValueList.forEach((item: any) => {
       if (item.alarmCfgModelId === data.id) {
         item.enable = e;
       }
@@ -137,7 +148,7 @@ export default class Setting extends Vue {
           {
             alarmModelList.length && alarmValueList.length ? alarmModelList.map((item: any, index: number) => <div class="item">
               <el-checkbox
-                on-change={(e:any) => this.checkBoxChange(e, item, index)}
+                on-change={(e: any) => this.checkBoxChange(e, item, index)}
                 checked={this.findValue(item.id, 'enable')}
               ></el-checkbox> <span class="itemTitle">{item.alarmTypeName}:</span>
               {
@@ -150,9 +161,12 @@ export default class Setting extends Vue {
               }
             </div>) : null
           }
-          <div class="bottom-btn">
-            <el-button on-click={this.onSubmit} loading={this.loading} type="primary">保存</el-button>
-          </div>
+          {
+            this.saveBtn ?
+              <div class="bottom-btn">
+                <el-button on-click={this.onSubmit} loading={this.loading} type="primary">保存</el-button>
+              </div> : null
+          }
         </el-card>
       </div>
     );

@@ -1,5 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Card, Form, FormItem, Input, Row, Col, Tag, Tooltip } from 'element-ui';
+import { Card, Form, FormItem, Input, Row, Col, Tag, Tooltip, Button } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
@@ -17,6 +17,7 @@ const noPic = require('@/assets/noPic.png');
   'el-row': Row,
   'el-col': Col,
   "m-table": MTable,
+  'el-button' :Button,
   'checkLog-model': CheckLogModel,
   'checkPic-model': CheckPicModel,
   'el-tag': Tag,
@@ -32,7 +33,15 @@ export default class BindLog extends Vue {
   }
   defaultPageSize: any = null;
   url: string = '/terminal/ops/list';
-  opreat: Opreat[] = [];
+  opreat: Opreat[] = [
+    {
+      key: 'checkLog',
+      rowKey: 'id',
+      color: 'blue',
+      text: '验收记录',
+      roles: true,
+    },
+  ];
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
@@ -41,9 +50,18 @@ export default class BindLog extends Vue {
     { label: '操作时间', prop: 'crtTime' },
     { label: '安装图片', prop: 'installUrl', formatter: this.showInstallPic },
     { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },
-    { label: '操作', prop: 'hostVer', formatter: this.checkLog },
   ];
+
+  // 新增、导出按钮展示
+  acceptBtn: boolean = true;
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/terminal/accept/list',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]);
+    });
     // id、imei
     this.tableParams = {
       page: true,
@@ -124,10 +142,6 @@ export default class BindLog extends Vue {
     return '暂无车架图片';
   }
 
-  checkLog(row: any) {
-    return <a class="check-link" on-click={() => this.checkLogChange(row)}>验收记录</a>;
-  }
-
   clickInstall(url: string, key: number) {
     this.checkPicTitle = '查看图片';
     this.checkPicVisible = true;
@@ -150,7 +164,13 @@ export default class BindLog extends Vue {
     }, 200);
   }
 
-  tableClick() { }
+  tableClick(key: string, row: any) {
+    const FromTable: any = this.$refs.table;
+    if (key === 'checkLog') {
+      this.checkLogVisible = true;
+      this.checkLogId = row.id;
+    }
+  }
 
   render(h: any) {
     return (

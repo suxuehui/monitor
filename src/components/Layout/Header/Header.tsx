@@ -3,6 +3,7 @@ import { Badge, Dropdown, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem
 import { routerItem } from '@/interface';
 import utils from '@/utils';
 import MenuList from '@/components/Layout/Sidebar/MenuList';
+import ChangePswModal from './ChangePawModal';
 import './Header.less';
 
 interface breadItem {
@@ -20,6 +21,7 @@ interface breadItem {
   'el-breadcrumb-item': BreadcrumbItem,
   'el-popover': Popover,
   'menu-list': MenuList,
+  'changePsw-modal': ChangePswModal,
   }
   })
 export default class Header extends Vue {
@@ -72,6 +74,8 @@ export default class Header extends Vue {
     }, 30000);
   }
 
+  pswVisible: boolean = false;
+
   @Emit()
   menuClick(type: string): void {
     const self = this;
@@ -79,6 +83,7 @@ export default class Header extends Vue {
       case '1':
         break;
       case '2':
+        this.pswVisible = true;
         break;
       case '3':
         localStorage.removeItem('token');
@@ -87,6 +92,15 @@ export default class Header extends Vue {
       default:
         break;
     }
+  }
+
+  // 关闭弹窗
+  closeModal(): void {
+    this.pswVisible = false;
+    const changePswBlock: any = this.$refs.changePsw;
+    setTimeout(() => {
+      changePswBlock.resetData();
+    }, 200);
   }
 
   checkInfo() {
@@ -104,52 +118,61 @@ export default class Header extends Vue {
     const { menuData, sidebar: { opened }, isMobile } = this.$store.state.app;
     this.menuData = menuData;
     return (
-      <header class="header-wrap">
-        <div class="header-left">
-          {
-            isMobile ? <el-popover
-              placement="bottom"
-              title=""
-              width="300"
-              trigger="click">
-              <menu-list bgColor="#fff" txtColor="#898989" />
-              <i slot="reference" class="menu-btn iconfont-listMenu"></i>
-            </el-popover> : <i class={`menu-btn iconfont-${opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
-          }
-          <el-breadcrumb class="header-bread" separator="/">
+      <div>
+        <header class="header-wrap">
+          <div class="header-left">
             {
-              this.breadList.map((item: breadItem) => <el-breadcrumb-item to={item.url ? { path: '/' } : null}>{item.text}</el-breadcrumb-item>)
+              isMobile ? <el-popover
+                placement="bottom"
+                title=""
+                width="300"
+                trigger="click">
+                <menu-list bgColor="#fff" txtColor="#898989" />
+                <i slot="reference" class="menu-btn iconfont-listMenu"></i>
+              </el-popover> : <i class={`menu-btn iconfont-${opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
             }
-          </el-breadcrumb>
-        </div>
-        <ul class="header-menu">
-          <li>
-            <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
-              <i class="iconfont-email" on-click={this.checkInfo}></i>
-            </el-badge>
-          </li>
-          <li>
-            <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
-              <i class="iconfont-bell" on-click={this.checkAlarm}></i>
-            </el-badge>
-          </li>
-          <li class="user">
-            <el-dropdown on-command={this.menuClick} size="medium">
-              <span class="el-dropdown-link">
-                <p class="name">{this.$store.getters.username}</p>
-                <i class="iconfont-user"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                {/* <el-dropdown-item command="1">个人中心</el-dropdown-item> */}
-                {/* <el-dropdown-item command="2">修改密码</el-dropdown-item> */}
-                {/* <el-dropdown-item command="3" divided>
-              <font color="red">退出登录</font></el-dropdown-item> */}
-                <el-dropdown-item command="3"><font color="red">退出登录</font></el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </li>
-        </ul>
-      </header>
+            <el-breadcrumb class="header-bread" separator="/">
+              {
+                this.breadList.map((item: breadItem) => <el-breadcrumb-item to={item.url ? { path: '/' } : null}>{item.text}</el-breadcrumb-item>)
+              }
+            </el-breadcrumb>
+          </div>
+          <ul class="header-menu">
+            <li>
+              <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
+                <i class="iconfont-email" on-click={this.checkInfo}></i>
+              </el-badge>
+            </li>
+            <li>
+              <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
+                <i class="iconfont-bell" on-click={this.checkAlarm}></i>
+              </el-badge>
+            </li>
+            <li class="user">
+              <el-dropdown on-command={this.menuClick} size="medium">
+                <span class="el-dropdown-link">
+                  <p class="name">{this.$store.getters.username}</p>
+                  <i class="iconfont-user"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  {/* <el-dropdown-item command="1">个人中心</el-dropdown-item> */}
+                  <el-dropdown-item command="2">修改密码</el-dropdown-item>
+                  <el-dropdown-item command="3" divided>
+                    <font color="red">退出登录</font>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </li>
+          </ul>
+        </header>
+        <changePsw-modal
+          ref="changePsw"
+          title="修改密码"
+          visible={this.pswVisible}
+          on-close={this.closeModal}
+        >
+        </changePsw-modal>
+      </div>
     );
   }
 }

@@ -64,6 +64,24 @@ export default class Alarm extends Vue {
     { label: '发布人', prop: 'publisher' },
   ];
 
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/message/notice/publish',
+      '/message/notice/delete',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      console.log(res);
+      this.opreat[1].roles = !!(res[1]);
+      this.addBtn = !!(res[0]);
+    });
+  }
+
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
+
   // 新增
   addVisible: boolean = false;
   addTitle: string = '';
@@ -130,14 +148,14 @@ export default class Alarm extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
           dataType={'JSON'}
-          export-btn={true}
+          export-btn={this.exportBtn}
           localName={'notice'}
           on-menuClick={this.menuClick}
         />

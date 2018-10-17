@@ -97,6 +97,28 @@ export default class Merchants extends Vue {
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
 
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/customer/org/save',
+      '/customer/org/detail/{orgId}',
+      '/customer/org/update',
+      '/customer/org/lock/{orgId}',
+      '/customer/org/unlock/{orgId}',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      console.log(res);
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3] && res[4]);
+      this.addBtn = !!(res[0]);
+    });
+  }
+
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
+
   // 新增、编辑
   modelVisible: boolean = false;
   modelTitle: string = '';
@@ -202,14 +224,14 @@ export default class Merchants extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
           localName={'merchants'}
-          export-btn={true}
+          export-btn={this.exportBtn}
           fetch-type={'get'}
           on-menuClick={this.menuClick}
         />

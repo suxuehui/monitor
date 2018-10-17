@@ -252,7 +252,7 @@ export default class EditModel extends Vue {
             </el-row>
           </el-form>
           <el-row>
-            <el-col offset={9} span={12}>
+            <el-col offset={7} span={12}>
               <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
               <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
             </el-col>

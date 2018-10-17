@@ -111,7 +111,20 @@ export default class Alarm extends Vue {
 
   alarmType: any = [];
 
+  // 导出按钮展示
+  exportBtn: boolean = true;
+
+  // 权限设置
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/message/alarm/getSolution',
+      '/message/alarm/handle',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      console.log(res);
+      this.opreat[0].roles = !!(res[0] && res[1]);
+    });
     // 门店搜索
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -205,7 +218,7 @@ export default class Alarm extends Vue {
           url={this.url}
           dataType={'JSON'}
           opreatWidth='180px'
-          export-btn={true}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
         <handle-model

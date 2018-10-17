@@ -57,6 +57,7 @@ export default class CarModel extends Vue {
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
+      disabled: (row: any) => (row.vehicleNum),
       roles: true,
     },
   ];
@@ -74,6 +75,26 @@ export default class CarModel extends Vue {
     value: 'value',
     children: 'name',
   }
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/model/add',
+      '/vehicle/model/info',
+      '/vehicle/model/edit',
+      '/vehicle/model/delete',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3]);
+      this.addBtn = !!(res[0]);
+    });
+  }
+
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true
 
   // 新增、编辑
   addVisible: boolean = false;
@@ -194,7 +215,7 @@ export default class CarModel extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           opreatWidth={'180px'}
           on-addBack={this.addModel}
           opreat={this.opreat}
@@ -203,7 +224,7 @@ export default class CarModel extends Vue {
           url={this.url}
           dataType={'JSON'}
           localName={'carmodel'}
-          export-btn={true}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
           on-clearOutParams={this.clear}
         />

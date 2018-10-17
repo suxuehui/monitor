@@ -330,9 +330,24 @@ export default class MFilter extends Vue {
             this.addBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableAdd' : 'tableAdd2'} size="mini" icon="el-icon-plus">新增</el-button> : null
           }
           {
-            this.exportBtn ? <el-button on-click={this.downloadFun} id={isNormal ? 'tableExport' : 'tableExport2'} size="mini" icon="el-icon-download" circle></el-button> : null
+            this.exportBtn ?
+              <el-button
+                on-click={this.downloadFun}
+                id={isNormal ?
+                  'tableExport' : 'tableExport2'}
+                size="mini"
+                icon="el-icon-download"
+                circle>
+              </el-button> :
+              null
           }
-          <el-button on-click={this.openSetting} id="tableSet" icon="el-icon-setting" size="mini" circle></el-button>
+          <el-button
+            on-click={this.openSetting}
+            id="tableSet"
+            icon="el-icon-setting"
+            size="mini"
+            circle>
+          </el-button>
         </div>
       </div>
     );

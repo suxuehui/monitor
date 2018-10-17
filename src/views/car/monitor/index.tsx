@@ -251,9 +251,10 @@ export default class Monitor extends Vue {
       prop: 'minutes',
       sortable: true,
       sortBy: 'minutes',
-      formatter(row: any) {
-        return row.minutes !== null ? `${row.minutes}分钟` : '--';
-      },
+      formatter: (row: any) => this.changeMinutes(row),
+      // formatter(row: any) {
+      //   return row.minutes !== null ? `${row.minutes}分钟` : '--';
+      // },
     },
     {
       label: '网络状态',
@@ -261,6 +262,32 @@ export default class Monitor extends Vue {
       formatter: this.onlineFormat,
     },
   ];
+  changeMinutes(row: any) {
+    if (row.minutes) {
+      return `${row.minutes}分钟`;
+    }
+    return '--';
+  }
+
+  // 修改
+  // timeStamp(StatusMinute: number) {
+  //   const day = parseInt(StatusMinute / 60 / 24, 10);
+  //   const hour = parseInt(StatusMinute / 60 % 24, 10);
+  //   const min = parseInt(StatusMinute % 60, 10);
+  //   const str;
+  //   if (day > 0) {
+  //     str = `${day}天`;
+  //   }
+  //   if (hour > 0) {
+  //     str += `${hour}小时`;
+  //   }
+  //   if (min > 0) {
+  //     str += `${parseFloat(min)}分钟`;
+  //   }
+  //   return StatusMinute;
+  // }
+
+
   brandChange(row: any) {
     const str = `${row.brandName}--${row.seriesName}--${row.modelName}`;
     return row.brandName ?
@@ -288,6 +315,7 @@ export default class Monitor extends Vue {
       color: 'blue',
       text: '追踪',
       roles: true,
+      disabled: this.tracking,
     },
     {
       key: 'trip',
@@ -592,7 +620,7 @@ export default class Monitor extends Vue {
   }
 
   // 清除覆盖物
-  clear=() => {
+  clear = () => {
     this.SMap.clearOverlays();
   }
 
@@ -690,6 +718,29 @@ export default class Monitor extends Vue {
       default:
         break;
     }
+  }
+
+  // 新增、导出按钮展示
+  exportBtn: boolean = true;
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/monitor/edit',
+      '/device/trip/list',
+      '/vehicle/monitor/delete',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      console.log(res);
+      this.opreat[0].roles = !!(res[0]);
+      this.opreat[2].roles = !!(res[1]);
+      this.opreat[3].roles = !!(res[2]);
+    });
+  }
+
+  tracking(row: any) {
+    return row.id > 0;
   }
 
   reloadTable() {
@@ -921,7 +972,7 @@ export default class Monitor extends Vue {
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
-            export-btn={true}
+            export-btn={this.exportBtn}
             localName={'monitor'}
             on-menuClick={this.menuClick}
             table-list={this.tableList}

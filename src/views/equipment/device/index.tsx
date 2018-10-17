@@ -125,7 +125,6 @@ export default class Device extends Vue {
       color: (row: any) => (row.status === 1 ? 'green' : 'red'),
       text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
       msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
-      // disabled: (row: any) => (!(row.status === 1 && row.online === 1)),
       disabled: this.bindDisable,
       roles: true,
     },
@@ -134,8 +133,6 @@ export default class Device extends Vue {
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      // disabled: (row: any) =>
-      //   (row.status === 1 || row.status === 3 || row.status === 5 || row.online === 2),
       disabled: this.acceptDisable,
       roles: true,
     },
@@ -163,7 +160,7 @@ export default class Device extends Vue {
       roles: true,
     },
   ];
-  acceptDisable(row:any) {
+  acceptDisable(row: any) {
     // 是否在线
     if (row.online === 1) {
       if (row.status === 1 || row.status === 3 || row.status === 5) {
@@ -174,7 +171,7 @@ export default class Device extends Vue {
     return true;
   }
 
-  bindDisable(row:any) {
+  bindDisable(row: any) {
     // 是否在线
     if (row.online === 1) {
       return false;
@@ -268,7 +265,37 @@ export default class Device extends Vue {
 
   loading: boolean = false;
 
+  // 新增、导出、重置、查看安绑记录按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
+  resetBtn: boolean = true;
+  opsBtn: boolean = true;
+
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/device/terminal/save',
+      '/device/terminal/bind',
+      '/device/terminal/unbind',
+      '/device/terminal/confirm',
+      '/device/terminal/getBluetoothAuthCode',
+      '/device/terminal/createBluetoothAuthCode',
+      '/device/terminal/deliveryCfg',
+      '/device/terminal/clearCfg',
+      '/device/terminal/reset/{id}',
+      '/terminal/ops/list',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3]);
+      this.opreat[2].roles = !!(res[4] && res[5]);
+      this.opreat[3].roles = !!(res[6]);
+      this.opreat[4].roles = !!(res[7]);
+      this.addBtn = !!(res[0]);
+      this.resetBtn = !!(res[8]);
+      this.opsBtn = !!(res[9]);
+      console.log(this.opsBtn);
+    });
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -310,22 +337,25 @@ export default class Device extends Vue {
   }
 
   bindLog(row: any) {
-    return <a class="check-link" on-click={() => this.checkLog(row)}>查看</a>;
+    return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看</el-button>;
   }
 
   endDay(row: any) {
     return <div>
       <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
-      <popconfirm-block
-        ref={`popBlock${row.id}`}
-        title="确定要对此设备进行续期1年？"
-        width="225"
-        loading={this.loading}
-        on-confirm={() => this.onResetTime(row)}
-        on-cancel={this.closePop}
-      >
-        <el-button style="marginLeft:10px" disabled={row.status !== 3 } type="text" size="small" >续期</el-button>
-      </popconfirm-block>
+      {
+        this.resetBtn ?
+          <popconfirm-block
+            ref={`popBlock${row.id}`}
+            title="确定要对此设备进行续期1年？"
+            width="225"
+            loading={this.loading}
+            on-confirm={() => this.onResetTime(row)}
+            on-cancel={this.closePop}
+          >
+            <el-button style="marginLeft:10px" disabled={row.status !== 3} type="text" size="small" >续期</el-button>
+          </popconfirm-block> : null
+      }
     </div>;
   }
   closePop() {

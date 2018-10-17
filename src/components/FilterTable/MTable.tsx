@@ -61,7 +61,7 @@ export default class MTable extends Vue {
 
   @Prop() private highlightCurrentRow!: boolean;
 
-  @Prop() private headerAlign!:string;
+  @Prop() private headerAlign!: string;
   // data
   tableData: any = [];
   pageParams: {
@@ -80,10 +80,10 @@ export default class MTable extends Vue {
     this.getData();
   }
 
-  reload(type:string) {
+  reload(type: string) {
     if (type === 'delete' && this.tableData.length === 1) {
       if (this.pageParams.pageNum !== 1) {
-        this.pageParams.pageNum = this.pageParams.pageNum-1;
+        this.pageParams.pageNum = this.pageParams.pageNum - 1;
       }
     }
     this.getData();
@@ -138,6 +138,19 @@ export default class MTable extends Vue {
     this.$emit('currentChange', val);
   }
 
+  showOperate(operaList: any) {
+    const optArr: number[] = [];
+    operaList.forEach((item: any) => {
+      if (item.roles) {
+        optArr.push(1);
+      }
+    });
+    if (optArr.length > 0) {
+      return <el-table-column width={this.opreatWidth} label="操作" formatter={this.opreatJSX}></el-table-column>;
+    }
+    return null;
+  }
+
   render() {
     return (
       <div class="m-table" >
@@ -151,10 +164,10 @@ export default class MTable extends Vue {
             this.tableList.map((item, index) => {
               if (!item.formatter) {
                 item.formatter = (row: any) =>
-                (row[item.prop] !== null && row[item.prop] !== ''?
-                <el-tooltip effect="dark" content={ row[item.prop] !== null ? `${row[item.prop]}` : '--' } placement="top">
-                    <p class="text-over">{ row[item.prop] !== null ? `${row[item.prop]}` : '--' }</p>
-                  </el-tooltip>:'--');
+                  (row[item.prop] !== null && row[item.prop] !== '' ?
+                    <el-tooltip effect="dark" content={row[item.prop] !== null ? `${row[item.prop]}` : '--'} placement="top">
+                      <p class="text-over">{row[item.prop] !== null ? `${row[item.prop]}` : '--'}</p>
+                    </el-tooltip> : '--');
               }
               return <el-table-column
                 key={index} {...{ props: item }}>
@@ -162,8 +175,17 @@ export default class MTable extends Vue {
             })
           }
           {
-            this.opreat.length ? <el-table-column width={this.opreatWidth} label="操作" formatter={this.opreatJSX}></el-table-column> : null
+            this.showOperate(this.opreat)
           }
+          {/* {
+            this.opreat.length ?
+              <el-table-column
+                width={this.opreatWidth}
+                label="操作"
+                formatter={this.opreatJSX}>
+              </el-table-column> :
+              null
+          } */}
         </el-table>
         <el-pagination
           class="pagination"
@@ -202,30 +224,33 @@ export default class MTable extends Vue {
       {
         this.opreat.map((item, indexs) => {
           const whiteList = ['red', 'orange'];
-          if (item.disabled && item.disabled(row)) {
-            return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
-              {typeof item.text === 'function' ? item.text(row) : item.text}
-            </a>;
-          } else if (typeof item.color === 'function'
-            && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
-            return <pop-confirm
-              on-confirm={() => this.menuClick(item.key, row)}
-              title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
-              <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
+          if (item.roles) {
+            if (item.disabled && item.disabled(row)) {
+              return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
                 {typeof item.text === 'function' ? item.text(row) : item.text}
-              </a>
-            </pop-confirm>;
-          } else if (typeof item.color === 'string'
-          && whiteList.indexOf(item.color) >= 0) {
-            return <pop-confirm
-            on-confirm={() => this.menuClick(item.key, row)}
-            title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
-            <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${item.color}`}>
-              {typeof item.text === 'function' ? item.text(row) : item.text}
-            </a>
-          </pop-confirm>;
+              </a>;
+            } else if (typeof item.color === 'function'
+              && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
+              return <pop-confirm
+                on-confirm={() => this.menuClick(item.key, row)}
+                title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
+                <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
+                  {typeof item.text === 'function' ? item.text(row) : item.text}
+                </a>
+              </pop-confirm>;
+            } else if (typeof item.color === 'string'
+              && whiteList.indexOf(item.color) >= 0) {
+              return <pop-confirm
+                on-confirm={() => this.menuClick(item.key, row)}
+                title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
+                <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${item.color}`}>
+                  {typeof item.text === 'function' ? item.text(row) : item.text}
+                </a>
+              </pop-confirm>;
+            }
+            return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
           }
-          return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
+          return true;
         })
       }
     </div>;

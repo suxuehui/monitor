@@ -119,3 +119,12 @@ export async function userInfo(params: any) {
     method: 'get',
   });
 }
+
+// 查看用户信息
+export async function changePsw(params: any) {
+  return request({
+    url: '/sys/user/password',
+    method: 'post',
+    data: params,
+  });
+}

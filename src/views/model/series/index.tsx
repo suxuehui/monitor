@@ -53,6 +53,7 @@ export default class Series extends Vue {
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
+      disabled: (row: any) => (row.vehicleNum),
       roles: true,
     },
   ];
@@ -65,15 +66,25 @@ export default class Series extends Vue {
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? row.vehicleNum : '--') },
   ];
 
-  // 新增、编辑
-  addVisible: boolean = false;
-  addTitle: string = '';
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
 
-  rowData: any = {};
-  brandList: any = [];
-  brandAddList: any = [];
-
+  // 权限设置
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/series/add',
+      '/vehicle/series/info',
+      '/vehicle/series/edit',
+      '/vehicle/series/delete',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3]);
+      this.addBtn = !!(res[0]);
+    });
+
     brandAll(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.map((item: any) => this.brandList.push({
@@ -94,6 +105,14 @@ export default class Series extends Vue {
       this.filterList[0].options = this.brandList;
     });
   }
+
+  // 新增、编辑
+  addVisible: boolean = false;
+  addTitle: string = '';
+
+  rowData: any = {};
+  brandList: any = [];
+  brandAddList: any = [];
 
   // 操作
   menuClick(key: string, row: any) {
@@ -150,7 +169,7 @@ export default class Series extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           opreatWidth={'180px'}
           on-addBack={this.addModel}
           localName={'series'}
@@ -159,7 +178,7 @@ export default class Series extends Vue {
           table-list={this.tableList}
           url={this.url}
           dataType={'JSON'}
-          export-btn={true}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
         <add-model

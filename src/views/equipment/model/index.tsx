@@ -60,6 +60,26 @@ export default class Member extends Vue {
     { label: '是否重启', prop: 'reboot', formatter: this.statusDom },
   ];
 
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/config/add',
+      '/vehicle/config/info',
+      '/vehicle/config/update',
+      '/vehicle/config/delete',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3]);
+      this.addBtn = !!(res[0]);
+    });
+  }
+
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
+
   statusDom(row: any) {
     if (row.reboot === 1) {
       return <el-tag size="medium" type="success">是</el-tag>;
@@ -129,7 +149,7 @@ export default class Member extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           opreatWidth={'180px'}
           localName={'model'}
           on-addBack={this.addModel}
@@ -137,7 +157,7 @@ export default class Member extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={true}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
         <add-model
