@@ -70,10 +70,12 @@ export default class Alarm extends Vue {
       // 操作
       '/message/notice/publish',
       '/message/notice/delete',
+      '/message/notice/view',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       console.log(res);
       this.opreat[1].roles = !!(res[1]);
+      this.opreat[0].roles = !!(res[2]);
       this.addBtn = !!(res[0]);
     });
   }
