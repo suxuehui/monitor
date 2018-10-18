@@ -108,8 +108,18 @@ export default class MTable extends Vue {
           this.tableData = [];
           this.dataTotal = 0;
         } else {
-          this.tableData = this.getValue(this.BackParams.data, res);
-          this.dataTotal = this.getValue(this.BackParams.total, res);
+          // 总数
+          if (this.getValue(this.BackParams.total, res)) {
+            this.dataTotal = this.getValue(this.BackParams.total, res);
+          } else {
+            this.dataTotal = 0;
+          }
+          // 数据
+          if (this.getValue(this.BackParams.data, res)) {
+            this.tableData = this.getValue(this.BackParams.data, res);
+          } else {
+            this.tableData = [];
+          }
         }
       } else {
         this.$message.error(this.getValue(this.BackParams.message, res));
@@ -177,15 +187,6 @@ export default class MTable extends Vue {
           {
             this.showOperate(this.opreat)
           }
-          {/* {
-            this.opreat.length ?
-              <el-table-column
-                width={this.opreatWidth}
-                label="操作"
-                formatter={this.opreatJSX}>
-              </el-table-column> :
-              null
-          } */}
         </el-table>
         <el-pagination
           class="pagination"

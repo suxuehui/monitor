@@ -48,19 +48,6 @@ export default class EleFence extends Vue {
       });
       this.SMap.centerAndZoom(new BMap.Point(106.560421, 29.563694), 15);
       this.SMap.enableScrollWheelZoom(true);
-
-      // 创建坐标点
-      // const pt = new this.BMap.Point(106.560421, 29.563694);
-      // const myIcon = new this.BMap.Icon(carIcon, new BMap.Size(32, 32));
-      // const point = new this.BMap.Marker(pt, { icon: myIcon });
-      // this.SMap.addOverlay(point);
-      // point.enableDragging(); // 点可拖拽
-
-      // // 拖动标点
-      // point.addEventListener('dragend', () => {
-      //   const position = point.getPosition();
-      //   this.SMap.panTo(new BMap.Point(position.lng, position.lat));
-      // });
     });
   }
   tableUrl: string = '/vehicle/fence/list'; // 表格请求地址
@@ -233,18 +220,18 @@ export default class EleFence extends Vue {
   nowMk: any = '';
   nowPosition: any = {};
 
-  tableDom: any = null;
-  tableHeight: number = 0
-
   // 省
   provinceList: any = [];
   // 省市区三级联动
   areaLoad(val: any) {
-    this.outParams.area = val[val.length - 1];
     if (val.length === 1) {
       this.getCitys(val[0]);
+      this.outParams.area = val[val.length - 1].substring(0, 2);
     } else if (val.length === 2) {
+      this.outParams.area = val[val.length - 1].substring(0, 4);
       this.getDistricts(val[1]);
+    } else if (val.length === 3) {
+      this.outParams.area = val[val.length - 1];
     }
   }
 
@@ -341,10 +328,6 @@ export default class EleFence extends Vue {
     this.filterList[3].options = this.statusOptions;
   }
 
-  mounted() {
-    this.tableDom = this.$refs.tableList;
-  }
-
   // 围栏详情
   fenceDetail: any = {}
 
@@ -369,7 +352,6 @@ export default class EleFence extends Vue {
   // 表格显示隐藏
   showTable(): any {
     this.locChange = true;
-    this.tableHeight = this.tableDom.offsetHeight;
   }
   hideTable(): any {
     this.locChange = false;
@@ -556,23 +538,11 @@ export default class EleFence extends Vue {
     return (
       <div class="monitor-wrap">
         <div id="map"></div>
-        {/* 搜索 */}
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
           </el-autocomplete>
           <el-button class="restore" size="small" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
         </div>
-        {/* 右下角控制台 */}
-        <div ref="btnControl" id="btnControl" style={{ bottom: this.locChange ? `${this.tableHeight}px` : '0' }} class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
-          <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
-          <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
-          <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
-          {!this.locChange ?
-            <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
-            <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
-          }
-        </div>
-        {/* 详情 */}
         <div class={['car-detail-box1', this.detailShow ? 'detail-active' : '']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
           <div class="car-info">
@@ -617,10 +587,18 @@ export default class EleFence extends Vue {
                 >
                 </el-pagination> : ''
             }
-
           </div>
         </div>
-        <div ref="tableList" id="TableList" class={['car-table', this.locChange ? 'table-active' : '']}>
+        <div ref="tableList" id="TableList" class={['car-table1', this.locChange ? 'table-active' : '']}>
+          <div ref="btnControl" id="btnControl" class="loc-change-box">
+            <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
+            <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
+            <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
+            {!this.locChange ?
+              <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
+              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+            }
+          </div>
           <filter-table
             ref="table"
             class="map-table"
@@ -633,7 +611,6 @@ export default class EleFence extends Vue {
             defaultPageSize={5}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
-            // on-menuClick={this.menuClick}
             on-clearOutParams={this.clear}
             headerAlign={'center'}
             table-list={this.tableList}

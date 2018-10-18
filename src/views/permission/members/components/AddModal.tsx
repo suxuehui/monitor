@@ -152,7 +152,7 @@ export default class AddModal extends Vue {
     });
     if (this.isInstaller) {
       if (this.phoneNumber) {
-        const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+        const exp: any = /^[1][3,4,5,7,8,9[0-9]{9}$/;
         if (exp.test(this.phoneNumber)) {
           this.isPhoneNumber = true;
         } else {

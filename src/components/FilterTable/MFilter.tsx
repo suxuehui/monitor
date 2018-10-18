@@ -156,7 +156,6 @@ export default class MFilter extends Vue {
         itemDom = <el-select
           style="width: 100%;"
           id={item.key}
-          clearable={true}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}>
           {

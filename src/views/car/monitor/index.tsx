@@ -303,7 +303,6 @@ export default class Monitor extends Vue {
       color: 'blue',
       text: '追踪',
       roles: true,
-      disabled: this.tracking,
     },
     {
       key: 'trip',
@@ -362,7 +361,7 @@ export default class Monitor extends Vue {
     { label: '右后车窗:', prop: 'rightRearWindow' },
   ];
   geolocationControl: any = null; // 定位
-  mapCenter: { lat: number, lng: number } = { lat: 29.35, lng: 106.33 };
+  mapCenter: { lat: number, lng: number } = { lat: 29.563694, lng: 106.560421 };
   // 地图查询半径
   radius: number = 5000;
   mapCarData: MapCarData[] = [];
@@ -723,10 +722,6 @@ export default class Monitor extends Vue {
     });
   }
 
-  tracking(row: any) {
-    return row.id > 0;
-  }
-
   reloadTable(key: string) {
     const MapTable: any = this.$refs.mapTable;
     MapTable.reloadTable(key);
@@ -944,8 +939,8 @@ export default class Monitor extends Vue {
             </ul>
           </div>
         </div>
-        <div>
-          <div class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
+        <div class={['car-table', this.locChange ? 'table-active' : '']}>
+          <div class='loc-change-box'>
             <el-button class="loc btn" size="small" icon="el-icon-location" on-click={this.setCenter}></el-button>
             <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>
             <el-button class="less btn" size="small" icon="el-icon-minus" on-click={this.zoomReduce}></el-button>
@@ -954,31 +949,29 @@ export default class Monitor extends Vue {
               <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
             }
           </div>
-          <div class={['car-table', this.locChange ? 'table-active' : '']}>
-            <filter-table
-              ref="mapTable"
-              class="mapTable"
-              filter-list={this.filterList}
-              filter-grade={[]}
-              filter-params={this.filterParams}
-              back-params={this.backParams}
-              add-btn={false}
-              data-type={'JSON'}
-              on-clearOutParams={this.clearOutParams}
-              out-params={this.outParams}
-              highlight-current-row={true}
-              on-currentChange={this.currentChange}
-              export-btn={this.exportBtn}
-              localName={'monitor'}
-              on-menuClick={this.menuClick}
-              table-list={this.tableList}
-              default-page-size={5}
-              url={this.tableUrl}
-              opreat={this.opreat}
-              opreat-width="150px"
-            >
-            </filter-table>
-          </div>
+          <filter-table
+            ref="mapTable"
+            class="mapTable"
+            filter-list={this.filterList}
+            filter-grade={[]}
+            filter-params={this.filterParams}
+            back-params={this.backParams}
+            add-btn={false}
+            data-type={'JSON'}
+            on-clearOutParams={this.clearOutParams}
+            out-params={this.outParams}
+            highlight-current-row={true}
+            on-currentChange={this.currentChange}
+            export-btn={this.exportBtn}
+            localName={'monitor'}
+            on-menuClick={this.menuClick}
+            table-list={this.tableList}
+            default-page-size={5}
+            url={this.tableUrl}
+            opreat={this.opreat}
+            opreat-width="150px"
+          >
+          </filter-table>
         </div>
         <edit-model
           ref="editTable"
