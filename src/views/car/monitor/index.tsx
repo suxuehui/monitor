@@ -260,14 +260,20 @@ export default class Monitor extends Vue {
     },
   ];
   changeMinutes(row: any) {
-    const day: any = row.minutes / 60 / 24;
-    const hour: any = (row.minutes / 60) % 24;
-    const min: any = row.minutes % 60;
-    const str = `${parseInt(day, 10)}天${parseInt(hour, 10)}小时${parseInt(min, 10)}分钟`;
+    const str: string = this.timeChange(row);
     return row.minutes !== null ?
       <el-tooltip class="item" effect="dark" content={str} placement="top">
         <span>{str}</span>
       </el-tooltip> : '--';
+  }
+
+  // 时间格式转换
+  timeChange(row: any) {
+    const day: any = row.minutes / 60 / 24;
+    const hour: any = (row.minutes / 60) % 24;
+    const min: any = row.minutes % 60;
+    const str = `${parseInt(day, 10)}天${parseInt(hour, 10)}小时${parseInt(min, 10)}分钟`;
+    return str;
   }
 
   brandChange(row: any) {
@@ -596,11 +602,6 @@ export default class Monitor extends Vue {
     return type;
   }
 
-  // 地图搜索
-  search(): void {
-    console.log(this.address);
-  }
-
   // 清除覆盖物
   clear = () => {
     this.SMap.clearOverlays();
@@ -608,9 +609,14 @@ export default class Monitor extends Vue {
 
   // 刷新
   refresh(): void {
-    this.radiusGetData();
+    // 详情
+    if (this.currentCarId !== 0) {
+      this.getCarDetail(`${this.currentCarId}`);
+    }
+    // 根据该车坐标查车,按id匹配信息
+    this.radiusGetData(`${this.currentCarId}`);
+    // 刷新table
     const MapTable: any = this.$refs.mapTable;
-    this.clear();
     MapTable.reloadTable();
   }
 
@@ -629,12 +635,6 @@ export default class Monitor extends Vue {
     const newZoom = this.SMap.getZoom() - 1;
     this.SMap.setZoom(newZoom);
   }
-
-  // 定位
-  getLoc(e: any): any {
-    console.log(e);
-  }
-
 
   // 到当前定位
   nowMk: any = '';
@@ -685,7 +685,7 @@ export default class Monitor extends Vue {
         }).then((res) => {
           if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
-            this.reloadTable();
+            this.reloadTable('delete');
           } else {
             this.$message.error(res.result.resultMessage);
           }
@@ -727,9 +727,9 @@ export default class Monitor extends Vue {
     return row.id > 0;
   }
 
-  reloadTable() {
+  reloadTable(key: string) {
     const MapTable: any = this.$refs.mapTable;
-    MapTable.reloadTable();
+    MapTable.reloadTable(key);
   }
 
   renderStatus(value: boolean | string | number, data: any, unit?: any) {
@@ -775,10 +775,18 @@ export default class Monitor extends Vue {
     return `${str1}；${str2}`;
   }
 
+  currentCarId: number = 0;
+
+  setCarId(val: number) {
+    this.currentCarId = val;
+  }
+
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
+      this.setCarId(val.id);
       if (val.lat && val.lng) {
+        this.currentCarId = val.id;
         this.mapCenter = {
           lat: val.lat,
           lng: val.lng,
@@ -875,17 +883,8 @@ export default class Monitor extends Vue {
         <div id="map"></div>
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
-            <el-button slot="append" icon="el-icon-search" on-click={this.search}></el-button>
           </el-autocomplete>
           <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
-        </div>
-        <div class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
-          <el-button class="loc btn" size="small" icon="el-icon-location" on-click={this.setCenter}></el-button>
-          <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>
-          <el-button class="less btn" size="small" icon="el-icon-minus" on-click={this.zoomReduce}></el-button>
-          {!this.locChange ?
-            <el-button class="up btn" size="small" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> : <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
-          }
         </div>
         <div class={['car-detail-box', this.detailShow ? 'detail-active' : '', this.locChange ? '' : 'big']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
@@ -930,7 +929,7 @@ export default class Monitor extends Vue {
                 {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
               </span>
               <span class="status">
-                ({carDetail.minutes}分钟无位置变化)
+                ({carDetail.minutes ? this.timeChange(carDetail) : '--'}无位置变化)
               </span>
             </div>
           </div>
@@ -945,30 +944,41 @@ export default class Monitor extends Vue {
             </ul>
           </div>
         </div>
-        <div class={['car-table', this.locChange ? 'table-active' : '']}>
-          <filter-table
-            ref="mapTable"
-            class="mapTable"
-            filter-list={this.filterList}
-            filter-grade={[]}
-            filter-params={this.filterParams}
-            back-params={this.backParams}
-            add-btn={false}
-            data-type={'JSON'}
-            on-clearOutParams={this.clearOutParams}
-            out-params={this.outParams}
-            highlight-current-row={true}
-            on-currentChange={this.currentChange}
-            export-btn={this.exportBtn}
-            localName={'monitor'}
-            on-menuClick={this.menuClick}
-            table-list={this.tableList}
-            default-page-size={5}
-            url={this.tableUrl}
-            opreat={this.opreat}
-            opreat-width="150px"
-          >
-          </filter-table>
+        <div>
+          <div class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
+            <el-button class="loc btn" size="small" icon="el-icon-location" on-click={this.setCenter}></el-button>
+            <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>
+            <el-button class="less btn" size="small" icon="el-icon-minus" on-click={this.zoomReduce}></el-button>
+            {!this.locChange ?
+              <el-button class="up btn" size="small" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
+              <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+            }
+          </div>
+          <div class={['car-table', this.locChange ? 'table-active' : '']}>
+            <filter-table
+              ref="mapTable"
+              class="mapTable"
+              filter-list={this.filterList}
+              filter-grade={[]}
+              filter-params={this.filterParams}
+              back-params={this.backParams}
+              add-btn={false}
+              data-type={'JSON'}
+              on-clearOutParams={this.clearOutParams}
+              out-params={this.outParams}
+              highlight-current-row={true}
+              on-currentChange={this.currentChange}
+              export-btn={this.exportBtn}
+              localName={'monitor'}
+              on-menuClick={this.menuClick}
+              table-list={this.tableList}
+              default-page-size={5}
+              url={this.tableUrl}
+              opreat={this.opreat}
+              opreat-width="150px"
+            >
+            </filter-table>
+          </div>
         </div>
         <edit-model
           ref="editTable"

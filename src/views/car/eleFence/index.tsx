@@ -540,6 +540,16 @@ export default class EleFence extends Vue {
       lng: val.lng,
     };
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+    // 添加坐标
+    const PT = new this.BMap.Point(val.lng, val.lat);
+    const marker = new this.BMap.Marker(
+      PT,
+      {
+        icon: new this.BMap.Icon(carIcon, new this.BMap.Size(28, 40)),
+      },
+    );
+    this.SMap.clearOverlays();
+    this.SMap.addOverlay(marker); // 创建标注
   }
 
   render() {
