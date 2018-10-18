@@ -76,6 +76,7 @@ export default class EleFence extends Vue {
       placeholder: '请选择所在地区',
       options: [],
       props: {},
+      filterable: true,
       change: this.areaLoad,
     },
     {
@@ -236,20 +237,29 @@ export default class EleFence extends Vue {
   }
 
   // 根据省级编码获取地级市
-  getCitys(data: number) {
+  getCitys(data: any) {
     getCity({ regionalismCode: data }).then((res) => {
       if (res.result.resultCode === '0') {
         this.provinceList.forEach((item: any, index: number) => {
           if (item.value === `${data}`) {
             setTimeout(() => {
               this.provinceList[index].children = [];
-              res.entity.forEach((items: any) => {
-                this.provinceList[index].children.push({
-                  label: items.name,
-                  children: [],
-                  value: items.regionalismcode,
+              if (data === 120000 || data === 110000 || data === 310000 || data === 500000 || data === '120000' || data === '110000' || data === '310000' || data === '500000') {
+                res.entity.forEach((items: any) => {
+                  this.provinceList[index].children.push({
+                    label: items.name,
+                    value: `${items.regionalismcode}&${items.name}`,
+                  });
                 });
-              });
+              } else {
+                res.entity.forEach((items: any) => {
+                  this.provinceList[index].children.push({
+                    label: items.name,
+                    children: [],
+                    value: `${items.regionalismcode}&${items.name}`,
+                  });
+                });
+              }
             }, 200);
           }
         });
@@ -265,20 +275,12 @@ export default class EleFence extends Vue {
         this.provinceList.forEach((item: any, index: number) => {
           item.children.forEach((items: any, inx: number) => {
             this.provinceList[index].children[inx].children = [];
-            if (res.entity !== null) {
-              if (`${data}` === items.value) {
-                res.entity.forEach((it: any, key: number) => {
-                  this.provinceList[index].children[inx].children.push({
-                    label: it.name,
-                    value: it.regionalismcode,
-                  });
+            if (`${data}` === items.value) {
+              res.entity.forEach((it: any, key: number) => {
+                this.provinceList[index].children[inx].children.push({
+                  label: it.name,
+                  value: it.regionalismcode,
                 });
-              }
-            } else {
-              this.provinceList[index].children[inx].children.push({
-                label: '到底了~',
-                value: Math.random(),
-                disabled: true,
               });
             }
           });
