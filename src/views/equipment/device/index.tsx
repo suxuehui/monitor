@@ -189,7 +189,7 @@ export default class Device extends Vue {
     { label: '配置名称', prop: 'cfgName' },
     { label: '产品编码', prop: 'productCode' },
     { label: '当前车辆', prop: 'plateNum' },
-    { label: '安绑记录', prop: 'plateNum', formatter: this.bindLog },
+    { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
