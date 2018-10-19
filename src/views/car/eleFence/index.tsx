@@ -345,6 +345,9 @@ export default class EleFence extends Vue {
   }
 
   refresh(): void {
+    // 刷新table
+    const MapTable: any = this.$refs.mapTable;
+    MapTable.reloadTable();
   }
 
   cancel(): any {
@@ -400,6 +403,7 @@ export default class EleFence extends Vue {
   // 展开并且显示详情
   showDetailBox(data: any) {
     this.detailShow = true;
+    console.log(1);
     this.fenceDetail = {
       name: data.name ? data.name : '--',
       shopName: data.shopName ? data.shopName : '--',
@@ -413,6 +417,7 @@ export default class EleFence extends Vue {
   }
 
   currentChange = (val: any) => {
+    console.log(val);
     this.showDetailBox(val);
     this.mapCenter = {
       lat: val.lat,
@@ -602,7 +607,7 @@ export default class EleFence extends Vue {
             }
           </div>
           <filter-table
-            ref="table"
+            ref="mapTable"
             class="map-table"
             filter-list={this.filterList}
             filter-grade={[]}

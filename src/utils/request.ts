@@ -125,13 +125,16 @@ export default function request(options: Option): Promise<any> {
       statusCode = 600;
       msg = error.message || 'Network Error';
     }
-    console.log(statusCode);
-    if (statusCode === 401) {
-      if (config.noLoginList.indexOf(window.location.hash) < 0) {
-        router.push('/login');
-      }
+    // if (statusCode === 401) {
+    //   if (config.noLoginList.indexOf(window.location.hash) < 0) {
+    //     Message.error('无权限访问，请联系管理员！');
+    //   }
+    // }
+    if (msg === '登陆验证失效') {
+      Message.error(msg);
+    } else {
+      Message.error('访问权限受限，请联系管理员！');
     }
-    Message.error(msg);
     return Promise.reject(new Error(msg));
   });
 }

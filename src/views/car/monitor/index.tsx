@@ -739,7 +739,6 @@ export default class Monitor extends Vue {
       }
       return `${num2} (${num})`;
     }
-    // 左前车门
     if (unit === 'leftFrontLock') {
       return this.setDoorStatus(data.leftFrontDoor, data.leftFrontLock);
     } else if (unit === 'rightFrontLock') {
@@ -765,7 +764,7 @@ export default class Monitor extends Vue {
 
   // 车门关闭、锁状态
   setDoorStatus(doorStatus: boolean, lockStatus: boolean) {
-    const str1 = doorStatus ? '关闭' : '开启';
+    const str1 = doorStatus ? '开启' : '关闭';
     const str2 = lockStatus ? '已上锁' : '未上锁';
     return `${str1}；${str2}`;
   }
@@ -924,7 +923,7 @@ export default class Monitor extends Vue {
                 {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
               </span>
               <span class="status">
-                ({carDetail.minutes ? this.timeChange(carDetail) : '--'}无位置变化)
+                ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
               </span>
             </div>
           </div>
