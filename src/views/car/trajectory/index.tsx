@@ -582,7 +582,7 @@ export default class Trajectory extends Vue {
       { num: 0, txt: '轻震动' },
       { num: 0, txt: '轻碰撞' },
       { num: 0, txt: '重碰撞' },
-      { num: 0, txt: '重翻滚' },
+      { num: 0, txt: '翻滚' },
       { num: 0, txt: '急加速' },
       { num: 0, txt: '急减速' },
       { num: 0, txt: '急转弯' },

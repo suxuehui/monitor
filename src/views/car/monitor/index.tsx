@@ -345,7 +345,7 @@ export default class Monitor extends Vue {
     { label: '剩余电量:', prop: 'leftElectricPercent', unit: '%' },
     { label: '累计里程:', prop: 'totalMileage', unit: 'km' },
     { label: '续航里程:', prop: 'leftMileage', unit: 'km' },
-    { label: '设防状态:', prop: 'defenceStatus' },
+    { label: '设防状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
     { label: '充电状态:', prop: 'chargeLight' },
     { label: '车灯状态:', prop: 'allLight' },
     { label: '天窗状态:', prop: 'skyWindow' },
@@ -747,6 +747,8 @@ export default class Monitor extends Vue {
       return this.setDoorStatus(data.leftRearDoor, data.leftRearLock);
     } else if (unit === 'rightRearLock') {
       return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
+    } else if (unit === 'defenceStatus') {
+      return data.defenceStatus ? '已设防' : '已撤防';
     }
     switch (gettype.call(value)) {
       case '[object Boolean]':
