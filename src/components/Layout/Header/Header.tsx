@@ -114,10 +114,6 @@ export default class Header extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.pswVisible = false;
-    const changePswBlock: any = this.$refs.changePsw;
-    setTimeout(() => {
-      changePswBlock.resetData();
-    }, 200);
   }
 
   checkInfo() {

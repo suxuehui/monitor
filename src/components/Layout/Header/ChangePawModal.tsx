@@ -31,6 +31,11 @@ export default class AddModal extends Vue {
 
 
   closeModal() {
+    const From: any = this.$refs.modelForm;
+    setTimeout(() => {
+      From.clearValidate();
+      From.resetFields();
+    }, 200);
     this.$emit('close');
     this.loading = false;
   }
@@ -47,32 +52,46 @@ export default class AddModal extends Vue {
     ],
   }
   checkPaw(rule: any, value: string, callback: Function) {
-    if (value === '') {
-      callback(new Error('请输入密码'));
+    if (this.modelForm.password) {
+      if (this.isChineseChar(this.modelForm.password)) {
+        callback(new Error('登录密码格式有误，请重新输入'));
+      } else {
+        callback();
+      }
     } else {
-      callback();
+      callback(new Error('请输入密码'));
     }
   }
 
   validatePass(rule: any, value: string, callback: Function) {
-    if (value === '') {
-      callback(new Error('请输入密码'));
-    } else {
-      if (this.modelForm.checkPass !== '') {
-        const modle:any = this.$refs.modelForm;
-        modle.validateField('checkPass');
+    if (this.modelForm.pass) {
+      if (this.isChineseChar(this.modelForm.pass)) {
+        callback(new Error('登录密码格式有误，请重新输入'));
+      } else {
+        const model: any = this.$refs.modelForm;
+        model.validateField('checkPass');
       }
       callback();
+    } else {
+      callback(new Error('请输入密码'));
     }
   }
   validatePass2(rule: any, value: string, callback: Function) {
-    if (value === '') {
-      callback(new Error('请再次输入密码'));
-    } else if (value !== this.modelForm.pass) {
-      callback(new Error('两次输入密码不一致!'));
-    } else {
+    if (this.modelForm.checkPass) {
+      if (this.isChineseChar(this.modelForm.checkPass)) {
+        callback(new Error('登录密码格式有误，请重新输入'));
+      } else if (value !== this.modelForm.pass) {
+        callback(new Error('两次输入密码不一致!'));
+      }
       callback();
+    } else {
+      callback(new Error('请输入密码'));
     }
+  }
+
+  isChineseChar(str: any) {
+    const reg = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
+    return reg.test(str);
   }
 
   onSubmit() {
@@ -118,33 +137,33 @@ export default class AddModal extends Vue {
       >
         <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="93px" class="model">
           <el-row>
-              <el-form-item label="旧密码" prop="password">
-                <el-input
-                  id="password"
-                  auto-complete="off"
-                  type="password"
-                  v-model={this.modelForm.password}
-                  placeholder="请输入旧密码"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="新密码" prop="pass">
-                <el-input
-                  id="pass"
-                  type="password"
-                  auto-complete="off"
-                  v-model={this.modelForm.pass}
-                  placeholder="请输入新密码"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="确认密码" prop="checkPass">
-                <el-input
-                  id="checkPass"
-                  auto-complete="off"
-                  type="password"
-                  v-model={this.modelForm.checkPass}
-                  placeholder="请再次输入新密码"
-                ></el-input>
-              </el-form-item>
+            <el-form-item label="旧密码" prop="password">
+              <el-input
+                id="password"
+                auto-complete="off"
+                type="password"
+                v-model={this.modelForm.password}
+                placeholder="请输入旧密码"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="新密码" prop="pass">
+              <el-input
+                id="pass"
+                type="password"
+                auto-complete="off"
+                v-model={this.modelForm.pass}
+                placeholder="请输入新密码"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码" prop="checkPass">
+              <el-input
+                id="checkPass"
+                auto-complete="off"
+                type="password"
+                v-model={this.modelForm.checkPass}
+                placeholder="请再次输入新密码"
+              ></el-input>
+            </el-form-item>
           </el-row>
         </el-form>
         <el-row>
