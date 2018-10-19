@@ -15,7 +15,7 @@ const noPic = require('@/assets/noPic.png');
 
 export default class Brand extends Vue {
   // 当前页面权限
-  nowArr: boolean[]=[];
+  nowArr: boolean[] = [];
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
@@ -50,7 +50,7 @@ export default class Brand extends Vue {
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
-      disabled: (row: any) => (row.vehicleNum > 0),
+      disabled: (row: any) => (row.seriesNum > 0 || row.modelNum > 0 || row.vehicleNum > 0),
       roles: true,
     },
   ];

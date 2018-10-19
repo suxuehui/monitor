@@ -53,7 +53,7 @@ export default class Series extends Vue {
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
-      disabled: (row: any) => (row.vehicleNum),
+      disabled: (row: any) => (row.modelNum > 0 || row.vehicleNum > 0),
       roles: true,
     },
   ];
@@ -95,7 +95,7 @@ export default class Series extends Vue {
       } else {
         this.$message.error(res.result.resultMessage);
       }
-      this.brandAddList = this.brandList.filter((item:any) => item);
+      this.brandAddList = this.brandList.filter((item: any) => item);
       // 所有品牌
       this.brandList.unshift({
         key: Math.random(),
