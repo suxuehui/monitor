@@ -130,11 +130,12 @@ export default function request(options: Option): Promise<any> {
     //     Message.error('无权限访问，请联系管理员！');
     //   }
     // }
-    if (msg === '登陆验证失效') {
-      Message.error(msg);
-    } else {
-      Message.error('访问权限受限，请联系管理员！');
-    }
+    Message.error(msg);
+    // if (msg === '登陆验证失效') {
+    //   Message.error(msg);
+    // } else {
+    //   Message.error('访问权限受限，请联系管理员！');
+    // }
     return Promise.reject(new Error(msg));
   });
 }
