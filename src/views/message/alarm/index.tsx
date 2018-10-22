@@ -52,7 +52,8 @@ export default class Alarm extends Vue {
       type: 'datetimerange',
       label: '角色名称',
       placeholder: ['开始', '结束'],
-      value: ['queryStartTime', 'queryEndTime'],
+      value: ['queryStart', 'queryEnd'],
+      change: this.dateChange,
     },
   ];
   // 高级筛选
@@ -61,12 +62,13 @@ export default class Alarm extends Vue {
   filterParams: any = {
     levelcode: '',
     status: '',
-    queryStartTime: '',
-    queryEndTime: '',
     alarmType: '',
     shopName: '',
   };
-  outParams: any = {};
+  outParams: any = {
+    queryStartTime: '',
+    queryEndTime: '',
+  };
   // 请求地址
   url: string = '/message/alarm/list';
 
@@ -74,8 +76,17 @@ export default class Alarm extends Vue {
     {
       key: 'handle',
       rowKey: 'id',
+      color: (row: any) => (row.activeStatus === 2 ? 'green' : 'red'),
+      text: '处理',
+      disabled: (row:any) => (!row.status === false),
+      roles: true,
+    },
+    {
+      key: 'check',
+      rowKey: 'id',
       color: 'blue',
-      text: (row: any) => (row.status ? '查看' : '处理'),
+      text: '查看',
+      disabled: (row:any) => (row.status === false),
       roles: true,
     },
   ];
@@ -90,6 +101,27 @@ export default class Alarm extends Vue {
     { label: '地点', prop: 'address', formatter: this.checkLoc },
     { label: '状态', prop: 'status', formatter: this.statusDom },
   ];
+
+  dateChange(val:any) {
+    if (val) {
+      if (val.length === 2) {
+        const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
+        const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.queryStartTime = startT;
+        this.outParams.queryEndTime = endT;
+      } else {
+        this.outParams.queryStartTime = `${val[0]}`;
+        this.outParams.queryEndTime = `${val[1]}`;
+      }
+    }
+  }
+
+  clear() {
+    this.outParams = {
+      queryStartTime: '',
+      queryEndTime: '',
+    };
+  }
 
   checkLoc(row: any) {
     return <i class="iconfont iconfont-location" on-click={() => { this.checkMapLoc(row); }} ></i>;
@@ -118,12 +150,13 @@ export default class Alarm extends Vue {
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/message/alarm/getSolution',
       '/message/alarm/handle',
+      '/message/alarm/getSolution',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       console.log(res);
-      this.opreat[0].roles = !!(res[0] && res[1]);
+      this.opreat[0].roles = !!(res[0]);
+      this.opreat[1].roles = !!(res[1]);
     });
     // 门店搜索
     orgTree(null).then((res) => {
@@ -220,6 +253,7 @@ export default class Alarm extends Vue {
           opreatWidth='180px'
           export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
+          on-clearOutParams={this.clear}
         />
         <handle-model
           visible={this.handleVisible}
