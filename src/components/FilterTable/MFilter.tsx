@@ -109,6 +109,8 @@ export default class MFilter extends Vue {
   reset(): void {
     this.params = JSON.parse(JSON.stringify(this.initParams));
     this.$emit('clearOut');
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
     this.$emit('search', this.params);
   }
   @Emit()
