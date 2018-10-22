@@ -1,4 +1,4 @@
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { Table, TableColumn, Pagination, Dropdown, DropdownItem, DropdownMenu, Tooltip } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import request from '@/utils/request';
@@ -78,6 +78,10 @@ export default class MTable extends Vue {
   dataTotal: number = 0;
   created() {
     this.getData();
+  }
+
+  returnData() {
+    return this.tableData;
   }
 
   reload(type: string) {

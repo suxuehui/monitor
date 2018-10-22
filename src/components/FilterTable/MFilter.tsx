@@ -109,8 +109,6 @@ export default class MFilter extends Vue {
   reset(): void {
     this.params = JSON.parse(JSON.stringify(this.initParams));
     this.$emit('clearOut');
-    this.$store.dispatch('getNotice');
-    this.$store.dispatch('getAlarm');
     this.$emit('search', this.params);
   }
   @Emit()
@@ -211,7 +209,8 @@ export default class MFilter extends Vue {
           type="datetimerange"
           align="right"
           pickerOptions={item.pickerOptions}
-          on-change={(e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])}
+          on-change={item.change}
+          // on-change={(e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])}
           start-placeholder={item.placeholder[0]}
           end-placeholder={item.placeholder[1]}>
         </el-date-picker>;
@@ -255,8 +254,11 @@ export default class MFilter extends Vue {
 
   // 时间区间赋值操作
   rangeChange(data: Date[], value: string[]) {
-    this.params[value[0]] = data[0].Format('yyyy-MM-dd hh:mm:ss');
-    this.params[value[1]] = data[1].Format('yyyy-MM-dd hh:mm:ss');
+    if (value.length > 2) {
+      this.params[value[0]] = data[0].Format('yyyy-MM-dd hh:mm:ss');
+      this.params[value[1]] = data[1].Format('yyyy-MM-dd hh:mm:ss');
+    }
+    console.log(this.params);
   }
 
   render() {

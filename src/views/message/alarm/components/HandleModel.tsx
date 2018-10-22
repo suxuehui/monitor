@@ -41,6 +41,7 @@ export default class HandleModel extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.resetData();
     }, 200);
     this.loading = false;
   }
@@ -67,6 +68,7 @@ export default class HandleModel extends Vue {
               this.loading = false;
               this.$store.dispatch('getAlarm');
               this.$message.success(res.result.resultMessage);
+              this.resetData();
               this.$emit('refresh');
             }, 1500);
           } else {

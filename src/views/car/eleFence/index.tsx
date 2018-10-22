@@ -348,6 +348,17 @@ export default class EleFence extends Vue {
     // 刷新table
     const MapTable: any = this.$refs.mapTable;
     MapTable.reloadTable();
+    const pageData:any = JSON.parse(JSON.stringify(MapTable.getCurrentPageData()));
+    pageData.forEach((item:any) => {
+      if (item.id === this.currentFenceId) {
+        this.showDetailBox(item);
+      }
+    });
+  }
+
+  // 清除覆盖物
+  clearOverlays = () => {
+    this.SMap.clearOverlays();
   }
 
   cancel(): any {
@@ -403,7 +414,6 @@ export default class EleFence extends Vue {
   // 展开并且显示详情
   showDetailBox(data: any) {
     this.detailShow = true;
-    console.log(1);
     this.fenceDetail = {
       name: data.name ? data.name : '--',
       shopName: data.shopName ? data.shopName : '--',
@@ -416,34 +426,41 @@ export default class EleFence extends Vue {
     this.getCarList(data.id);
   }
 
+  currentFenceId: number = 0;
+  setCurrentFenceId(id:number) {
+    this.currentFenceId = id;
+  }
+
   currentChange = (val: any) => {
-    console.log(val);
-    this.showDetailBox(val);
-    this.mapCenter = {
-      lat: val.lat,
-      lng: val.lng,
-    };
-    // 点击设点
-    const pt = new this.BMap.Point(val.lng, val.lat);
-    const myIcon = new this.BMap.Icon(carIcon, new this.BMap.Size(32, 32));
-    const point = new this.BMap.Marker(pt, { icon: myIcon });
-    // 清除之前所涉标点
-    this.SMap.clearOverlays();
-    // 新建点
-    this.SMap.addOverlay(point);
-    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
-    // 新建圆圈、多边形、矩形
-    this.remark(val);
-    const opts = {
-      width: 200, // 信息窗口宽度
-      // offset: { height: -10, width: -10 },
-      title: '围栏名称：', // 信息窗口标题
-    };
-    const infoWindow = new this.BMap.InfoWindow(val.name, opts);
-    this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    point.addEventListener('click', () => {
+    if (val) {
+      this.setCurrentFenceId(val.id);
+      this.showDetailBox(val);
+      this.mapCenter = {
+        lat: val.lat,
+        lng: val.lng,
+      };
+      // 点击设点
+      const pt = new this.BMap.Point(val.lng, val.lat);
+      const myIcon = new this.BMap.Icon(carIcon, new this.BMap.Size(32, 32));
+      const point = new this.BMap.Marker(pt, { icon: myIcon });
+      // 清除之前所涉标点
+      this.SMap.clearOverlays();
+      // 新建点
+      this.SMap.addOverlay(point);
+      this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+      // 新建圆圈、多边形、矩形
+      this.remark(val);
+      const opts = {
+        width: 200, // 信息窗口宽度
+        // offset: { height: -10, width: -10 },
+        title: '围栏名称：', // 信息窗口标题
+      };
+      const infoWindow = new this.BMap.InfoWindow(val.name, opts);
       this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    });
+      point.addEventListener('click', () => {
+        this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+      });
+    }
   }
 
   remark(data: any) {

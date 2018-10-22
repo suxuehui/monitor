@@ -1,5 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Button, Slider, Select, Option } from 'element-ui';
+import { Button, Slider, Select, Option, Tooltip } from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import { tripGPS } from '@/api/trajectory';
 import coordTrasns from '@/utils/coordTrasns';
@@ -8,7 +8,7 @@ import commonfun from './commonfun';
 import MapControl from './mapContorl';
 import './index.less';
 
-function getTimeDay(day : number) {}
+function getTimeDay(day: number) { }
 
 @Component({
   components: {
@@ -16,11 +16,12 @@ function getTimeDay(day : number) {}
   'el-slider': Slider,
   'el-select': Select,
   'el-option': Option,
+  'el-tooltip': Tooltip,
   }
   })
 export default class Trajectory extends Vue {
-  locChange : boolean = false; // 底部表格开关
-  filterList : FilterFormList[] = [
+  locChange: boolean = false; // 底部表格开关
+  filterList: FilterFormList[] = [
     {
       key: 'time',
       type: 'datetimerange',
@@ -31,6 +32,7 @@ export default class Trajectory extends Vue {
       value: [
         'startTime', 'endTime',
       ],
+      change: this.timeRangeChange,
       pickerOptions: {
         shortcuts: [
           {
@@ -62,25 +64,45 @@ export default class Trajectory extends Vue {
       },
     },
   ];
-  filterParams : any = {
+  filterParams: any = {
     checkboxTime: '',
     time: '',
     startTime: '',
     endTime: '',
   };
-  outParams : any = {
+  outParams: any = {
     startTime: '',
     endTime: '',
-
   }
-  backParams : object = {
+  backParams: object = {
     code: 'result.resultCode',
     codeOK: '0',
     message: 'result.resultMessage',
     data: 'entity.data',
     total: 'entity.count',
   };
-  tableList : tableList[] = [
+
+  clear() {
+    this.outParams = {
+      startTime: '',
+      endTime: '',
+    };
+  }
+
+  timeRangeChange(val: any) {
+    if (val) {
+      if (val.length === 2) {
+        const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
+        const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.startTime = startT;
+        this.outParams.endTime = endT;
+      } else {
+        this.outParams.startTime = `${val[0]}`;
+        this.outParams.endTime = `${val[1]}`;
+      }
+    }
+  }
+  tableList: tableList[] = [
     {
       label: '车牌号',
       prop: 'platenum',
@@ -96,7 +118,9 @@ export default class Trajectory extends Vue {
     }, {
       label: '里程',
       prop: 'mileage',
-      formatter(row : any) {
+      sortable: true,
+      sortBy: 'mileage',
+      formatter(row: any) {
         return row.mileage !== null
           ? `${row.mileage}km`
           : '未知';
@@ -104,7 +128,9 @@ export default class Trajectory extends Vue {
     }, {
       label: '用时',
       prop: 'period',
-      formatter(row : any) {
+      sortable: true,
+      sortBy: 'period',
+      formatter(row: any) {
         return row.period !== null
           ? `${row.period}分钟`
           : '未知';
@@ -112,31 +138,36 @@ export default class Trajectory extends Vue {
     }, {
       label: '耗油',
       prop: 'fuelCons',
-      formatter(row : any) {
-        return row.fuelCons !== null
-          ? `${row.fuelCons}L`
-          : '未知';
-      },
+      sortable: true,
+      sortBy: 'fuelCons',
+      // formatter(row: any) {
+      //   return row.fuelCons !== null
+      //     ? `${row.fuelCons}L`
+      //     : '未知';
+      // },
+      formatter: this.oilCount,
     }, {
       label: '耗电',
       prop: 'powerCons',
-      formatter(row : any) {
+      sortable: true,
+      sortBy: 'powerCons',
+      formatter(row: any) {
         return row.powerCons !== null
           ? `${row.powerCons}%`
           : '未知';
       },
     }, {
-      label: '平均油耗(L/100km)',
+      label: '平均油耗',
       prop: 'avgfuelCons',
-      formatter(row : any) {
-        return row.avgfuelCons !== null
-          ? row.avgfuelCons
-          : '未知';
-      },
+      sortable: true,
+      sortBy: 'avgfuelCons',
+      formatter: this.avgOilCount,
     }, {
       label: '平均速度',
       prop: 'avgSpeed',
-      formatter(row : any) {
+      sortable: true,
+      sortBy: 'avgSpeed',
+      formatter(row: any) {
         return row.avgSpeed !== null
           ? `${row.avgSpeed}km/h`
           : '未知';
@@ -144,35 +175,59 @@ export default class Trajectory extends Vue {
     }, {
       label: '最高速度',
       prop: 'maxSpeed',
-      formatter(row : any) {
+      sortable: true,
+      sortBy: 'maxSpeed',
+      formatter(row: any) {
         return row.maxSpeed !== null
-          ? `${row.maxSpeed}km`
+          ? `${row.maxSpeed}km/h`
           : '未知';
       },
     },
   ];
-  BMap : any = null; // 百度地图对象
-  SMap : any = null; // 当前地图对象实例
-  SMapZoom : number = 15; // 当前地图对象zoom
-  geolocationControl : any = null; // 定位
+  // 耗油计算
+  oilCount(row: any) {
+    if (row.fuelCons && row.fuelTankCap) {
+      const percent = (row.fuelCons / row.fuelTankCap) * 100;
+      const str = `${percent.toFixed(2)}%  (${row.fuelCons}L)`;
+      return <el-tooltip class="item" effect="dark" content={str} placement="top">
+        <span>{str}</span>
+      </el-tooltip>;
+    }
+    return '未知';
+  }
+
+  // 平均油耗
+  avgOilCount(row: any) {
+    if (row.avgfuelCons) {
+      return <el-tooltip class="item" effect="dark" content={`${row.avgfuelCons}L/100km`} placement="top">
+        <span>{`${row.avgfuelCons}L/100km`}</span>
+      </el-tooltip>;
+    }
+    return '未知';
+  }
+
+  BMap: any = null; // 百度地图对象
+  SMap: any = null; // 当前地图对象实例
+  SMapZoom: number = 15; // 当前地图对象zoom
+  geolocationControl: any = null; // 定位
   CanvasLayer: any = null; // 轨迹渲染层
-  mapCenter : {
+  mapCenter: {
     lat: number,
     lng: number
   } = {
     lat: 29.563694,
     lng: 106.560421,
   };
-  CarPoint : any = null; // 车辆位置
-  CarIcon : any = null; // 车辆图标
-  CarMarker : object[] = []; // 车辆标记
-  tableUrl : string = '';
+  CarPoint: any = null; // 车辆位置
+  CarIcon: any = null; // 车辆图标
+  CarMarker: object[] = []; // 车辆标记
+  tableUrl: string = '';
   mapContorl: any = null; // 地图方法类
-  constructor(props : any) {
+  constructor(props: any) {
     super(props);
     config
       .loadMap()
-      .then((BMap : any) => {
+      .then((BMap: any) => {
         this.BMap = BMap;
         this.SMap = new BMap.Map('map', { enableMapClick: false });
         this
@@ -234,7 +289,7 @@ export default class Trajectory extends Vue {
     if (data.length === 0) {
       return;
     }
-    for (let i = 0; i < data.length; i+=1) {
+    for (let i = 0; i < data.length; i += 1) {
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
       tempPoint.speed = data[i].obdSpeed ? data[i].obdSpeed : data[i].gpsSpeed;
       tempPoint.uTCTime = data[i].utctime;
@@ -276,7 +331,7 @@ export default class Trajectory extends Vue {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       if (totalPoints.length !== 0) {
         // 绘制带速度颜色的轨迹
-        for (let i = 0, len = totalPoints.length; i < len -2; i+=1) {
+        for (let i = 0, len = totalPoints.length; i < len - 2; i += 1) {
           const pixel = self.SMap.pointToPixel(totalPoints[i]);
           const nextPixel = self.SMap.pointToPixel(totalPoints[i + 1]);
           ctx.beginPath();
@@ -320,7 +375,7 @@ export default class Trajectory extends Vue {
 
             // 起点终点距离
             const distance = (((nextPixel.x - pixel.x) ** 2)
-            + ((nextPixel.y - pixel.y) ** 2)) ** 0.5;
+              + ((nextPixel.y - pixel.y) ** 2)) ** 0.5;
             // 箭头长度
             const pointerLong = 4;
             const aPixel: any = {};
@@ -377,7 +432,7 @@ export default class Trajectory extends Vue {
       const mulPoint: { x: number, y: number, event: string[] }[] = [];
       function addPoint(x: number, y: number, text: string, color: string, fontSize: string, type: 'one' | 'mul') {
         ctx.beginPath();
-        ctx.arc(x, y, 9, 0, 2*Math.PI);
+        ctx.arc(x, y, 9, 0, 2 * Math.PI);
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.fillStyle = color;
@@ -407,7 +462,7 @@ export default class Trajectory extends Vue {
       if (totalPoints.length !== 0) {
         const oneXY = self.SMap.pointToPixel(totalPoints[0]);
         iconRender(oneXY.x - 13, oneXY.y - 26, require('@/assets/start.png'));
-        const endXY = self.SMap.pointToPixel(totalPoints[totalPoints.length -1]);
+        const endXY = self.SMap.pointToPixel(totalPoints[totalPoints.length - 1]);
         iconRender(endXY.x - 13, endXY.y - 26, require('@/assets/end.png'));
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           if (totalPoints[i].event && totalPoints[i].event[0] !== '0') {
@@ -554,23 +609,26 @@ export default class Trajectory extends Vue {
     return color;
   }
 
-  timeChnage(val : string) {
+  timeChange(val: string) {
     console.log(val);
   }
 
   // 增加zoom
-  zoomAdd() : any {
-    this.SMapZoom += 1;
+  zoomAdd = () => {
+    const newZoom = this.SMap.getZoom() + 1;
+    this.SMap.setZoom(newZoom);
   }
   // 减少zoom
-  zoomReduce() : any {
-    this.SMapZoom -= 1;
+  zoomReduce = () => {
+    const newZoom = this.SMap.getZoom() - 1;
+    this.SMap.setZoom(newZoom);
   }
+
   // 表格显示隐藏
-  showTable() : void {
+  showTable(): void {
     this.locChange = true;
   }
-  hideTable() : void {
+  hideTable(): void {
     this.locChange = false;
   }
   plateNum = '';
@@ -692,41 +750,41 @@ export default class Trajectory extends Vue {
         <ul class="behavior-list">
           {
             this.behaivorData && this.behaivorData.map(item => <li>
-            <span class="number">{item.num}</span>
-            <span className="txt">{item.txt}</span>
-          </li>)
+              <span class="number">{item.num}</span>
+              <span className="txt">{item.txt}</span>
+            </li>)
           }
         </ul>
         <div id="map"></div>
         {
           this.currentTrackData.length ?
-          <div class={`play-box ${this.locChange ? 'bottom': ''}`}>
-            <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
-            <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
-            <el-slider
-              v-model={this.playOnTime}
-              max={this.playTimeNumber(this.playTime)}
-              on-onchange={this.jumpPlay}
-              format-tooltip={this.timeFormat}>
-            </el-slider>
-            <span class="dot-right">{this.playTime}</span>
-            <el-select v-model={this.playMultiple} on-change={this.playChange} placeholder="请选择">
-              <el-option key={0} label="0.3x" value={0.3}></el-option>
-              <el-option key={1} label="0.5x" value={0.5}></el-option>
-              <el-option key={2} label="0.8x" value={0.8}></el-option>
-              <el-option key={3} label="1x" value={1}></el-option>
-              <el-option key={4} label="1.5x" value={1.5}></el-option>
-              <el-option key={5} label="2x" value={2}></el-option>
-              <el-option key={6} label="3x" value={3}></el-option>
-            </el-select>
-          </div> : null
+            <div class={`play-box ${this.locChange ? 'bottom' : ''}`}>
+              <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
+              <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
+              <el-slider
+                v-model={this.playOnTime}
+                max={this.playTimeNumber(this.playTime)}
+                on-onchange={this.jumpPlay}
+                format-tooltip={this.timeFormat}>
+              </el-slider>
+              <span class="dot-right">{this.playTime}</span>
+              <el-select v-model={this.playMultiple} on-change={this.playChange} placeholder="请选择">
+                <el-option key={0} label="0.3x" value={0.3}></el-option>
+                <el-option key={1} label="0.5x" value={0.5}></el-option>
+                <el-option key={2} label="0.8x" value={0.8}></el-option>
+                <el-option key={3} label="1x" value={1}></el-option>
+                <el-option key={4} label="1.5x" value={1.5}></el-option>
+                <el-option key={5} label="2x" value={2}></el-option>
+                <el-option key={6} label="3x" value={3}></el-option>
+              </el-select>
+            </div> : null
         }
         <div
           class={[
-          'loc-change-box', this.locChange
-            ? 'loc-active'
-            : '',
-        ]}>
+            'loc-change-box', this.locChange
+              ? 'loc-active'
+              : '',
+          ]}>
           <img class="speedContorl-img" src={require('@/assets/speedcontrol.png')}></img>
           <el-button
             class="add btn"
@@ -740,25 +798,25 @@ export default class Trajectory extends Vue {
             on-click={this.zoomReduce}></el-button>
           {!this.locChange
             ? <el-button
-                class="up btn"
-                size="small"
-                type="primary"
-                icon="el-icon-arrow-up"
-                on-click={this.showTable}></el-button>
+              class="up btn"
+              size="small"
+              type="primary"
+              icon="el-icon-arrow-up"
+              on-click={this.showTable}></el-button>
             : <el-button
               class="down btn"
               size="small"
               type="primary"
               icon="el-icon-arrow-down"
               on-click={this.hideTable}></el-button>
-}
+          }
         </div>
         <div
           class={[
-          'car-table', this.locChange
-            ? 'table-active'
-            : '',
-        ]}>
+            'car-table', this.locChange
+              ? 'table-active'
+              : '',
+          ]}>
           <filter-table
             class="map-table"
             filter-list={this.filterList}
@@ -772,6 +830,7 @@ export default class Trajectory extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             export-btn={true}
+            on-clearOutParams={this.clear}
             localName={'trajectory'}
             table-list={this.tableList}
             url={this.tableUrl}

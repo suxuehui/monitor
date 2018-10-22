@@ -123,11 +123,15 @@ export default class FilterTable extends Vue {
     }, 100);
   }
 
+  getCurrentPageData() {
+    const table: any = this.$refs.MTable;
+    return table.returnData();
+  }
+
   @Emit()
   searchFun(params: any) {
     this.tableParams = params;
     const table: any = this.$refs.MTable;
-
     table.clearPageParams();
     // 延迟100ms加载数据
     setTimeout(() => {
