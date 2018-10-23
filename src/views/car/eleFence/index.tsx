@@ -161,10 +161,8 @@ export default class EleFence extends Vue {
       case '2':
         type = <el-tag size="small" type="success">驶出监控</el-tag>;
         break;
-      case '3':
-        type = <el-tag size="small" type="info">驶入驶出监控</el-tag>;
-        break;
       default:
+        type = <el-tag size="small" type="info">未知类型</el-tag>;
         break;
     }
     return type;
@@ -190,7 +188,6 @@ export default class EleFence extends Vue {
     { key: '', value: '', label: '监控类型(全部)' },
     { key: 1, value: 1, label: '驶入监控' },
     { key: 2, value: 2, label: '驶出监控' },
-    { key: 3, value: 3, label: '驶入驶出监控' },
   ]
 
   carList: any = []
