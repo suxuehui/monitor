@@ -14,6 +14,7 @@ module.exports = {
     });
   },
   devServer: {
+    disableHostCheck: true,
     proxy: {
       '/api': {
         // target: 'http://192.168.1.240:3000/mock/11', // mock地址
