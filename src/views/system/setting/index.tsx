@@ -118,6 +118,7 @@ export default class Setting extends Vue {
         enable: item.enable,
         fieldThreshold: item.fieldThreshold,
         fqcy: item.fqcy,
+        field: item.field,
         maxFqcy: item.maxFqcy,
       });
     });
