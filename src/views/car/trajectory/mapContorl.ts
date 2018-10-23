@@ -78,7 +78,6 @@ export default class MapContorl {
   playInterVal() {
     return setInterval(() => {
       if (this.playNumber === this.trackData.length - 1) {
-        console.log(this.playTimers);
         window.clearInterval(this.playTimers);
         this.playNumber = 0;
       }
@@ -112,9 +111,8 @@ export default class MapContorl {
   playSetTime(val: number) {
     if (this.trackData) {
       this.oneTime = (val * 1000) / this.trackData.length;
-      this.passPlay();
       this.playNumber = 0;
-      this.playContinue();
+      this.passPlay();
     }
   }
   // 暂停播放
@@ -346,7 +344,7 @@ export default class MapContorl {
           ['定位', data.lnglat],
           ['地址', address],
           ['速度', `${data.speed}km/h`],
-          ['定位时间', data.uTCTime],
+          ['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')],
         ];
         this.setTrackInfoBox({
           plateNum: data.plateNum,

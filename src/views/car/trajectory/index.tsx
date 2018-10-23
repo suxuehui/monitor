@@ -73,6 +73,7 @@ export default class Trajectory extends Vue {
   outParams: any = {
     startTime: '',
     endTime: '',
+
   }
   backParams: object = {
     code: 'result.resultCode',
@@ -88,7 +89,6 @@ export default class Trajectory extends Vue {
       endTime: '',
     };
   }
-
   timeRangeChange(val: any) {
     if (val) {
       if (val.length === 2) {
@@ -109,6 +109,8 @@ export default class Trajectory extends Vue {
     }, {
       label: '开始时间',
       prop: 'startTime',
+      sortable: true,
+      sortBy: 'startTime',
     }, {
       label: '起点',
       prop: 'startAddr',
@@ -140,11 +142,6 @@ export default class Trajectory extends Vue {
       prop: 'fuelCons',
       sortable: true,
       sortBy: 'fuelCons',
-      // formatter(row: any) {
-      //   return row.fuelCons !== null
-      //     ? `${row.fuelCons}L`
-      //     : '未知';
-      // },
       formatter: this.oilCount,
     }, {
       label: '耗电',
@@ -184,6 +181,7 @@ export default class Trajectory extends Vue {
       },
     },
   ];
+
   // 耗油计算
   oilCount(row: any) {
     if (row.fuelCons && row.fuelTankCap) {
@@ -285,7 +283,6 @@ export default class Trajectory extends Vue {
     const that = this;
     const totalPoints: any = [];
     const viewportPoints = [];
-
     if (data.length === 0) {
       return;
     }
@@ -492,60 +489,68 @@ export default class Trajectory extends Vue {
         }
       }
     }
-    if (totalPoints.length > 0) {
-      if (this.canvasLayer || this.canvasLayerBack || this.CanvasLayerPointer) {
-        this.SMap.removeOverlay(this.CanvasLayerPointer);
-        this.SMap.removeOverlay(this.canvasLayer);
-        this.SMap.removeOverlay(this.canvasLayerBack);
-        this.SMap.removeOverlay(this.canvasBehavior);
+    const render = () => {
+      if (totalPoints.length > 0) {
+        if (this.canvasLayer || this.canvasLayerBack ||
+          this.CanvasLayerPointer || this.canvasBehavior) {
+          this.SMap.removeOverlay(this.CanvasLayerPointer);
+          this.SMap.removeOverlay(this.canvasLayer);
+          this.SMap.removeOverlay(this.canvasLayerBack);
+          this.SMap.removeOverlay(this.canvasBehavior);
+        }
+        // 轨迹边框渲染
+        this.canvasLayerBack = new this.CanvasLayer({
+          map: this.SMap,
+          update: updateBack,
+        });
+        // 轨迹渐变渲染
+        this.canvasLayer = new this.CanvasLayer({
+          map: this.SMap,
+          update,
+        });
+        // 轨迹箭头渲染
+        this.CanvasLayerPointer = new this.CanvasLayer({
+          map: this.SMap,
+          update: updatePointer,
+        });
+        // 驾驶行为层
+        this.canvasBehavior = new this.CanvasLayer({
+          map: this.SMap,
+          update: renderBehavior,
+        });
       }
-      // 轨迹边框渲染
-      this.canvasLayerBack = new this.CanvasLayer({
-        map: this.SMap,
-        update: updateBack,
+      const options = {
+        size: window.BMAP_POINT_SIZE_HUGE,
+        shape: window.BMAP_POINT_SHAPE_CIRCLE,
+        color: 'rgba(0, 0, 0, 0)',
+      };
+      // 初始化PointCollection
+      if (this.pointCollection) {
+        this.SMap.removeOverlay(this.pointCollection);
+      }
+      this.pointCollection = new this.BMap.PointCollection(totalPoints, options);
+      this.pointCollection.addEventListener('click', (e: any) => {
+        this.mapContorl.showTrackInfoBox({
+          ...e.point,
+          plateNum: this.getPlateNum(),
+          status: e.point.printSpeed,
+          point: e.point,
+        });
       });
-      // 轨迹渐变渲染
-      this.canvasLayer = new this.CanvasLayer({
-        map: this.SMap,
-        update,
+      this.pointCollection.addEventListener('mouseover', (e: any) => {
+        this.mapContorl.addTrackPointOverlay(e, 'trackpoint_over');
       });
-      // 轨迹箭头渲染
-      this.CanvasLayerPointer = new this.CanvasLayer({
-        map: this.SMap,
-        update: updatePointer,
+      this.pointCollection.addEventListener('mouseout', (e: any) => {
+        this.mapContorl.removeTrackPointOverlay('trackpoint_over');
       });
-      // 驾驶行为层
-      this.canvasBehavior = new this.CanvasLayer({
-        map: this.SMap,
-        update: renderBehavior,
-      });
-    }
-    const options = {
-      size: window.BMAP_POINT_SIZE_HUGE,
-      shape: window.BMAP_POINT_SHAPE_CIRCLE,
-      color: 'rgba(0, 0, 0, 0)',
+      // 添加Overlay
+      this.SMap.addOverlay(this.pointCollection);
     };
-    // 初始化PointCollection
-    if (this.pointCollection) {
-      this.SMap.removeOverlay(this.pointCollection);
+    if (that.first) {
+      setTimeout(() => render(), 100);
+    } else {
+      this.render();
     }
-    this.pointCollection = new this.BMap.PointCollection(totalPoints, options);
-    this.pointCollection.addEventListener('click', (e: any) => {
-      this.mapContorl.showTrackInfoBox({
-        ...e.point,
-        plateNum: this.getPlateNum(),
-        status: e.point.printSpeed,
-        point: e.point,
-      });
-    });
-    this.pointCollection.addEventListener('mouseover', (e: any) => {
-      this.mapContorl.addTrackPointOverlay(e, 'trackpoint_over');
-    });
-    this.pointCollection.addEventListener('mouseout', (e: any) => {
-      this.mapContorl.removeTrackPointOverlay('trackpoint_over');
-    });
-    // 添加Overlay
-    this.SMap.addOverlay(this.pointCollection);
   }
 
   getPlateNum() {
@@ -721,6 +726,7 @@ export default class Trajectory extends Vue {
           this.playStatus = false;
           this.playOnTime = 0;
           this.firstPlay = true;
+          this.getMapContorl().clearPlay();
         } else {
           this.playOnTime += 1;
         }
@@ -732,13 +738,15 @@ export default class Trajectory extends Vue {
   }
   clearPlay() {
     // this.trackPlay();
+    clearInterval(this.playTimer);
     this.playOnTime = 0;
+    this.playStatus = false;
     this.firstPlay = true;
+    this.getMapContorl().clearPlay();
   }
   playChange(val: number) {
     this.playTime = this.timeFormat(this.playTimeNumber(this.defaultTime) / val);
     this.clearPlay();
-    // this.trackPlay();
     this.getMapContorl().playSetTime(this.playTimeNumber(this.defaultTime) / val);
   }
   /**
@@ -829,8 +837,8 @@ export default class Trajectory extends Vue {
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
-            export-btn={true}
             on-clearOutParams={this.clear}
+            export-btn={true}
             localName={'trajectory'}
             table-list={this.tableList}
             url={this.tableUrl}
