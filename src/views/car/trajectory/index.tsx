@@ -651,11 +651,9 @@ export default class Trajectory extends Vue {
       { num: 0, txt: '急转弯' },
     ];
     this.plateNum = val.platenum;
-    // 如果有播放状态则清除播放
-    if (this.playStatus) {
-      this.getMapContorl().clearPlay();
-      this.clearPlay();
-    }
+    // 清除播放
+    this.getMapContorl().clearPlay();
+    this.clearPlay();
     tripGPS({ id: val.tripId }).then((res) => {
       if (res.result.resultCode === '0') {
         let data = res.entity;
@@ -689,7 +687,7 @@ export default class Trajectory extends Vue {
   playStatus: boolean = false; // 播放状态
   playMultiple: number = 1; // 播放速度
   timeFormat(val: number) { // 格式化时间
-    return `${parseInt((val / 60).toString(), 10)}:${(val % 60) < 10 ? `0${val % 60}` : (val % 60).toFixed(0)}`;
+    return `${parseInt((val / 60).toString(), 10)}:${(val % 60) < 10 ? `0${(val % 60).toFixed(0)}` : (val % 60).toFixed(0)}`;
   }
   playTimeNumber(time: string) {
     const timeArr = time.split(':');

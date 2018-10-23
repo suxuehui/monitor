@@ -493,11 +493,7 @@ export default class Device extends Vue {
   }
 
   downLoad(data: any) {
-    console.log('下载');
-    console.log(data);
-    terminalExport(data).then((res: any) => {
-      console.log(res);
-    });
+    terminalExport(data);
   }
 
   // 关闭弹窗

@@ -87,8 +87,9 @@ export default class MFilter extends Vue {
       this.checkList = saveList.split(',');
     }
   }
-  created() {
-    if (!this.checkList) {
+
+  mounted() {
+    if (!this.checkList.length) {
       this.tableList.map((item) => {
         if (item.prop) {
           this.checkList.push(item.prop);
@@ -154,6 +155,7 @@ export default class MFilter extends Vue {
     });
     obj.headerName = obj.headerName.join(',');
     obj.headerKey = obj.headerKey.join(',');
+    console.log(obj);
     this.$emit('downloadFun', obj);
   }
 
