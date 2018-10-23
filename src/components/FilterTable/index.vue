@@ -14,6 +14,7 @@
       @export="exportBack"
       @setTable="setTable"
       @addFun="addBack"
+      @downloadFun="downBack"
       @tableHeight="tableHeight"
     />
     <m-table
@@ -146,6 +147,10 @@ export default class FilterTable extends Vue {
   @Emit()
   addBack() {
     this.$emit('addBack');
+  }
+  @Emit()
+  downBack(data: any) {
+    this.$emit('downBack', data);
   }
   @Emit()
   tableHeight(params: any) {

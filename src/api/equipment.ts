@@ -139,3 +139,13 @@ export async function terminalInfo(params: any) {
     data: params,
   });
 }
+
+// 导出
+export async function terminalExport(params: any) {
+  return request({
+    url: '/device/terminal/exportExcel',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
+  });
+}

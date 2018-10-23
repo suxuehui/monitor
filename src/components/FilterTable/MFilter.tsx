@@ -141,8 +141,20 @@ export default class MFilter extends Vue {
 
   @Emit()
   downloadFun(): void {
-    // this.$emit('addFun');
-    console.log(1);
+    // 参数
+    const obj: any = JSON.parse(JSON.stringify(this.params));
+    obj.headerName = [];
+    obj.headerKey = [];
+    // 表格参数
+    this.tableList.forEach((item: any) => {
+      if (this.checkList.indexOf(item.prop) > -1) {
+        obj.headerName.push(item.label);
+        obj.headerKey.push(item.prop);
+      }
+    });
+    obj.headerName = obj.headerName.join(',');
+    obj.headerKey = obj.headerKey.join(',');
+    this.$emit('downloadFun', obj);
   }
 
   formItem(item: FilterFormList, index: number, grade?: boolean) {

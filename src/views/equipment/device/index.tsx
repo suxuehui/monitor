@@ -1,7 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Tag, Button, Popover } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { terminalType, getBluetooth, resetTime } from '@/api/equipment';
+import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
 import { orgTree } from '@/api/app';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
@@ -492,6 +492,14 @@ export default class Device extends Vue {
     this.addTitle = '添加设备';
   }
 
+  downLoad(data: any) {
+    console.log('下载');
+    console.log(data);
+    terminalExport(data).then((res: any) => {
+      console.log(res);
+    });
+  }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -526,6 +534,7 @@ export default class Device extends Vue {
           data-type={'JSON'}
           localName={'device'}
           on-addBack={this.addModel}
+          on-downBack={this.downLoad}
           opreat={this.opreat}
           opreatWidth={'150px'}
           out-params={this.outParams}
