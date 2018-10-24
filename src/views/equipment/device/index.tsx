@@ -3,6 +3,7 @@ import { Tag, Button, Popover } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
 import { orgTree } from '@/api/app';
+import config from '@/utils/config';
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
@@ -495,10 +496,11 @@ export default class Device extends Vue {
     this.addTitle = '添加设备';
   }
 
+  // /device/terminal/exportExcel
   downLoad(data: any) {
-    terminalExport(data).then((res) => {
-      console.log(res);
-    });
+    console.log(data);
+    terminalExport(data);
+    // window.location.href = `${config.API}/device/terminal/exportExcel?${data}`;
   }
 
   // 关闭弹窗

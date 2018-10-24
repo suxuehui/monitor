@@ -155,7 +155,6 @@ export default class MFilter extends Vue {
     });
     obj.headerName = obj.headerName.join(',');
     obj.headerKey = obj.headerKey.join(',');
-    console.log(obj);
     this.$emit('downloadFun', obj);
   }
 

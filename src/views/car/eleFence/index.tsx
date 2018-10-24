@@ -349,6 +349,7 @@ export default class EleFence extends Vue {
     pageData.forEach((item:any) => {
       if (item.id === this.currentFenceId) {
         this.showDetailBox(item);
+        this.currentChange(item);
       }
     });
   }
