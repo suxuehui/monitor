@@ -214,13 +214,18 @@ export default class MTable extends Vue {
         </span>
         <el-dropdown-menu slot="dropdown">
           {
-            this.opreat.map((item, indexs) => <el-dropdown-item
-              key={indexs}
-              command={item.key}
-              disabled={item.disabled && item.disabled(row)}
-            >
-              {typeof item.text === 'function' ? item.text(row) : item.text}
-            </el-dropdown-item>)
+            this.opreat.map((item, indexs) => {
+              if (item.roles) {
+                return <el-dropdown-item
+                  key={indexs}
+                  command={item.key}
+                  disabled={item.disabled && item.disabled(row)}
+                >
+                  {typeof item.text === 'function' ? item.text(row) : item.text}
+                </el-dropdown-item>;
+              }
+              return true;
+            })
           }
         </el-dropdown-menu>
       </el-dropdown>;

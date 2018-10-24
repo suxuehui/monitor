@@ -265,18 +265,19 @@ export default class Device extends Vue {
 
   loading: boolean = false;
 
-  // 新增、导出、重置、查看安绑记录按钮展示
+  // 新增、导出、重置、查看安绑记录按钮展示 更新鉴权码
   addBtn: boolean = true;
   exportBtn: boolean = true;
   resetBtn: boolean = true;
   opsBtn: boolean = true;
+  authBtn: boolean = true;
 
   created() {
     const getNowRoles: string[] = [
       // 操作
       '/device/terminal/save',
       '/device/terminal/bind',
-      '/device/terminal/unbind',
+      '/device/terminal/unbind/{imei}',
       '/device/terminal/confirm',
       '/device/terminal/getBluetoothAuthCode',
       '/device/terminal/createBluetoothAuthCode',
@@ -287,8 +288,10 @@ export default class Device extends Vue {
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[1] && res[2]);
-      this.opreat[1].roles = !!(res[3]);
-      this.opreat[2].roles = !!(res[4] && res[5]);
+      this.opreat[1].roles = !!(res[3]); // 验收
+      this.opreat[2].roles = !!(res[4]); // 鉴权码
+      this.authBtn = !!(res[5]);
+      this.opreat[3].roles = !!(res[6]);
       this.opreat[3].roles = !!(res[6]);
       this.opreat[4].roles = !!(res[7]);
       this.addBtn = !!(res[0]);
@@ -493,7 +496,9 @@ export default class Device extends Vue {
   }
 
   downLoad(data: any) {
-    terminalExport(data);
+    terminalExport(data).then((res) => {
+      console.log(res);
+    });
   }
 
   // 关闭弹窗
@@ -561,6 +566,7 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         ></accept-modal>
         <auth-model
+          updateAble={this.authBtn}
           data={this.authData}
           visible={this.authVisible}
           on-close={this.closeModal}
