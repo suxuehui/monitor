@@ -1,17 +1,24 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Tag, Button, Popover } from 'element-ui';
+import qs from 'qs';
+
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
 import { orgTree } from '@/api/app';
 import config from '@/utils/config';
+import utils from '@/utils/index';
+
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';
 import AcceptModal from '@/views/equipment/device/components/AcceptModal';
+
 import PopconfirmBlock from '@/components/Popconfirm/index';
+
 import DownModel from './components/DownModel';
 import ClearModel from './components/ClearModel';
 import AuthModel from './components/AuthModel';
 import UnbindModel from './components/UnbindModel';
+
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -496,11 +503,17 @@ export default class Device extends Vue {
     this.addTitle = '添加设备';
   }
 
-  // /device/terminal/exportExcel
   downLoad(data: any) {
-    console.log(data);
-    terminalExport(data);
-    // window.location.href = `${config.API}/device/terminal/exportExcel?${data}`;
+    console.log(this.getUrlParams(data));
+    terminalExport(this.getUrlParams(data));
+    // utils.postDownload(`${config.API}/device/terminal/exportExcel?${qs.stringify(data)}`);
+  }
+  getUrlParams(params:any) {
+    let urlParams = '';
+    for (const i in params) {
+      urlParams += `${i}=${params[i]}&`;
+    }
+    return urlParams.substring(0, urlParams.length - 1);
   }
 
   // 关闭弹窗

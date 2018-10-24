@@ -658,7 +658,7 @@ export default class Trajectory extends Vue {
       if (res.result.resultCode === '0') {
         let data = res.entity;
         data = data.map((item: any, index: number) => {
-          const point = coordTrasns.transToBaidu(item, 'gcj02ll');
+          const point = coordTrasns.transToBaidu(item, 'GCJ02');
           item.lat = point.lat;
           item.lng = point.lng;
           if (item.events) {

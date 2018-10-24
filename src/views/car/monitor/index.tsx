@@ -451,6 +451,7 @@ export default class Monitor extends Vue {
       if (id === item.id) {
         this.openMsg(item);
       }
+      console.log(item);
       const point = CoordTrasns.transToBaidu(
         {
           lat: item.lat,

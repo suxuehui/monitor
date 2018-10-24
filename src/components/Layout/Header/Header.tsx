@@ -83,12 +83,16 @@ export default class Header extends Vue {
     }, 200);
   }
 
+  mounted() {
+    setTimeout(() => {
+      this.timeGet();
+    }, 3000);
+  }
+
   // 每30s拉取一次
   timeGet() {
-    setInterval(() => {
-      this.$store.dispatch('getNotice');
-      this.$store.dispatch('getAlarm');
-    }, 30000);
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
   }
 
   pswVisible: boolean = false;

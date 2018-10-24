@@ -345,13 +345,14 @@ export default class EleFence extends Vue {
     // 刷新table
     const MapTable: any = this.$refs.mapTable;
     MapTable.reloadTable();
-    const pageData:any = JSON.parse(JSON.stringify(MapTable.getCurrentPageData()));
-    pageData.forEach((item:any) => {
-      if (item.id === this.currentFenceId) {
-        this.showDetailBox(item);
-        this.currentChange(item);
-      }
-    });
+    setTimeout(() => {
+      const pageData:any = JSON.parse(JSON.stringify(MapTable.getCurrentPageData()));
+      pageData.forEach((item:any) => {
+        if (item.id === this.currentFenceId) {
+          this.currentChange(item);
+        }
+      });
+    }, 200);
   }
 
   // 清除覆盖物

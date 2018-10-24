@@ -1,8 +1,11 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
+
 import { orgTree, getDict } from '@/api/app';
 import { getSolution } from '@/api/message';
+import CoordTrasns from '@/utils/coordTrasns';
+
 import HandleModel from '@/views/message/alarm/components/HandleModel';
 import CheckModel from '@/views/message/alarm/components/CheckModel';
 import './index.less';
@@ -78,7 +81,7 @@ export default class Alarm extends Vue {
       rowKey: 'id',
       color: (row: any) => (row.activeStatus === 2 ? 'green' : 'red'),
       text: '处理',
-      disabled: (row:any) => (!row.status === false),
+      disabled: (row: any) => (!row.status === false),
       roles: true,
     },
     {
@@ -86,7 +89,7 @@ export default class Alarm extends Vue {
       rowKey: 'id',
       color: 'blue',
       text: '查看',
-      disabled: (row:any) => (row.status === false),
+      disabled: (row: any) => (row.status === false),
       roles: true,
     },
   ];
@@ -96,13 +99,18 @@ export default class Alarm extends Vue {
     { label: '车牌号', prop: 'plateNum' },
     { label: '车架号', prop: 'vin' },
     { label: '告警类型', prop: 'alarmTypeName' },
-    { label: '告警时间', prop: 'formatMsgTime' },
+    {
+      label: '告警时间',
+      prop: 'formatMsgTime',
+      sortable: true,
+      sortBy: 'formatMsgTime',
+    },
     { label: '告警内容', prop: 'content' },
     { label: '地点', prop: 'address', formatter: this.checkLoc },
     { label: '状态', prop: 'status', formatter: this.statusDom },
   ];
 
-  dateChange(val:any) {
+  dateChange(val: any) {
     if (val) {
       if (val.length === 2) {
         const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
@@ -132,7 +140,14 @@ export default class Alarm extends Vue {
     return <el-tag size="medium" type={type}>{row.status ? '已处理' : '未处理'}</el-tag>;
   }
   checkMapLoc(row: any) {
-    this.$router.push({ name: '告警地点', query: { lng: row.lng, lat: row.lat } });
+    const point: any = CoordTrasns.transToBaidu(
+      {
+        lat: row.lat,
+        lng: row.lng,
+      },
+      row.coordinateSystem,
+    );
+    this.$router.push({ name: '告警地点', query: { lng: point.lng, lat: point.lat } });
   }
 
   activeTypes: ActiveType[] = [

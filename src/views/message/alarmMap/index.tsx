@@ -16,7 +16,7 @@ export default class AlarmMap extends Vue {
   BMap: any = null; // 百度地图对象
   SMap: any = null; // 当前地图对象实例
   akNums: string = 'K52pNzWT61z1EHvdZptaSmlPRc7mKbjC'
-  locAddress:string = '';
+  locAddress: string = '';
   mounted() {
     const Address: any = this.$route.query;
     config.loadMap().then((BMap: any) => {
@@ -52,15 +52,30 @@ export default class AlarmMap extends Vue {
     });
   }
 
-  // msgContent(content: any) {
-  //   return `<div class="makerMsg">
-  //     <h3 class="plateNum">${content}</h3>
-  //   </div>`;
-  // }
+  // 定位至当前位置
+  getNowPosition() {
+    const Address: any = this.$route.query;
+    this.SMap.centerAndZoom(new this.BMap.Point(Address.lng, Address.lat), 15);
+  }
+
+  addZoom() {
+    const newZoom = this.SMap.getZoom() + 1;
+    this.SMap.setZoom(newZoom);
+  }
+
+  reduceZoom() {
+    const newZoom = this.SMap.getZoom() - 1;
+    this.SMap.setZoom(newZoom);
+  }
 
   render() {
     return (
       <div class="monitor-wrap">
+        <div ref="btnControl" id="btnControl" class="loc-change-box">
+          <el-button class="loc btn" size="mini" icon="iconfont-trace" on-click={this.getNowPosition}></el-button>
+          <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
+          <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
+        </div>
         <div id="map"></div>
       </div>
     );

@@ -144,6 +144,7 @@ export default class MFilter extends Vue {
   downloadFun(): void {
     // 参数
     const obj: any = JSON.parse(JSON.stringify(this.params));
+    const token:any = window.localStorage.getItem('token');
     obj.headerName = [];
     obj.headerKey = [];
     // 表格参数
@@ -155,6 +156,7 @@ export default class MFilter extends Vue {
     });
     obj.headerName = obj.headerName.join(',');
     obj.headerKey = obj.headerKey.join(',');
+    obj.token = token;
     this.$emit('downloadFun', obj);
   }
 

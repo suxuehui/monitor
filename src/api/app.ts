@@ -93,6 +93,9 @@ lat: number,
 lng: number,
 coordinateSystem?: string
 }) {
+  if (params.coordinateSystem === 'GCJ02') {
+    params.coordinateSystem = 'gcj02ll';
+  }
   return request({
     url: `http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&coordtype=${params.coordinateSystem}&location=${params.lat},${params.lng}&output=json&pois=1&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
     method: 'get',

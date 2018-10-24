@@ -160,10 +160,20 @@ const loadCanvasLayer = () => new Promise(((resolve, reject) => {
   script.onreadystatechange = script.onload;
 }));
 
+function postDownload(url: string) {
+  const Form = document.createElement('form');
+  document.body.appendChild(Form);
+  Form.method = 'get';
+  Form.action = url;
+  Form.target = '_blank';
+  Form.submit();
+}
+
 export default {
   param2Obj,
   levelcodeToArray,
   routeToArray,
+  postDownload,
   loadMap,
   loadMapLib,
   loadMapTextIcon,
