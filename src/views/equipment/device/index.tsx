@@ -130,11 +130,20 @@ export default class Device extends Vue {
     {
       key: 'bind',
       rowKey: 'imei',
-      color: (row: any) => (row.status === 1 ? 'green' : 'red'),
-      text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
-      msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
+      color: 'green',
+      text: '绑定',
+      msg: '是否要绑定？',
       disabled: this.bindDisable,
       roles: true,
+    },
+    {
+      key: 'unbind',
+      rowKey: 'imei',
+      color: 'red',
+      text: '解绑',
+      msg: '是否要解绑？',
+      roles: true,
+      disabled: this.unBindDisable,
     },
     {
       key: 'accept',
@@ -182,12 +191,20 @@ export default class Device extends Vue {
   bindDisable(row: any) {
     // 是否在线
     if (row.online === 1) {
-      return false;
-    }
-    if (row.status === 1) {
+      // 待安绑
+      if (row.status === 1) {
+        return false;
+      }
       return true;
     }
-    return false;
+    return true;
+  }
+
+  unBindDisable(row: any) {
+    if (row.status === 2 || row.status === 3 || row.status === 4) {
+      return false;
+    }
+    return true;
   }
   // 表格参数
   tableList: tableList[] = [
@@ -295,13 +312,13 @@ export default class Device extends Vue {
       '/terminal/ops/list',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[1] && res[2]);
-      this.opreat[1].roles = !!(res[3]); // 验收
-      this.opreat[2].roles = !!(res[4]); // 鉴权码
+      this.opreat[0].roles = !!(res[1]); // 绑定
+      this.opreat[1].roles = !!(res[2]); // 解绑
+      this.opreat[2].roles = !!(res[3]); // 验收
+      this.opreat[3].roles = !!(res[4]); // 鉴权码
       this.authBtn = !!(res[5]);
-      this.opreat[3].roles = !!(res[6]);
-      this.opreat[3].roles = !!(res[6]);
-      this.opreat[4].roles = !!(res[7]);
+      this.opreat[4].roles = !!(res[6]);
+      this.opreat[5].roles = !!(res[7]);
       this.addBtn = !!(res[0]);
       this.resetBtn = !!(res[8]);
       this.opsBtn = !!(res[9]);
@@ -405,7 +422,7 @@ export default class Device extends Vue {
   }
   terSelect(row: any) {
     let type;
-    // 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
+    // 1-待安绑，2-待验收，3-已合格，4-未合格,5-已返厂 ,
     switch (row.status) {
       case 1:
         type = <el-tag size="medium" type="blue" style="marginRight:5px">待安绑</el-tag>;
@@ -445,14 +462,13 @@ export default class Device extends Vue {
     switch (key) {
       // 绑定、解绑
       case 'bind':
-        if (row.status === 1) {
-          this.modelForm = row;
-          this.bindVisible = true;
-          this.bindTitle = '绑定车辆';
-        } else {
-          this.unbindVisible = true;
-          this.unbindData = row;
-        }
+        this.modelForm = row;
+        this.bindVisible = true;
+        this.bindTitle = '绑定车辆';
+        break;
+      case 'unbind':
+        this.unbindVisible = true;
+        this.unbindData = row;
         break;
       case 'accept':
         this.acceptData = row;
