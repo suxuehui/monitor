@@ -73,7 +73,6 @@ export default class Alarm extends Vue {
       '/message/notice/view',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      console.log(res);
       this.opreat[1].roles = !!(res[1]);
       this.opreat[0].roles = !!(res[2]);
       this.addBtn = !!(res[0]);
@@ -82,7 +81,6 @@ export default class Alarm extends Vue {
 
   // 新增、导出按钮展示
   addBtn: boolean = true;
-  exportBtn: boolean = true;
 
   // 新增
   addVisible: boolean = false;
@@ -157,7 +155,7 @@ export default class Alarm extends Vue {
           table-list={this.tableList}
           url={this.url}
           dataType={'JSON'}
-          export-btn={this.exportBtn}
+          export-btn={false}
           localName={'notice'}
           on-menuClick={this.menuClick}
         />

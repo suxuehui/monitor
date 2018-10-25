@@ -1,6 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Button, Slider, Select, Option, Tooltip } from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
+import qs from 'qs';
 import { tripGPS } from '@/api/trajectory';
 import coordTrasns from '@/utils/coordTrasns';
 import config from '@/utils';
@@ -259,9 +260,18 @@ export default class Trajectory extends Vue {
   currentTrackData = [];
   first = true;
 
+  exportBtn:boolean = true;
+
   created() {
     this.tableUrl = '/device/trip/list';
     this.outParams.vehicleId = this.$route.params.id;
+    const getNowRoles: string[] = [
+      // 操作
+      '/device/trip/export',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.exportBtn = !!(res[0]);
+    });
   }
   canvasLayer: any = null;
   canvasLayerBack: any = null;
@@ -750,6 +760,13 @@ export default class Trajectory extends Vue {
   /**
    * 播放轨迹动画-end
    */
+
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log('导出车辆轨迹');
+    console.log(data1);
+  }
   render() {
     return (
       <div class="trajectory-wrap">
@@ -836,7 +853,8 @@ export default class Trajectory extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             on-clearOutParams={this.clear}
-            export-btn={true}
+            export-btn={this.exportBtn}
+            on-downBack={this.downLoad}
             localName={'trajectory'}
             table-list={this.tableList}
             url={this.tableUrl}

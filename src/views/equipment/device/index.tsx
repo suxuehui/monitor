@@ -322,7 +322,6 @@ export default class Device extends Vue {
       this.addBtn = !!(res[0]);
       this.resetBtn = !!(res[8]);
       this.opsBtn = !!(res[9]);
-      console.log(this.opsBtn);
     });
     // 门店
     orgTree(null).then((res) => {
@@ -554,7 +553,7 @@ export default class Device extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           data-type={'JSON'}
           localName={'device'}
           on-addBack={this.addModel}
@@ -564,7 +563,7 @@ export default class Device extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={true}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
         <add-modal

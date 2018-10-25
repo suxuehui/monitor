@@ -1,8 +1,9 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
 import { Input, Button, Tag, Pagination, Autocomplete, Tooltip } from 'element-ui';
-import { enableFence, disableFence, deleteFence, getFenceDetail, getFenceCars } from '@/api/fence';
-import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
+import qs from 'qs';
+import { getFenceCars } from '@/api/fence';
+import { queryAddress, orgTree } from '@/api/app';
 import { getProvince, getCity, getDistrict } from '@/api/province';
 import config from '@/utils';
 import './index.less';
@@ -325,7 +326,16 @@ export default class EleFence extends Vue {
     });
     this.filterList[2].options = this.alarmTypes;
     this.filterList[3].options = this.statusOptions;
+    // 权限设置
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/fence/export',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.exportBtn = !!(res[0]);
+    });
   }
+  exportBtn: boolean = true;
 
   // 围栏详情
   fenceDetail: any = {}
@@ -557,6 +567,12 @@ export default class EleFence extends Vue {
     this.SMap.addOverlay(marker); // 创建标注
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出电子围栏');
+  }
+
   render() {
     return (
       <div class="monitor-wrap">
@@ -630,7 +646,8 @@ export default class EleFence extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
-            export-btn={true}
+            export-btn={this.exportBtn}
+            on-downBack={this.downLoad}
             defaultPageSize={5}
             highlight-current-row={true}
             on-currentChange={this.currentChange}

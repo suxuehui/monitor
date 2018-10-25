@@ -1,6 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
+import qs from 'qs';
 import { modelInfo, modelDelete, brandAll, seriesAll } from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
@@ -84,11 +85,13 @@ export default class CarModel extends Vue {
       '/vehicle/model/info',
       '/vehicle/model/edit',
       '/vehicle/model/delete',
+      '/vehicle/model/export',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[1] && res[2]);
       this.opreat[1].roles = !!(res[3]);
       this.addBtn = !!(res[0]);
+      this.exportBtn = !!(res[4]);
     });
   }
 
@@ -207,6 +210,12 @@ export default class CarModel extends Vue {
     FromTable.reloadTable();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出车型');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -225,6 +234,7 @@ export default class CarModel extends Vue {
           dataType={'JSON'}
           localName={'carmodel'}
           export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
           on-clearOutParams={this.clear}
         />

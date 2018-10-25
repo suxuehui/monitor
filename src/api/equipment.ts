@@ -144,7 +144,7 @@ export async function terminalInfo(params: any) {
 // 导出
 export async function terminalExport(params: any) {
   return request({
-    url: `/device/terminal/exportExcel?${params}`,
+    url: `/zuul/device/terminal/exportExcel?${params}`,
     method: 'get',
     fetchType: 'JSON',
   });

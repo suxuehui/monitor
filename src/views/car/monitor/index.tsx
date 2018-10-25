@@ -3,7 +3,8 @@ import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Too
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
 import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate, controlCar } from '@/api/monitor';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
-import { allList, brandAll } from '@/api/model';
+import qs from 'qs';
+import { allList } from '@/api/model';
 import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import EditModel from './components/EditModel';
@@ -451,7 +452,6 @@ export default class Monitor extends Vue {
       if (id === item.id) {
         this.openMsg(item);
       }
-      console.log(item);
       const point = CoordTrasns.transToBaidu(
         {
           lat: item.lat,
@@ -714,12 +714,14 @@ export default class Monitor extends Vue {
       '/device/trip/list',
       '/vehicle/monitor/delete',
       '/vehicle/monitor/control',
+      '/vehicle/monitor/export',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]);
       this.opreat[2].roles = !!(res[1]);
       this.opreat[3].roles = !!(res[2]);
       this.controlBtn = !!(res[3]);
+      this.exportBtn = !!(res[4]);
     });
   }
 
@@ -872,6 +874,10 @@ export default class Monitor extends Vue {
       }
     });
   }
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log('导出车辆监控');
+  }
 
   render() {
     const { carDetail } = this;
@@ -974,6 +980,7 @@ export default class Monitor extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             export-btn={this.exportBtn}
+            on-downBack={this.downLoad}
             localName={'monitor'}
             on-menuClick={this.menuClick}
             table-list={this.tableList}

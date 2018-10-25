@@ -1,5 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col } from 'element-ui';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';
@@ -106,12 +107,14 @@ export default class Merchants extends Vue {
       '/customer/org/update',
       '/customer/org/lock/{orgId}',
       '/customer/org/unlock/{orgId}',
+      '/customer/org/export',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       console.log(res);
       this.opreat[0].roles = !!(res[1] && res[2]);
       this.opreat[1].roles = !!(res[3] && res[4]);
       this.addBtn = !!(res[0]);
+      this.exportBtn = !!(res[5]);
     });
   }
 
@@ -216,6 +219,12 @@ export default class Merchants extends Vue {
     this.closeModal();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出商户');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -232,6 +241,7 @@ export default class Merchants extends Vue {
           url={this.url}
           localName={'merchants'}
           export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
           fetch-type={'get'}
           on-menuClick={this.menuClick}
         />

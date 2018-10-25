@@ -1,4 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
+import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import { roleUpdateStatus } from '@/api/permission';
@@ -166,6 +167,12 @@ export default class Role extends Vue {
     this.closeModal();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出角色');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -183,6 +190,7 @@ export default class Role extends Vue {
           url={this.url}
           localName={'role'}
           export-btn={true}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />
         <add-modal

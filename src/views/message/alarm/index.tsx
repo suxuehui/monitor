@@ -1,5 +1,6 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag } from 'element-ui';
 
 import { orgTree, getDict } from '@/api/app';
@@ -167,11 +168,12 @@ export default class Alarm extends Vue {
       // 操作
       '/message/alarm/handle',
       '/message/alarm/getSolution',
+      '/message/alarm/export',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      console.log(res);
       this.opreat[0].roles = !!(res[0]);
       this.opreat[1].roles = !!(res[1]);
+      this.exportBtn = !!(res[2]);
     });
     // 门店搜索
     orgTree(null).then((res) => {
@@ -250,6 +252,12 @@ export default class Alarm extends Vue {
     this.closeModal();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出告警');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -267,6 +275,7 @@ export default class Alarm extends Vue {
           dataType={'JSON'}
           opreatWidth='180px'
           export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
           on-clearOutParams={this.clear}
         />

@@ -1,5 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
 import AddModel from './components/Addmodel';
@@ -72,12 +73,13 @@ export default class Brand extends Vue {
       '/vehicle/brand/info',
       '/vehicle/brand/edit',
       '/vehicle/brand/delete',
+      '/vehicle/brand/export',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      console.log(res);
       this.opreat[0].roles = !!(res[1] && res[2]);
       this.opreat[1].roles = !!(res[3]);
       this.addBtn = !!(res[0]);
+      this.exportBtn = !!(res[4]);
     });
   }
 
@@ -142,6 +144,12 @@ export default class Brand extends Vue {
     FromTable.reloadTable();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出品牌');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -159,6 +167,7 @@ export default class Brand extends Vue {
           table-list={this.tableList}
           url={this.url}
           dataType={'JSON'}
+          on-downBack={this.downLoad}
           export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />

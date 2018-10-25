@@ -1,4 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
+import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { roleSelect, userLock, userUnlock, userInfo, getUserInfo } from '@/api/permission';
@@ -212,6 +213,13 @@ export default class Member extends Vue {
     FromTable.reloadTable();
     this.closeModal();
   }
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出成员');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -228,6 +236,7 @@ export default class Member extends Vue {
           url={this.url}
           localName={'remembers'}
           export-btn={true}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />
         <add-modal

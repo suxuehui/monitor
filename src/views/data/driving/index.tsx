@@ -1,5 +1,6 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag } from 'element-ui';
 import { orgTree } from '@/api/app';
 import './index.less';
@@ -164,6 +165,20 @@ export default class Driving extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+    const getNowRoles: string[] = [
+      // 操作
+      '/statistics/driving/export',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.exportBtn = !!(res[0]);
+    });
+  }
+  exportBtn:boolean = false;
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log(data1);
+    console.log('导出品牌');
   }
 
   render(h: any) {
@@ -180,7 +195,8 @@ export default class Driving extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={true}
+          export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
         />
       </div>
     );
