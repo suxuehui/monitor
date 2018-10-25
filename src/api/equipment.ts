@@ -1,5 +1,6 @@
 import request from '@/utils/request';
-
+import axios from 'axios';
+import qs from 'qs';
 // 设备绑定
 export async function terminalBind(params: any) {
   return request({

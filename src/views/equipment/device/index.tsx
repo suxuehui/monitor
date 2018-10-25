@@ -504,18 +504,10 @@ export default class Device extends Vue {
   }
 
   downLoad(data: any) {
-    console.log(this.getUrlParams(data));
-    terminalExport(this.getUrlParams(data));
+    const data1 = qs.stringify(data);
+    terminalExport(data1);
     // utils.postDownload(`${config.API}/device/terminal/exportExcel?${qs.stringify(data)}`);
   }
-  getUrlParams(params:any) {
-    let urlParams = '';
-    for (const i in params) {
-      urlParams += `${i}=${params[i]}&`;
-    }
-    return urlParams.substring(0, urlParams.length - 1);
-  }
-
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;

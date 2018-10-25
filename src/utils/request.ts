@@ -109,7 +109,7 @@ export default function request(options: Option): Promise<any> {
     }
     return Promise.resolve({
       success: true,
-      message: response.data.result.resultMessage || statusText,
+      message: response.data.result.resultMessage || statusText || null,
       statusCode: status,
       ...data,
     });
@@ -130,12 +130,7 @@ export default function request(options: Option): Promise<any> {
     //     Message.error('无权限访问，请联系管理员！');
     //   }
     // }
-    Message.error(msg);
-    // if (msg === '登陆验证失效') {
-    //   Message.error(msg);
-    // } else {
-    //   Message.error('访问权限受限，请联系管理员！');
-    // }
+    // Message.error(msg);
     return Promise.reject(new Error(msg));
   });
 }
