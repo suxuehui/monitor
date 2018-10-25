@@ -562,7 +562,7 @@ export default class Monitor extends Vue {
           this.detailShow = true;
         }
       } else {
-        this.$message.error(res.result.resultMessage || '未知错误');
+        this.$message.error(res.result.resultMessage || '暂无车辆信息');
       }
     });
   }
@@ -732,7 +732,7 @@ export default class Monitor extends Vue {
 
   renderStatus(value: boolean | string | number, data: any, unit?: any) {
     const gettype = Object.prototype.toString;
-    // 油量%
+    // 剩余油量%
     if (unit === 'L' && typeof value === 'number' && typeof data.fuelTankCap === 'number') {
       const num = value ? value + unit : '未知';
       let num2: string = '未知';
@@ -741,6 +741,27 @@ export default class Monitor extends Vue {
         num2 = value ? `${str.toFixed(2)}%` : '未知';
       }
       return `${num2} (${num})`;
+    }
+    // 剩余电量
+    if (unit === '%') {
+      if (value) {
+        return value > -1 ? `${value}${unit}` : '未知';
+      }
+      return '未知';
+    }
+    // 累计里程、续航里程
+    if (unit === 'km') {
+      if (value) {
+        return value > -1 ? `${value}${unit}` : '未知';
+      }
+      return '未知';
+    }
+    // 电瓶电压
+    if (unit === 'V') {
+      if (value) {
+        return value > -1 ? `${value}${unit}` : '未知';
+      }
+      return '未知';
     }
     if (unit === 'leftFrontLock') {
       return this.setDoorStatus(data.leftFrontDoor, data.leftFrontLock);
@@ -769,8 +790,18 @@ export default class Monitor extends Vue {
 
   // 车门关闭、锁状态
   setDoorStatus(doorStatus: boolean, lockStatus: boolean) {
-    const str1 = doorStatus ? '开启' : '关闭';
-    const str2 = lockStatus ? '已上锁' : '未上锁';
+    let str1: string = '';
+    let str2: string = '';
+    if (doorStatus !== null) {
+      str1 = doorStatus ? '开启' : '关闭';
+    } else {
+      str1 = '未知';
+    }
+    if (lockStatus !== null) {
+      str2 = lockStatus ? '已上锁' : '未上锁';
+    } else {
+      str2 = '未知';
+    }
     return `${str1}；${str2}`;
   }
 

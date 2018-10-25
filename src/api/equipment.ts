@@ -142,10 +142,12 @@ export async function terminalInfo(params: any) {
 }
 
 // 导出
-export async function terminalExport(params: any) {
+export async function terminalExport(params: any, fileName:string) {
   return request({
-    url: `/zuul/device/terminal/exportExcel?${params}`,
+    url: `/device/terminal/exportExcel?${params}`,
     method: 'get',
     fetchType: 'JSON',
+    responseType: 'blob',
+    fileName: `${fileName}`,
   });
 }

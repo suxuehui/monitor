@@ -15,13 +15,7 @@ const service = axios.create({
   timeout: 20000, // 请求超时时间
 });
 
-const fetch = (options: {
-url: string,
-method: string,
-data?: object,
-fetchType?: string,
-headers?: any,
-}) => {
+const fetch = (options: Option) => {
   const { data } = options;
   let { url } = options;
   const { method = 'get', fetchType } = options;
@@ -71,6 +65,7 @@ headers?: any,
     return service({
       url,
       method: method.toLowerCase(),
+      responseType: options.responseType,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -96,12 +91,27 @@ interface Option {
   data?: object,
   fetchType?: string,
   headers?: any,
+  responseType?: 'blob' | 'json',
+  fileName?: string,
 }
 
 export default function request(options: Option): Promise<any> {
   return fetch(options).then((response: any) => {
     const { statusText, status } = response;
     let { data } = response;
+    if (options.responseType === 'blob') {
+      const reader = new FileReader();
+      reader.readAsDataURL(data);
+      reader.onload = (e: any) => {
+        const a = document.createElement('a');
+        a.download = `${options.fileName}.xlsx`;
+        a.href = e.target.result;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+      return false;
+    }
     if (data instanceof Array) {
       data = {
         list: data,
@@ -109,7 +119,8 @@ export default function request(options: Option): Promise<any> {
     }
     return Promise.resolve({
       success: true,
-      message: response.data.result.resultMessage || statusText || null,
+      message: response.data.result ?
+        response.data.result.resultMessage : null || statusText || null,
       statusCode: status,
       ...data,
     });

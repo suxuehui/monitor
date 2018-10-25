@@ -520,8 +520,7 @@ export default class Device extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    terminalExport(data1);
-    // utils.postDownload(`${config.API}/device/terminal/exportExcel?${qs.stringify(data)}`);
+    terminalExport(data1, '设备管理列表');
   }
   // 关闭弹窗
   closeModal(): void {
