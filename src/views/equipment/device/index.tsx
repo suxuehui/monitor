@@ -308,6 +308,7 @@ export default class Device extends Vue {
       '/device/terminal/clearCfg',
       '/device/terminal/reset/{id}',
       '/terminal/ops/list',
+      '/device/terminal/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[1]); // 绑定
@@ -320,6 +321,7 @@ export default class Device extends Vue {
       this.addBtn = !!(res[0]);
       this.resetBtn = !!(res[8]);
       this.opsBtn = !!(res[9]);
+      this.exportBtn = !!(res[10]);
     });
     // 门店
     orgTree(null).then((res) => {

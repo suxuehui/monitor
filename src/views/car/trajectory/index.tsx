@@ -268,7 +268,7 @@ export default class Trajectory extends Vue {
     this.outParams.vehicleId = this.$route.params.id;
     const getNowRoles: string[] = [
       // 操作
-      '/device/trip/export',
+      '/device/trip/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.exportBtn = !!(res[0]);
