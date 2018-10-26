@@ -171,7 +171,7 @@ export default class Setting extends Vue {
     const { alarmModelList, alarmValueList } = this;
     return (
       <div class="container">
-        <el-card class="box-card">
+        <el-card class="box-card" style="height:680px" shadow="never">
           <div class="header">
             <span class="title">告警设置</span>
           </div>
