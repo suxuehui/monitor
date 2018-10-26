@@ -168,7 +168,7 @@ export default class Alarm extends Vue {
       // 操作
       '/message/alarm/handle',
       '/message/alarm/getSolution',
-      '/message/alarm/export',
+      '/message/alarm//exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]);

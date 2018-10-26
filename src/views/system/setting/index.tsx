@@ -82,6 +82,7 @@ export default class Setting extends Vue {
           {
             result[index] && (index !== content.length - 1) ? <el-input
               size='mini'
+              step="1"
               type="number"
               value={this.alarmValueList[ind][val.substring(1, val.length - 1)]}
               on-change={(e: any) => this.inputChange(e, ind, val.substring(1, val.length - 1))}
@@ -92,8 +93,16 @@ export default class Setting extends Vue {
     });
   }
 
+  btnDisable: boolean = false;
+
   inputChange(e: any, ind: number, key: string) {
-    this.alarmValueList[ind][key] = parseInt(e, 10);
+    if (parseInt(e, 10) < 0) {
+      this.btnDisable = true;
+      this.$message.error('输入错误，请重新输入！');
+    } else {
+      this.btnDisable = false;
+      this.alarmValueList[ind][key] = parseInt(e, 10);
+    }
   }
 
   checkBoxChange(e: any, data: any, indx: number) {
@@ -165,7 +174,7 @@ export default class Setting extends Vue {
           {
             this.saveBtn ?
               <div class="bottom-btn">
-                <el-button on-click={this.onSubmit} loading={this.loading} type="primary">保存</el-button>
+                <el-button on-click={this.onSubmit} disabled={this.btnDisable} loading={this.loading} type="primary">保存</el-button>
               </div> : null
           }
         </el-card>
