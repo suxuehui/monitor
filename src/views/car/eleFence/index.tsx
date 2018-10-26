@@ -630,7 +630,7 @@ export default class EleFence extends Vue {
           </div>
         </div>
         <div ref="tableList" id="TableList" class={['car-table1', this.locChange ? 'table-active' : '']}>
-          <div ref="btnControl" id="btnControl" class="loc-change-box">
+          <div ref="btnControl" id="btnControl" class="loc-change-box-fence">
             <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
             <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
             <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
