@@ -123,6 +123,8 @@ export default class Alarm extends Vue {
         this.outParams.queryStartTime = `${val[0]}`;
         this.outParams.queryEndTime = `${val[1]}`;
       }
+    } else {
+      this.clear();
     }
   }
 
