@@ -738,11 +738,12 @@ export default class Monitor extends Vue {
     // 剩余油量%
     if (unit === 'L' && typeof value === 'number' && typeof data.fuelTankCap === 'number') {
       if (value > -1) {
-        const num = value ? value + unit : '未知';
+        // 剩余油量
+        const num = value > -1 ? value + unit : '未知';
         let num2: string = '未知';
         const str = (value / data.fuelTankCap) * 100;
         if (data.fuelTankCap !== 0) {
-          num2 = value ? `${str.toFixed(2)}%` : '未知';
+          num2 = str > -1 ? `${str.toFixed(2)}%` : '未知';
         }
         return `${num2} (${num})`;
       }
