@@ -3,6 +3,7 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
 import { configDelete, configInfo } from '@/api/config';
+import { exportExcel } from '@/api/export';
 import AddModel from '@/views/equipment/model/components/Addmodel';
 
 interface ActiveType { key: any, value: any, label: string }
@@ -69,7 +70,7 @@ export default class Member extends Vue {
       '/vehicle/config/info',
       '/vehicle/config/update',
       '/vehicle/config/delete',
-      '/vehicle/config/export',
+      '/vehicle/config/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[1] && res[2]);
@@ -146,8 +147,7 @@ export default class Member extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出配置');
+    exportExcel(data1, '配置列表', '/vehicle/config/exportExcel');
   }
 
   render(h: any) {

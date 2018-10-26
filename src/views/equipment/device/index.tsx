@@ -5,8 +5,6 @@ import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
 import { orgTree } from '@/api/app';
-import config from '@/utils/config';
-import utils from '@/utils/index';
 
 import AddModal from '@/views/equipment/device/components/AddModal';
 import BindModal from '@/views/equipment/device/components/BindModal';

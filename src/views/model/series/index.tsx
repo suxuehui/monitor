@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
+import { exportExcel } from '@/api/export';
 import { seriesDelete, seriesInfo, brandAll } from '@/api/model';
 import AddModel from './components/Addmodel';
 
@@ -79,7 +80,7 @@ export default class Series extends Vue {
       '/vehicle/series/info',
       '/vehicle/series/edit',
       '/vehicle/series/delete',
-      '/vehicle/series/export',
+      '/vehicle/series/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[1] && res[2]);
@@ -166,8 +167,7 @@ export default class Series extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出车系');
+    exportExcel(data1, '车系列表', '/vehicle/series/exportExcel');
   }
 
   render(h: any) {

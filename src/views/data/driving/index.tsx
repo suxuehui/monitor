@@ -2,6 +2,7 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
+import { exportExcel } from '@/api/export';
 import { orgTree } from '@/api/app';
 import './index.less';
 
@@ -167,7 +168,7 @@ export default class Driving extends Vue {
     });
     const getNowRoles: string[] = [
       // 操作
-      '/statistics/driving/export',
+      '/statistics/driving/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.exportBtn = !!(res[0]);
@@ -177,8 +178,7 @@ export default class Driving extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出品牌');
+    exportExcel(data1, '数据统计列表', '/statistics/driving/exportExcel');
   }
 
   render(h: any) {

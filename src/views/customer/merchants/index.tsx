@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col } from 'element-ui';
+import { exportExcel } from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';
 
@@ -107,7 +108,7 @@ export default class Merchants extends Vue {
       '/customer/org/update',
       '/customer/org/lock/{orgId}',
       '/customer/org/unlock/{orgId}',
-      '/customer/org/export',
+      '/customer/org/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       console.log(res);
@@ -221,8 +222,7 @@ export default class Merchants extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出商户');
+    exportExcel(data1, '商户列表', '/customer/org/exportExcel');
   }
 
   render(h: any) {

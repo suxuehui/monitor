@@ -35,7 +35,6 @@ export default class Setting extends Vue {
       '/system/cfg/save',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      console.log(res);
       this.saveBtn = !!(res[0]);
     });
   }
@@ -139,9 +138,10 @@ export default class Setting extends Vue {
 
   onSubmit() {
     this.loading = true;
-    const obj: any = [];
+    const alarmConfigDTOS: any = [];
+    const obj:any = {};
     this.alarmValueList.forEach((item: any) => {
-      obj.push({
+      alarmConfigDTOS.push({
         alarmCfgModelId: item.alarmCfgModelId,
         enable: item.enable,
         fieldThreshold: item.fieldThreshold,
@@ -150,6 +150,7 @@ export default class Setting extends Vue {
         maxFqcy: item.maxFqcy,
       });
     });
+    obj.alarmConfigDTOS = alarmConfigDTOS;
     saveAlarmModelList(obj).then((res) => {
       if (res.result.resultCode === '0') {
         setTimeout(() => {

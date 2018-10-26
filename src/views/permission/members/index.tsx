@@ -2,7 +2,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { roleSelect, userLock, userUnlock, userInfo, getUserInfo } from '@/api/permission';
+import { exportExcel } from '@/api/export';
+import { roleSelect, userLock, userUnlock, userInfo } from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
 import './index.less';
@@ -216,8 +217,7 @@ export default class Member extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出成员');
+    exportExcel(data1, '成员列表', '/sys/user/exportExcel');
   }
 
   render(h: any) {

@@ -3,6 +3,7 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
+import { exportExcel } from '@/api/export';
 import AddModel from './components/Addmodel';
 
 const noPic = require('@/assets/noPic.png');
@@ -73,7 +74,7 @@ export default class Brand extends Vue {
       '/vehicle/brand/info',
       '/vehicle/brand/edit',
       '/vehicle/brand/delete',
-      '/vehicle/brand/export',
+      '/vehicle/brand/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[1] && res[2]);
@@ -146,8 +147,7 @@ export default class Brand extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出品牌');
+    exportExcel(data1, '品牌列表', '/vehicle/brand/exportExcel');
   }
 
   render(h: any) {

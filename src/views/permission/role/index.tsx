@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
+import { exportExcel } from '@/api/export';
 import { roleUpdateStatus } from '@/api/permission';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
@@ -169,8 +170,7 @@ export default class Role extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出角色');
+    exportExcel(data1, '角色列表', '/sys/role/exportExcel');
   }
 
   render(h: any) {

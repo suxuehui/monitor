@@ -1,7 +1,8 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate, controlCar } from '@/api/monitor';
+import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, controlCar } from '@/api/monitor';
+import { exportExcel } from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import qs from 'qs';
 import { allList } from '@/api/model';
@@ -714,7 +715,7 @@ export default class Monitor extends Vue {
       '/device/trip/list',
       '/vehicle/monitor/delete',
       '/vehicle/monitor/control',
-      '/vehicle/monitor/export',
+      '/vehicle/monitor/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]);
@@ -907,7 +908,7 @@ export default class Monitor extends Vue {
   }
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log('导出车辆监控');
+    exportExcel(data1, '车辆列表', '/vehicle/monitor/exportExcel');
   }
 
   render() {

@@ -3,6 +3,7 @@ import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
 
+import { exportExcel } from '@/api/export';
 import { orgTree, getDict } from '@/api/app';
 import { getSolution } from '@/api/message';
 import CoordTrasns from '@/utils/coordTrasns';
@@ -168,7 +169,7 @@ export default class Alarm extends Vue {
       // 操作
       '/message/alarm/handle',
       '/message/alarm/getSolution',
-      '/message/alarm//exportExcel',
+      '/message/alarm/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]);
@@ -254,8 +255,7 @@ export default class Alarm extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出告警');
+    exportExcel(data1, '告警列表', '/message/alarm/exportExcel');
   }
 
   render(h: any) {

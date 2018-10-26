@@ -3,6 +3,8 @@ import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
 import { Input, Button, Tag, Pagination, Autocomplete, Tooltip } from 'element-ui';
 import qs from 'qs';
 import { getFenceCars } from '@/api/fence';
+import { exportExcel } from '@/api/export';
+
 import { queryAddress, orgTree } from '@/api/app';
 import { getProvince, getCity, getDistrict } from '@/api/province';
 import config from '@/utils';
@@ -329,7 +331,7 @@ export default class EleFence extends Vue {
     // 权限设置
     const getNowRoles: string[] = [
       // 操作
-      '/vehicle/fence/export',
+      '/vehicle/fence/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.exportBtn = !!(res[0]);
@@ -569,8 +571,7 @@ export default class EleFence extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出电子围栏');
+    exportExcel(data1, '围栏列表', '/vehicle/fence/exportExcel');
   }
 
   render() {

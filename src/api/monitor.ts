@@ -1,4 +1,3 @@
-import axios from 'axios';
 import request from '@/utils/request';
 
 export async function vehicleInfo(params: any) {

@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import qs from 'qs';
+import { exportExcel } from '@/api/export';
 import { modelInfo, modelDelete, brandAll, seriesAll } from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
@@ -85,7 +86,7 @@ export default class CarModel extends Vue {
       '/vehicle/model/info',
       '/vehicle/model/edit',
       '/vehicle/model/delete',
-      '/vehicle/model/export',
+      '/vehicle/model/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[1] && res[2]);
@@ -212,8 +213,7 @@ export default class CarModel extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log(data1);
-    console.log('导出车型');
+    exportExcel(data1, '车型列表', '/vehicle/model/exportExcel');
   }
 
   render(h: any) {
