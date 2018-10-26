@@ -300,13 +300,6 @@ export default class Monitor extends Vue {
       roles: true,
     },
     {
-      key: 'tracking',
-      rowKey: 'vin',
-      color: 'blue',
-      text: '追踪',
-      roles: true,
-    },
-    {
       key: 'trip',
       rowKey: 'vin',
       color: 'blue',
@@ -321,6 +314,13 @@ export default class Monitor extends Vue {
       msg: '确定删除？',
       roles: true,
     },
+    // {
+    //   key: 'tracking',
+    //   rowKey: 'vin',
+    //   color: 'blue',
+    //   text: '追踪',
+    //   roles: true,
+    // },
   ];
   tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
@@ -719,8 +719,10 @@ export default class Monitor extends Vue {
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]);
-      this.opreat[2].roles = !!(res[1]);
-      this.opreat[3].roles = !!(res[2]);
+      this.opreat[1].roles = !!(res[1]);
+      this.opreat[2].roles = !!(res[2]);
+      // 追踪
+      // this.opreat[3].roles;
       this.controlBtn = !!(res[3]);
       this.exportBtn = !!(res[4]);
     });

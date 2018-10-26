@@ -22,6 +22,18 @@ export default class AlarmMap extends Vue {
     config.loadMap().then((BMap: any) => {
       this.BMap = BMap;
       this.SMap = new BMap.Map('map', { enableMapClick: false });
+      this.SMap.setMapStyle({
+        styleJson: [
+          {
+            featureType: 'all',
+            elementType: 'all',
+            stylers: {
+              lightness: 16,
+              saturation: -53,
+            },
+          },
+        ],
+      });
       this.SMap.centerAndZoom(new BMap.Point(Address.lng, Address.lat), 15);
       this.SMap.enableScrollWheelZoom(true);
       this.getFormAddress(Address.lng, Address.lat);

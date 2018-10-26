@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Button, Slider, Select, Option, Tooltip } from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import qs from 'qs';
+import { exportExcel } from '@/api/export';
 import { tripGPS } from '@/api/trajectory';
 import coordTrasns from '@/utils/coordTrasns';
 import config from '@/utils';
@@ -764,8 +765,7 @@ export default class Trajectory extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log('导出车辆轨迹');
-    console.log(data1);
+    exportExcel(data1, '轨迹列表', '/device/trip/exportExcel');
   }
   render() {
     return (
