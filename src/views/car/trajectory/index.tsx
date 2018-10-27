@@ -261,7 +261,7 @@ export default class Trajectory extends Vue {
   currentTrackData = [];
   first = true;
 
-  exportBtn:boolean = true;
+  exportBtn: boolean = true;
 
   created() {
     this.tableUrl = '/device/trip/list';
@@ -279,6 +279,14 @@ export default class Trajectory extends Vue {
   CanvasLayerPointer: any = null;
   canvasBehavior: any = null;
   pointCollection: any = [];
+
+  utc2now(time: string) {
+    const date = new Date(time);
+    const str = date.getTime() + (8 * 60 * 60 * 1000); // 转换成时间戳+8小时
+    const nowDate = new Date(str);
+    return nowDate.Format('yyyy-MM-dd hh:mm:ss');
+  }
+
   /**
    * view内部，绘制轨迹线路
    *
@@ -300,7 +308,7 @@ export default class Trajectory extends Vue {
     for (let i = 0; i < data.length; i += 1) {
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
       tempPoint.speed = data[i].obdSpeed ? data[i].obdSpeed : data[i].gpsSpeed;
-      tempPoint.uTCTime = data[i].utctime;
+      tempPoint.uTCTime = this.utc2now(data[i].utctime);
       tempPoint.direction = data[i].direction;
       tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
       tempPoint.lnglat = `${data[i].lng.toFixed(2)},${data[i].lat.toFixed(2)}`;
