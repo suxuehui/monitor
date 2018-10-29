@@ -650,10 +650,10 @@ export default class Trajectory extends Vue {
 
   // 表格显示隐藏
   showTable(): void {
-    this.locChange = true;
+    this.locChange = false;
   }
   hideTable(): void {
-    this.locChange = false;
+    this.locChange = true;
   }
   plateNum = '';
 
@@ -812,7 +812,7 @@ export default class Trajectory extends Vue {
         }
         <div
           class={[
-            'loc-change-box', this.locChange
+            'loc-change-box3', !this.locChange
               ? 'loc-active'
               : '',
           ]}>
@@ -829,26 +829,28 @@ export default class Trajectory extends Vue {
             on-click={this.zoomReduce}></el-button>
           {!this.locChange
             ? <el-button
+              class="down btn"
+              size="small"
+              type="primary"
+              icon="el-icon-arrow-down"
+              on-click={this.hideTable}></el-button> :
+            <el-button
               class="up btn"
               size="small"
               type="primary"
               icon="el-icon-arrow-up"
               on-click={this.showTable}></el-button>
-            : <el-button
-              class="down btn"
-              size="small"
-              type="primary"
-              icon="el-icon-arrow-down"
-              on-click={this.hideTable}></el-button>
+
           }
         </div>
         <div
           class={[
-            'car-table', this.locChange
+            'car-table3', !this.locChange
               ? 'table-active'
               : '',
           ]}>
           <filter-table
+            ref="tableList"
             class="map-table"
             filter-list={this.filterList}
             filter-grade={[]}

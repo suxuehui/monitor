@@ -378,10 +378,10 @@ export default class EleFence extends Vue {
   }
   // 表格显示隐藏
   showTable(): any {
-    this.locChange = true;
+    this.locChange = false;
   }
   hideTable(): any {
-    this.locChange = false;
+    this.locChange = true;
   }
 
   alarmTypeSet(data: string) {
@@ -629,14 +629,14 @@ export default class EleFence extends Vue {
             }
           </div>
         </div>
-        <div ref="tableList" id="TableList" class={['car-table1', this.locChange ? 'table-active' : '']}>
-          <div ref="btnControl" id="btnControl" class="loc-change-box-fence">
+        <div ref="tableList" id="TableList" class={['car-table2', !this.locChange ? 'table-active' : '']}>
+          <div ref="btnControl" id="btnControl" class="loc-change-box2">
             <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
             <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
             <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
             {!this.locChange ?
-              <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
-              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>:
+              <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
             }
           </div>
           <filter-table

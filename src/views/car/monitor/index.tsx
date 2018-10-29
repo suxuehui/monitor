@@ -662,10 +662,10 @@ export default class Monitor extends Vue {
 
   // 表格显示隐藏
   showTable(): void {
-    this.locChange = true;
+    this.locChange = false;
   }
   hideTable(): void {
-    this.locChange = false;
+    this.locChange = true;
   }
 
 
@@ -994,19 +994,19 @@ export default class Monitor extends Vue {
             </ul>
           </div>
         </div>
-        <div class={['car-table', this.locChange ? 'table-active' : '']}>
-          <div class='loc-change-box'>
+        <div class={['car-table1', !this.locChange ? 'table-active' : '']}>
+          <div class='loc-change-box1'>
             <el-button class="loc btn" size="small" icon="el-icon-location" on-click={this.setCenter}></el-button>
             <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>
             <el-button class="less btn" size="small" icon="el-icon-minus" on-click={this.zoomReduce}></el-button>
             {!this.locChange ?
-              <el-button class="up btn" size="small" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
-              <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+              <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>:
+              <el-button class="up btn" size="small" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
             }
           </div>
           <filter-table
             ref="mapTable"
-            class="mapTable"
+            class="mapTable1"
             filter-list={this.filterList}
             filter-grade={[]}
             filter-params={this.filterParams}
