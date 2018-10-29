@@ -30,7 +30,7 @@
             v-model="loginForm.captcha"
             prefix-icon="iconfont-code"
             placeholder="请输入验证码"
-            @keydown.enter="submitForm('ruleForm')"
+            @keyup.native.enter="submitForm('ruleForm')"
           />
           <img :src="codeImg" class="authcodeImg" alt="" @click="getCodeImg">
         </el-form-item>
