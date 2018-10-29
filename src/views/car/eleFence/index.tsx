@@ -244,22 +244,13 @@ export default class EleFence extends Vue {
           if (item.value === `${data}`) {
             setTimeout(() => {
               this.provinceList[index].children = [];
-              if (data === 120000 || data === 110000 || data === 310000 || data === 500000 || data === '120000' || data === '110000' || data === '310000' || data === '500000') {
-                res.entity.forEach((items: any) => {
-                  this.provinceList[index].children.push({
-                    label: items.name,
-                    value: `${items.regionalismcode}&${items.name}`,
-                  });
+              res.entity.forEach((items: any) => {
+                this.provinceList[index].children.push({
+                  label: items.name,
+                  children: [],
+                  value: `${items.regionalismcode}`,
                 });
-              } else {
-                res.entity.forEach((items: any) => {
-                  this.provinceList[index].children.push({
-                    label: items.name,
-                    children: [],
-                    value: `${items.regionalismcode}&${items.name}`,
-                  });
-                });
-              }
+              });
             }, 200);
           }
         });
@@ -357,8 +348,8 @@ export default class EleFence extends Vue {
     const MapTable: any = this.$refs.mapTable;
     MapTable.reloadTable();
     setTimeout(() => {
-      const pageData:any = JSON.parse(JSON.stringify(MapTable.getCurrentPageData()));
-      pageData.forEach((item:any) => {
+      const pageData: any = JSON.parse(JSON.stringify(MapTable.getCurrentPageData()));
+      pageData.forEach((item: any) => {
         if (item.id === this.currentFenceId) {
           this.currentChange(item);
         }
@@ -437,7 +428,7 @@ export default class EleFence extends Vue {
   }
 
   currentFenceId: number = 0;
-  setCurrentFenceId(id:number) {
+  setCurrentFenceId(id: number) {
     this.currentFenceId = id;
   }
 
@@ -634,7 +625,7 @@ export default class EleFence extends Vue {
             <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
             <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
             {!this.locChange ?
-              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>:
+              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button> :
               <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
             }
           </div>
