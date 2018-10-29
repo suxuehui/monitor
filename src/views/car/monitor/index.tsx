@@ -554,6 +554,9 @@ export default class Monitor extends Vue {
               this.detailShow = true;
             }
           });
+          if (this.currentCarId !== 0) {
+            this.setNowCarPosi(res.entity);
+          }
         } else {
           carDetail = {
             address: '未知位置',
@@ -567,6 +570,17 @@ export default class Monitor extends Vue {
       }
     });
   }
+
+  // 刷新后重置车辆信息
+  setNowCarPosi = (val: any) => {
+    this.mapCenter = {
+      lat: val.lat,
+      lng: val.lng,
+    };
+    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+    this.radiusGetData(val.id);
+  }
+
   // online
   onlineFormat(row: any) {
     if (row.online) {
@@ -609,7 +623,7 @@ export default class Monitor extends Vue {
   }
 
   // 刷新
-  refresh(): void {
+  refreshLoad(): void {
     // 详情
     if (this.currentCarId !== 0) {
       this.getCarDetail(`${this.currentCarId}`);
@@ -925,7 +939,7 @@ export default class Monitor extends Vue {
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
           </el-autocomplete>
-          <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
+          <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refreshLoad}></el-button>
         </div>
         <div class={['car-detail-box', this.detailShow ? 'detail-active' : '', this.locChange ? '' : 'big']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
@@ -1000,7 +1014,7 @@ export default class Monitor extends Vue {
             <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>
             <el-button class="less btn" size="small" icon="el-icon-minus" on-click={this.zoomReduce}></el-button>
             {!this.locChange ?
-              <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>:
+              <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button> :
               <el-button class="up btn" size="small" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
             }
           </div>

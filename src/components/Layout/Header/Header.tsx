@@ -146,7 +146,7 @@ export default class Header extends Vue {
                 trigger="click">
                 <menu-list bgColor="#fff" txtColor="#898989" />
                 <i slot="reference" class="menu-btn iconfont-listMenu"></i>
-              </el-popover> : <i class={`menu-btn iconfont-${opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
+              </el-popover> : <i class={`menu-btn iconfont-${!opened ? 'indent' : 'outdent'}`} on-click={this.switchSidebar}></i>
             }
             <el-breadcrumb class="header-bread" separator="/">
               {

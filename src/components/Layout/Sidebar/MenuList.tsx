@@ -31,6 +31,7 @@ export default class MenuList extends Vue {
         collapse={!opened}
         default-active="2"
         class="left-menu"
+        id="left-menu"
         background-color={this.bgColor}
         text-color={this.txtColor}
         unique-opened={true}

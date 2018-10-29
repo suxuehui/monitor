@@ -181,7 +181,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       From.clearValidate();
       From.resetFields();
-    }, 200);
+    }, 400);
     this.loading = false;
   }
 
