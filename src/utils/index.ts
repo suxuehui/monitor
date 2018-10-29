@@ -133,7 +133,6 @@ const loadDrawScript = () => new Promise(((resolve, reject) => {
   script.onload = function onload() {
     if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
       // map ok
-      console.log('load DrawingManager ok');
       resolve(window.BMapLib);
     }
     script.onload = null;

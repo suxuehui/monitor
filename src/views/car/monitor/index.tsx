@@ -387,7 +387,6 @@ export default class Monitor extends Vue {
       this.SMap.centerAndZoom(new BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
       this.geolocationControl = new BMap.GeolocationControl();
       this.geolocationControl.addEventListener('locationSuccess', () => {
-        console.log(1);
       });
       this.SMap.enableScrollWheelZoom(true);
       // 创建新的图标

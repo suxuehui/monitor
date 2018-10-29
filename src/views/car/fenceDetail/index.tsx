@@ -142,7 +142,6 @@ export default class FenceDetail extends Vue {
           }
         });
       }).catch((e) => {
-        console.log(`e:${e}`);
       });
     });
   }
@@ -218,7 +217,6 @@ export default class FenceDetail extends Vue {
     this.inFenLat = lat;
     this.circleRadius = radius;
     if (!lng || !lat) {
-      console.log('no lat or lng');
       return;
     }
     // 在地图上显示标注
@@ -467,18 +465,6 @@ export default class FenceDetail extends Vue {
   }
 
   submit = () => {
-    console.log(`标点纬度：${this.inFenLng}`);
-    console.log(`标点经度：${this.inFenLat}`);
-    console.log(`标点经度：${this.rectanglePoint}`);
-
-    // 圆形半径、坐标
-    // inFenLat: string = '';
-    // inFenLng: string = '';
-    // circleRadius: number = 1;
-    // // 多边形坐标点
-    // polyPoint: any = {};
-    // // 矩形坐标点
-    // rectanglePoint: any = {};
   }
 
   render() {

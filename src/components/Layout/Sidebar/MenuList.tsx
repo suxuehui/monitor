@@ -17,12 +17,10 @@ export default class MenuList extends Vue {
   @Emit()
   handleOpen(key: string, keyPath: string) {
     const self = this;
-    console.log(key, keyPath);
   }
   @Emit()
   handleClose(key: string, keyPath: string) {
     const self = this;
-    console.log(key, keyPath);
   }
   render() {
     const { menuData, sidebar: { opened } } = this.$store.state.app;

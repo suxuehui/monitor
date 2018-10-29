@@ -111,7 +111,6 @@ export default class Merchants extends Vue {
       '/customer/org/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      console.log(res);
       this.opreat[0].roles = !!(res[1] && res[2]);
       this.opreat[1].roles = !!(res[3] && res[4]);
       this.addBtn = !!(res[0]);

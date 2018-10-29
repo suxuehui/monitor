@@ -123,12 +123,12 @@ const app = {
     RemoveTab: (context: any, name: string) => {
       let { tabList } = context.state;
       const { keepList } = context.state;
+      let onTab: any = null;
       const resultData = { tabList: [], tabActiveKey: '' };
       tabList = tabList.filter((item: any, index: number) => {
         if (item.name === name) {
           // 关闭tab后，页面跳转到前一个TAB，特殊情况是关闭第一个TAB应该打开第二个TAB
-          const onTab = index ? tabList[index - 1] : tabList[index + 1];
-          router.push({ name: onTab.name, query: onTab.query, params: onTab.params });
+          onTab = index ? tabList[index - 1] : tabList[index + 1];
           keepList.splice(keepList.indexOf(item.meta.key), 1);
           context.commit('KEEP_CHANGE', keepList);
           return false;
@@ -137,6 +137,15 @@ const app = {
       });
       resultData.tabList = tabList;
       context.commit('TAB_CHANGE', resultData);
+      const params: any = {};
+      if (onTab.params) {
+        const pattern = /:\w+/g;
+        const str = pattern.exec(onTab.path);
+        if (str) {
+          params[str[0].replace(':', '')] = onTab.params;
+        }
+      }
+      router.push({ name: onTab.name, query: onTab.query, params });
     },
     TabChange: (context: any, name: string) => {
       const { tabList } = context.state;

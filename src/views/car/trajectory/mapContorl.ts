@@ -230,7 +230,6 @@ export default class MapContorl {
     if (!data.interval) {
       this.SMap.panTo(point);
     }
-    console.log(this.entityMarker.getIcon());
   }
   trackInfoBox: any = null; // 窗口对象
   entityMarker: any = null; // 标记

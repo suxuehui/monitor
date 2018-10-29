@@ -350,7 +350,6 @@ export default class EleFence extends Vue {
 
   // 地图搜索
   search(): void {
-    console.log(this.address);
   }
 
   refresh(): void {

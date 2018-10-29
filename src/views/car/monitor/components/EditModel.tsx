@@ -135,7 +135,6 @@ export default class EditModel extends Vue {
   }
 
   handleChangeModel(val: any) {
-    console.log(val);
     this.brandId = val[0] ? parseInt(val[0], 10) : null;
     this.seriesId = val[1] ? parseInt(val[1], 10) : -1;
     this.modelId = val[2] ? parseInt(val[2], 10) : -1;

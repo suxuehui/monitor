@@ -85,7 +85,7 @@ export default class AddModal extends Vue {
   // 检测角色
   checkRole(rule: any, value: string, callback: Function) {
     if (value) {
-      console.log('---');
+      callback();
     } else {
       callback(new Error('成员角色不能为空'));
     }

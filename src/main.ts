@@ -39,7 +39,6 @@ router.beforeEach((to, from, next) => {
         });
       });
     }).catch((err) => {
-      console.log(err);
       if (config.noLoginList.indexOf(to.path) < 0) {
         next({ name: '登录', replace: true });
       }

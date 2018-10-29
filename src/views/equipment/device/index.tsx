@@ -489,7 +489,7 @@ export default class Device extends Vue {
         this.clearVisible = true;
         break;
       default:
-        console.log(1);
+        break;
     }
   }
 

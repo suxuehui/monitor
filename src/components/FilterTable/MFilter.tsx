@@ -274,7 +274,6 @@ export default class MFilter extends Vue {
       this.params[value[0]] = data[0].Format('yyyy-MM-dd hh:mm:ss');
       this.params[value[1]] = data[1].Format('yyyy-MM-dd hh:mm:ss');
     }
-    console.log(this.params);
   }
 
   render() {
