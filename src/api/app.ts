@@ -97,7 +97,7 @@ coordinateSystem?: string
     params.coordinateSystem = 'gcj02ll';
   }
   return request({
-    url: `http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&coordtype=${params.coordinateSystem}&location=${params.lat},${params.lng}&output=json&pois=1&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
+    url: `https://api.map.baidu.com/geocoder/v2/?callback=renderReverse&coordtype=${params.coordinateSystem}&location=${params.lat},${params.lng}&output=json&pois=1&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
     method: 'get',
     fetchType: 'JSONP',
   });
@@ -105,7 +105,7 @@ coordinateSystem?: string
 
 export async function queryAddress(params: string) {
   return request({
-    url: `http://api.map.baidu.com/place/v2/suggestion?query=${params}&region=全国&city_limit=false&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
+    url: `https://api.map.baidu.com/place/v2/suggestion?query=${params}&region=全国&city_limit=false&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
     method: 'get',
     fetchType: 'JSONP',
   });
@@ -113,7 +113,7 @@ export async function queryAddress(params: string) {
 
 export async function addressToGps(params: string) {
   return request({
-    url: `http://api.map.baidu.com/geocoder/v2/?address=${params}&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&callback=showLocation`,
+    url: `https://api.map.baidu.com/geocoder/v2/?address=${params}&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&callback=showLocation`,
     method: 'get',
     fetchType: 'JSONP',
   });
