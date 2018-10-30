@@ -764,21 +764,21 @@ export default class Monitor extends Vue {
     }
     // 剩余电量
     if (unit === '%') {
-      if (value >= 0) {
+      if (value && value >= 0) {
         return `${value}${unit}`;
       }
       return '未知';
     }
     // 累计里程、续航里程
     if (unit === 'km') {
-      if (value >= 0) {
+      if (value && value >= 0) {
         return `${value}${unit}`;
       }
       return '未知';
     }
     // 电瓶电压
     if (unit === 'V') {
-      if (value >= 0) {
+      if (value && value >= 0) {
         return `${value}${unit}`;
       }
       return '未知';
