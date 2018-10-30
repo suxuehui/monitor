@@ -117,13 +117,13 @@ export default class Member extends Vue {
       label: '添加时间',
       prop: 'crtTime',
       sortable: true,
-      sortBy: 'crtTime',
+      sortBy: ['crtTime'],
     },
     {
       label: '最后登录',
       prop: 'lastLoginTime',
       sortable: true,
-      sortBy: 'lastLoginTime',
+      sortBy: ['lastLoginTime'],
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];

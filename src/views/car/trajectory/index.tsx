@@ -114,6 +114,11 @@ export default class Trajectory extends Vue {
       sortable: true,
       sortBy: 'startTime',
     }, {
+      label: '结束时间',
+      prop: 'endTime',
+      sortable: true,
+      sortBy: 'endTime',
+    }, {
       label: '起点',
       prop: 'startAddr',
     }, {
@@ -674,18 +679,21 @@ export default class Trajectory extends Vue {
     tripGPS({ id: val.tripId }).then((res) => {
       if (res.result.resultCode === '0') {
         let data = res.entity;
-        data = data.map((item: any, index: number) => {
-          const point = coordTrasns.transToBaidu(item, 'bd09ll');
-          item.lat = point.lat;
-          item.lng = point.lng;
-          if (item.events) {
-            item.events.forEach((items: string) => {
-              if (items !== '0') {
-                this.behaivorData[parseInt(items, 10) - 1].num += 1;
-              }
-            });
+        data = data.filter((item: any, index: number) => {
+          if (item.lat > 0 || item.lng > 0) {
+            const point = coordTrasns.transToBaidu(item, 'bd09ll');
+            item.lat = point.lat;
+            item.lng = point.lng;
+            if (item.events) {
+              item.events.forEach((items: string) => {
+                if (items !== '0') {
+                  this.behaivorData[parseInt(items, 10) - 1].num += 1;
+                }
+              });
+            }
+            return item;
           }
-          return item;
+          return false;
         });
         this.currentTrackData = data;
         this.trackView(data);
@@ -787,7 +795,7 @@ export default class Trajectory extends Vue {
         <div id="map"></div>
         {
           this.currentTrackData.length ?
-            <div class={`play-box ${this.locChange ? 'bottom' : ''}`}>
+            <div class={`play-box ${this.locChange ? '' : 'bottom'}`}>
               <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
               <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
               <el-slider
