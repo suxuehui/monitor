@@ -91,7 +91,7 @@ export default class FilterTable extends Vue {
   // 请求数据方法
   @Prop() private fetchType!: string;
 
-  @Prop() private headerAlign!: string;
+  @Prop({ default: 'center' }) private headerAlign!: string;
 
   @Prop({ default: false })
   private highlightCurrentRow!: boolean;

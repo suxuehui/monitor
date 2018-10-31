@@ -126,7 +126,7 @@ const loadMapInfoBox = () => new Promise(((resolve, reject) => {
 const loadDrawScript = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
-  script.src = '//api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js';
+  script.src = 'https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js';
   script.onerror = reject;
   const link: any = document.createElement('link');
   link.rel = 'stylesheet';

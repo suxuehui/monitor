@@ -184,7 +184,7 @@ export default class MTable extends Vue {
                     </el-tooltip> : '--');
               }
               return <el-table-column
-                key={index} {...{ props: item }}>
+                key={index} {...{ props: item }} align={this.headerAlign}>
               </el-table-column>;
             })
           }

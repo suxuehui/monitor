@@ -643,7 +643,7 @@ export default class EleFence extends Vue {
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             on-clearOutParams={this.clear}
-            headerAlign={'center'}
+            header-align={'center'}
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'eleFence'}

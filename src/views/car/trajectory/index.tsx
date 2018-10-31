@@ -132,18 +132,13 @@ export default class Trajectory extends Vue {
       formatter(row: any) {
         return row.mileage !== null
           ? `${row.mileage}km`
-          : '未知';
+          : '--';
       },
     }, {
       label: '用时',
       prop: 'period',
       sortable: true,
       sortBy: 'period',
-      // formatter(row: any) {
-      //   return row.period !== null
-      //     ? `${row.period}分钟`
-      //     : '未知';
-      // },
       formatter: this.changeMinutes,
     }, {
       label: '耗油',
@@ -159,7 +154,7 @@ export default class Trajectory extends Vue {
       formatter(row: any) {
         return row.powerCons !== null
           ? `${row.powerCons}%`
-          : '未知';
+          : '--';
       },
     }, {
       label: '平均油耗',
@@ -175,7 +170,7 @@ export default class Trajectory extends Vue {
       formatter(row: any) {
         return row.avgSpeed !== null
           ? `${row.avgSpeed}km/h`
-          : '未知';
+          : '--';
       },
     }, {
       label: '最高速度',
@@ -185,7 +180,7 @@ export default class Trajectory extends Vue {
       formatter(row: any) {
         return row.maxSpeed !== null
           ? `${row.maxSpeed}km/h`
-          : '未知';
+          : '--';
       },
     },
   ];
@@ -216,7 +211,7 @@ export default class Trajectory extends Vue {
         <span>{str}</span>
       </el-tooltip>;
     }
-    return '未知';
+    return '--';
   }
 
   // 平均油耗
@@ -226,7 +221,7 @@ export default class Trajectory extends Vue {
         <span>{`${row.avgfuelCons}L/100km`}</span>
       </el-tooltip>;
     }
-    return '未知';
+    return '--';
   }
 
   BMap: any = null; // 百度地图对象
@@ -888,14 +883,14 @@ export default class Trajectory extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
+            export-btn={this.exportBtn}
+            on-downBack={this.downLoad}
             dataType={'JSON'}
             fetchType={'post'}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
             on-clearOutParams={this.clear}
-            export-btn={this.exportBtn}
-            on-downBack={this.downLoad}
             localName={'trajectory'}
             table-list={this.tableList}
             url={this.tableUrl}
