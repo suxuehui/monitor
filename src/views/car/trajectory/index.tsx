@@ -678,8 +678,10 @@ export default class Trajectory extends Vue {
   isEnd: boolean = true;
   // 表格单选
   currentChange(val: any) {
-    if (!val.entTime) {
+    if (!val.endTime) {
       this.isEnd = false;
+    } else {
+      this.isEnd = true;
     }
     this.behaivorData = [
       { num: 0, txt: '轻震动' },
