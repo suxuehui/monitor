@@ -139,11 +139,12 @@ export default class Trajectory extends Vue {
       prop: 'period',
       sortable: true,
       sortBy: 'period',
-      formatter(row: any) {
-        return row.period !== null
-          ? `${row.period}分钟`
-          : '未知';
-      },
+      // formatter(row: any) {
+      //   return row.period !== null
+      //     ? `${row.period}分钟`
+      //     : '未知';
+      // },
+      formatter: this.changeMinutes,
     }, {
       label: '耗油',
       prop: 'fuelCons',
@@ -188,6 +189,23 @@ export default class Trajectory extends Vue {
       },
     },
   ];
+
+  changeMinutes(data: any) {
+    const str: string = this.timeChange(data.period);
+    return data.period !== null ?
+      <el-tooltip class="item" effect="dark" content={str} placement="top">
+        <span>{str}</span>
+      </el-tooltip> : '--';
+  }
+
+  // 时间格式转换
+  timeChange(data: any) {
+    const day: any = data / 60 / 24;
+    const hour: any = (data / 60) % 24;
+    const min: any = data % 60;
+    const str = `${parseInt(day, 10)}天${parseInt(hour, 10)}小时${parseInt(min, 10)}分钟`;
+    return str;
+  }
 
   // 耗油计算
   oilCount(row: any) {
@@ -482,8 +500,10 @@ export default class Trajectory extends Vue {
       if (totalPoints.length !== 0) {
         const oneXY = self.SMap.pointToPixel(totalPoints[0]);
         iconRender(oneXY.x - 13, oneXY.y - 26, require('@/assets/start.png'));
-        const endXY = self.SMap.pointToPixel(totalPoints[totalPoints.length - 1]);
-        iconRender(endXY.x - 13, endXY.y - 26, require('@/assets/end.png'));
+        if (self.isEnd) {
+          const endXY = self.SMap.pointToPixel(totalPoints[totalPoints.length - 1]);
+          iconRender(endXY.x - 13, endXY.y - 26, require('@/assets/end.png'));
+        }
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           if (totalPoints[i].event && totalPoints[i].event[0] !== '0') {
             const pixel = self.SMap.pointToPixel(totalPoints[i]);
@@ -637,8 +657,6 @@ export default class Trajectory extends Vue {
     return color;
   }
 
-  timeChange(val: string) {
-  }
 
   // 增加zoom
   zoomAdd = () => {
@@ -661,8 +679,13 @@ export default class Trajectory extends Vue {
   plateNum = '';
 
   behaivorData: { num: number, txt: string }[] = []
+
+  isEnd: boolean = true;
   // 表格单选
   currentChange(val: any) {
+    if (!val.entTime) {
+      this.isEnd = false;
+    }
     this.behaivorData = [
       { num: 0, txt: '轻震动' },
       { num: 0, txt: '轻碰撞' },
@@ -676,6 +699,8 @@ export default class Trajectory extends Vue {
     // 清除播放
     this.getMapContorl().clearPlay();
     this.clearPlay();
+    this.getMapContorl().removeTrackPointOverlay('trackpoint_in');
+    this.getMapContorl().removeTrackInfoBox();
     tripGPS({ id: val.tripId }).then((res) => {
       if (res.result.resultCode === '0') {
         let data = res.entity;
@@ -794,7 +819,7 @@ export default class Trajectory extends Vue {
         </ul>
         <div id="map"></div>
         {
-          this.currentTrackData.length ?
+          this.currentTrackData.length && this.isEnd ?
             <div class={`play-box ${this.locChange ? '' : 'bottom'}`}>
               <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
               <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>

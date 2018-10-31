@@ -175,6 +175,7 @@ export default class MapContorl {
     const myCompOverlay = new this.trackPointOverlay(data.point, type);
     this.SMap.addOverlay(myCompOverlay);
   }
+
   /**
    * 设置设备监控的marker
    *

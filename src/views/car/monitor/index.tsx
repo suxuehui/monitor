@@ -348,6 +348,8 @@ export default class Monitor extends Vue {
     { label: '累计里程:', prop: 'totalMileage', unit: 'km' },
     { label: '续航里程:', prop: 'leftMileage', unit: 'km' },
     { label: '设防状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
+    { label: '授权状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
+    { label: '油路状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
     { label: '充电状态:', prop: 'chargeLight' },
     { label: '车灯状态:', prop: 'allLight' },
     { label: '天窗状态:', prop: 'skyWindow' },
@@ -749,16 +751,15 @@ export default class Monitor extends Vue {
   renderStatus(value: boolean | string | number, data: any, unit?: any) {
     const gettype = Object.prototype.toString;
     // 剩余油量%
-    if (unit === 'L' && typeof value === 'number' && typeof data.fuelTankCap === 'number') {
-      if (value > -1) {
-        // 剩余油量
-        const num = value > -1 ? value + unit : '未知';
-        let num2: string = '未知';
-        const str = (value / data.fuelTankCap) * 100;
-        if (data.fuelTankCap !== 0) {
-          num2 = str > -1 ? `${str.toFixed(2)}%` : '未知';
+    if (unit === 'L') {
+      const num: any = value; // 剩余油量
+      const num1: any = data.fuelTankCap; // 油箱容量
+      if (num && num > 0) {
+        if (num1 && num1 > 0) {
+          const str = (num / num1) * 100;
+          return `${str.toFixed(2)}% (${num}L)`;
         }
-        return `${num2} (${num})`;
+        return `--% (${num}L)`;
       }
       return '未知';
     }
@@ -792,7 +793,7 @@ export default class Monitor extends Vue {
     } else if (unit === 'rightRearLock') {
       return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
     } else if (unit === 'defenceStatus') {
-      return data.defenceStatus ? '已设防' : '已撤防';
+      return data.defenceStatus ? '设防' : '撤防';
     }
     switch (gettype.call(value)) {
       case '[object Boolean]':
@@ -846,6 +847,7 @@ export default class Monitor extends Vue {
         this.getCarDetail(val.id);
       } else {
         this.$message.error('车辆暂无定位');
+        // this.getCarDetail(val.id);
         this.radiusGetData(val.id);
       }
     }
