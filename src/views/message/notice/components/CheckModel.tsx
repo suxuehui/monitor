@@ -40,9 +40,9 @@ export default class CheckModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <div class="container">
+        <div class="noticeBox">
           <div class="title">{this.data.title}</div>
-          <iframe srcdoc={this.data.content} frameborder="0" class="content"></iframe>
+          <iframe srcdoc={this.data.content} frameborder="0" class="content" width="400" height="300"></iframe>
         </div>
       </el-dialog>
     );

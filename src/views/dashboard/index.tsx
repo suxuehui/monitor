@@ -293,7 +293,6 @@ export default class Dashboard extends Vue {
               <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
             </div>
           </div>
-          <el-button type="success" id="openLink" plain size="mini" class="iconfont iconfont-link openLink" on-click={this.openLink}>   开放接口</el-button>
         </div>
         <div class="driveArea">
           <div class="title">
@@ -391,21 +390,6 @@ export default class Dashboard extends Vue {
             }
           </ul>
         </div>
-        <el-dialog
-          class="openInfo"
-          title="开放接口"
-          visible={this.openVisible}
-          width="520px"
-          before-close={this.closeDialog}>
-          <p class="title">您的平台接口对接秘钥</p>
-          <p class="key">1akshndgkljfdhuif</p>
-          <p class="webAddress">
-            接口地址：
-            <a href="http://www.qq.com" target="_blank">
-              <span style="color:#1890ff">www.jiekouwendang.com</span>
-            </a>
-          </p>
-        </el-dialog >
       </div >
     );
   }

@@ -125,6 +125,15 @@ export default class Driving extends Vue {
       },
     },
     {
+      label: '轻震动',
+      prop: 'ligntHitCount',
+      sortable: true,
+      sortBy: 'ligntHitCount',
+      formatter(row: any) {
+        return `${row.ligntHitCount} 次`;
+      },
+    },
+    {
       label: '轻碰撞',
       prop: 'ligntHitCount',
       sortable: true,
