@@ -198,7 +198,13 @@ export default class Trajectory extends Vue {
     const day: any = data / 60 / 24;
     const hour: any = (data / 60) % 24;
     const min: any = data % 60;
-    const str = `${parseInt(day, 10)}天${parseInt(hour, 10)}小时${parseInt(min, 10)}分钟`;
+    const strDay = parseInt(day, 10) > 0 ? `${parseInt(day, 10)}天` : '';
+    const strHour = parseInt(hour, 10) > 0 ? `${parseInt(hour, 10)}小时` : '';
+    const strMin = parseInt(min, 10) > 0 ? `${parseInt(min, 10)}分钟` : '';
+    const str = `${strDay}${strHour}${strMin}`;
+    if (day === 0 && hour === 0 && min === 0) {
+      return '--';
+    }
     return str;
   }
 
