@@ -108,6 +108,17 @@ export default class Dashboard extends Vue {
 
   openVisible: boolean = false;
 
+  toMonitor: boolean = true;
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/monitor/list',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.toMonitor = !!(res[0]);
+    });
+  }
+
   mounted() {
     // 环状图表
     const circleChart = new window.G2.Chart({
@@ -290,7 +301,11 @@ export default class Dashboard extends Vue {
             <div id="mountNode" class="mountNode"></div>
             <div class="title">
               <span style="marginRight:20px">{this.helloWord}好！当前{this.count}辆车处于监控中</span>
-              <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+              {
+                this.toMonitor ?
+                  <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+                  : null
+              }
             </div>
           </div>
         </div>

@@ -66,7 +66,7 @@ export default class Alarm extends Vue {
   // 筛选参数
   filterParams: any = {
     levelcode: '',
-    status: '',
+    status: 'false',
     alarmType: '',
     shopName: '',
   };
@@ -81,7 +81,7 @@ export default class Alarm extends Vue {
     {
       key: 'handle',
       rowKey: 'id',
-      color: (row: any) => (row.activeStatus === 2 ? 'green' : 'red'),
+      color: (row: any) => (row.activeStatus === 2 ? 'green' : 'blue'),
       text: '处理',
       disabled: (row: any) => (!row.status === false),
       roles: true,
@@ -156,8 +156,8 @@ export default class Alarm extends Vue {
 
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '状态(全部)' },
-    { key: true, value: true, label: '已处理' },
-    { key: false, value: false, label: '未处理' },
+    { key: 'true', value: 'true', label: '已处理' },
+    { key: 'false', value: 'false', label: '未处理' },
   ]
 
   alarmType: any = [];
@@ -210,6 +210,13 @@ export default class Alarm extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // 当前月份
+    const date = new Date();
+    const endTime = date.Format('yyyy-MM-dd hh:mm:ss');
+    const startTime1 = endTime.slice(0, 8);
+    const startTime2 = `${startTime1}01 00:00:00`;
+    this.outParams.queryStartTime = startTime2;
+    this.outParams.queryEndTime = endTime;
   }
 
   mounted() {

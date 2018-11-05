@@ -348,8 +348,8 @@ export default class Monitor extends Vue {
     { label: '累计里程:', prop: 'totalMileage', unit: 'km' },
     { label: '续航里程:', prop: 'leftMileage', unit: 'km' },
     { label: '设防状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
-    { label: '授权状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
-    { label: '油路状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
+    { label: '授权状态:', prop: 'authorizedStatus', unit: 'authorizedStatus' },
+    { label: '油路状态:', prop: 'oilStatus', unit: 'oilStatus' },
     { label: '充电状态:', prop: 'chargeLight' },
     { label: '车灯状态:', prop: 'allLight' },
     { label: '天窗状态:', prop: 'skyWindow' },
@@ -793,7 +793,20 @@ export default class Monitor extends Vue {
     } else if (unit === 'rightRearLock') {
       return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
     } else if (unit === 'defenceStatus') {
-      return data.defenceStatus ? '设防' : '撤防';
+      if (data.defenceStatus !== null) {
+        return data.defenceStatus ? '设防' : '撤防';
+      }
+      return '未知';
+    } else if (unit === 'authorizedStatus') {
+      if (data.authorizedStatus !== null) {
+        return data.authorizedStatus ? '授权' : '夺权';
+      }
+      return '未知';
+    } else if (unit === 'oilStatus') {
+      if (data.authorizedStatus !== null) {
+        return data.authorizedStatus ? '通油' : '断油';
+      }
+      return '未知';
     }
     switch (gettype.call(value)) {
       case '[object Boolean]':
