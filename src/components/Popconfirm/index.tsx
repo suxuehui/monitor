@@ -13,6 +13,7 @@ export default class Popconfirm extends Vue {
   @Prop({ default: '取消' }) private cancelText!: string;
   @Prop({ default: '确定' }) private okText!: string;
   @Prop({ default: '160' }) private width!: string;
+  @Prop({ default: false }) private disabled!: boolean;
   @Prop() private loading!: boolean;
   visible: boolean = false;
 
@@ -40,6 +41,7 @@ export default class Popconfirm extends Vue {
         placement="top"
         width={this.width}
         v-model={this.visible}
+        disabled={this.disabled}
         >
         <p class="pop-confirm-text"><i class="el-icon-warning"></i>{this.title}</p>
           <div class="pop-opreat">
