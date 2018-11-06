@@ -117,6 +117,9 @@ export default class Setting extends Vue {
     } else if (parseInt(e, 10) < 0) {
       this.btnDisable = true;
       this.$message.error('输入错误，请重新输入！');
+    } else if (Number(e) < 0) {
+      this.btnDisable = true;
+      this.$message.error('输入错误，请重新输入！');
     } else {
       this.btnDisable = false;
       this.alarmValueList[ind][key] = parseInt(e, 10);
@@ -139,7 +142,7 @@ export default class Setting extends Vue {
   onSubmit() {
     this.loading = true;
     const alarmConfigDTOS: any = [];
-    const obj:any = {};
+    const obj: any = {};
     this.alarmValueList.forEach((item: any) => {
       alarmConfigDTOS.push({
         alarmCfgModelId: item.alarmCfgModelId,
