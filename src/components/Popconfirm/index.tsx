@@ -35,6 +35,12 @@ export default class Popconfirm extends Vue {
     }
     this.$emit('confirm');
   }
+
+  @Emit()
+  stopClick(e:any) {
+    e.stopPropagation();
+  }
+
   render() {
     return (
       <el-popover
@@ -48,7 +54,7 @@ export default class Popconfirm extends Vue {
             <el-button size="mini" type="text" on-click={this.closePop}>{this.cancelText}</el-button>
             <el-button type="primary" size="mini" loading={this.loading} on-click={this.openPop}>{this.okText}</el-button>
           </div>
-          <span slot="reference">
+          <span on-click={this.stopClick} slot="reference">
             {
               this.$slots.default
             }

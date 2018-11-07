@@ -208,7 +208,7 @@ export default class MTable extends Vue {
 
   opreatJSX(row: any, column: string, cellValue: any, index: number) {
     if (this.opreat.length > 4) {
-      return <el-dropdown on-command={(command: string) => this.menuClick(command, row)}>
+      return <el-dropdown on-command={(command: string) => this.menuClick(null, command, row)}>
         <span class="el-dropdown-link">
           下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
@@ -242,7 +242,7 @@ export default class MTable extends Vue {
             } else if (typeof item.color === 'function'
               && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
               return <pop-confirm
-                on-confirm={() => this.menuClick(item.key, row)}
+                on-confirm={() => this.menuClick(null, item.key, row)}
                 title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
                 <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
                   {typeof item.text === 'function' ? item.text(row) : item.text}
@@ -251,14 +251,14 @@ export default class MTable extends Vue {
             } else if (typeof item.color === 'string'
               && whiteList.indexOf(item.color) >= 0) {
               return <pop-confirm
-                on-confirm={() => this.menuClick(item.key, row)}
+                on-confirm={() => this.menuClick(null, item.key, row)}
                 title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
                 <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${item.color}`}>
                   {typeof item.text === 'function' ? item.text(row) : item.text}
                 </a>
               </pop-confirm>;
             }
-            return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
+            return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={(e: any) => this.menuClick(e, item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
           }
           return true;
         })
@@ -276,7 +276,10 @@ export default class MTable extends Vue {
     this.getData();
   }
 
-  menuClick(key: string, row: any) {
+  menuClick(e: any, key: string, row: any) {
+    if (e) {
+      e.stopPropagation();
+    }
     this.$emit('tableClick', key, row);
   }
 }
