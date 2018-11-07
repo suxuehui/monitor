@@ -112,7 +112,7 @@ export default class Member extends Vue {
     { label: '成员姓名', prop: 'realName' },
     { label: '登录账号', prop: 'userName' },
     { label: '角色类型', prop: 'roleNames', formatter: this.roleChange },
-    { label: '备注', prop: 'remark' },
+    { label: '成员描述', prop: 'remark' },
     {
       label: '添加时间',
       prop: 'crtTime',

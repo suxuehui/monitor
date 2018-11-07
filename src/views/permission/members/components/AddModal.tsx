@@ -341,13 +341,13 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="备注" prop="remark">
+              <el-form-item label="成员描述" prop="remark">
                 <el-input
                   id="remark"
                   v-model={this.modelForm.remark}
                   type="textarea"
                   rows="2"
-                  placeholder="请输入备注"
+                  placeholder="请输入成员描述"
                 ></el-input>
               </el-form-item>
             </el-col>
