@@ -1,5 +1,5 @@
 import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
+import { Dialog, Row, Col, Form, FormItem, Input, Button, Select } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
 
 import { userCheck } from '@/api/permission';
@@ -12,6 +12,7 @@ import { userCheck } from '@/api/permission';
   'el-form-item': FormItem,
   'el-input': Input,
   'el-button': Button,
+  'el-select': Select,
   }
   })
 export default class AddModal extends Vue {
@@ -30,6 +31,9 @@ export default class AddModal extends Vue {
     contactPhone: '',
     contactAddress: '',
   };
+
+  shopNameList: any = [];
+  typeList: any = [];
 
   loading: boolean = false;
 
@@ -237,11 +241,44 @@ export default class AddModal extends Vue {
                 <el-input
                   id="orgName"
                   v-model={this.modelForm.orgName}
-                  // disabled={this.title === '编辑商户'}
                   placeholder="请输入商户名称"
                 ></el-input>
               </el-form-item>
             </el-col>
+            {/* <el-col span={24}>
+              <el-form-item label="选择商户" prop="orgName" >
+                <el-select
+                  id="orgName"
+                  v-model={this.modelForm.brandId}
+                  filterable={true}
+                  placeholder="请选择商户"
+                  style="width:100%"
+                >
+                  {
+                    this.shopNameList.map((item: any) => (
+                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                    ))
+                  }
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col span={24}>
+              <el-form-item label="设备同步" prop="orgName">
+                <el-select
+                  id="brandId"
+                  v-model={this.modelForm.brandId}
+                  filterable={true}
+                  placeholder="请选择设备类型"
+                  style="width:100%"
+                >
+                  {
+                    this.typeList.map((item: any) => (
+                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                    ))
+                  }
+                </el-select>
+              </el-form-item>
+            </el-col> */}
             <el-col span={12}>
               <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
                 <el-input

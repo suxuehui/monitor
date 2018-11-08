@@ -75,7 +75,6 @@ export default class Trajectory extends Vue {
   outParams: any = {
     startTime: '',
     endTime: '',
-
   }
   backParams: object = {
     code: 'result.resultCode',

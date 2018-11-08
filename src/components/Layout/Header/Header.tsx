@@ -71,14 +71,14 @@ export default class Header extends Vue {
     ];
     setTimeout(() => {
       this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+        this.showNotice = !!(res[0]);
+        this.showAlarm = !!(res[1]);
         if (res[0]) {
           this.$store.dispatch('getNotice');
         }
         if (res[1]) {
           this.$store.dispatch('getAlarm');
         }
-        this.showNotice = !!(res[0]);
-        this.showAlarm = !!(res[1]);
       });
     }, 200);
   }

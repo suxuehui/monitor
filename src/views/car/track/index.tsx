@@ -66,26 +66,6 @@ export default class Track extends Vue {
 
   }
 
-
-  // 页数
-  total: number = 1;
-  pageSize: number = 5;
-  pageCount: number = 5;
-  // 多选项目
-  multipleSelection: any = []
-  // 时间范围
-  startSet: any = {
-    start: '00:00',
-    step: '00:10',
-    end: '24:00',
-  }
-  endSet: any = {
-    start: '00:00',
-    step: '00:10',
-    end: '24:00',
-    minTime: this.modelForm.startTime,
-  }
-
   locChange: boolean = false;
   tabActive: string = 'record';
 
@@ -101,14 +81,6 @@ export default class Track extends Vue {
 
   }
 
-  mounted() {
-    this.tableDom = this.$refs.tabList;
-  }
-
-  tableDom: any = null;
-  tableHeight: number = 0
-
-
   addZoom = () => {
     const newZoom = this.SMap.getZoom() + 1;
     this.SMap.setZoom(newZoom);
@@ -121,11 +93,10 @@ export default class Track extends Vue {
 
   // 表格显示隐藏
   showTable(): any {
-    this.locChange = true;
-    this.tableHeight = this.tableDom.offsetHeight;
+    this.locChange = false;
   }
   hideTable(): any {
-    this.locChange = false;
+    this.locChange = true;
   }
 
   tabClick(data: any) {
@@ -134,16 +105,15 @@ export default class Track extends Vue {
     return (
       <div class="monitor-wrap">
         <div id="map"></div>
-        {/* 右下角控制台 */}
-        <div ref="btnControl" id="btnControl" style={{ bottom: this.locChange ? `${this.tableHeight}px` : '0' }} class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
-          <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
-          <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
-          {!this.locChange ?
-            <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
-            <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
-          }
-        </div>
-        <div ref="tabList" class={['tab-table', this.locChange ? 'table-active' : '']}>
+        <div ref="tabList" class={['tab-table-track', !this.locChange ? 'table-active' : '']}>
+          <div ref="btnControl" id="btnControl" class={'loc-change-box-track'}>
+            <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
+            <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
+            {!this.locChange ?
+              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>:
+              <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
+            }
+          </div>
           <el-tabs
             v-model={this.tabActive}
             type="card"

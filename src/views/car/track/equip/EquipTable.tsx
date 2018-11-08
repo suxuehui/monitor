@@ -109,7 +109,7 @@ export default class Equipment extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
-  tableUrl: string = '/fence/list'; // 表格请求地址
+  tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
   outParams: any = {}
 
   deployVisible: boolean = false;
@@ -160,7 +160,7 @@ export default class Equipment extends Vue {
 
   render() {
     return (
-      <div class="container">
+      <div class="container-equip">
         <filter-table
           ref="table"
           class="map-table"
@@ -177,6 +177,7 @@ export default class Equipment extends Vue {
           url={this.tableUrl}
           localName={'equipTable'}
           dataType={'JSON'}
+          default-page-size={5}
           opreat={this.opreat}
           out-params={this.outParams}
           opreat-width="150px"
