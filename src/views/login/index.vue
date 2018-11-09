@@ -36,6 +36,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
+            id="submit"
             :loading="loading"
             type="primary"
             @click="submitForm('ruleForm')"
