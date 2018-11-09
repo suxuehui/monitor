@@ -320,13 +320,13 @@ export default class Monitor extends Vue {
       msg: '确定删除？',
       roles: true,
     },
-    {
-      key: 'tracking',
-      rowKey: 'vin',
-      color: 'blue',
-      text: '追踪',
-      roles: true,
-    },
+    // {
+    //   key: 'tracking',
+    //   rowKey: 'vin',
+    //   color: 'blue',
+    //   text: '追踪',
+    //   roles: true,
+    // },
   ];
   tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
