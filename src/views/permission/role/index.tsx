@@ -47,7 +47,7 @@ export default class Role extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'userName',
+      rowKey: 'roleName',
       color: 'blue',
       text: '编辑',
       roles: true,
@@ -55,7 +55,7 @@ export default class Role extends Vue {
     },
     {
       key: 'freeze',
-      rowKey: 'userName',
+      rowKey: 'roleName',
       color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
       text: (row: any) => (row.activeStatus === 1 ? '禁用' : '启用'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要禁用？' : '是否要启用？'),
@@ -64,7 +64,7 @@ export default class Role extends Vue {
     },
     {
       key: 'setAuth',
-      rowKey: 'userName',
+      rowKey: 'roleName',
       color: 'blue',
       text: '设置权限',
       roles: true,

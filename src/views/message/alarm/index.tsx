@@ -80,7 +80,7 @@ export default class Alarm extends Vue {
   opreat: Opreat[] = [
     {
       key: 'handle',
-      rowKey: 'id',
+      rowKey: 'vin',
       color: (row: any) => (row.activeStatus === 2 ? 'green' : 'blue'),
       text: '处理',
       disabled: (row: any) => (!row.status === false),
@@ -88,7 +88,7 @@ export default class Alarm extends Vue {
     },
     {
       key: 'check',
-      rowKey: 'id',
+      rowKey: 'vin',
       color: 'blue',
       text: '查看',
       disabled: (row: any) => (row.status === false),

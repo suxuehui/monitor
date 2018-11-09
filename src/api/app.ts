@@ -76,6 +76,15 @@ export async function getDict(params: any) {
   });
 }
 
+// 设备表中的数据字典
+export async function terminalDict(params: any) {
+  return request({
+    url: '/dict/terminalDict',
+    method: 'post',
+    data: params,
+  });
+}
+
 export async function uploadFile(params: any) {
   return axios({
     url: '/verify/file/upload',

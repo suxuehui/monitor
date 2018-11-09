@@ -571,7 +571,7 @@ export default class EleFence extends Vue {
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
           </el-autocomplete>
-          <el-button class="restore" size="small" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
+          <el-button id="reload" class="restore" size="small" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
         </div>
         <div class={['car-detail-box1', this.detailShow ? 'detail-active' : '']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>

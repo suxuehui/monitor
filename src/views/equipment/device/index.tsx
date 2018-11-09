@@ -6,11 +6,10 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
 import { orgTree } from '@/api/app';
 
-import AddModal from '@/views/equipment/device/components/AddModal';
-import BindModal from '@/views/equipment/device/components/BindModal';
-import AcceptModal from '@/views/equipment/device/components/AcceptModal';
-
 import PopconfirmBlock from '@/components/Popconfirm/index';
+import AddModal from './components/AddModal';
+import BindModal from './components/BindModal';
+import AcceptModal from './components/AcceptModal';
 
 import DownModel from './components/DownModel';
 import ClearModel from './components/ClearModel';

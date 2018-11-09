@@ -56,6 +56,7 @@ export default class Setting extends Vue {
   }
 
   contentRender(field: string, str: string, ind: number) {
+    console.log(field);
     const regular = /\[input\(\w*\)\]/g;
     // 分割字符串和替换掉input框
     const content: string[] = str.split(regular);
@@ -181,6 +182,7 @@ export default class Setting extends Vue {
           {
             alarmModelList.length && alarmValueList.length ? alarmModelList.map((item: any, index: number) => <div class="item">
               <el-checkbox
+                id={item.field}
                 on-change={(e: any) => this.checkBoxChange(e, item, index)}
                 checked={this.findValue(item.id, 'enable')}
               ></el-checkbox> <span class="itemTitle">{item.alarmTypeName}:</span>
@@ -197,7 +199,7 @@ export default class Setting extends Vue {
           {
             this.saveBtn ?
               <div class="bottom-btn">
-                <el-button on-click={this.onSubmit} disabled={this.btnDisable} loading={this.loading} type="primary">保存</el-button>
+                <el-button id="button" on-click={this.onSubmit} disabled={this.btnDisable} loading={this.loading} type="primary">保存</el-button>
               </div> : null
           }
         </el-card>

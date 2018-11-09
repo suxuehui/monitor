@@ -320,13 +320,13 @@ export default class Monitor extends Vue {
       msg: '确定删除？',
       roles: true,
     },
-    // {
-    //   key: 'tracking',
-    //   rowKey: 'vin',
-    //   color: 'blue',
-    //   text: '追踪',
-    //   roles: true,
-    // },
+    {
+      key: 'tracking',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '追踪',
+      roles: true,
+    },
   ];
   tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
@@ -981,24 +981,15 @@ export default class Monitor extends Vue {
             this.controlBtn ?
               <div class="car-control">
                 <div class="left">
-                  <el-button class="fire" size="mini" on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
-                  <el-button class="unfire" size="mini" on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
+                  <el-button id="CMD_START" class="fire" size="mini" on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
+                  <el-button id="CMD_STOP" class="unfire" size="mini" on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
                 </div>
                 <div class="right">
-                  <el-button class="lock" type="text" size="mini" on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
-                  <el-button class="lock" type="text" size="mini" on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
-                  <el-button class="lock" type="text" icon="iconfont-lock" size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
-                  <el-button class="unlock" type="text" icon="iconfont-unlock" size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
-                  {/* <el-button
-                    class="find"
-                    type="text"
-                    icon="iconfont-wifi"
-                    loading={this.controlLoading[6]}
-                    size="mini"
-                    on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>
-                    寻车
-                  </el-button> */}
-                  <el-button class="find" type="text" icon="iconfont-wifi" size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
+                  <el-button id="CMD_SET_DEFENCE" class="lock" type="text" size="mini" on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
+                  <el-button id="CMD_CANCEl_DEFENCE" class="lock" type="text" size="mini" on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
+                  <el-button id="CMD_LOCK" class="lock" type="text" icon="iconfont-lock" size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
+                  <el-button id="CMD_UNLOCK" class="unlock" type="text" icon="iconfont-unlock" size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
+                  <el-button id="CMD_CALL" class="find" type="text" icon="iconfont-wifi" size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
                 </div>
               </div> : null
           }

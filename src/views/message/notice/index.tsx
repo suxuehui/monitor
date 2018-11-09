@@ -37,14 +37,14 @@ export default class Alarm extends Vue {
   opreat: Opreat[] = [
     {
       key: 'check',
-      rowKey: 'id',
+      rowKey: 'title',
       color: 'blue',
       text: '查看',
       roles: true,
     },
     {
       key: 'delete',
-      rowKey: 'id',
+      rowKey: 'title',
       color: (row: any) => (row.abcd === 1 ? 'green' : 'red'),
       text: (row: any) => (row.abcd === 1 ? '绑定' : '删除'),
       msg: (row: any) => (row.abcd === 1 ? '是否要绑定？' : '是否要删除？'),

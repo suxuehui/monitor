@@ -52,6 +52,21 @@ export default class Track extends Vue {
     });
   }
 
+  // 记录
+  recordTable: boolean = true;
+  // 设备
+  deviceTable: boolean = true;
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      '/vehicle/tracke/findTerminalList',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.deviceTable = !!(res[0]);
+    });
+  }
+
   // 获取地址
   getLocAddress(lng: any, lat: any) {
     gpsToAddress({ lat, lng }).then((res) => {
@@ -110,7 +125,7 @@ export default class Track extends Vue {
             <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
             <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
             {!this.locChange ?
-              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>:
+              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button> :
               <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
             }
           </div>
@@ -119,12 +134,14 @@ export default class Track extends Vue {
             type="card"
             on-tab-click={this.tabClick}
           >
-            <el-tab-pane label="记录" name="record">
+            <el-tab-pane label="记录" id="record" name="record">
               <record-table></record-table>
             </el-tab-pane>
-            <el-tab-pane label="设备" name="equipment">
-              <equipment-table></equipment-table>
-            </el-tab-pane>
+            {
+              this.deviceTable ? <el-tab-pane label="设备" id="equipment" name="equipment">
+                <equipment-table></equipment-table>
+              </el-tab-pane> : null
+            }
           </el-tabs>
         </div>
       </div >

@@ -157,7 +157,7 @@ export default class Header extends Vue {
           <ul class="header-menu">
             {
               this.showNotice ?
-                <li>
+                <li id="noticeList">
                   <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
                     <i class="iconfont-email" on-click={this.checkInfo}></i>
                   </el-badge>
@@ -165,13 +165,13 @@ export default class Header extends Vue {
             }
             {
               this.showAlarm ?
-                <li>
+                <li id="alarmList">
                   <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
                     <i class="iconfont-bell" on-click={this.checkAlarm}></i>
                   </el-badge>
                 </li> : null
             }
-            <li class="user">
+            <li class="user" id="userList">
               <el-dropdown on-command={this.menuClick} size="medium">
                 <span class="el-dropdown-link">
                   <p class="name">{this.$store.getters.username}</p>
@@ -179,9 +179,9 @@ export default class Header extends Vue {
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   {/* <el-dropdown-item command="1">个人中心</el-dropdown-item> */}
-                  <el-dropdown-item command="2">修改密码</el-dropdown-item>
+                  <el-dropdown-item command="2" id="changePsw">修改密码</el-dropdown-item>
                   <el-dropdown-item command="3" divided>
-                    <font color="red">退出登录</font>
+                    <font color="red" id="exit">退出登录</font>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>

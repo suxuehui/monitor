@@ -44,14 +44,14 @@ export default class Series extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'id',
+      rowKey: 'name',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'delete',
-      rowKey: 'id',
+      rowKey: 'name',
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),

@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 
+// 车辆详情
 export async function vehicleInfo(params: any) {
   return request({
     url: '/vehicle/monitor/info',
@@ -8,6 +9,7 @@ export async function vehicleInfo(params: any) {
   });
 }
 
+// 车辆编辑
 export async function vehicleUpdate(params: any) {
   return request({
     url: '/vehicle/monitor/edit',
@@ -17,6 +19,7 @@ export async function vehicleUpdate(params: any) {
   });
 }
 
+// 删除
 export async function vehicleDelete(params: any) {
   return request({
     url: '/vehicle/monitor/delete',
@@ -25,6 +28,7 @@ export async function vehicleDelete(params: any) {
   });
 }
 
+// 按范围查车辆
 export async function vehicleRadiusQuery(params: any) {
   return request({
     url: '/vehicle/monitor/radiusQuery',
@@ -33,10 +37,42 @@ export async function vehicleRadiusQuery(params: any) {
   });
 }
 
+// 控车
 export async function controlCar(params: any) {
   return request({
     url: '/vehicle/monitor/control',
     method: 'get',
     data: params,
+  });
+}
+
+// 追踪
+// 设备配置
+export async function vehicleDeviceSet(params: any) {
+  return request({
+    url: '/vehicle/tracke/saveConfig',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
+  });
+}
+
+// 设备预约
+export async function vehicleDeviceRev(params: any) {
+  return request({
+    url: '/vehicle/tracke/reserveConfig',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
+  });
+}
+
+// 计算生效时间
+export async function vehicleCalvalid(params: any) {
+  return request({
+    url: '/vehicle/tracke/calvalid',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
   });
 }

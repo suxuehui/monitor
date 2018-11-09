@@ -4,7 +4,7 @@ import qs from 'qs';
 import { Tag } from 'element-ui';
 import { configDelete, configInfo } from '@/api/config';
 import { exportExcel } from '@/api/export';
-import AddModel from '@/views/equipment/model/components/Addmodel';
+import AddModel from './components/Addmodel';
 
 interface ActiveType { key: any, value: any, label: string }
 
@@ -40,14 +40,14 @@ export default class Member extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'id',
+      rowKey: 'productCode',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'delete',
-      rowKey: 'id',
+      rowKey: 'productCode',
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),

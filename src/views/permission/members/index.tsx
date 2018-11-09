@@ -91,7 +91,7 @@ export default class Member extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'roleId',
+      rowKey: 'userName',
       color: 'blue',
       text: '编辑',
       roles: true,
@@ -99,7 +99,7 @@ export default class Member extends Vue {
     },
     {
       key: 'freeze',
-      rowKey: 'roleId',
+      rowKey: 'userName',
       color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
       text: (row: any) => (row.activeStatus === 1 ? '冻结' : '解冻'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要冻结？' : '是否要解冻？'),
