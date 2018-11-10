@@ -128,19 +128,19 @@ export default class Equipment extends Vue {
         str = row.startDate ? `每天${row.startDate}` : '--';
         break;
       case 'duration':
-        str = row.duration ? `${row.duration}分钟` : '--';
+        str = row.duration > 0 ? `${row.duration}分钟` : '--';
         break;
       case 'frequency':
-        str = row.frequency ? `${row.frequency}分钟/次` : '--';
+        str = row.frequency > 0 ? `${row.frequency}分钟/次` : '--';
         break;
       case 'trackDuration':
-        str = row.trackDuration ? `${row.trackDuration}分钟` : '--';
+        str = row.trackDurationv ? `${row.trackDuration}分钟` : '--';
         break;
       case 'trackFrequency':
-        str = row.trackFrequency ? `${row.trackFrequency}分钟/次` : '--';
+        str = row.trackFrequencyv ? `${row.trackFrequency}分钟/次` : '--';
         break;
       case 'leftPower':
-        str = row.leftPower && row.leftPower >= 0 ? `${row.leftPower}%` : '--';
+        str = row.leftPower > 0 ? `${row.leftPower}%` : '--';
         break;
       default:
         break;

@@ -42,28 +42,27 @@ export default class Track extends Vue {
       });
       this.SMap.centerAndZoom(new BMap.Point(106.560421, 29.563694), 15);
       this.SMap.enableScrollWheelZoom(true);
-
-      // 创建坐标点
-      const pt = new this.BMap.Point(106.560421, 29.563694);
-      const myIcon = new this.BMap.Icon(locaIcon, new BMap.Size(32, 32));
-      const point = new this.BMap.Marker(pt, { icon: myIcon });
-      // this.SMap.addOverlay(point);
-      // point.enableDragging(); // 点可拖拽
     });
   }
 
-  // 记录
-  recordTable: boolean = true;
-  // 设备
+  // 设备、记录
   deviceTable: boolean = true;
+  logTable: boolean = true;
 
   // 权限设置
   created() {
     const getNowRoles: string[] = [
       '/vehicle/tracke/findTerminalList',
+      '/vehicle/tracke/findRecordList',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.deviceTable = !!(res[0]);
+      this.logTable = !!(res[1]);
+      if (res[1]) {
+        this.tabActive = 'record';
+      } else {
+        this.tabActive = 'equipment';
+      }
     });
   }
 
@@ -77,9 +76,7 @@ export default class Track extends Vue {
     });
   }
 
-  modelForm: any = {
-
-  }
+  modelForm: any = {}
 
   locChange: boolean = false;
   tabActive: string = 'record';
@@ -90,10 +87,6 @@ export default class Track extends Vue {
       this.modelForm.carList.push(item.plateNum);
       return true;
     });
-  }
-
-  submit = () => {
-
   }
 
   addZoom = () => {
@@ -116,6 +109,24 @@ export default class Track extends Vue {
 
   tabClick(data: any) {
   }
+
+  setMapLoc = (val: any) => {
+    const pt = new this.BMap.Point(val.lng, val.lat);
+    this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
+    const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
+    const point = new this.BMap.Marker(pt, { icon: myIcon });
+    this.SMap.removeOverlay();
+    this.SMap.addOverlay(point);
+    const opts = {
+      width: 200, // 信息窗口宽度
+      title: '上报时间：', // 信息窗口标题
+    };
+    const infoWindow = new this.BMap.InfoWindow(val.date, opts);
+    this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+    point.addEventListener('click', () => {
+      this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+    });
+  }
   render() {
     return (
       <div class="monitor-wrap">
@@ -134,9 +145,12 @@ export default class Track extends Vue {
             type="card"
             on-tab-click={this.tabClick}
           >
-            <el-tab-pane label="记录" id="record" name="record">
-              <record-table></record-table>
-            </el-tab-pane>
+            {
+              this.logTable ?
+                <el-tab-pane label="记录" id="record" name="record">
+                  <record-table on-location={this.setMapLoc}></record-table>
+                </el-tab-pane> : null
+            }
             {
               this.deviceTable ? <el-tab-pane label="设备" id="equipment" name="equipment">
                 <equipment-table></equipment-table>

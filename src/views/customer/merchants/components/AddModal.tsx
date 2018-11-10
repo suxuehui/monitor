@@ -1,6 +1,7 @@
 import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button, Select } from 'element-ui';
+import { Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
+import { getAllShopName } from '@/api/app';
 
 import { userCheck } from '@/api/permission';
 @Component({
@@ -13,6 +14,7 @@ import { userCheck } from '@/api/permission';
   'el-input': Input,
   'el-button': Button,
   'el-select': Select,
+  'el-option': Option,
   }
   })
 export default class AddModal extends Vue {
@@ -20,9 +22,6 @@ export default class AddModal extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop({ default: '' }) private title!: string;
   @Prop() private data: any;
-  created() {
-    this.modelForm = JSON.parse(JSON.stringify(this.data));
-  }
   modelForm: any = {
     orgName: '',
     contactUser: '',
@@ -30,12 +29,33 @@ export default class AddModal extends Vue {
     password: '',
     contactPhone: '',
     contactAddress: '',
+    oldLevelCode: '',
+    deviceType: '',
   };
 
   shopNameList: any = [];
-  typeList: any = [];
+  shopFilteredList: any = [];
+  typeList: any = [
+    {
+      value: '选项1',
+      label: '黄金糕',
+    }, {
+      value: '选项2',
+      label: '双皮奶',
+    }, {
+      value: '选项3',
+      label: '蚵仔煎',
+    }, {
+      value: '选项4',
+      label: '龙须面',
+    }, {
+      value: '选项5',
+      label: '北京烤鸭',
+    },
+  ];
 
   loading: boolean = false;
+  selectLoading: boolean = true;
 
   rules = {
     contactUser: [
@@ -128,6 +148,26 @@ export default class AddModal extends Vue {
     }, 500);
   }
 
+  created() {
+    this.modelForm = JSON.parse(JSON.stringify(this.data));
+    const obj: any = {
+      name: '',
+    };
+    getAllShopName(obj).then((res) => {
+      const { data } = res.data;
+      if (res.status === 200) {
+        data.forEach((item: any) => {
+          this.shopNameList.push({
+            label: item.name,
+            value: `${item.levelCode}-${item.name}`,
+          });
+        });
+      } else {
+        this.$message.error(res.data.message);
+      }
+    });
+  }
+
   @Watch('data')
   onDataChange(data: any) {
     if (data.id > 0) {
@@ -148,6 +188,8 @@ export default class AddModal extends Vue {
       password: '',
       contactPhone: '',
       contactAddress: '',
+      oldLevelCode: '',
+      deviceType: '',
     };
   }
 
@@ -225,6 +267,23 @@ export default class AddModal extends Vue {
     });
   }
 
+  remoteMethod(query: any) {
+    if (query !== '') {
+      this.selectLoading = true;
+      setTimeout(() => {
+        this.selectLoading = false;
+        this.shopFilteredList = this.shopNameList.filter((item:any) =>
+          item.label.indexOf(query) > -1);
+      }, 200);
+    } else {
+      this.shopNameList = [];
+    }
+  }
+
+  shopChecked(val:any) {
+    console.log(val);
+  }
+
   render() {
     return (
       <el-dialog
@@ -237,36 +296,39 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="商户名称" prop="orgName" rules={this.orgRule}>
+              <el-form-item label="商户名称" prop="oldLevelCode" >
                 <el-input
                   id="orgName"
                   v-model={this.modelForm.orgName}
+                  // disabled={this.title === '编辑商户'}
                   placeholder="请输入商户名称"
                 ></el-input>
+                {/* <el-select
+                  id="oldLevelCode"
+                  v-model={this.modelForm.oldLevelCode}
+                  filterable={true}
+                  remote={true}
+                  placeholder="请选择商户"
+                  remote-method={this.remoteMethod}
+                  on-change={this.shopChecked}
+                  style="width:100%">
+                  {
+                    this.shopFilteredList.map((item: any, index: number) => (
+                      <el-option
+                        key={index}
+                        value={item.value}
+                        label={item.label}
+                      >{item.label}</el-option>
+                    ))
+                  }
+                </el-select> */}
               </el-form-item>
             </el-col>
             {/* <el-col span={24}>
-              <el-form-item label="选择商户" prop="orgName" >
+              <el-form-item label="设备同步" prop="deviceType">
                 <el-select
-                  id="orgName"
-                  v-model={this.modelForm.brandId}
-                  filterable={true}
-                  placeholder="请选择商户"
-                  style="width:100%"
-                >
-                  {
-                    this.shopNameList.map((item: any) => (
-                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                    ))
-                  }
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col span={24}>
-              <el-form-item label="设备同步" prop="orgName">
-                <el-select
-                  id="brandId"
-                  v-model={this.modelForm.brandId}
+                  id="deviceType"
+                  v-model={this.modelForm.deviceType}
                   filterable={true}
                   placeholder="请选择设备类型"
                   style="width:100%"

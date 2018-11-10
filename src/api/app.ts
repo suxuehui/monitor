@@ -42,6 +42,18 @@ export async function getAuthCode(params: any, token?: string) {
     },
   });
 }
+// 所有商户名称--来自4S门户
+export async function getAllShopName(params: any, token?: string) {
+  return axios({
+    url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}/old/department/selectOptionsAll`,
+    method: 'post',
+    data: params,
+    headers: {
+      token,
+      'Content-Type': 'application/json',
+    },
+  });
+}
 
 export async function getCodeImg(params: any) {
   return request({

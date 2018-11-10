@@ -15,6 +15,7 @@ export default class Popconfirm extends Vue {
   @Prop({ default: '160' }) private width!: string;
   @Prop({ default: false }) private disabled!: boolean;
   @Prop() private loading!: boolean;
+
   visible: boolean = false;
 
   @Emit()
@@ -51,8 +52,8 @@ export default class Popconfirm extends Vue {
         >
         <p class="pop-confirm-text"><i class="el-icon-warning"></i>{this.title}</p>
           <div class="pop-opreat">
-            <el-button size="mini" type="text" on-click={this.closePop}>{this.cancelText}</el-button>
-            <el-button type="primary" size="mini" loading={this.loading} on-click={this.openPop}>{this.okText}</el-button>
+            <el-button id="cancel" size="mini" type="text" on-click={this.closePop}>{this.cancelText}</el-button>
+            <el-button id="confirm" type="primary" size="mini" loading={this.loading} on-click={this.openPop}>{this.okText}</el-button>
           </div>
           <span on-click={this.stopClick} slot="reference">
             {

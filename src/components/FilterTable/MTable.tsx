@@ -217,6 +217,8 @@ export default class MTable extends Vue {
             this.opreat.map((item, indexs) => {
               if (item.roles) {
                 return <el-dropdown-item
+                  // 设备管理特有
+                  id={`${item.key}`}
                   key={indexs}
                   command={item.key}
                   disabled={item.disabled && item.disabled(row)}

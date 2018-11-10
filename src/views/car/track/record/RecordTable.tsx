@@ -1,13 +1,14 @@
-import { Component, Vue } from 'vue-property-decorator';
-import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { Button, Tabs, TabPane } from 'element-ui';
+import { Component, Vue, Emit } from 'vue-property-decorator';
+import { tableList, Opreat, FilterFormList } from '@/interface';
+import { Button, Tabs, TabPane, Tooltip } from 'element-ui';
 
 import './RecordTable.less';
 @Component({
   components: {
   'el-button': Button,
   'el-tabs': Tabs,
-  'el-tab-pane': TabPane
+  'el-tab-pane': TabPane,
+  'el-tooltip': Tooltip,
   }
   })
 export default class Equipment extends Vue {
@@ -58,27 +59,31 @@ export default class Equipment extends Vue {
   tableList: tableList[] = [
     {
       label: '车牌',
-      prop: 'shopName',
+      prop: 'platNum',
     },
     {
       label: '时间',
-      prop: 'name',
+      prop: 'date',
+      sortable: true,
+      sortBy: 'date',
     },
     {
       label: '地点',
-      prop: 'areaValue',
-    },
-    {
-      label: '上报类型',
       prop: 'address',
     },
     {
+      label: '上报类型',
+      prop: 'type',
+      formatter: this.checkType,
+    },
+    {
       label: '型号',
-      prop: 'alarmType',
+      prop: 'clientType',
+      formatter: this.checkClientType,
     },
     {
       label: 'imei号',
-      prop: 'remark',
+      prop: 'imei',
     },
   ];
   opreat: Opreat[] = [];
@@ -90,16 +95,49 @@ export default class Equipment extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
-  tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
+  tableUrl: string = '/vehicle/tracke/findRecordList'; // 表格请求地址
   outParams: any = {
     startTime: '',
     endTime: '',
+    vehicleId: '',
+  }
+
+  checkClientType(row: any) {
+    let str = '';
+    if (row.clientType === 17) {
+      str = 'GL500';
+    } else {
+      str = '--';
+    }
+    return <el-tooltip class="item" effect="dark" content={str} placement="top">
+      <span>{str}</span>
+    </el-tooltip>;
+  }
+  checkType(row: any) {
+    let str = '';
+    if (row.clientType === 1) {
+      str = '正常上报';
+    } else if (row.clientType === 2) {
+      str = '追踪上报';
+    } else {
+      str = '--';
+    }
+    return <el-tooltip class="item" effect="dark" content={str} placement="top">
+      <span>{str}</span>
+    </el-tooltip>;
+  }
+
+  created() {
+    if (this.$route.params.id) {
+      this.outParams.vehicleId = this.$route.params.id;
+    }
   }
 
   clear() {
     this.outParams = {
       startTime: '',
       endTime: '',
+      vehicleId: '',
     };
   }
   timeRangeChange(val: any) {
@@ -116,7 +154,8 @@ export default class Equipment extends Vue {
     }
   }
 
-  currentChange = (val: any) => {
+  currentChange(val: any) {
+    this.$emit('location', val);
   }
 
   menuClick(key: string, row: any) {
