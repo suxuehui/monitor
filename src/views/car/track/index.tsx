@@ -115,7 +115,7 @@ export default class Track extends Vue {
     this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
     const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
     const point = new this.BMap.Marker(pt, { icon: myIcon });
-    this.SMap.removeOverlay();
+    this.SMap.removeOverlay(point);
     this.SMap.addOverlay(point);
     const opts = {
       width: 200, // 信息窗口宽度

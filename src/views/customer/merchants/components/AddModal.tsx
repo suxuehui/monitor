@@ -1,6 +1,7 @@
 import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
+import { terminalType } from '@/api/equipment';
 import { getAllShopName } from '@/api/app';
 
 import { userCheck } from '@/api/permission';
@@ -29,30 +30,12 @@ export default class AddModal extends Vue {
     password: '',
     contactPhone: '',
     contactAddress: '',
-    oldLevelCode: '',
     deviceType: '',
   };
 
   shopNameList: any = [];
   shopFilteredList: any = [];
-  typeList: any = [
-    {
-      value: '选项1',
-      label: '黄金糕',
-    }, {
-      value: '选项2',
-      label: '双皮奶',
-    }, {
-      value: '选项3',
-      label: '蚵仔煎',
-    }, {
-      value: '选项4',
-      label: '龙须面',
-    }, {
-      value: '选项5',
-      label: '北京烤鸭',
-    },
-  ];
+  typeList: any = [];
 
   loading: boolean = false;
   selectLoading: boolean = true;
@@ -150,6 +133,7 @@ export default class AddModal extends Vue {
 
   created() {
     this.modelForm = JSON.parse(JSON.stringify(this.data));
+    // 所有门店名称
     const obj: any = {
       name: '',
     };
@@ -159,11 +143,30 @@ export default class AddModal extends Vue {
         data.forEach((item: any) => {
           this.shopNameList.push({
             label: item.name,
-            value: `${item.levelCode}-${item.name}`,
+            value: `${item.levelCode}***${item.name}`,
           });
         });
       } else {
         this.$message.error(res.data.message);
+      }
+    });
+    // 设备类型
+    terminalType(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((item: any) =>
+          this.typeList.push({
+            key: Math.random(),
+            value: parseInt(item.enumValue, 10),
+            label: item.name,
+          }));
+        // 设备类型(全部)
+        this.typeList.unshift({
+          key: Math.random(),
+          value: 999999999999,
+          label: '全部',
+        });
+      } else {
+        this.$message.error(res.result.resultMessage);
       }
     });
   }
@@ -188,9 +191,10 @@ export default class AddModal extends Vue {
       password: '',
       contactPhone: '',
       contactAddress: '',
-      oldLevelCode: '',
       deviceType: '',
     };
+    this.nameAndLev = '';
+    this.deviceType = [];
   }
 
   closeModal() {
@@ -210,11 +214,14 @@ export default class AddModal extends Vue {
     this.loading = true;
     obj = {
       orgName: this.modelForm.orgName ? this.modelForm.orgName : '',
+      // orgName: this.nameAndLev.split('***')[1] ? this.nameAndLev.split('***')[1] : '',
       contactUser: this.modelForm.contactUser,
       contactPhone: this.modelForm.contactPhone,
       manageUser: this.modelForm.manageUser,
       password: this.modelForm.password,
       contactAddress: this.modelForm.contactAddress,
+      // oldLevelCode: this.nameAndLev.split('***')[0],
+      // deviceType: this.deviceType.join(','),
     };
     From.validate((valid: any) => {
       if (valid) {
@@ -226,6 +233,8 @@ export default class AddModal extends Vue {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
+                // this.nameAndLev = '';
+                // this.deviceType = [];
                 this.ruleStatus = true;
                 this.$emit('refresh');
               }, 1500);
@@ -272,7 +281,7 @@ export default class AddModal extends Vue {
       this.selectLoading = true;
       setTimeout(() => {
         this.selectLoading = false;
-        this.shopFilteredList = this.shopNameList.filter((item:any) =>
+        this.shopFilteredList = this.shopNameList.filter((item: any) =>
           item.label.indexOf(query) > -1);
       }, 200);
     } else {
@@ -280,8 +289,19 @@ export default class AddModal extends Vue {
     }
   }
 
-  shopChecked(val:any) {
-    console.log(val);
+  // 名字加levelCode
+  nameAndLev: string = '';
+  shopChecked(val: any) {
+    this.nameAndLev = val;
+  }
+  deviceType: any = [];
+  typeChecked(val: any) {
+    this.deviceType = val;
+    val.forEach((item: any) => {
+      if (item === 999999999999) {
+        this.deviceType = [3, 22, 23, 17, 16];
+      }
+    });
   }
 
   render() {
@@ -300,17 +320,18 @@ export default class AddModal extends Vue {
                 <el-input
                   id="orgName"
                   v-model={this.modelForm.orgName}
-                  // disabled={this.title === '编辑商户'}
+                  disabled={this.title === '编辑商户'}
                   placeholder="请输入商户名称"
                 ></el-input>
                 {/* <el-select
                   id="oldLevelCode"
-                  v-model={this.modelForm.oldLevelCode}
+                  v-model={this.nameAndLev}
                   filterable={true}
                   remote={true}
                   placeholder="请选择商户"
                   remote-method={this.remoteMethod}
                   on-change={this.shopChecked}
+                  loading={this.selectLoading}
                   style="width:100%">
                   {
                     this.shopFilteredList.map((item: any, index: number) => (
@@ -328,10 +349,12 @@ export default class AddModal extends Vue {
               <el-form-item label="设备同步" prop="deviceType">
                 <el-select
                   id="deviceType"
-                  v-model={this.modelForm.deviceType}
+                  v-model={this.deviceType}
                   filterable={true}
+                  multiple={true}
                   placeholder="请选择设备类型"
                   style="width:100%"
+                  on-change={this.typeChecked}
                 >
                   {
                     this.typeList.map((item: any) => (
@@ -346,7 +369,7 @@ export default class AddModal extends Vue {
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
-                  disabled={this.title === '编辑商户'}
+                  disabled={this.title !== '新增商户'}
                   placeholder="请输入登录账号"
                 ></el-input>
               </el-form-item>

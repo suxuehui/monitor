@@ -134,10 +134,10 @@ export default class Equipment extends Vue {
         str = row.frequency > 0 ? `${row.frequency}分钟/次` : '--';
         break;
       case 'trackDuration':
-        str = row.trackDurationv ? `${row.trackDuration}分钟` : '--';
+        str = row.trackDuration > 0 ? `${row.trackDuration}分钟` : '--';
         break;
       case 'trackFrequency':
-        str = row.trackFrequencyv ? `${row.trackFrequency}分钟/次` : '--';
+        str = row.trackFrequency > 0 ? `${row.trackFrequency}分钟/次` : '--';
         break;
       case 'leftPower':
         str = row.leftPower > 0 ? `${row.leftPower}%` : '--';
@@ -179,10 +179,10 @@ export default class Equipment extends Vue {
   // 设备
   deviceTable: boolean = true;
 
-  exportBtn: boolean = true;
   // 设备类型
   typeList: any = [];
 
+  exportBtn: boolean = true;
   // 权限设置
   created() {
     if (this.$route.params.id) {
@@ -195,9 +195,9 @@ export default class Equipment extends Vue {
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.deviceTable = !!(res[0]);
-      // this.exportBtn = !!(res[0]);
       this.opreat[0].roles = !!(res[1]);
       this.opreat[1].roles = !!(res[2]);
+      // this.exportBtn = !!(res[0]);
     });
   }
   deviceTypes: any[] = [

@@ -320,13 +320,13 @@ export default class Monitor extends Vue {
       msg: '确定删除？',
       roles: true,
     },
-    {
-      key: 'tracking',
-      rowKey: 'vin',
-      color: 'blue',
-      text: '追踪',
-      roles: true,
-    },
+    // {
+    //   key: 'tracking',
+    //   rowKey: 'vin',
+    //   color: 'blue',
+    //   text: '追踪',
+    //   roles: true,
+    // },
   ];
   tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
@@ -865,9 +865,15 @@ export default class Monitor extends Vue {
         this.radiusGetData(val.id);
         this.getCarDetail(val.id);
       } else {
-        this.$message.error('车辆暂无定位');
-        // this.getCarDetail(val.id);
+        this.$message.error('车辆暂无定位，使用默认位置！');
+        this.currentCarId = val.id;
+        this.mapCenter = {
+          lat: 29.627258,
+          lng: 106.496422,
+        };
+        this.SMap.centerAndZoom(new this.BMap.Point(106.496422, 29.627258), 15);
         this.radiusGetData(val.id);
+        this.getCarDetail(val.id);
       }
     }
   }

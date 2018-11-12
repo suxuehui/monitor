@@ -122,6 +122,7 @@ export default class AddModal extends Vue {
             <el-col span={24}>
               <el-form-item prop="noticeTitle">
                 <el-input
+                  id="title"
                   v-model={this.noticeTitle}
                   placeholder="请输入标题"
                 ></el-input>
@@ -135,8 +136,8 @@ export default class AddModal extends Vue {
           </el-row>
         </el-form>
         <div class="btnGroup">
-          <el-button size="small" type="primary" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
-          <el-button size="small" on-click={this.closeModal}>取消</el-button>
+          <el-button id="submit" size="small" type="primary" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
+          <el-button id="close" size="small" on-click={this.closeModal}>取消</el-button>
         </div>
       </el-dialog>
     );

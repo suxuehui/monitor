@@ -39,14 +39,16 @@ export default class DeployModel extends Vue {
   created() {
     terminalDict({ EnumType: 'wireless_config' }).then((res) => {
       if (res.result.resultCode === '0') {
-        res.entity.forEach((item: any) => {
-          if (item.enumValue === 'frequency') {
-            this.modelForm.frequency = `${item.name}分钟/次`;
-          }
-          if (item.enumValue === 'duration') {
-            this.modelForm.duration = `${item.name}分钟`;
-          }
-        });
+        if (res.entity !== null) {
+          res.entity.forEach((item: any) => {
+            if (item.enumValue === 'frequency') {
+              this.modelForm.frequency = `${item.name}分钟/次`;
+            }
+            if (item.enumValue === 'duration') {
+              this.modelForm.duration = `${item.name}分钟`;
+            }
+          });
+        }
       } else {
         this.$message.error(res.result.resultMessage);
       }

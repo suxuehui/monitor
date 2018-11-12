@@ -1,6 +1,8 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList } from '@/interface';
 import { Button, Tabs, TabPane, Tooltip } from 'element-ui';
+import qs from 'qs';
+import { exportExcel } from '@/api/export';
 
 import './RecordTable.less';
 @Component({
@@ -97,8 +99,8 @@ export default class Equipment extends Vue {
   };
   tableUrl: string = '/vehicle/tracke/findRecordList'; // 表格请求地址
   outParams: any = {
-    startTime: '',
-    endTime: '',
+    startDate: '',
+    endDate: '',
     vehicleId: '',
   }
 
@@ -127,17 +129,23 @@ export default class Equipment extends Vue {
     </el-tooltip>;
   }
 
+  exportBtn: boolean = true;
   created() {
     if (this.$route.params.id) {
       this.outParams.vehicleId = this.$route.params.id;
     }
+    const getNowRoles: string[] = [
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      // this.exportBtn = !!(res[0]);
+    });
   }
 
   clear() {
     this.outParams = {
-      startTime: '',
-      endTime: '',
-      vehicleId: '',
+      startDate: '',
+      endDate: '',
+      vehicleId: this.$route.params.id,
     };
   }
   timeRangeChange(val: any) {
@@ -145,11 +153,11 @@ export default class Equipment extends Vue {
       if (val.length === 2) {
         const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
         const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
-        this.outParams.startTime = startT;
-        this.outParams.endTime = endT;
+        this.outParams.startDate = startT;
+        this.outParams.endDate = endT;
       } else {
-        this.outParams.startTime = `${val[0]}`;
-        this.outParams.endTime = `${val[1]}`;
+        this.outParams.startDate = `${val[0]}`;
+        this.outParams.endDate = `${val[1]}`;
       }
     }
   }
@@ -160,6 +168,12 @@ export default class Equipment extends Vue {
 
   menuClick(key: string, row: any) {
 
+  }
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    console.log('未完成');
+    // exportExcel(data1, '商户列表', '/customer/org/exportExcel');
   }
   render() {
     return (
@@ -172,8 +186,10 @@ export default class Equipment extends Vue {
           filter-params={this.filterParams}
           back-params={this.backParams}
           add-btn={false}
-          export-btn={true}
+          export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
           highlight-current-row={true}
+          on-clearOutParams={this.clear}
           on-currentChange={this.currentChange}
           on-menuClick={this.menuClick}
           table-list={this.tableList}

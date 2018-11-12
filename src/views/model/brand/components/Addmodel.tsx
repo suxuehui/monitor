@@ -92,7 +92,7 @@ export default class AddModal extends Vue {
     const upModel: any = this.$refs.uploadModel;
     setTimeout(() => {
       upModel.$children[0].clearFiles();
-    }, 200);
+    }, 400);
     this.loading = false;
   }
 
