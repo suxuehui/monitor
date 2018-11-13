@@ -3,8 +3,8 @@ import { Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option } from 
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
 import { terminalType } from '@/api/equipment';
 import { getAllShopName } from '@/api/app';
-
 import { userCheck } from '@/api/permission';
+import './AddModal.less';
 @Component({
   components: {
   'el-dialog': Dialog,
@@ -31,7 +31,7 @@ export default class AddModal extends Vue {
     contactPhone: '',
     contactAddress: '',
     nameAndLev: '',
-    deviceType: '',
+    deviceType: [],
   };
 
   shopNameList: any = [];
@@ -334,6 +334,7 @@ export default class AddModal extends Vue {
     } else {
       this.deviceType = val;
     }
+    this.modelForm.deviceType = this.deviceType;
   }
 
   render() {
@@ -346,8 +347,8 @@ export default class AddModal extends Vue {
         close-on-click-modal={false}
       >
         <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
-          <el-row>
-            <el-col span={24}>
+          <el-row >
+            <el-col span={24} class="shopName">
               <el-form-item label="商户名称" prop="oldLevelCode" rules={!this.ruleStatus ? null : this.oldLevelCodeRule}>
                 <el-select
                   id="oldLevelCode"
@@ -371,9 +372,12 @@ export default class AddModal extends Vue {
                     ))
                   }
                 </el-select>
+                {
+                  this.title === '新增商户' ? <span class="star1">*</span> : null
+                }
               </el-form-item>
             </el-col>
-            <el-col span={24}>
+            <el-col span={24} class="typeName">
               <el-form-item label="设备同步" prop="deviceType" rules={this.typeRule}>
                 <el-select
                   id="deviceType"
@@ -394,6 +398,7 @@ export default class AddModal extends Vue {
                     ))
                   }
                 </el-select>
+                <span class="star2">*</span>
               </el-form-item>
             </el-col>
             <el-col span={12}>

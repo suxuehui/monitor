@@ -9,8 +9,8 @@ import { allList } from '@/api/model';
 import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import EditModel from './components/EditModel';
+import ControlModel from './components/ControlModel';
 import './index.less';
-import '../../../styles/var.less';
 
 // 车子图片
 const carIcon = require('@/assets/car.png');
@@ -27,6 +27,7 @@ const pointIcon = require('@/assets/point.png');
   'el-tooltip': Tooltip,
   'el-cascader': Cascader,
   'edit-model': EditModel,
+  'control-model': ControlModel,
   }
   })
 export default class Monitor extends Vue {
@@ -320,13 +321,13 @@ export default class Monitor extends Vue {
       msg: '确定删除？',
       roles: true,
     },
-    // {
-    //   key: 'tracking',
-    //   rowKey: 'vin',
-    //   color: 'blue',
-    //   text: '追踪',
-    //   roles: true,
-    // },
+    {
+      key: 'tracking',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '追踪',
+      roles: true,
+    },
   ];
   tableUrl: string = '/vehicle/monitor/list'; // 表格请求地址
   BMap: any = null; // 百度地图对象
@@ -689,7 +690,6 @@ export default class Monitor extends Vue {
     this.locChange = true;
   }
 
-
   menuClick(key: string, row: any): void {
     switch (key) {
       case 'edit':
@@ -737,13 +737,14 @@ export default class Monitor extends Vue {
       '/vehicle/monitor/delete',
       '/vehicle/monitor/control',
       '/vehicle/monitor/exportExcel',
+      '/vehicle/tracke/findTerminalList',
+      '/vehicle/tracke/findRecordList',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]);
       this.opreat[1].roles = !!(res[1]);
       this.opreat[2].roles = !!(res[2]);
-      // 追踪
-      // this.opreat[3].roles;
+      this.opreat[3].roles = !!(res[5] || res[6]);
       this.controlBtn = !!(res[3]);
       this.exportBtn = !!(res[4]);
     });
@@ -915,10 +916,13 @@ export default class Monitor extends Vue {
   // 编辑开关
   editVisible: boolean = false;
   editData: any = {};
-
+  // 设备控制
+  controlData: any = {}
+  controlVisible: boolean = false;
   // 关闭编辑
   closeEdit() {
     this.editVisible = false;
+    this.controlVisible = false;
   }
 
   brandList: any = [];
@@ -926,6 +930,7 @@ export default class Monitor extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.editVisible = false;
+    this.controlVisible = false;
     const editBlock: any = this.$refs.editTable;
     setTimeout(() => {
       editBlock.resetData();
@@ -938,19 +943,40 @@ export default class Monitor extends Vue {
     this.closeModal();
   }
 
-  controlLoading: boolean[] = [false, false, false, false, false, false, false]
   // 车辆控制
   controlCar(type: string, index: number): void {
-    this.controlLoading[index] = true;
-    controlCar({ imei: this.carDetail.otuImei, cmd: type }).then((res: any) => {
-      this.controlLoading[index] = false;
-      if (res.result.resultCode === '0') {
-        this.getCarDetail(this.carDetail.id);
-        this.$message.success(res.result.resultMessage);
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
+    let str: string = '';
+    switch (type) {
+      case 'CMD_START':
+        str = '点火';
+        break;
+      case 'CMD_STOP':
+        str = '熄火';
+        break;
+      case 'CMD_SET_DEFENCE':
+        str = '设防';
+        break;
+      case 'CMD_CANCEl_DEFENCE':
+        str = '撤防';
+        break;
+      case 'CMD_LOCK':
+        str = '上锁';
+        break;
+      case 'CMD_UNLOCK':
+        str = '解锁';
+        break;
+      case 'CMD_CALL':
+        str = '寻车';
+        break;
+      default:
+        break;
+    }
+    this.controlData = {
+      cmd: type,
+      imei: this.carDetail.otuImei,
+      operateStr: str,
+    };
+    this.controlVisible = true;
   }
   downLoad(data: any) {
     const data1 = qs.stringify(data);
@@ -993,17 +1019,13 @@ export default class Monitor extends Vue {
           {
             this.controlBtn ?
               <div class="car-control">
-                <div class="left">
-                  <el-button id="CMD_START" class="fire" size="mini" on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
-                  <el-button id="CMD_STOP" class="unfire" size="mini" on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
-                </div>
-                <div class="right">
-                  <el-button id="CMD_SET_DEFENCE" class="lock" type="text" size="mini" on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
-                  <el-button id="CMD_CANCEl_DEFENCE" class="lock" type="text" size="mini" on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
-                  <el-button id="CMD_LOCK" class="lock" type="text" icon="iconfont-lock" size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
-                  <el-button id="CMD_UNLOCK" class="unlock" type="text" icon="iconfont-unlock" size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
-                  <el-button id="CMD_CALL" class="find" type="text" icon="iconfont-wifi" size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
-                </div>
+                <el-button id="CMD_START" type="text" size="mini" icon="iconfont-powerOn" on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
+                <el-button id="CMD_STOP" type="text" size="mini" icon="iconfont-powerOff" on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
+                <el-button id="CMD_SET_DEFENCE" type="text" size="mini" icon="iconfont-fenceOn" on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
+                <el-button id="CMD_CANCEl_DEFENCE" type="text" size="mini" icon="iconfont-fenceOff" on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
+                <el-button id="CMD_LOCK" type="text" icon="iconfont-lock" size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
+                <el-button id="CMD_UNLOCK" type="text" icon="iconfont-unlock" size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
+                <el-button id="CMD_CALL" type="text" icon="iconfont-wifi" size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
               </div> : null
           }
           <div class="car-address">
@@ -1074,6 +1096,14 @@ export default class Monitor extends Vue {
           on-close={this.closeModal}
           on-refresh={this.reFresh}
         ></edit-model>
+        <control-model
+          ref="controlTable"
+          data={this.controlData}
+          visible={this.controlVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        >
+        </control-model>
       </div>
     );
   }
