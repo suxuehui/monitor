@@ -513,7 +513,7 @@ export default class Monitor extends Vue {
         </li>
         <li>
           <i class="icon iconfont-speed"></i>
-          <span class="txt">${content.speed}km/h</span>
+          <span class="txt">${content.speed !== null ? `${content.speed}km/h` : '未知'}</span>
         </li>
       </ul>
     </div>`;
@@ -957,6 +957,13 @@ export default class Monitor extends Vue {
     exportExcel(data1, '车辆列表', '/vehicle/monitor/exportExcel');
   }
 
+  infoBox(data: any) {
+    const bName = data.brandName !== null ? `${data.brandName}-` : '';
+    const sName = data.seriesName !== null ? `${data.seriesName}-` : '';
+    const mName = data.modelName !== null ? data.modelName : '';
+    return `${bName}${sName}${mName}`;
+  }
+
   render() {
     const { carDetail } = this;
     return (
@@ -972,7 +979,7 @@ export default class Monitor extends Vue {
           <div class="car-info">
             <div class="top">
               <span class="plateNumber">{carDetail.plateNum}</span>
-              <span class="modelName">（{carDetail.brandName + carDetail.modelName}）</span>
+              <span class="modelName">（{this.infoBox(carDetail)}）</span>
             </div>
             <div class="center">
               <span class="brandName">{carDetail.orgName}</span>

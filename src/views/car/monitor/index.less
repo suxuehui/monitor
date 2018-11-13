@@ -25,11 +25,9 @@
     }
   }
   .car-detail-box {
-    // max-height: e('calc(100vh - 480px)');
     position: absolute;
-    // top: -100%;
     left: 10px;
-    width: 380px;
+    width: 400px;
     border: 1px solid @primary-color;
     border-radius: 5px;
     background-color: #fff;
@@ -38,8 +36,7 @@
     &.big {
       max-height: e('calc(100vh - 100px)');
       .car-detail {
-        // max-height: e('calc(100vh - 340px)');
-        max-height: e('calc(100vh - 710px)');
+        max-height: e('calc(100vh - 680px)');
       }
     }
     .car-info {
@@ -54,7 +51,7 @@
           font-weight: 500;
         }
         .modelName {
-          font-size: 14px;
+          font-size: 12px;
         }
       }
       .center {
@@ -177,8 +174,12 @@
     position: absolute;
     transition: all .5s ease-in-out;
     background-color: #fff;
+    margin-bottom: -10px;
     .pagination{
       text-align: center;
+    }
+    .filter-wrap {
+      margin-bottom: -10px;
     }
     .filter-table {
       height: auto;
@@ -202,6 +203,10 @@
       }
       .less {
         margin-bottom: 10px;
+      }
+      .mapTable {
+        max-height: 320px;
+        overflow: auto;
       }
     }
   }

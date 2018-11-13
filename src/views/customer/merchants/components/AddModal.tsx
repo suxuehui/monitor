@@ -30,6 +30,7 @@ export default class AddModal extends Vue {
     password: '',
     contactPhone: '',
     contactAddress: '',
+    nameAndLev: '',
     deviceType: '',
   };
 
@@ -76,43 +77,47 @@ export default class AddModal extends Vue {
     return reg.test(str);
   }
 
-  orgRule = [
-    { required: true, message: '请输入商户名称', trigger: 'blur' },
-    {
-      validator: this.checkName, trigger: 'blur',
-    },
-  ];
   manageUserRule = [
     { required: true, message: '请输入登录账号', trigger: 'blur' },
     {
       validator: this.checkUsername, trigger: 'blur',
     },
   ]
+  oldLevelCodeRule = [
+    {
+      validator: this.checkShopValue,
+    },
+  ]
+  typeRule = [
+    {
+      validator: this.checkValue,
+    },
+  ]
   ruleStatus: boolean = true;
 
-  // 验证商户名称
-  @Emit()
-  checkName(rule: any, value: string, callback: Function) {
-    setTimeout(() => {
-      if (value) {
-        if (this.data.orgName !== value) {
-          // 商户名变化重新判定
-          checkOrgName(value).then((res) => {
-            if (res.result.resultCode === '0') {
-              callback();
-            } else {
-              callback(new Error('商户名已存在，请重新输入'));
-            }
-          });
-        } else {
-          // 商户名未变，直接通过
-          callback();
-        }
-      } else {
-        callback(new Error('商户名不能为空'));
-      }
-    }, 500);
+  checkShopValue(rule: any, value: string, callback: Function) {
+    if (this.nameAndLev) {
+      setTimeout(() => {
+        callback();
+      }, 200);
+    } else {
+      setTimeout(() => {
+        callback(new Error('请选择商户'));
+      }, 200);
+    }
   }
+  checkValue(rule: any, value: string, callback: Function) {
+    if (this.deviceType) {
+      setTimeout(() => {
+        callback();
+      }, 200);
+    } else {
+      setTimeout(() => {
+        callback(new Error('请选择设备类型'));
+      }, 200);
+    }
+  }
+
   // 验证登录账号
   @Emit()
   checkUsername(rule: any, value: string, callback: Function) {
@@ -138,9 +143,8 @@ export default class AddModal extends Vue {
       name: '',
     };
     getAllShopName(obj).then((res) => {
-      const { data } = res.data;
       if (res.status === 200) {
-        data.forEach((item: any) => {
+        res.data.entity.forEach((item: any) => {
           this.shopNameList.push({
             label: item.name,
             value: `${item.levelCode}***${item.name}`,
@@ -156,13 +160,13 @@ export default class AddModal extends Vue {
         res.entity.forEach((item: any) =>
           this.typeList.push({
             key: Math.random(),
-            value: parseInt(item.enumValue, 10),
+            value: item.enumValue,
             label: item.name,
           }));
         // 设备类型(全部)
         this.typeList.unshift({
           key: Math.random(),
-          value: 999999999999,
+          value: '1026',
           label: '全部',
         });
       } else {
@@ -177,9 +181,21 @@ export default class AddModal extends Vue {
       this.modelForm = JSON.parse(JSON.stringify(data));
       this.modelForm.password = '********';
       this.ruleStatus = false;
+      this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
+      this.nameAndLev = `${this.data.orgName}`;
     } else {
       this.resetData();
     }
+  }
+
+  typeEdit(str: string) {
+    let arr: any = [];
+    if (str.split(',').length === this.typeList.length - 1) {
+      arr = ['1026'];
+    } else {
+      arr = str.split(',');
+    }
+    return arr;
   }
 
   // 重置数据
@@ -191,7 +207,6 @@ export default class AddModal extends Vue {
       password: '',
       contactPhone: '',
       contactAddress: '',
-      deviceType: '',
     };
     this.nameAndLev = '';
     this.deviceType = [];
@@ -212,16 +227,23 @@ export default class AddModal extends Vue {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     this.loading = true;
+    if (this.nameAndLev === '') {
+      this.$message.error('请选择商户');
+      return false;
+    }
+    if (this.deviceType.length === 0) {
+      this.$message.error('请选择设备类型');
+      return false;
+    }
     obj = {
-      orgName: this.modelForm.orgName ? this.modelForm.orgName : '',
-      // orgName: this.nameAndLev.split('***')[1] ? this.nameAndLev.split('***')[1] : '',
+      orgName: this.nameAndLev.split('***')[1] ? this.nameAndLev.split('***')[1] : '',
       contactUser: this.modelForm.contactUser,
       contactPhone: this.modelForm.contactPhone,
       manageUser: this.modelForm.manageUser,
       password: this.modelForm.password,
       contactAddress: this.modelForm.contactAddress,
-      // oldLevelCode: this.nameAndLev.split('***')[0],
-      // deviceType: this.deviceType.join(','),
+      oldLevelCode: this.nameAndLev.split('***')[0],
+      deviceType: this.deviceType.indexOf('1026') > -1 ? '3,22,23,16,17' : this.deviceType.join(','),
     };
     From.validate((valid: any) => {
       if (valid) {
@@ -233,8 +255,8 @@ export default class AddModal extends Vue {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
-                // this.nameAndLev = '';
-                // this.deviceType = [];
+                this.nameAndLev = '';
+                this.deviceType = [];
                 this.ruleStatus = true;
                 this.$emit('refresh');
               }, 1500);
@@ -250,6 +272,8 @@ export default class AddModal extends Vue {
           if (obj.password === '********') {
             delete obj.password;
           }
+          obj.orgName = this.data.orgName;
+          obj.oldLevelCode = this.data.oldLevelCode;
           customerUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -274,6 +298,7 @@ export default class AddModal extends Vue {
       }
       return false;
     });
+    return true;
   }
 
   remoteMethod(query: any) {
@@ -296,12 +321,19 @@ export default class AddModal extends Vue {
   }
   deviceType: any = [];
   typeChecked(val: any) {
-    this.deviceType = val;
-    val.forEach((item: any) => {
-      if (item === 999999999999) {
-        this.deviceType = [3, 22, 23, 17, 16];
+    if (val.length > 1) {
+      if (val.indexOf('1026') > -1) {
+        if (val[0] === '1026') {
+          this.deviceType = val.slice(1, val.length);
+        } else {
+          this.deviceType = ['1026'];
+        }
+      } else {
+        this.deviceType = val;
       }
-    });
+    } else {
+      this.deviceType = val;
+    }
   }
 
   render() {
@@ -313,21 +345,16 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
+        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="商户名称" prop="oldLevelCode" >
-                <el-input
-                  id="orgName"
-                  v-model={this.modelForm.orgName}
-                  disabled={this.title === '编辑商户'}
-                  placeholder="请输入商户名称"
-                ></el-input>
-                {/* <el-select
+              <el-form-item label="商户名称" prop="oldLevelCode" rules={!this.ruleStatus ? null : this.oldLevelCodeRule}>
+                <el-select
                   id="oldLevelCode"
                   v-model={this.nameAndLev}
                   filterable={true}
                   remote={true}
+                  disabled={this.title !== '新增商户'}
                   placeholder="请选择商户"
                   remote-method={this.remoteMethod}
                   on-change={this.shopChecked}
@@ -336,34 +363,39 @@ export default class AddModal extends Vue {
                   {
                     this.shopFilteredList.map((item: any, index: number) => (
                       <el-option
+                        id={item.value}
                         key={index}
                         value={item.value}
                         label={item.label}
                       >{item.label}</el-option>
                     ))
                   }
-                </el-select> */}
+                </el-select>
               </el-form-item>
             </el-col>
-            {/* <el-col span={24}>
-              <el-form-item label="设备同步" prop="deviceType">
+            <el-col span={24}>
+              <el-form-item label="设备同步" prop="deviceType" rules={this.typeRule}>
                 <el-select
                   id="deviceType"
                   v-model={this.deviceType}
                   filterable={true}
-                  multiple={true}
+                  multiple={this.deviceType !== '1026'}
                   placeholder="请选择设备类型"
                   style="width:100%"
                   on-change={this.typeChecked}
                 >
                   {
                     this.typeList.map((item: any) => (
-                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                      <el-option
+                        id={item.label}
+                        value={item.value}
+                        label={item.label}
+                      >{item.label}</el-option>
                     ))
                   }
                 </el-select>
               </el-form-item>
-            </el-col> */}
+            </el-col>
             <el-col span={12}>
               <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
                 <el-input

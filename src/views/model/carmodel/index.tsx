@@ -69,13 +69,23 @@ export default class CarModel extends Vue {
     { label: '车系名称', prop: 'seriesName', formatter: (row: any) => (row.seriesName ? row.seriesName : '--') },
     { label: '车型名称', prop: 'name' },
     { label: '能源类型', prop: 'energyType', formatter: (row: any) => (row.energyType ? row.energyType : '--') },
-    { label: '油箱容量', prop: 'fuelTankCap', formatter: (row: any) => (row.fuelTankCap ? `${row.fuelTankCap}L` : '--') },
+    { label: '油箱容量', prop: 'fuelTankCap', formatter: this.checkFuelTank },
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },
   ];
 
   props: any = {
     value: 'value',
     children: 'name',
+  }
+
+  checkFuelTank(row: any) {
+    let str: any = '';
+    if (row.energyType === '电动') {
+      str = '--';
+    } else {
+      str = `${row.fuelTankCap}L`;
+    }
+    return str;
   }
 
   // 权限设置
@@ -122,7 +132,7 @@ export default class CarModel extends Vue {
         });
         this.filterList[0].props = this.props;
         this.filterList[0].options = this.brandList;
-        this.brandAddList = this.brandList.filter((item:any) => item);
+        this.brandAddList = this.brandList.filter((item: any) => item);
       } else {
         this.$message.error(res.result.resultMessage);
       }
