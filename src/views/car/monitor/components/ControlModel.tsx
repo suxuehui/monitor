@@ -45,7 +45,8 @@ export default class ControlModel extends Vue {
   render() {
     return (
       <el-dialog
-        width="540px"
+        width="415px"
+        top="23vh"
         title="车辆控制"
         visible={this.visible}
         before-close={this.closeModal}

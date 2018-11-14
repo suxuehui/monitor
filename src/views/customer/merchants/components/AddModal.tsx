@@ -2,7 +2,7 @@ import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option } from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
 import { terminalType } from '@/api/equipment';
-import { getAllShopName } from '@/api/app';
+import { getAllShopName, getAllShopNameMoni } from '@/api/app';
 import { userCheck } from '@/api/permission';
 import './AddModal.less';
 @Component({
@@ -34,7 +34,6 @@ export default class AddModal extends Vue {
     deviceType: [],
   };
 
-  shopNameList: any = [];
   shopFilteredList: any = [];
   typeList: any = [];
 
@@ -138,22 +137,6 @@ export default class AddModal extends Vue {
 
   created() {
     this.modelForm = JSON.parse(JSON.stringify(this.data));
-    // 所有门店名称
-    const obj: any = {
-      name: '',
-    };
-    getAllShopName(obj).then((res) => {
-      if (res.status === 200) {
-        res.data.entity.forEach((item: any) => {
-          this.shopNameList.push({
-            label: item.name,
-            value: `${item.levelCode}***${item.name}`,
-          });
-        });
-      } else {
-        this.$message.error(res.data.message);
-      }
-    });
     // 设备类型
     terminalType(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -304,13 +287,20 @@ export default class AddModal extends Vue {
   remoteMethod(query: any) {
     if (query !== '') {
       this.selectLoading = true;
-      setTimeout(() => {
-        this.selectLoading = false;
-        this.shopFilteredList = this.shopNameList.filter((item: any) =>
-          item.label.indexOf(query) > -1);
-      }, 200);
-    } else {
-      this.shopNameList = [];
+      getAllShopNameMoni({ name: query }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.selectLoading = false;
+          this.shopFilteredList = [];
+          res.entity.forEach((item: any) => {
+            this.shopFilteredList.push({
+              label: item.name,
+              value: `${item.levelCode}***${item.name}`,
+            });
+          });
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
 

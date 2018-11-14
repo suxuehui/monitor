@@ -55,6 +55,14 @@ export async function getAllShopName(params: any, token?: string) {
   });
 }
 
+export async function getAllShopNameMoni(params: any) {
+  return request({
+    url: '/customer/org/create/selectOptions',
+    method: 'post',
+    data: params,
+  });
+}
+
 export async function getCodeImg(params: any) {
   return request({
     url: `/sys/user/getImg?r=${Math.random()}`,

@@ -26,6 +26,7 @@
   }
   .car-detail-box {
     position: absolute;
+    z-index: 3000;
     left: 10px;
     width: 400px;
     border: 1px solid @primary-color;
@@ -37,6 +38,12 @@
       max-height: e('calc(100vh - 100px)');
       .car-detail {
         max-height: e('calc(100vh - 680px)');
+      }
+    }
+    &:hover {
+      max-height: e('calc(100vh - 100px)') !important;
+      .car-detail {
+        max-height: e('calc(100vh - 300px)');
       }
     }
     .car-info {
