@@ -270,6 +270,7 @@ export default class Trajectory extends Vue {
         this.SMap.centerAndZoom(new BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
         this.geolocationControl = new BMap.GeolocationControl();
         this.geolocationControl.addEventListener('locationSuccess', () => {
+          console.log('locationSuccess');
         });
         this.SMap.enableScrollWheelZoom(true);
         config.loadMapInfoBox().then((BMapLib: any) => {
@@ -657,7 +658,6 @@ export default class Trajectory extends Vue {
     return color;
   }
 
-
   // 增加zoom
   zoomAdd = () => {
     const newZoom = this.SMap.getZoom() + 1;
@@ -803,7 +803,6 @@ export default class Trajectory extends Vue {
    * 播放轨迹动画-end
    */
 
-
   downLoad(data: any) {
     const data1 = qs.stringify(data);
     exportExcel(data1, '轨迹列表', '/device/trip/exportExcel');
@@ -883,7 +882,6 @@ export default class Trajectory extends Vue {
               : '',
           ]}>
           <filter-table
-            ref="tableList"
             class="map-table"
             filter-list={this.filterList}
             filter-grade={[]}

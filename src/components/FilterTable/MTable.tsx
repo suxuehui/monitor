@@ -217,7 +217,6 @@ export default class MTable extends Vue {
             this.opreat.map((item, indexs) => {
               if (item.roles) {
                 return <el-dropdown-item
-                  // 设备管理特有
                   id={`${item.key}`}
                   key={indexs}
                   command={item.key}
@@ -244,9 +243,11 @@ export default class MTable extends Vue {
             } else if (typeof item.color === 'function'
               && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
               return <pop-confirm
+                keyName={item.key}
                 on-confirm={() => this.menuClick(null, item.key, row)}
                 title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
-                <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
+                <a id={`${item.key}-${row[item.rowKey]}`} key={indexs}
+                  class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
                   {typeof item.text === 'function' ? item.text(row) : item.text}
                 </a>
               </pop-confirm>;
