@@ -18,7 +18,7 @@ export default class MapContorl {
    */
   initTrackCarOverlay() {
     const self = this;
-    this.trackCarOverlay = function trackCarOverlay(point : any, type : string) {
+    this.trackCarOverlay = function trackCarOverlay(point: any, type: string) {
       this.point = point;
       // this.type = 'trackpoint';
       this.type = type;
@@ -136,7 +136,7 @@ export default class MapContorl {
    */
   initTrackPointOverlay() {
     const self = this;
-    this.trackPointOverlay = function trackPointOverlay(point : any, type : string) {
+    this.trackPointOverlay = function trackPointOverlay(point: any, type: string) {
       this.point = point;
       // this.type = 'trackpoint';
       this.type = type;
@@ -364,7 +364,7 @@ export default class MapContorl {
       if (response.status === 0) {
         const address = response.result.formatted_address + response.result.sematic_description;
         const infor = [
-          ['速度方向', `${data.speed}km/h（${this.getDirection(data.direction)}）`],
+          ['速度方向', `${data.speed >= 0 ? `${data.speed}km/h` : '未知'}（${this.getDirection(data.direction)}）`],
         ];
         if (data.event && data.event[0] !== '0') {
           const haovrData: string[] = [];
