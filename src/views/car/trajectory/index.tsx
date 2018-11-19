@@ -615,9 +615,12 @@ export default class Trajectory extends Vue {
         break;
       case 1:
         speed -= 25;
-        red = 187 + Math.ceil(((241 - 187) / 25) * speed);
-        green = 0 + Math.ceil(((48 - 0) / 25) * speed);
-        blue = 0 + Math.ceil(((48 - 0) / 25) * speed);
+        // red = 187 + Math.ceil(((241 - 187) / 25) * speed);
+        // green = 0 + Math.ceil(((48 - 0) / 25) * speed);
+        // blue = 0 + Math.ceil(((48 - 0) / 25) * speed);
+        red = 241 + Math.ceil(((255 - 241) / 25) * speed);
+        green = 48 + Math.ceil(((200 - 48) / 25) * speed);
+        blue = 48 + Math.ceil(((0 - 48) / 25) * speed);
         break;
       case 2:
         speed -= 50;
@@ -629,12 +632,12 @@ export default class Trajectory extends Vue {
         speed -= 75;
         red = 255 + Math.ceil(((22 - 255) / 25) * speed);
         green = 200 + Math.ceil(((191 - 200) / 25) * speed);
-        blue = 0 + Math.ceil(((43 - 0) / 25) * speed);
+        blue = 100 + Math.ceil(((43 - 0) / 25) * speed);
         break;
       case 4:
         red = 22;
         green = 191;
-        blue = 43;
+        blue = 0;
         break;
       default: break;
     }
