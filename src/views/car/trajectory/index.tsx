@@ -506,7 +506,7 @@ export default class Trajectory extends Vue {
           iconRender(endXY.x - 13, endXY.y - 26, require('@/assets/end.png'));
         }
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
-          if (totalPoints[i].event && totalPoints[i].event[0] !== '0') {
+          if (totalPoints[i].event && totalPoints[i].event.length && totalPoints[i].event[0] !== '0') {
             const pixel = self.SMap.pointToPixel(totalPoints[i]);
             if (totalPoints[i].event.length === 1) {
               addPoint(pixel.x, pixel.y, Map[parseInt(totalPoints[i].event[0], 10)], ColorMap[parseInt(totalPoints[i].event[0], 10)], '12px', 'one');

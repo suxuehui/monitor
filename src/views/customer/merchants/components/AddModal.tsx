@@ -298,6 +298,8 @@ export default class AddModal extends Vue {
             });
           });
         } else {
+          this.selectLoading = false;
+          this.shopFilteredList = [];
           this.$message.error(res.result.resultMessage);
         }
       });
