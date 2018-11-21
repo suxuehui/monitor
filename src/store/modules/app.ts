@@ -10,10 +10,15 @@ function findMenu(
   tabActiveKey: string,
   params?: string,
   query?: any,
+  key?: string[],
 ) {
-  let result = { tabList, tabActiveKey, key: '' };
+  let result: any = { tabList, tabActiveKey };
   data.forEach((item: any) => {
     if (url.indexOf(item.path.replace(/\/:\w+/g, '')) > -1) {
+      if (!key) {
+        key = [];
+      }
+      key.push(item.meta.key);
       if (url.length === 1) {
         result.tabList.push({
           ...item,
@@ -21,13 +26,13 @@ function findMenu(
           query,
         });
         result.tabActiveKey = item.name;
-        result.key = item.meta.key;
       } else {
         url.shift();
-        result = findMenu(item.children, url, tabList, tabActiveKey, params, query);
+        result = findMenu(item.children, url, tabList, tabActiveKey, params, query, key);
       }
     }
   });
+  result.key = key;
   return result;
 }
 
@@ -81,12 +86,20 @@ const app = {
       context.commit('SAVE_MENU', menuData);
     },
     // 新增缓存页面
-    addKeep: async (context: any, name: string) => {
+    addKeep: async (context: any, name: string | string[]) => {
       // 新增tab，增加缓存状态
-      const { keepList } = context.state;
+      let { keepList } = context.state;
       if (keepList.indexOf(name) === -1) {
-        keepList.push(name);
+        if (typeof name === 'object') {
+          keepList = keepList.concat(name);
+        } else {
+          keepList.push(name);
+        }
       }
+      const newList = new Set();
+      keepList.forEach((x: string) => newList.add(x));
+      keepList = [];
+      newList.forEach((x: string) => keepList.push(x));
       await context.commit('KEEP_CHANGE', keepList);
     },
     // 清除列表
@@ -116,7 +129,7 @@ const app = {
           context.dispatch('addKeep', resultData.key);
         }
       }
-      context.commit('KEEP_CHANGE', keepList);
+      // context.commit('KEEP_CHANGE', keepList);
       context.commit('TAB_CHANGE', resultData);
       resolve(true);
     }),

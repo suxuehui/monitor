@@ -51,6 +51,7 @@ export const asyncRouterMap: routerItem[] = [
       '/vehicle/monitor/list',
       '/vehicle/fence/list',
     ],
+    meta: { key: 'Car' },
     children: [
       {
         path: 'monitor',
@@ -104,6 +105,7 @@ export const asyncRouterMap: routerItem[] = [
       '/vehicle/series/list',
       '/vehicle/model/list',
     ],
+    meta: { key: 'Model' },
     children: [
       {
         path: 'brand',
@@ -137,6 +139,7 @@ export const asyncRouterMap: routerItem[] = [
       '/device/terminal/list',
       '/vehicle/config/list',
     ],
+    meta: { key: 'Equipment' },
     children: [
       {
         path: 'device',
@@ -170,6 +173,7 @@ export const asyncRouterMap: routerItem[] = [
     permission: [
       '/customer/org/list',
     ],
+    meta: { key: 'Customer' },
     children: [
       {
         path: 'merchants',
@@ -189,6 +193,7 @@ export const asyncRouterMap: routerItem[] = [
       '/message/notice/list',
       '/message/alarm/list',
     ],
+    meta: { key: 'Message' },
     children: [
       {
         path: 'notice',
@@ -222,6 +227,7 @@ export const asyncRouterMap: routerItem[] = [
     permission: [
       '/statistics/driving/list',
     ],
+    meta: { key: 'Data' },
     children: [
       {
         path: 'driving',
@@ -241,6 +247,7 @@ export const asyncRouterMap: routerItem[] = [
       '/sys/user/list',
       '/sys/user/list',
     ],
+    meta: { key: 'Permission' },
     children: [
       {
         path: 'members',
@@ -266,6 +273,7 @@ export const asyncRouterMap: routerItem[] = [
     permission: [
       '/system/cfg/list',
     ],
+    meta: { key: 'System' },
     children: [
       {
         path: 'setting',

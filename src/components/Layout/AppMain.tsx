@@ -67,7 +67,7 @@ export default class AppMain extends Vue {
             }
           </el-tabs>
           <div class="page-wrap">
-            <keep-alive max={10} include={keepList}>
+            <keep-alive max={20} include={keepList}>
               <router-view/>
             </keep-alive>
           </div>

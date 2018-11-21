@@ -13,7 +13,7 @@ import CheckModel from '@/views/message/notice/components/CheckModel';
   'el-tooltip': Tooltip,
   }
   })
-export default class Alarm extends Vue {
+export default class Notice extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
