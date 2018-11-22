@@ -45,9 +45,8 @@ export default class Notice extends Vue {
     {
       key: 'delete',
       rowKey: 'title',
-      color: (row: any) => (row.abcd === 1 ? 'green' : 'red'),
-      text: (row: any) => (row.abcd === 1 ? '绑定' : '删除'),
-      msg: (row: any) => (row.abcd === 1 ? '是否要绑定？' : '是否要删除？'),
+      color: 'red',
+      text: '删除',
       roles: true,
     },
   ];

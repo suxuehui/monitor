@@ -201,7 +201,7 @@ export default class Monitor extends Vue {
       prop: 'vin',
     },
     {
-      label: 'imei号(OTU)',
+      label: 'imei号(有线)',
       prop: 'otuImei',
     },
     {

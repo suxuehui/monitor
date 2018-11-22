@@ -254,6 +254,7 @@ export default class MTable extends Vue {
             } else if (typeof item.color === 'string'
               && whiteList.indexOf(item.color) >= 0) {
               return <pop-confirm
+                keyName={item.key}
                 on-confirm={() => this.menuClick(null, item.key, row)}
                 title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
                 <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${item.color}`}>

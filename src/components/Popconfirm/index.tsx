@@ -33,7 +33,7 @@ export default class Popconfirm extends Vue {
   }
 
   @Emit()
-  openPop(e:any) {
+  openPop(e: any) {
     this.loading = true;
     e.stopPropagation();
     setTimeout(() => {
@@ -47,6 +47,20 @@ export default class Popconfirm extends Vue {
   stopClick(e: any) {
     this.visible = true;
     e.stopPropagation();
+  }
+
+  checkOptName(name: String) {
+    let str: String = '';
+    if (name === 'delete') {
+      str = '删除';
+    } else if (name === 'unbind') {
+      str = '解绑';
+    } else if (name === 'freeze') {
+      str = '冻结';
+    } else if (name === 'forbid') {
+      str = '禁用';
+    }
+    return str;
   }
 
   render() {
@@ -66,7 +80,7 @@ export default class Popconfirm extends Vue {
           close-on-click-modal={false}
         >
           <div class="box">
-            <p>确定是否进行<span class="info">{this.keyName === 'delete' ? '删除' : ''}</span>操作？</p>
+            <p>确定是否进行<span class="info"> {this.checkOptName(this.keyName)} </span>操作？</p>
           </div>
           <div>
             <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.openPop}>{this.okText}</el-button>

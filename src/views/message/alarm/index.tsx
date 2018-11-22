@@ -52,23 +52,65 @@ export default class Alarm extends Vue {
       placeholder: '请选择状态',
       options: [],
     },
+  ];
+  // 高级筛选
+  filterGrade: FilterFormList[] = [
+    {
+      key: 'levelcode',
+      type: 'levelcode',
+      label: '所属商户',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择所属商户',
+      options: [],
+    },
+    {
+      key: 'alarmType',
+      type: 'select',
+      label: '告警类型',
+      placeholder: '请选择告警类型',
+      options: [],
+    },
+    {
+      key: 'status',
+      type: 'select',
+      label: '状态',
+      placeholder: '请选择状态',
+      options: [],
+    },
+    {
+      key: 'plateNum',
+      type: 'input',
+      label: '车牌号',
+      placeholder: '请输入车牌号',
+    },
+    {
+      key: 'vin',
+      type: 'input',
+      label: '车架号',
+      placeholder: '请输入车架号',
+    },
     {
       key: 'query',
       type: 'datetimerange',
-      label: '角色名称',
+      label: '告警时间',
       placeholder: ['开始', '结束'],
       value: ['queryStart', 'queryEnd'],
       change: this.dateChange,
     },
   ];
-  // 高级筛选
-  filterGrade: FilterFormList[] = [];
   // 筛选参数
   filterParams: any = {
     levelcode: '',
     status: 'false',
     alarmType: '',
     shopName: '',
+    plateNum: '',
+    vin: '',
   };
   outParams: any = {
     queryStartTime: '',
@@ -187,6 +229,7 @@ export default class Alarm extends Vue {
           orgName: '全部',
         });
         this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -206,6 +249,7 @@ export default class Alarm extends Vue {
           label: '告警类型(全部)',
         });
         this.filterList[1].options = this.alarmType;
+        this.filterGrade[1].options = this.alarmType;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -222,6 +266,7 @@ export default class Alarm extends Vue {
   mounted() {
     // 处理状态
     this.filterList[2].options = this.activeTypes;
+    this.filterGrade[2].options = this.activeTypes;
   }
 
   modelForm: any = {};

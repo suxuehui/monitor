@@ -175,24 +175,16 @@ export default class Device extends Vue {
     },
   ];
   acceptDisable(row: any) {
-    // 是否在线
-    if (row.online === 1) {
-      if (row.status === 1 || row.status === 3 || row.status === 5) {
-        return true;
-      }
-      return false;
+    if (row.status === 1 || row.status === 3 || row.status === 5) {
+      return true;
     }
-    return true;
+    return false;
   }
 
   bindDisable(row: any) {
-    // 是否在线
-    if (row.online === 1) {
-      // 待安绑
-      if (row.status === 1) {
-        return false;
-      }
-      return true;
+    // 待安绑
+    if (row.status === 1) {
+      return false;
     }
     return true;
   }

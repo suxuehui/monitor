@@ -54,7 +54,7 @@ export default class Role extends Vue {
       disabled: (row: any) => (row.roleType !== 2),
     },
     {
-      key: 'freeze',
+      key: 'forbid',
       rowKey: 'roleName',
       color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
       text: (row: any) => (row.activeStatus === 1 ? '禁用' : '启用'),
@@ -131,7 +131,7 @@ export default class Role extends Vue {
         roleName: row.roleName,
         remark: row.remark,
       };
-    } else if (key === 'freeze') {
+    } else if (key === 'forbid') {
       roleUpdateStatus({ roleId: row.roleId }).then((res) => {
         if (res.result.resultCode === '0') {
           FromTable.reloadTable();
