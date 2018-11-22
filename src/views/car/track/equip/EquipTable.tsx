@@ -46,6 +46,11 @@ export default class Equipment extends Vue {
       formatter: this.typeConfirm,
     },
     {
+      label: '配置时间',
+      prop: 'configDate',
+      formatter: (row: any) => this.addUnit(row, 'configDate'),
+    },
+    {
       label: '启动时间',
       prop: 'startDate',
       formatter: (row: any) => this.addUnit(row, 'startDate'),
@@ -80,8 +85,8 @@ export default class Equipment extends Vue {
     },
     {
       label: '剩余电量',
-      prop: 'leftPower',
-      formatter: (row: any) => this.addUnit(row, 'leftPower'),
+      prop: 'leftPowerPercent',
+      formatter: (row: any) => this.addUnit(row, 'leftPowerPercent'),
     },
     {
       label: '状态',
@@ -124,8 +129,11 @@ export default class Equipment extends Vue {
   addUnit(row: any, unit: string) {
     let str = '';
     switch (unit) {
+      case 'configDate':
+        str = row.configDate ? `每天 ${row.configDate}` : '--';
+        break;
       case 'startDate':
-        str = row.startDate ? `每天${row.startDate}` : '--';
+        str = row.startDate ? `每天 ${row.startDate}` : '--';
         break;
       case 'duration':
         str = row.duration > 0 ? `${row.duration}分钟` : '--';
@@ -139,8 +147,8 @@ export default class Equipment extends Vue {
       case 'trackFrequency':
         str = row.trackFrequency > 0 ? `${row.trackFrequency}分钟/次` : '--';
         break;
-      case 'leftPower':
-        str = row.leftPower > 0 ? `${row.leftPower}%` : '--';
+      case 'leftPowerPercent':
+        str = row.leftPowerPercent ? `${row.leftPowerPercent}` : '--';
         break;
       default:
         break;
@@ -218,10 +226,18 @@ export default class Equipment extends Vue {
 
   menuClick(key: string, row: any) {
     if (key === 'deploy') {
-      this.rowData = row;
+      const data: any = {
+        vehicleId: this.$route.params.id,
+        startDate: row.configDate, // 配置时间
+        id: row.id,
+        imei: row.imei,
+        type: 'deploy',
+      };
+      this.rowData = data;
       this.deployVisible = true;
     } else if (key === 'reserve') {
       const data: any = {
+        vehicleId: this.$route.params.id,
         id: row.id,
         imei: row.imei,
         trackDate: row.trackDate ? row.trackDate.split(' ')[1] : '',
@@ -236,6 +252,7 @@ export default class Equipment extends Vue {
 
   // 关闭弹窗
   closeModal(): void {
+    // this.rowData = {};
     this.deployVisible = false;
     this.reverseVisible = false;
   }

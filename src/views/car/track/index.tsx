@@ -5,7 +5,6 @@ import config from '@/utils';
 import RecordTable from '@/views/car/track/record/RecordTable';
 import EquipmentTable from '@/views/car/track/equip/EquipTable';
 import './index.less';
-import '../../../styles/var.less';
 
 // 坐标图片
 const locaIcon = require('@/assets/point.png');

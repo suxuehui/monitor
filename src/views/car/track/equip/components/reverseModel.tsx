@@ -132,7 +132,7 @@ export default class ReverseModel extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
-    }, 200);
+    }, 400);
     this.loading = false;
   }
 
@@ -141,6 +141,7 @@ export default class ReverseModel extends Vue {
     const From: any = this.$refs.modelForm;
     this.loading = true;
     obj = {
+      vehicleId: this.data.vehicleId,
       id: this.data.id,
       imei: this.data.imei,
       cfgName: 'wirelessDeviceReserve',

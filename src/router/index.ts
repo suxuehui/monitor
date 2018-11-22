@@ -161,7 +161,7 @@ export const asyncRouterMap: routerItem[] = [
         name: '配置管理',
         component: getComponent('equipment/model/index'),
         permission: '/vehicle/config/list',
-        meta: { key: 'Model' },
+        meta: { key: 'DeviceModel' },
       },
     ],
   },

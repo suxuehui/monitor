@@ -1,4 +1,4 @@
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect } from 'element-ui';
 import { vehicleCalvalid, vehicleDeviceSet } from '@/api/monitor';
 import { terminalDict } from '@/api/app';
@@ -23,6 +23,18 @@ export default class DeployModel extends Vue {
     duration: '',
   };
   loading: boolean = false;
+
+  @Watch('data')
+  onDataChange(data: any) {
+    const obj: any = JSON.parse(JSON.stringify(data));
+    this.modelForm.startTime = '';
+    this.modelForm.startTime = obj.startDate;
+    if (obj.type === '配置') {
+      if (this.modelForm.startTime !== null) {
+        this.timeChange(this.modelForm.startTime);
+      }
+    }
+  }
 
   rules = {
     startTime: [
@@ -66,8 +78,6 @@ export default class DeployModel extends Vue {
   resetData() {
     this.modelForm = {
       startTime: '',
-      frequency: '',
-      duration: '',
     };
   }
 
@@ -93,9 +103,8 @@ export default class DeployModel extends Vue {
 
   closeModal() {
     this.$emit('close');
-    const From: any = this.$refs.modelForm;
     setTimeout(() => {
-      From.resetFields();
+      this.modelForm.startTime = '';
     }, 200);
     this.loading = false;
   }
@@ -105,6 +114,7 @@ export default class DeployModel extends Vue {
     const From: any = this.$refs.modelForm;
     this.loading = true;
     obj = {
+      vehicleId: this.data.vehicleId,
       id: this.data.id,
       imei: this.data.imei,
       cfgName: 'wirelessDeviceConfiguration',
@@ -118,7 +128,7 @@ export default class DeployModel extends Vue {
             setTimeout(() => {
               this.loading = false;
               this.$message.success(res.result.resultMessage);
-              From.resetFields();
+              this.modelForm.startTime = '';
               this.$emit('refresh');
             }, 1500);
           } else {

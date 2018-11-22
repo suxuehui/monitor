@@ -14,7 +14,7 @@ interface ActiveType { key: any, value: any, label: string }
   'add-model': AddModel,
   }
   })
-export default class Member extends Vue {
+export default class DeviceModel extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
