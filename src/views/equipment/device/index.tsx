@@ -416,22 +416,22 @@ export default class Device extends Vue {
     // 1-待安绑，2-待验收，3-已合格，4-未合格,5-已返厂 ,
     switch (row.status) {
       case 1:
-        type = <el-tag size="medium" type="blue" style="marginRight:5px">待安绑</el-tag>;
+        type = <el-tag size="medium" type="blue" >待安绑</el-tag>;
         break;
       case 2:
-        type = <el-tag size="medium" type="info" style="marginRight:5px">待验收</el-tag>;
+        type = <el-tag size="medium" type="info" >待验收</el-tag>;
         break;
       case 3:
-        type = <el-tag size="medium" type="success" style="marginRight:5px">已合格</el-tag>;
+        type = <el-tag size="medium" type="success" >已合格</el-tag>;
         break;
       case 4:
-        type = <el-tag size="medium" type="warning" style="marginRight:5px">未合格</el-tag>;
+        type = <el-tag size="medium" type="warning" >未合格</el-tag>;
         break;
       case 5:
-        type = <el-tag size="medium" type="danger" style="marginRight:5px">已返厂</el-tag>;
+        type = <el-tag size="medium" type="danger" >已返厂</el-tag>;
         break;
       default:
-        type = <el-tag size="medium" type="info" style="marginRight:5px">未知</el-tag>;
+        type = <el-tag size="medium" type="info" >未知</el-tag>;
     }
     return type;
   }
@@ -449,7 +449,6 @@ export default class Device extends Vue {
 
   // 操作
   menuClick(key: string, row: any) {
-    const formTable: any = this.$refs.table;
     switch (key) {
       // 绑定、解绑
       case 'bind':

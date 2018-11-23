@@ -1,9 +1,10 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, controlCar } from '@/api/monitor';
+import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
 import { exportExcel } from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
+import { terminalType } from '@/api/equipment';
 import qs from 'qs';
 import { allList } from '@/api/model';
 import config from '@/utils';
@@ -201,8 +202,13 @@ export default class Monitor extends Vue {
       prop: 'vin',
     },
     {
-      label: 'imei号(有线)',
+      label: 'imei号',
       prop: 'otuImei',
+    },
+    {
+      label: '设备类型',
+      prop: 'clientType',
+      formatter: this.clientTypeCheck,
     },
     {
       label: '品牌车系',
@@ -262,6 +268,21 @@ export default class Monitor extends Vue {
       formatter: this.onlineFormat,
     },
   ];
+
+  clientTypeCheck(row: any) {
+    let str: string = '';
+    this.typeList.forEach((item: any) => {
+      if (row.clientType !== null) {
+        if (item.value === row.clientType) {
+          str = item.label;
+        }
+      } else {
+        str = '--';
+      }
+    });
+    return str;
+  }
+
   changeMinutes(row: any) {
     const str: string = this.timeChange(row);
     return row.minutes !== null ?
@@ -430,7 +451,21 @@ export default class Monitor extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // 设备类型
+    terminalType(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.typeList.push({
+          key: Math.random(),
+          value: item.enumValue,
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
+  // 设备类型
+  typeList: any = [];
 
   clearOutParams() {
     this.outParams = {
