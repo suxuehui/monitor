@@ -141,6 +141,12 @@ export default class Equipment extends Vue {
     });
   }
 
+  activated() {
+    this.outParams.vehicleId = this.$route.params.id;
+    const TableRecord:any = this.$refs.table;
+    TableRecord.reloadTable();
+  }
+
   clear() {
     this.outParams = {
       startDate: '',

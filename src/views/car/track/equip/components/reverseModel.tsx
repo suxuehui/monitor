@@ -42,10 +42,10 @@ export default class ReverseModel extends Vue {
 
   rules = {
     startTime: [
-      { required: true, message: '请选择启动时间', trigger: 'blur' },
+      { required: true, message: '请选择追踪时间', trigger: 'blur' },
     ],
     valdate: [
-      { required: true, message: '请选择启动时间' },
+      { required: true, message: '请选择生效时间' },
     ],
     frequency: [
       { required: true, message: '请输入追踪频率' },

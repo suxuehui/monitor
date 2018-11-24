@@ -300,6 +300,13 @@ export default class Trajectory extends Vue {
       this.exportBtn = !!(res[0]);
     });
   }
+
+  activated() {
+    this.outParams.vehicleId = this.$route.params.id;
+    const TableRecord: any = this.$refs.table;
+    TableRecord.reloadTable();
+  }
+
   canvasLayer: any = null;
   canvasLayerBack: any = null;
   CanvasLayerPointer: any = null;
@@ -888,6 +895,7 @@ export default class Trajectory extends Vue {
               : '',
           ]}>
           <filter-table
+            ref="table"
             class="map-table"
             filter-list={this.filterList}
             filter-grade={[]}

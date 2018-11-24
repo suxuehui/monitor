@@ -216,6 +216,12 @@ export default class Equipment extends Vue {
     this.filterList[0].options = this.deviceTypes;
   }
 
+  activated() {
+    this.outParams.vehicleId = this.$route.params.id;
+    const Table:any = this.$refs.table;
+    Table.reloadTable();
+  }
+
   deployVisible: boolean = false;
   reverseVisible: boolean = false;
 
