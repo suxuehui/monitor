@@ -101,6 +101,9 @@ export default class Trajectory extends Vue {
         this.outParams.startTime = `${val[0]}`;
         this.outParams.endTime = `${val[1]}`;
       }
+    } else {
+      this.outParams.startTime = '';
+      this.outParams.endTime = '';
     }
   }
   tableList: tableList[] = [
