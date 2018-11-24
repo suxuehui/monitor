@@ -113,9 +113,15 @@ const app = {
       let resultData = { tabList, tabActiveKey, key: '' };
       let haveMenu = false;
       const ArrPath = utils.routeToArray(url);
-      tabList.map((item: any) => {
+      tabList.map((item: any, index: number) => {
         if (ArrPath.routeArr.indexOf(item.path.replace(/\/:\w+/g, '')) > -1) {
           resultData.tabActiveKey = item.name;
+          resultData.tabList[index].params = ArrPath.params;
+          const rep = /\?.+/g;
+          const query = window.location.href.match(rep);
+          if (query) {
+            resultData.tabList[index].query = query;
+          }
           haveMenu = true;
           return false;
         }
