@@ -166,14 +166,19 @@ export default class Equipment extends Vue {
         this.outParams.startDate = `${val[0]}`;
         this.outParams.endDate = `${val[1]}`;
       }
+    } else {
+      this.outParams.startDate = '';
+      this.outParams.endDate = '';
     }
   }
 
   currentChange(val: any) {
-    if (parseFloat(val.lat) >= 0) {
-      this.$emit('location', val);
-    } else {
-      this.$message.error('该设备暂无位置信息！');
+    if (val) {
+      if (parseFloat(val.lat) >= 0) {
+        this.$emit('location', val);
+      } else {
+        this.$message.error('该设备暂无位置信息！');
+      }
     }
   }
 
