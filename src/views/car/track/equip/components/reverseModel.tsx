@@ -58,7 +58,7 @@ export default class ReverseModel extends Vue {
     duration: [
       { required: true, message: '请输入追踪时长' },
       {
-        validator: this.checkFrequency, trigger: 'blur',
+        validator: this.checkDuration, trigger: 'blur',
       },
     ],
   }
