@@ -29,7 +29,7 @@ export default class DeployModel extends Vue {
     const obj: any = JSON.parse(JSON.stringify(data));
     this.modelForm.startTime = '';
     this.modelForm.startTime = obj.startDate;
-    if (obj.type === '配置') {
+    if (obj.type === 'deploy') {
       if (this.modelForm.startTime !== null) {
         this.timeChange(this.modelForm.startTime);
       }
@@ -85,6 +85,7 @@ export default class DeployModel extends Vue {
   valdate: string = '';
 
   timeChange(val: any) {
+    console.log(val);
     const obj = {
       id: this.data.id,
       imei: this.data.imei,

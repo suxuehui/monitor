@@ -188,7 +188,7 @@ export default class Trajectory extends Vue {
   ];
 
   changeMinutes(data: any) {
-    const str: string = this.timeChange(data.period);
+    const str: string = data.period !== null && data.period >= 0 ? this.timeChange(data.period) : '--';
     return data.period !== null ?
       <el-tooltip class="item" effect="dark" content={str} placement="top">
         <span>{str}</span>
