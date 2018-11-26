@@ -46,12 +46,12 @@ export default class Equipment extends Vue {
       formatter: this.typeConfirm,
     },
     {
-      label: '配置时间',
+      label: '配置启动',
       prop: 'configDate',
       formatter: (row: any) => this.addUnit(row, 'configDate'),
     },
     {
-      label: '启动时间',
+      label: '当前启动',
       prop: 'startDate',
       formatter: (row: any) => this.addUnit(row, 'startDate'),
     },
@@ -200,12 +200,13 @@ export default class Equipment extends Vue {
       '/vehicle/tracke/findTerminalList',
       '/vehicle/tracke/saveConfig',
       '/vehicle/tracke/reserveConfig',
+      '/vehicle/tracke/导出',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.deviceTable = !!(res[0]);
       this.opreat[0].roles = !!(res[1]);
       this.opreat[1].roles = !!(res[2]);
-      // this.exportBtn = !!(res[0]);
+      this.exportBtn = !!(res[3]);
     });
   }
   deviceTypes: any[] = [

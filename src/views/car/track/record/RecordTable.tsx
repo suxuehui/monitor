@@ -129,21 +129,22 @@ export default class Equipment extends Vue {
     </el-tooltip>;
   }
 
-  exportBtn: boolean = true;
+  exportBtn: boolean = false;
   created() {
     if (this.$route.params.id) {
       this.outParams.vehicleId = this.$route.params.id;
     }
     const getNowRoles: string[] = [
+      '/vehicle/tracke/导出',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      // this.exportBtn = !!(res[0]);
+      this.exportBtn = !!(res[0]);
     });
   }
 
   activated() {
     this.outParams.vehicleId = this.$route.params.id;
-    const TableRecord:any = this.$refs.table;
+    const TableRecord: any = this.$refs.table;
     TableRecord.reloadTable();
   }
 
@@ -169,7 +170,11 @@ export default class Equipment extends Vue {
   }
 
   currentChange(val: any) {
-    this.$emit('location', val);
+    if (parseFloat(val.lat) >= 0) {
+      this.$emit('location', val);
+    } else {
+      this.$message.error('该设备暂无位置信息！');
+    }
   }
 
   menuClick(key: string, row: any) {

@@ -45,8 +45,8 @@ export default class Track extends Vue {
   }
 
   // 设备、记录
-  deviceTable: boolean = true;
-  logTable: boolean = true;
+  deviceTable: boolean = false;
+  logTable: boolean = false;
 
   // 权限设置
   created() {
@@ -151,9 +151,10 @@ export default class Track extends Vue {
                 </el-tab-pane> : null
             }
             {
-              this.deviceTable ? <el-tab-pane label="设备" id="equipment" name="equipment">
-                <equipment-table></equipment-table>
-              </el-tab-pane> : null
+              this.deviceTable ?
+                <el-tab-pane label="设备" id="equipment" name="equipment">
+                  <equipment-table></equipment-table>
+                </el-tab-pane> : null
             }
           </el-tabs>
         </div>
