@@ -85,7 +85,6 @@ export default class DeployModel extends Vue {
   valdate: string = '';
 
   timeChange(val: any) {
-    console.log(val);
     const obj = {
       id: this.data.id,
       imei: this.data.imei,

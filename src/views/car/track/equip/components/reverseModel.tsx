@@ -21,12 +21,14 @@ export default class ReverseModel extends Vue {
   onDataChange(data: any) {
     if (data.id > 0) {
       const obj: any = JSON.parse(JSON.stringify(data));
-      this.modelForm = {
-        startTime: obj.trackDate,
-        frequency: obj.trackFrequency,
-        duration: obj.trackDuration,
-        valdate: obj.effectiveDate,
-      };
+      setTimeout(() => {
+        this.modelForm = {
+          startTime: obj.trackDate,
+          frequency: obj.trackFrequency,
+          duration: obj.trackDuration,
+          valdate: obj.effectiveDate,
+        };
+      }, 200);
     } else {
       this.resetData();
     }
@@ -154,9 +156,11 @@ export default class ReverseModel extends Vue {
           if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
+              this.resetData();
               this.$message.success(res.result.resultMessage);
               From.resetFields();
               this.$emit('refresh');
+              console.log(this.modelForm);
             }, 1500);
           } else {
             setTimeout(() => {
