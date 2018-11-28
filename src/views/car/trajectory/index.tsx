@@ -133,7 +133,7 @@ export default class Trajectory extends Vue {
       sortBy: 'mileage',
       formatter(row: any) {
         return row.mileage !== null
-          ? `${row.mileage}km`
+          ? `${Math.abs(row.mileage)}km`
           : '--';
       },
     }, {
@@ -171,7 +171,7 @@ export default class Trajectory extends Vue {
       sortBy: 'avgSpeed',
       formatter(row: any) {
         return row.avgSpeed !== null
-          ? `${row.avgSpeed}km/h`
+          ? `${Math.abs(row.avgSpeed)}km/h`
           : '--';
       },
     }, {
@@ -511,7 +511,7 @@ export default class Trajectory extends Vue {
       if (totalPoints.length !== 0) {
         const oneXY = self.SMap.pointToPixel(totalPoints[0]);
         iconRender(oneXY.x - 13, oneXY.y - 26, require('@/assets/start.png'));
-        if (self.isEnd) {
+        if (self.getIsEnd()) {
           const endXY = self.SMap.pointToPixel(totalPoints[totalPoints.length - 1]);
           iconRender(endXY.x - 13, endXY.y - 26, require('@/assets/end.png'));
         }
@@ -607,6 +607,10 @@ export default class Trajectory extends Vue {
     }
   }
 
+  getIsEnd() {
+    return this.isEnd;
+  }
+
   getPlateNum() {
     return this.plateNum;
   }
@@ -619,35 +623,32 @@ export default class Trajectory extends Vue {
     speed = speed > 100 ? 100 : speed;
     switch (Math.floor(speed / 25)) {
       case 0:
-        red = 187;
-        green = 0;
-        blue = 0;
+        red = 187 + Math.ceil(((241 - 187) / 25) * speed);
+        green = 0 + Math.ceil(((48 - 0) / 25) * speed);
+        blue = 0 + Math.ceil(((48 - 0) / 25) * speed);
         break;
       case 1:
         speed -= 25;
-        // red = 187 + Math.ceil(((241 - 187) / 25) * speed);
-        // green = 0 + Math.ceil(((48 - 0) / 25) * speed);
-        // blue = 0 + Math.ceil(((48 - 0) / 25) * speed);
         red = 241 + Math.ceil(((255 - 241) / 25) * speed);
         green = 48 + Math.ceil(((200 - 48) / 25) * speed);
         blue = 48 + Math.ceil(((0 - 48) / 25) * speed);
         break;
       case 2:
         speed -= 50;
-        red = 241 + Math.ceil(((255 - 241) / 25) * speed);
-        green = 48 + Math.ceil(((200 - 48) / 25) * speed);
-        blue = 48 + Math.ceil(((0 - 48) / 25) * speed);
+        red = 255 + Math.ceil(((22 - 255) / 25) * speed);
+        green = 200 + Math.ceil(((191 - 200) / 25) * speed);
+        blue = 0 + Math.ceil(((43 - 0) / 25) * speed);
         break;
       case 3:
         speed -= 75;
-        red = 255 + Math.ceil(((22 - 255) / 25) * speed);
-        green = 200 + Math.ceil(((191 - 200) / 25) * speed);
-        blue = 100 + Math.ceil(((43 - 0) / 25) * speed);
+        red = 85 + Math.ceil(((22 - 85) / 25) * speed);
+        green = 170 + Math.ceil(((191 - 170) / 25) * speed);
+        blue = 0 + Math.ceil(((85 - 0) / 25) * speed);
         break;
       case 4:
-        red = 22;
-        green = 191;
-        blue = 0;
+        red = 85;
+        green = 170;
+        blue = 85;
         break;
       default: break;
     }

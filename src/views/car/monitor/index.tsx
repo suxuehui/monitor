@@ -73,6 +73,7 @@ export default class Monitor extends Vue {
       label: '品牌车型',
       placeholder: '品牌车型',
       options: [],
+      filterable: true,
       props: {
         value: 'id',
         children: 'children',
@@ -433,8 +434,12 @@ export default class Monitor extends Vue {
     });
     allList(null).then((res) => {
       if (res.result.resultCode === '0') {
-        this.filterList[1].options = res.entity;
         this.brandList = res.entity;
+        res.entity.unshift({
+          id: Math.random(),
+          name: '全部',
+        });
+        this.filterList[1].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }

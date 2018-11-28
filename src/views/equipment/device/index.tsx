@@ -200,6 +200,7 @@ export default class Device extends Vue {
     { label: '所属商户', prop: 'orgName' },
     { label: '设备类型', prop: 'terminalTypeName', formatter: (row: any) => (row.terminalTypeName ? row.terminalTypeName : '--') },
     { label: 'imei号', prop: 'imei' },
+    { label: '主机编码', prop: 'barCode' },
     { label: '配置名称', prop: 'cfgName' },
     { label: '产品编码', prop: 'productCode' },
     { label: '当前车辆', prop: 'plateNum' },

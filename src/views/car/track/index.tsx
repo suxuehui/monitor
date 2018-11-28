@@ -110,21 +110,23 @@ export default class Track extends Vue {
   }
 
   setMapLoc = (val: any) => {
-    const pt = new this.BMap.Point(val.lng, val.lat);
-    this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
-    const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
-    const point = new this.BMap.Marker(pt, { icon: myIcon });
-    this.SMap.removeOverlay(point);
-    this.SMap.addOverlay(point);
-    const opts = {
-      width: 200, // 信息窗口宽度
-      title: '上报时间：', // 信息窗口标题
-    };
-    const infoWindow = new this.BMap.InfoWindow(val.date, opts);
-    this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    point.addEventListener('click', () => {
+    if (val.lng >= 0) {
+      const pt = new this.BMap.Point(val.lng, val.lat);
+      this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
+      const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
+      const point = new this.BMap.Marker(pt, { icon: myIcon });
+      this.SMap.removeOverlay(point);
+      this.SMap.addOverlay(point);
+      const opts = {
+        width: 200, // 信息窗口宽度
+        title: '上报时间：', // 信息窗口标题
+      };
+      const infoWindow = new this.BMap.InfoWindow(val.date, opts);
       this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    });
+      point.addEventListener('click', () => {
+        this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+      });
+    }
   }
   render() {
     return (

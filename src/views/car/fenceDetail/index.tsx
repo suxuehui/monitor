@@ -273,7 +273,7 @@ export default class FenceDetail extends Vue {
   }
 
   // 删除覆盖物
-  deleteCover=(ret:any, name:string) => {
+  deleteCover = (ret: any, name: string) => {
     const deleteMenu = new this.BMap.ContextMenu();
     deleteMenu.addItem(new this.BMap.MenuItem(name, (() => {
       this.SMap.clearOverlays();
@@ -283,7 +283,7 @@ export default class FenceDetail extends Vue {
   }
 
   // 创建多边形
-  createPoly = (ret:any) => {
+  createPoly = (ret: any) => {
     this.SMap.clearOverlays();
     this.SMap.addOverlay(ret);
     ret.enableEditing();
@@ -411,7 +411,7 @@ export default class FenceDetail extends Vue {
   // 搜索车辆
   findCar() {
     findCar({ plateNum: this.findCarPlate }).then((res) => {
-      if (res.result.resultCode) {
+      if (res.result.resultCode === 0) {
         this.tableSelectData.push(res.entity);
         this.total = 1;
       } else {

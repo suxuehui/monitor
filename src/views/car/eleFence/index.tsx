@@ -225,7 +225,9 @@ export default class EleFence extends Vue {
   provinceList: any = [];
   // 省市区三级联动
   areaLoad(val: any) {
-    if (val.length === 1) {
+    if (val.length === 0) {
+      this.outParams.area = '';
+    } else if (val.length === 1) {
       this.getCitys(val[0]);
       this.outParams.area = val[val.length - 1].substring(0, 2);
     } else if (val.length === 2) {
