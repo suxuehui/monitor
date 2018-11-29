@@ -135,7 +135,7 @@ export default class Equipment extends Vue {
       this.outParams.vehicleId = this.$route.params.id;
     }
     const getNowRoles: string[] = [
-      '/vehicle/tracke/导出',
+      '/vehicle/tracke/exportExcelRecord',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.exportBtn = !!(res[0]);
@@ -188,8 +188,7 @@ export default class Equipment extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    console.log('未完成');
-    // exportExcel(data1, '商户列表', '/customer/org/exportExcel');
+    exportExcel(data1, '追踪记录列表', '/vehicle/tracke/exportExcelRecord');
   }
   render() {
     return (

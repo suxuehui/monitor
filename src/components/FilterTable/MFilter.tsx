@@ -225,8 +225,10 @@ export default class MFilter extends Vue {
           type="datetimerange"
           align="right"
           pickerOptions={item.pickerOptions}
-          on-change={item.change}
-          // on-change={(e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])}
+          on-change={item.change ?
+            item.change :
+            (e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])
+          }
           start-placeholder={item.placeholder[0]}
           end-placeholder={item.placeholder[1]}>
         </el-date-picker>;
@@ -270,10 +272,8 @@ export default class MFilter extends Vue {
 
   // 时间区间赋值操作
   rangeChange(data: Date[], value: string[]) {
-    if (value.length > 2) {
-      this.params[value[0]] = data[0].Format('yyyy-MM-dd hh:mm:ss');
-      this.params[value[1]] = data[1].Format('yyyy-MM-dd hh:mm:ss');
-    }
+    this.params[value[0]] = data[0].Format('yyyy-MM-dd hh:mm:ss');
+    this.params[value[1]] = data[1].Format('yyyy-MM-dd hh:mm:ss');
   }
 
   render() {
@@ -346,24 +346,9 @@ export default class MFilter extends Vue {
             this.addBtn ? <el-button on-click={this.addFun} id={isNormal ? 'tableAdd' : 'tableAdd2'} size="mini" icon="el-icon-plus">新增</el-button> : null
           }
           {
-            this.exportBtn ?
-              <el-button
-                on-click={this.downloadFun}
-                id={isNormal ?
-                  'tableExport' : 'tableExport2'}
-                size="mini"
-                icon="el-icon-download"
-                circle>
-              </el-button> :
-              null
+            this.exportBtn ? <el-button on-click={this.downloadFun} id={isNormal ? 'tableExport' : 'tableExport2'} size="mini" icon="el-icon-download" circle></el-button> : null
           }
-          <el-button
-            on-click={this.openSetting}
-            id="tableSet"
-            icon="el-icon-setting"
-            size="mini"
-            circle>
-          </el-button>
+          <el-button on-click={this.openSetting} id="tableSet" icon="el-icon-setting" size="mini" circle></el-button>
         </div>
       </div>
     );

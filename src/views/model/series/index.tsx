@@ -65,7 +65,7 @@ export default class Series extends Vue {
     { label: '车系名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
     { label: '车系描述', prop: 'description' },
     { label: '车型数量', prop: 'modelNum', formatter: (row: any) => (row.modelNum ? row.modelNum : '--') },
-    { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? row.vehicleNum : '--') },
+    { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },
   ];
 
   // 新增、导出按钮展示

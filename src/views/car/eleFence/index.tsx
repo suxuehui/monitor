@@ -127,10 +127,7 @@ export default class EleFence extends Vue {
     },
     {
       label: '监控时段',
-      prop: 'beginTime',
-      formatter(row: any) {
-        return `每天${row.beginTime}~${row.endTime}`;
-      },
+      prop: 'momitorTime',
     },
     {
       label: '状态',

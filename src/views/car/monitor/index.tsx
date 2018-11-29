@@ -37,7 +37,7 @@ export default class Monitor extends Vue {
     brandModelArr: [],
     levelCode: '',
     energyType: '',
-    onliine: '',
+    online: '',
     noMoveTime: '',
   };
   backParams: object = {
@@ -213,8 +213,7 @@ export default class Monitor extends Vue {
     },
     {
       label: '品牌车系',
-      prop: 'brandName',
-      formatter: this.brandChange,
+      prop: 'bsmName',
     },
     {
       label: '能源类型',
@@ -258,10 +257,9 @@ export default class Monitor extends Vue {
     },
     {
       label: '无位置变化',
-      prop: 'minutes',
+      prop: 'minutesString',
       sortable: true,
-      sortBy: 'minutes',
-      formatter: this.changeMinutes,
+      sortBy: 'minutesString',
     },
     {
       label: '网络状态',
@@ -305,16 +303,6 @@ export default class Monitor extends Vue {
       return '--';
     }
     return str;
-  }
-
-  brandChange(row: any) {
-    const str = `${row.brandName}--${row.seriesName}--${row.modelName}`;
-    return row.brandName ?
-      <el-tooltip class="item" effect="dark" content={str} placement="top">
-        <div>
-          <p>{str}</p>
-        </div>
-      </el-tooltip> : '--';
   }
 
   changeStatus(data: any, unit: string) {

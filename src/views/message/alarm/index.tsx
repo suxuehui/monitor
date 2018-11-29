@@ -52,6 +52,13 @@ export default class Alarm extends Vue {
       placeholder: '请选择状态',
       options: [],
     },
+    {
+      key: 'query',
+      type: 'datetimerange',
+      label: '告警时间',
+      placeholder: ['开始', '结束'],
+      change: this.dateChange,
+    },
   ];
   // 高级筛选
   filterGrade: FilterFormList[] = [
@@ -99,7 +106,6 @@ export default class Alarm extends Vue {
       type: 'datetimerange',
       label: '告警时间',
       placeholder: ['开始', '结束'],
-      value: ['queryStart', 'queryEnd'],
       change: this.dateChange,
     },
   ];
@@ -111,6 +117,7 @@ export default class Alarm extends Vue {
     shopName: '',
     plateNum: '',
     vin: '',
+    query: [null, null],
   };
   outParams: any = {
     queryStartTime: '',
@@ -156,14 +163,11 @@ export default class Alarm extends Vue {
 
   dateChange(val: any) {
     if (val) {
-      if (val.length === 2) {
-        const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
-        const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
-        this.outParams.queryStartTime = startT;
-        this.outParams.queryEndTime = endT;
+      if ((val[1].getTime() - val[0].getTime()) > 7 * 24 * 60 * 60 * 1000) {
+        this.$message.error('查询时间不能超过7天');
       } else {
-        this.outParams.queryStartTime = `${val[0]}`;
-        this.outParams.queryEndTime = `${val[1]}`;
+        this.outParams.queryStartTime = val[0].Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.queryEndTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
       }
     } else {
       this.clear();
@@ -175,6 +179,14 @@ export default class Alarm extends Vue {
       queryStartTime: '',
       queryEndTime: '',
     };
+  }
+  clearOut() {
+    const date = new Date();
+    const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
+    this.filterParams.query[0] = new Date(starTime);
+    this.filterParams.query[1] = date;
+    this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
   checkLoc(row: any) {
@@ -256,11 +268,11 @@ export default class Alarm extends Vue {
     });
     // 当前月份
     const date = new Date();
-    const endTime = date.Format('yyyy-MM-dd hh:mm:ss');
-    const startTime1 = endTime.slice(0, 8);
-    const startTime2 = `${startTime1}01 00:00:00`;
-    this.outParams.queryStartTime = startTime2;
-    this.outParams.queryEndTime = endTime;
+    const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
+    this.filterParams.query[0] = new Date(starTime);
+    this.filterParams.query[1] = date;
+    this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
   mounted() {
@@ -331,7 +343,7 @@ export default class Alarm extends Vue {
           export-btn={this.exportBtn}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
-          on-clearOutParams={this.clear}
+          on-clearOutParams={this.clearOut}
         />
         <handle-model
           visible={this.handleVisible}

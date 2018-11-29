@@ -30,7 +30,7 @@ export default class DeployModel extends Vue {
     this.modelForm.startTime = '';
     this.modelForm.startTime = obj.startDate;
     if (obj.type === 'deploy') {
-      if (this.modelForm.startTime !== null) {
+      if (this.modelForm.startTime !== '') {
         this.timeChange(this.modelForm.startTime);
       }
     }
