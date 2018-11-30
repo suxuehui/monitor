@@ -136,19 +136,15 @@ export default function request(options: Option): Promise<any> {
       statusCode = 600;
       msg = error.message || 'Network Error';
     }
-    if (statusCode === 401) {
+    if (response.data.result.resultCode === 4) {
+      Message.error(response.data.result.resultMessage);
+      router.replace('/login');
+    } else if (statusCode === 401) {
       if (config.noLoginList.indexOf(window.location.hash) < 0) {
-        Message.error('登录超时，请重新登录');
+        Message.error('验证失效，请重新登录');
         router.replace('/login');
       }
     }
-    // if (statusCode === 4) {
-    //   if (config.noLoginList.indexOf(window.location.hash) < 0) {
-    //     Message.error('登陆验证失效，请重新登录');
-    //     router.replace('/login');
-    //   }
-    // }
-    // Message.error(msg);
     return Promise.reject(new Error(msg));
   });
 }

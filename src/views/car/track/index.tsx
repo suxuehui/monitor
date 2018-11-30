@@ -110,24 +110,37 @@ export default class Track extends Vue {
   }
 
   setMapLoc = (val: any) => {
-    if (val.lng >= 0) {
-      const pt = new this.BMap.Point(val.lng, val.lat);
-      this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
-      const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
-      const point = new this.BMap.Marker(pt, { icon: myIcon });
-      this.SMap.removeOverlay(point);
-      this.SMap.addOverlay(point);
-      const opts = {
-        width: 200, // 信息窗口宽度
-        title: '上报时间：', // 信息窗口标题
-      };
-      const infoWindow = new this.BMap.InfoWindow(val.date, opts);
+    const infoWindow = new this.BMap.InfoWindow(this.msgContent(val));
+    const pt = new this.BMap.Point(val.lng, val.lat);
+    const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
+    const point = new this.BMap.Marker(pt, { icon: myIcon });
+    this.SMap.removeOverlay(point);
+    this.SMap.addOverlay(point);
+    this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
+    this.SMap.openInfoWindow(
+      infoWindow,
+      new this.BMap.Point(val.lng, val.lat),
+    );
+    point.addEventListener('click', () => {
       this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-      point.addEventListener('click', () => {
-        this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-      });
-    }
+    });
   }
+
+  msgContent(content: any) {
+    return `<div class="makerMsgTrack">
+      <ul class="msg">
+        <li>
+          <i class="icon iconfont-time-circle"></i>
+          <span class="txt">${content.date}</span>
+        </li>
+        <li>
+          <i class="icon iconfont-location"></i>
+          <span class="txt">${content.address}</span>
+        </li>
+      </ul>
+    </div>`;
+  }
+
   render() {
     return (
       <div class="monitor-wrap">
