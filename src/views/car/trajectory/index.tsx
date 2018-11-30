@@ -302,9 +302,33 @@ export default class Trajectory extends Vue {
   }
 
   activated() {
-    this.outParams.vehicleId = this.$route.params.id;
-    const TableRecord: any = this.$refs.table;
-    TableRecord.reloadTable();
+    if (this.$route.params.id !== this.outParams.vehicleId) {
+      this.outParams.vehicleId = this.$route.params.id;
+      const TableRecord: any = this.$refs.table;
+      TableRecord.reloadTable();
+      this.clearCanvas();
+      this.isEnd = false;
+      this.locChange = false;
+      this.behaivorData = [
+        { num: 0, txt: '轻震动' },
+        { num: 0, txt: '轻碰撞' },
+        { num: 0, txt: '重碰撞' },
+        { num: 0, txt: '翻滚' },
+        { num: 0, txt: '急加速' },
+        { num: 0, txt: '急减速' },
+        { num: 0, txt: '急转弯' },
+      ];
+    }
+  }
+
+  clearCanvas = () => {
+    if (this.canvasLayer || this.canvasLayerBack ||
+      this.CanvasLayerPointer || this.canvasBehavior) {
+      this.SMap.removeOverlay(this.CanvasLayerPointer);
+      this.SMap.removeOverlay(this.canvasLayer);
+      this.SMap.removeOverlay(this.canvasLayerBack);
+      this.SMap.removeOverlay(this.canvasBehavior);
+    }
   }
 
   canvasLayer: any = null;
@@ -697,52 +721,54 @@ export default class Trajectory extends Vue {
   isEnd: boolean = true;
   // 表格单选
   currentChange(val: any) {
-    if (!val.endTime) {
-      this.isEnd = false;
-    } else {
-      this.isEnd = true;
-    }
-    this.behaivorData = [
-      { num: 0, txt: '轻震动' },
-      { num: 0, txt: '轻碰撞' },
-      { num: 0, txt: '重碰撞' },
-      { num: 0, txt: '翻滚' },
-      { num: 0, txt: '急加速' },
-      { num: 0, txt: '急减速' },
-      { num: 0, txt: '急转弯' },
-    ];
-    this.plateNum = val.platenum;
-    // 清除播放
-    this.getMapContorl().clearPlay();
-    this.clearPlay();
-    this.getMapContorl().removeTrackPointOverlay('trackpoint_in');
-    this.getMapContorl().removeTrackInfoBox();
-    tripGPS({ id: val.tripId }).then((res) => {
-      if (res.result.resultCode === '0') {
-        let data = res.entity;
-        data = data.filter((item: any, index: number) => {
-          if (item.lat > 0 || item.lng > 0) {
-            const point = coordTrasns.transToBaidu(item, 'bd09ll');
-            item.lat = point.lat;
-            item.lng = point.lng;
-            if (item.events) {
-              item.events.forEach((items: string) => {
-                if (items !== '0') {
-                  this.behaivorData[parseInt(items, 10) - 1].num += 1;
-                }
-              });
-            }
-            return item;
-          }
-          return false;
-        });
-        this.currentTrackData = data;
-        this.trackView(data);
-        // 设置轨迹播放时间-1小时轨迹播放时长为1分钟
-        this.playTime = this.timeFormat(val.period);
-        this.defaultTime = this.playTime;
+    if (val) {
+      if (!val.endTime) {
+        this.isEnd = false;
+      } else {
+        this.isEnd = true;
       }
-    });
+      this.behaivorData = [
+        { num: 0, txt: '轻震动' },
+        { num: 0, txt: '轻碰撞' },
+        { num: 0, txt: '重碰撞' },
+        { num: 0, txt: '翻滚' },
+        { num: 0, txt: '急加速' },
+        { num: 0, txt: '急减速' },
+        { num: 0, txt: '急转弯' },
+      ];
+      this.plateNum = val.platenum;
+      // 清除播放
+      this.getMapContorl().clearPlay();
+      this.clearPlay();
+      this.getMapContorl().removeTrackPointOverlay('trackpoint_in');
+      this.getMapContorl().removeTrackInfoBox();
+      tripGPS({ id: val.tripId }).then((res) => {
+        if (res.result.resultCode === '0') {
+          let data = res.entity;
+          data = data.filter((item: any, index: number) => {
+            if (item.lat > 0 || item.lng > 0) {
+              const point = coordTrasns.transToBaidu(item, 'bd09ll');
+              item.lat = point.lat;
+              item.lng = point.lng;
+              if (item.events) {
+                item.events.forEach((items: string) => {
+                  if (items !== '0') {
+                    this.behaivorData[parseInt(items, 10) - 1].num += 1;
+                  }
+                });
+              }
+              return item;
+            }
+            return false;
+          });
+          this.currentTrackData = data;
+          this.trackView(data);
+          // 设置轨迹播放时间-1小时轨迹播放时长为1分钟
+          this.playTime = this.timeFormat(val.period);
+          this.defaultTime = this.playTime;
+        }
+      });
+    }
   }
   /**
    * 播放轨迹动画-start
@@ -835,7 +861,7 @@ export default class Trajectory extends Vue {
         <div id="map"></div>
         {
           this.currentTrackData.length ?
-            <div class={`play-box ${this.locChange ? '' : 'bottom'} ${this.isEnd ? 'hide' : ''}`}>
+            <div class={`play-box ${this.locChange ? '' : 'bottom'} ${this.isEnd ? '' : 'hide'}`}>
               <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
               <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
               <el-slider
