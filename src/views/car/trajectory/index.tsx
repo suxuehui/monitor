@@ -834,8 +834,8 @@ export default class Trajectory extends Vue {
         </ul>
         <div id="map"></div>
         {
-          this.currentTrackData.length && this.isEnd ?
-            <div class={`play-box ${this.locChange ? '' : 'bottom'}`}>
+          this.currentTrackData.length ?
+            <div class={`play-box ${this.locChange ? '' : 'bottom'} ${this.isEnd ? 'hide' : ''}`}>
               <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
               <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
               <el-slider
@@ -886,15 +886,9 @@ export default class Trajectory extends Vue {
               type="primary"
               icon="el-icon-arrow-up"
               on-click={this.showTable}></el-button>
-
           }
         </div>
-        <div
-          class={[
-            'car-table3', !this.locChange
-              ? 'table-active'
-              : '',
-          ]}>
+        <div class={`car-table3 ${!this.locChange ? 'table-active' : ''}`}>
           <filter-table
             ref="table"
             class="map-table"
