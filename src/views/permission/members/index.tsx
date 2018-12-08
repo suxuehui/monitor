@@ -17,9 +17,9 @@ interface ActiveType { key: any, value: any, label: string }
   'add-modal': AddModal,
   'el-tooltip': Tooltip,
   },
-  name:'Member'
+  name:'Members'
   })
-export default class Member extends Vue {
+export default class Members extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
