@@ -11,17 +11,11 @@ import router from '@/router';
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const service = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' ? '/monitor' : '/api', // api的base_url
-  timeout: 20000, // 请求超时时间
+  baseURL: process.env.NODE_ENV === 'production' ? '/api/monitor' : '/api', // api的base_url
+  timeout: 50000, // 请求超时时间
 });
 
-const fetch = (options: {
-url: string,
-method: string,
-data?: object,
-fetchType?: string,
-headers?: any,
-}) => {
+const fetch = (options: Option) => {
   const { data } = options;
   let { url } = options;
   const { method = 'get', fetchType } = options;
@@ -71,6 +65,7 @@ headers?: any,
     return service({
       url,
       method: method.toLowerCase(),
+      responseType: options.responseType,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -96,12 +91,27 @@ interface Option {
   data?: object,
   fetchType?: string,
   headers?: any,
+  responseType?: 'blob' | 'json',
+  fileName?: string,
 }
 
 export default function request(options: Option): Promise<any> {
   return fetch(options).then((response: any) => {
     const { statusText, status } = response;
     let { data } = response;
+    if (options.responseType === 'blob') {
+      const reader = new FileReader();
+      reader.readAsDataURL(data);
+      reader.onload = (e: any) => {
+        const a = document.createElement('a');
+        a.download = `${options.fileName}.xlsx`;
+        a.href = e.target.result;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+      return false;
+    }
     if (data instanceof Array) {
       data = {
         list: data,
@@ -109,7 +119,8 @@ export default function request(options: Option): Promise<any> {
     }
     return Promise.resolve({
       success: true,
-      message: response.data.result.resultMessage || statusText,
+      message: response.data.result ?
+        response.data.result.resultMessage : null || statusText || null,
       statusCode: status,
       ...data,
     });
@@ -125,13 +136,15 @@ export default function request(options: Option): Promise<any> {
       statusCode = 600;
       msg = error.message || 'Network Error';
     }
-    console.log(statusCode);
-    if (statusCode === 401) {
+    if (response.data.result.resultCode === 4) {
+      Message.error(response.data.result.resultMessage);
+      router.replace('/login');
+    } else if (statusCode === 401) {
       if (config.noLoginList.indexOf(window.location.hash) < 0) {
-        router.push('/login');
+        Message.error('验证失效，请重新登录');
+        router.replace('/login');
       }
     }
-    Message.error(msg);
     return Promise.reject(new Error(msg));
   });
 }

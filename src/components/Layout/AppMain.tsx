@@ -25,14 +25,12 @@ export default class AppMain extends Vue {
 
   @Emit()
   removeTab(index: string) {
-    // console.log(this);
     this.$store.dispatch('RemoveTab', index);
   }
   @Emit()
   tabChange(index: any) {
     this.tabList.forEach((item: any, indexs: number) => {
       if (item.name === index.name) {
-        console.log(item);
         this.$router.push({ name: item.name, params: { id: item.params }, query: item.query });
         this.$store.dispatch('TabChange', index.name);
       }
@@ -69,7 +67,7 @@ export default class AppMain extends Vue {
             }
           </el-tabs>
           <div class="page-wrap">
-            <keep-alive max={10} include={keepList}>
+            <keep-alive max={20} include={keepList}>
               <router-view/>
             </keep-alive>
           </div>

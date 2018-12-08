@@ -1,6 +1,8 @@
 import { Component, Vue } from 'vue-property-decorator';
+import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
+import { exportExcel } from '@/api/export';
 import { roleUpdateStatus } from '@/api/permission';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
@@ -45,24 +47,24 @@ export default class Role extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'userName',
+      rowKey: 'roleName',
       color: 'blue',
       text: '编辑',
       roles: true,
       disabled: (row: any) => (row.roleType !== 2),
     },
     {
-      key: 'freeze',
-      rowKey: 'userName',
+      key: 'forbid',
+      rowKey: 'roleName',
       color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
       text: (row: any) => (row.activeStatus === 1 ? '禁用' : '启用'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要禁用？' : '是否要启用？'),
       roles: true,
-      // disabled: (row: any) => (row.roleType !== 2),
+      disabled: (row: any) => (row.roleType !== 2),
     },
     {
       key: 'setAuth',
-      rowKey: 'userName',
+      rowKey: 'roleName',
       color: 'blue',
       text: '设置权限',
       roles: true,
@@ -129,7 +131,7 @@ export default class Role extends Vue {
         roleName: row.roleName,
         remark: row.remark,
       };
-    } else if (key === 'freeze') {
+    } else if (key === 'forbid') {
       roleUpdateStatus({ roleId: row.roleId }).then((res) => {
         if (res.result.resultCode === '0') {
           FromTable.reloadTable();
@@ -166,6 +168,11 @@ export default class Role extends Vue {
     this.closeModal();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '角色列表', '/sys/role/exportExcel');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -183,6 +190,7 @@ export default class Role extends Vue {
           url={this.url}
           localName={'role'}
           export-btn={true}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />
         <add-modal

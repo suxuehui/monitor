@@ -1,12 +1,13 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Dialog } from 'element-ui';
+import { Dialog, Tooltip } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import MTable from '@/components/FilterTable/MTable';
 import './CheckLogModel.less';
 @Component({
   components: {
   'el-dialog': Dialog,
-  "m-table": MTable
+  'm-table': MTable,
+  'el-tooltip': Tooltip,
   }
   })
 export default class CheckLog extends Vue {
@@ -28,10 +29,12 @@ export default class CheckLog extends Vue {
 
   acceptPerson(row: any) {
     return row.acceptOrgName && row.acceptRealName && row.acceptUsername ?
-      <div>
-        <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
-        <p>{`(${row.acceptUsername})`}</p>
-      </div> : '--';
+      <el-tooltip class="item" effect="dark" content={`${row.acceptOrgName}+${row.acceptRealName}+${row.acceptUsername}`} placement="top">
+        <div>
+          <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
+          <p>{`(${row.acceptUsername})`}</p>
+        </div>
+      </el-tooltip> : '--';
   }
 
   @Watch('data')

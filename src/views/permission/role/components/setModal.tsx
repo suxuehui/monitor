@@ -84,6 +84,7 @@ export default class SetModal extends Vue {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
     From.resetFields();
+    this.loading = false;
   }
 
   onSubmit() {
@@ -119,7 +120,7 @@ export default class SetModal extends Vue {
   render() {
     return (
       <el-dialog
-        width="1000px"
+        width="700px"
         class="setModal"
         top="10px"
         title={this.title}

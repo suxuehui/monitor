@@ -14,6 +14,7 @@
       @export="exportBack"
       @setTable="setTable"
       @addFun="addBack"
+      @downloadFun="downBack"
       @tableHeight="tableHeight"
     />
     <m-table
@@ -25,6 +26,7 @@
       :opreat="opreat"
       :opreat-width="opreatWidth"
       :back-params="BackParams"
+      :header-align="headerAlign"
       :fetch-type="fetchType"
       :fetch-error="fetchError"
       :table-params="tableParams"
@@ -89,6 +91,8 @@ export default class FilterTable extends Vue {
   // 请求数据方法
   @Prop() private fetchType!: string;
 
+  @Prop({ default: 'center' }) private headerAlign!: string;
+
   @Prop({ default: false })
   private highlightCurrentRow!: boolean;
   // 初始化请求参数
@@ -112,19 +116,23 @@ export default class FilterTable extends Vue {
     }
   }
 
-  reloadTable() {
+  reloadTable(type?:string) {
     const table: any = this.$refs.MTable;
     // 延迟100ms加载数据
     setTimeout(() => {
-      table.reload();
+      table.reload(type);
     }, 100);
+  }
+
+  getCurrentPageData() {
+    const table: any = this.$refs.MTable;
+    return table.returnData();
   }
 
   @Emit()
   searchFun(params: any) {
     this.tableParams = params;
     const table: any = this.$refs.MTable;
-
     table.clearPageParams();
     // 延迟100ms加载数据
     setTimeout(() => {
@@ -141,6 +149,10 @@ export default class FilterTable extends Vue {
     this.$emit('addBack');
   }
   @Emit()
+  downBack(data: any) {
+    this.$emit('downBack', data);
+  }
+  @Emit()
   tableHeight(params: any) {
     const table: any = this.$refs.MTable;
     table.$el.style.marginTop = `${params - 48}px`;
@@ -153,11 +165,6 @@ export default class FilterTable extends Vue {
   setTable(list: Array<string>) {
     const filterList = this.defalutTableList.filter((item, index) => list.indexOf(item.prop) > -1);
     this.changeTableList = filterList;
-    // console.log(filterList);
-    // if (filterList.length === 0) {
-    //   this.$message.error('表格不能为空，请重新选择');
-    // } else {
-    // }
   }
   @Emit()
   tableClick(key: string, row: any) {

@@ -1,11 +1,14 @@
 import { Component, Prop, Emit, Vue, Inject, Provide } from 'vue-property-decorator';
-import { Popover, Button } from 'element-ui';
+import { Popover, Button, Dialog, Row, Col } from 'element-ui';
 import './index.less';
 
 @Component({
   components: {
   'el-popover': Popover,
   'el-button': Button,
+  'el-dialog': Dialog,
+  'el-row': Row,
+  'el-col': Col,
   }
   })
 export default class Popconfirm extends Vue {
@@ -13,9 +16,11 @@ export default class Popconfirm extends Vue {
   @Prop({ default: '取消' }) private cancelText!: string;
   @Prop({ default: '确定' }) private okText!: string;
   @Prop({ default: '160' }) private width!: string;
-  @Prop() private loading!: boolean;
-  visible: boolean = false;
+  @Prop() private keyName!: string;
+  @Prop({ default: false }) private disabled!: boolean;
 
+  visible: boolean = false;
+  loading: boolean = false;
   @Emit()
   closeModel() {
     this.visible = false;
@@ -28,30 +33,61 @@ export default class Popconfirm extends Vue {
   }
 
   @Emit()
-  openPop() {
-    if (this.loading === undefined) {
+  openPop(e: any) {
+    this.loading = true;
+    e.stopPropagation();
+    setTimeout(() => {
+      this.$emit('confirm');
+      this.loading = false;
       this.visible = false;
-    }
-    this.$emit('confirm');
+    }, 1500);
   }
+
+  @Emit()
+  stopClick(e: any) {
+    this.visible = true;
+    e.stopPropagation();
+  }
+
+  checkOptName(name: String) {
+    let str: String = '';
+    if (name === 'delete') {
+      str = '删除';
+    } else if (name === 'unbind') {
+      str = '解绑';
+    } else if (name === 'freeze') {
+      str = '冻结';
+    } else if (name === 'forbid') {
+      str = '禁用';
+    }
+    return str;
+  }
+
   render() {
     return (
-      <el-popover
-        placement="top"
-        width={this.width}
-        v-model={this.visible}
+      <span>
+        <span on-click={this.stopClick} slot="reference">
+          {
+            this.$slots.default
+          }
+        </span>
+        <el-dialog
+          top='20vh'
+          width="430px"
+          title="操作"
+          visible={this.visible}
+          before-close={this.closePop}
+          close-on-click-modal={false}
         >
-        <p class="pop-confirm-text"><i class="el-icon-warning"></i>{this.title}</p>
-          <div class="pop-opreat">
-            <el-button size="mini" type="text" on-click={this.closePop}>{this.cancelText}</el-button>
-            <el-button type="primary" size="mini" loading={this.loading} on-click={this.openPop}>{this.okText}</el-button>
+          <div class="box">
+            <p>确定是否进行<span class="info"> {this.checkOptName(this.keyName)} </span>操作？</p>
           </div>
-          <span slot="reference">
-            {
-              this.$slots.default
-            }
-          </span>
-      </el-popover>
+          <div>
+            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.openPop}>{this.okText}</el-button>
+            <el-button size="small" id="cancel" on-click={this.closePop}>{this.cancelText}</el-button>
+          </div>
+        </el-dialog>
+      </span>
     );
   }
 }

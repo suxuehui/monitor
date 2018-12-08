@@ -142,7 +142,6 @@ export default class FenceDetail extends Vue {
           }
         });
       }).catch((e) => {
-        console.log(`e:${e}`);
       });
     });
   }
@@ -218,7 +217,6 @@ export default class FenceDetail extends Vue {
     this.inFenLat = lat;
     this.circleRadius = radius;
     if (!lng || !lat) {
-      console.log('no lat or lng');
       return;
     }
     // 在地图上显示标注
@@ -275,7 +273,7 @@ export default class FenceDetail extends Vue {
   }
 
   // 删除覆盖物
-  deleteCover=(ret:any, name:string) => {
+  deleteCover = (ret: any, name: string) => {
     const deleteMenu = new this.BMap.ContextMenu();
     deleteMenu.addItem(new this.BMap.MenuItem(name, (() => {
       this.SMap.clearOverlays();
@@ -285,7 +283,7 @@ export default class FenceDetail extends Vue {
   }
 
   // 创建多边形
-  createPoly = (ret:any) => {
+  createPoly = (ret: any) => {
     this.SMap.clearOverlays();
     this.SMap.addOverlay(ret);
     ret.enableEditing();
@@ -413,7 +411,7 @@ export default class FenceDetail extends Vue {
   // 搜索车辆
   findCar() {
     findCar({ plateNum: this.findCarPlate }).then((res) => {
-      if (res.result.resultCode) {
+      if (res.result.resultCode === 0) {
         this.tableSelectData.push(res.entity);
         this.total = 1;
       } else {
@@ -467,18 +465,6 @@ export default class FenceDetail extends Vue {
   }
 
   submit = () => {
-    console.log(`标点纬度：${this.inFenLng}`);
-    console.log(`标点经度：${this.inFenLat}`);
-    console.log(`标点经度：${this.rectanglePoint}`);
-
-    // 圆形半径、坐标
-    // inFenLat: string = '';
-    // inFenLng: string = '';
-    // circleRadius: number = 1;
-    // // 多边形坐标点
-    // polyPoint: any = {};
-    // // 矩形坐标点
-    // rectanglePoint: any = {};
   }
 
   render() {

@@ -1,7 +1,9 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
+import { exportExcel } from '@/api/export';
 import AddModel from './components/Addmodel';
 
 const noPic = require('@/assets/noPic.png');
@@ -14,6 +16,8 @@ const noPic = require('@/assets/noPic.png');
   })
 
 export default class Brand extends Vue {
+  // 当前页面权限
+  nowArr: boolean[] = [];
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
@@ -37,17 +41,18 @@ export default class Brand extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'id',
+      rowKey: 'name',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'delete',
-      rowKey: 'id',
+      rowKey: 'name',
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
+      disabled: (row: any) => (row.seriesNum > 0 || row.modelNum > 0 || row.vehicleNum > 0),
       roles: true,
     },
   ];
@@ -58,8 +63,30 @@ export default class Brand extends Vue {
     { label: '品牌描述', prop: 'description' },
     { label: '车系数量', prop: 'seriesNum', formatter: (row: any) => (row.seriesNum ? row.seriesNum : '--') },
     { label: '车型数量', prop: 'modelNum', formatter: (row: any) => (row.modelNum ? row.modelNum : '--') },
-    { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? row.vehicleNum : '--') },
+    { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },
   ];
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/brand/add',
+      '/vehicle/brand/info',
+      '/vehicle/brand/edit',
+      '/vehicle/brand/delete',
+      '/vehicle/brand/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3]);
+      this.addBtn = !!(res[0]);
+      this.exportBtn = !!(res[4]);
+    });
+  }
+
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
 
   // 新增、编辑
   addVisible: boolean = false;
@@ -89,7 +116,7 @@ export default class Brand extends Vue {
     } else if (key === 'delete') {
       brandDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
-          FromTable.reloadTable();
+          FromTable.reloadTable(key);
           this.$message.success(res.result.resultMessage);
         } else {
           this.$message.error(res.result.resultMessage);
@@ -118,6 +145,11 @@ export default class Brand extends Vue {
     FromTable.reloadTable();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '品牌列表', '/vehicle/brand/exportExcel');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -126,7 +158,7 @@ export default class Brand extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           opreatWidth={'180px'}
           localName={'brand'}
           on-addBack={this.addModel}
@@ -135,7 +167,8 @@ export default class Brand extends Vue {
           table-list={this.tableList}
           url={this.url}
           dataType={'JSON'}
-          export-btn={true}
+          on-downBack={this.downLoad}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
         <add-model

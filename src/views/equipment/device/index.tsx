@@ -1,16 +1,21 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Tag, Button, Popover } from 'element-ui';
+import qs from 'qs';
+
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { terminalType, getBluetooth, resetTime } from '@/api/equipment';
+import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
 import { orgTree } from '@/api/app';
-import AddModal from '@/views/equipment/device/components/AddModal';
-import BindModal from '@/views/equipment/device/components/BindModal';
-import AcceptModal from '@/views/equipment/device/components/AcceptModal';
+
 import PopconfirmBlock from '@/components/Popconfirm/index';
+import AddModal from './components/AddModal';
+import BindModal from './components/BindModal';
+import AcceptModal from './components/AcceptModal';
+
 import DownModel from './components/DownModel';
 import ClearModel from './components/ClearModel';
 import AuthModel from './components/AuthModel';
 import UnbindModel from './components/UnbindModel';
+
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -122,20 +127,26 @@ export default class Device extends Vue {
     {
       key: 'bind',
       rowKey: 'imei',
-      color: (row: any) => (row.status === 1 ? 'green' : 'red'),
-      text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
-      msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
-      // disabled: (row: any) => (!(row.status === 1 && row.online === 1)),
+      color: 'green',
+      text: '绑定',
+      msg: '是否要绑定？',
       disabled: this.bindDisable,
       roles: true,
+    },
+    {
+      key: 'unbind',
+      rowKey: 'imei',
+      color: 'red',
+      text: '解绑',
+      msg: '是否要解绑？',
+      roles: true,
+      disabled: this.unBindDisable,
     },
     {
       key: 'accept',
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      // disabled: (row: any) =>
-      //   (row.status === 1 || row.status === 3 || row.status === 5 || row.online === 2),
       disabled: this.acceptDisable,
       roles: true,
     },
@@ -163,36 +174,37 @@ export default class Device extends Vue {
       roles: true,
     },
   ];
-  acceptDisable(row:any) {
-    // 是否在线
-    if (row.online === 1) {
-      if (row.status === 1 || row.status === 3 || row.status === 5) {
-        return true;
-      }
+  acceptDisable(row: any) {
+    if (row.status === 1 || row.status === 3 || row.status === 5) {
+      return true;
+    }
+    return false;
+  }
+
+  bindDisable(row: any) {
+    // 待安绑
+    if (row.status === 1) {
       return false;
     }
     return true;
   }
 
-  bindDisable(row:any) {
-    // 是否在线
-    if (row.online === 1) {
+  unBindDisable(row: any) {
+    if (row.status === 2 || row.status === 3 || row.status === 4) {
       return false;
     }
-    if (row.status === 1) {
-      return true;
-    }
-    return false;
+    return true;
   }
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
     { label: '设备类型', prop: 'terminalTypeName', formatter: (row: any) => (row.terminalTypeName ? row.terminalTypeName : '--') },
     { label: 'imei号', prop: 'imei' },
+    { label: '主机编码', prop: 'barCode' },
     { label: '配置名称', prop: 'cfgName' },
     { label: '产品编码', prop: 'productCode' },
     { label: '当前车辆', prop: 'plateNum' },
-    { label: '安绑记录', prop: 'plateNum', formatter: this.bindLog },
+    { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
@@ -268,7 +280,41 @@ export default class Device extends Vue {
 
   loading: boolean = false;
 
+  // 新增、导出、重置、查看安绑记录按钮展示 更新鉴权码
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
+  resetBtn: boolean = true;
+  opsBtn: boolean = true;
+  authBtn: boolean = true;
+
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/device/terminal/save',
+      '/device/terminal/bind',
+      '/device/terminal/unbind/{imei}',
+      '/device/terminal/confirm',
+      '/device/terminal/getBluetoothAuthCode',
+      '/device/terminal/createBluetoothAuthCode',
+      '/device/terminal/deliveryCfg',
+      '/device/terminal/clearCfg',
+      '/device/terminal/reset/{id}',
+      '/terminal/ops/list',
+      '/device/terminal/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1]); // 绑定
+      this.opreat[1].roles = !!(res[2]); // 解绑
+      this.opreat[2].roles = !!(res[3]); // 验收
+      this.opreat[3].roles = !!(res[4]); // 鉴权码
+      this.authBtn = !!(res[5]);
+      this.opreat[4].roles = !!(res[6]);
+      this.opreat[5].roles = !!(res[7]);
+      this.addBtn = !!(res[0]);
+      this.resetBtn = !!(res[8]);
+      this.opsBtn = !!(res[9]);
+      this.exportBtn = !!(res[10]);
+    });
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -310,22 +356,26 @@ export default class Device extends Vue {
   }
 
   bindLog(row: any) {
-    return <a class="check-link" on-click={() => this.checkLog(row)}>查看</a>;
+    return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看</el-button>;
   }
 
   endDay(row: any) {
     return <div>
       <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
-      <popconfirm-block
-        ref={`popBlock${row.id}`}
-        title="确定要重置此设备到期日期吗？"
-        width="225"
-        loading={this.loading}
-        on-confirm={() => this.onResetTime(row)}
-        on-cancel={this.closePop}
-      >
-        <el-button style="marginLeft:10px" type="text" size="small" >重置</el-button>
-      </popconfirm-block>
+      {
+        this.resetBtn ?
+          <popconfirm-block
+            ref={`popBlock${row.id}`}
+            title="确定要对此设备进行续期1年？"
+            width="225"
+            disabled={row.status !== 3}
+            loading={this.loading}
+            on-confirm={() => this.onResetTime(row)}
+            on-cancel={this.closePop}
+          >
+            <el-button style="marginLeft:10px" disabled={row.status !== 3} type="text" size="small" >续期</el-button>
+          </popconfirm-block> : null
+      }
     </div>;
   }
   closePop() {
@@ -364,25 +414,25 @@ export default class Device extends Vue {
   }
   terSelect(row: any) {
     let type;
-    // 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
+    // 1-待安绑，2-待验收，3-已合格，4-未合格,5-已返厂 ,
     switch (row.status) {
       case 1:
-        type = <el-tag size="medium" type="blue" style="marginRight:5px">待安绑</el-tag>;
+        type = <el-tag size="medium" type="blue" >待安绑</el-tag>;
         break;
       case 2:
-        type = <el-tag size="medium" type="info" style="marginRight:5px">待验收</el-tag>;
+        type = <el-tag size="medium" type="info" >待验收</el-tag>;
         break;
       case 3:
-        type = <el-tag size="medium" type="success" style="marginRight:5px">已合格</el-tag>;
+        type = <el-tag size="medium" type="success" >已合格</el-tag>;
         break;
       case 4:
-        type = <el-tag size="medium" type="warning" style="marginRight:5px">未合格</el-tag>;
+        type = <el-tag size="medium" type="warning" >未合格</el-tag>;
         break;
       case 5:
-        type = <el-tag size="medium" type="danger" style="marginRight:5px">已返厂</el-tag>;
+        type = <el-tag size="medium" type="danger" >已返厂</el-tag>;
         break;
       default:
-        type = <el-tag size="medium" type="info" style="marginRight:5px">未知</el-tag>;
+        type = <el-tag size="medium" type="info" >未知</el-tag>;
     }
     return type;
   }
@@ -400,18 +450,16 @@ export default class Device extends Vue {
 
   // 操作
   menuClick(key: string, row: any) {
-    const formTable: any = this.$refs.table;
     switch (key) {
       // 绑定、解绑
       case 'bind':
-        if (row.status === 1) {
-          this.modelForm = row;
-          this.bindVisible = true;
-          this.bindTitle = '绑定车辆';
-        } else {
-          this.unbindVisible = true;
-          this.unbindData = row;
-        }
+        this.modelForm = row;
+        this.bindVisible = true;
+        this.bindTitle = '绑定车辆';
+        break;
+      case 'unbind':
+        this.unbindVisible = true;
+        this.unbindData = row;
         break;
       case 'accept':
         this.acceptData = row;
@@ -433,7 +481,7 @@ export default class Device extends Vue {
         this.clearVisible = true;
         break;
       default:
-        console.log(1);
+        break;
     }
   }
 
@@ -462,6 +510,10 @@ export default class Device extends Vue {
     this.addTitle = '添加设备';
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    terminalExport(data1, '设备管理列表');
+  }
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -475,6 +527,7 @@ export default class Device extends Vue {
     setTimeout(() => {
       addBlock.resetData();
     }, 200);
+    this.loading = false;
   }
   // 关闭弹窗时刷新
   refresh(): void {
@@ -491,16 +544,17 @@ export default class Device extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           data-type={'JSON'}
           localName={'device'}
           on-addBack={this.addModel}
+          on-downBack={this.downLoad}
           opreat={this.opreat}
           opreatWidth={'150px'}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={true}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
         <add-modal
@@ -525,6 +579,7 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         ></accept-modal>
         <auth-model
+          updateAble={this.authBtn}
           data={this.authData}
           visible={this.authVisible}
           on-close={this.closeModal}

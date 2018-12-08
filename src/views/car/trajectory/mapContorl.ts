@@ -18,7 +18,7 @@ export default class MapContorl {
    */
   initTrackCarOverlay() {
     const self = this;
-    this.trackCarOverlay = function trackCarOverlay(point : any, type : string) {
+    this.trackCarOverlay = function trackCarOverlay(point: any, type: string) {
       this.point = point;
       // this.type = 'trackpoint';
       this.type = type;
@@ -78,7 +78,6 @@ export default class MapContorl {
   playInterVal() {
     return setInterval(() => {
       if (this.playNumber === this.trackData.length - 1) {
-        console.log(this.playTimers);
         window.clearInterval(this.playTimers);
         this.playNumber = 0;
       }
@@ -112,9 +111,8 @@ export default class MapContorl {
   playSetTime(val: number) {
     if (this.trackData) {
       this.oneTime = (val * 1000) / this.trackData.length;
-      this.passPlay();
       this.playNumber = 0;
-      this.playContinue();
+      this.passPlay();
     }
   }
   // 暂停播放
@@ -138,7 +136,7 @@ export default class MapContorl {
    */
   initTrackPointOverlay() {
     const self = this;
-    this.trackPointOverlay = function trackPointOverlay(point : any, type : string) {
+    this.trackPointOverlay = function trackPointOverlay(point: any, type: string) {
       this.point = point;
       // this.type = 'trackpoint';
       this.type = type;
@@ -232,7 +230,6 @@ export default class MapContorl {
     if (!data.interval) {
       this.SMap.panTo(point);
     }
-    console.log(this.entityMarker.getIcon());
   }
   trackInfoBox: any = null; // 窗口对象
   entityMarker: any = null; // 标记
@@ -335,6 +332,30 @@ export default class MapContorl {
   /**
    * 展示轨迹点详情
   */
+
+  haoverMap = ['', '轻震动', '轻碰撞', '重碰撞', '翻滚', '急加速', '急减速', '急转弯'];
+
+  getDirection(itm: number) {
+    if (itm > 337.5 || itm <= 22.5) {
+      return '北方';
+    } else if (itm > 22.5 && itm <= 67.5) {
+      return '东北方';
+    } else if (itm > 67.5 && itm <= 112.5) {
+      return '东方';
+    } else if (itm > 112.5 && itm <= 157.5) {
+      return '东南方';
+    } else if (itm > 157.5 && itm <= 202.5) {
+      return '南方';
+    } else if (itm > 202.5 && itm <= 247.5) {
+      return '西南方';
+    } else if (itm > 247.5 && itm <= 292.5) {
+      return '西方';
+    } else if (itm > 292.5 && itm <= 337.5) {
+      return '西北方';
+    }
+    return '未知';
+  }
+
   showTrackInfoBox(data: any) {
     this.removeTrackPointOverlay('trackpoint_in');
     this.removeTrackInfoBox();
@@ -343,11 +364,17 @@ export default class MapContorl {
       if (response.status === 0) {
         const address = response.result.formatted_address + response.result.sematic_description;
         const infor = [
-          ['定位', data.lnglat],
-          ['地址', address],
-          ['速度', `${data.speed}km/h`],
-          ['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')],
+          ['速度方向', `${data.speed >= 0 ? `${data.speed}km/h` : '未知'}（${this.getDirection(data.direction)}）`],
         ];
+        if (data.event && data.event[0] !== '0') {
+          const haovrData: string[] = [];
+          data.event.forEach((item: string) => {
+            haovrData.push(this.haoverMap[parseInt(item, 10)]);
+          });
+          infor.push(['驾驶行为', haovrData.join('-')]);
+        }
+        infor.push(['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')]);
+        infor.push(['定位地址', `${address}(${data.lnglat})`]);
         this.setTrackInfoBox({
           plateNum: data.plateNum,
           infor,

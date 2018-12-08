@@ -95,7 +95,6 @@ export default class About extends Vue {
   ];
   @Emit()
   change() {
-    console.log(this.filterList);
   }
 }
 </script>

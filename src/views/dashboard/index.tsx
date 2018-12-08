@@ -108,6 +108,17 @@ export default class Dashboard extends Vue {
 
   openVisible: boolean = false;
 
+  toMonitor: boolean = true;
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/monitor/list',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.toMonitor = !!(res[0]);
+    });
+  }
+
   mounted() {
     // 环状图表
     const circleChart = new window.G2.Chart({
@@ -290,10 +301,13 @@ export default class Dashboard extends Vue {
             <div id="mountNode" class="mountNode"></div>
             <div class="title">
               <span style="marginRight:20px">{this.helloWord}好！当前{this.count}辆车处于监控中</span>
-              <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+              {
+                this.toMonitor ?
+                  <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+                  : null
+              }
             </div>
           </div>
-          <el-button type="success" id="openLink" plain size="mini" class="iconfont iconfont-link openLink" on-click={this.openLink}>   开放接口</el-button>
         </div>
         <div class="driveArea">
           <div class="title">
@@ -391,21 +405,6 @@ export default class Dashboard extends Vue {
             }
           </ul>
         </div>
-        <el-dialog
-          class="openInfo"
-          title="开放接口"
-          visible={this.openVisible}
-          width="520px"
-          before-close={this.closeDialog}>
-          <p class="title">您的平台接口对接秘钥</p>
-          <p class="key">1akshndgkljfdhuif</p>
-          <p class="webAddress">
-            接口地址：
-            <a href="http://www.qq.com" target="_blank">
-              <span style="color:#1890ff">www.jiekouwendang.com</span>
-            </a>
-          </p>
-        </el-dialog >
       </div >
     );
   }

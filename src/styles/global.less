@@ -165,11 +165,11 @@ a:hover {
 }
 @font-face {
   font-family: 'iconfont';  /* project id 730427 */
-  src: url('//at.alicdn.com/t/font_730427_0jr8nzjd50j6.eot');
-  src: url('//at.alicdn.com/t/font_730427_0jr8nzjd50j6.eot?#iefix') format('embedded-opentype'),
-  url('//at.alicdn.com/t/font_730427_0jr8nzjd50j6.woff') format('woff'),
-  url('//at.alicdn.com/t/font_730427_0jr8nzjd50j6.ttf') format('truetype'),
-  url('//at.alicdn.com/t/font_730427_0jr8nzjd50j6.svg#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/font_730427_r3pcl5f3yzd.eot');
+  src: url('//at.alicdn.com/t/font_730427_r3pcl5f3yzd.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_730427_r3pcl5f3yzd.woff') format('woff'),
+  url('//at.alicdn.com/t/font_730427_r3pcl5f3yzd.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_730427_r3pcl5f3yzd.svg#iconfont') format('svg');
 }
 
 [class*=" iconfont-"], [class^="iconfont-"] {
@@ -318,6 +318,21 @@ a:hover {
 .iconfont-plus::before {
   content: '\e801';
 }
+.iconfont-trace::before {
+  content: '\e7d6';
+}
+.iconfont-powerOn::before {
+  content: '\e781';
+}
+.iconfont-powerOff::before {
+  content: '\e78c';
+}
+.iconfont-fenceOn::before {
+  content: '\e69a';
+}
+.iconfont-fenceOff::before {
+  content: '\e625';
+}
 #app {
   font-family: Monospaced Number,Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
   .el-dialog__header {
@@ -331,6 +346,15 @@ a:hover {
   }
   .el-dialog__body {
     padding: 20px;
-    
   }
+}
+
+.el-table .el-table__body tr.hover-row > td,
+.el-table .el-table__body tr.el-table__row.hover-row > td
+{
+  background-color: #b3d9ff !important;
+}
+.el-table .el-table__body tr.current-row > td {
+  background-color: #b3d9ff;
+  font-weight: bold;
 }

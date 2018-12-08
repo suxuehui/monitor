@@ -1,6 +1,6 @@
 <template>
   <div class="loginWrap">
-    <h2 class="loginTxt">欢迎使用<br>共享车监控系统</h2>
+    <h2 class="loginTxt">欢迎使用<br>桴之科监控系统</h2>
     <div class="loginForm">
       <div class="logo">
         <img alt="logo" src="../../assets/logo.svg">
@@ -30,12 +30,13 @@
             v-model="loginForm.captcha"
             prefix-icon="iconfont-code"
             placeholder="请输入验证码"
-            @keydown.enter="submitForm('ruleForm')"
+            @keyup.native.enter="submitForm('ruleForm')"
           />
           <img :src="codeImg" class="authcodeImg" alt="" @click="getCodeImg">
         </el-form-item>
         <el-form-item>
           <el-button
+            id="submit"
             :loading="loading"
             type="primary"
             @click="submitForm('ruleForm')"

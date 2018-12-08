@@ -76,11 +76,10 @@ export default class AddModal extends Vue {
   checkTank(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        const exp: any = /^[1-9]\d*$/;
-        if (exp.test(value)) {
-          callback();
+        if (parseInt(value, 10) > 200) {
+          callback(new Error('请输入正确的油箱容量'));
         } else {
-          callback(new Error('油箱容量只能为数字，请重新输入'));
+          callback();
         }
       } else {
         callback(new Error('油箱容量不能为空'));
@@ -133,7 +132,7 @@ export default class AddModal extends Vue {
       this.modelForm = {
         name: data.name,
         energyType: data.energyType,
-        fuelTankCap: data.fuelTankCap,
+        fuelTankCap: parseInt(data.fuelTankCap, 10),
         brandSeries: [data.brandId, data.seriesId],
       };
       this.oilInput = data.energyType !== 2;
@@ -289,6 +288,7 @@ export default class AddModal extends Vue {
                   <el-form-item label="油箱容量" prop="fuelTankCap" rules={!this.oilInput ? null : this.fuelTankCapRule}>
                     <el-input
                       id="fuelTankCap"
+                      type="number"
                       v-model={this.modelForm.fuelTankCap}
                       placeholder="请输入油箱容量"
                     >

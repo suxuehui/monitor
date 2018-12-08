@@ -1,6 +1,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col } from 'element-ui';
+import { exportExcel } from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';
 
@@ -96,6 +98,29 @@ export default class Merchants extends Vue {
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/customer/org/save',
+      '/customer/org/detail/{orgId}',
+      '/customer/org/update',
+      '/customer/org/lock/{orgId}',
+      '/customer/org/unlock/{orgId}',
+      '/customer/org/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3] && res[4]);
+      this.addBtn = !!(res[0]);
+      this.exportBtn = !!(res[5]);
+    });
+  }
+
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+  exportBtn: boolean = true;
 
   // 新增、编辑
   modelVisible: boolean = false;
@@ -194,6 +219,11 @@ export default class Merchants extends Vue {
     this.closeModal();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '商户列表', '/customer/org/exportExcel');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -202,14 +232,15 @@ export default class Merchants extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
           localName={'merchants'}
-          export-btn={true}
+          export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
           fetch-type={'get'}
           on-menuClick={this.menuClick}
         />

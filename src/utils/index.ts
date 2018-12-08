@@ -47,12 +47,13 @@ const loadMap = () => new Promise(((resolve, reject) => {
   if (!window.BMap) {
     const script: any = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = '//api.map.baidu.com/getscript?v=2.0&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&ser' +
-      'vices=&t=20180629105706';
+    script.src = 'https://api.map.baidu.com/getscript?v=2.0&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&ser' +
+      'vices=&t=20180629105706&s=1';
     script.onerror = reject;
-    document
-      .head
-      .appendChild(script);
+    const { head } = document;
+    if (head) {
+      head.appendChild(script);
+    }
     script.onload = function onload() {
       if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
         resolve(window.BMap);
@@ -71,9 +72,10 @@ const loadMapLib = () => new Promise(((resolve, reject) => {
   script.type = 'text/javascript';
   script.src = '//api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js';
   script.onerror = reject;
-  document
-    .head
-    .appendChild(script);
+  const { head } = document;
+  if (head) {
+    head.appendChild(script);
+  }
   script.onload = function onload() {
     if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
       resolve(window.BMapLib);
@@ -89,9 +91,10 @@ const loadMapTextIcon = () => new Promise(((resolve, reject) => {
   script.type = 'text/javascript';
   script.src = '//api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js';
   script.onerror = reject;
-  document
-    .head
-    .appendChild(script);
+  const { head } = document;
+  if (head) {
+    head.appendChild(script);
+  }
   script.onload = function onload() {
     if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
       resolve();
@@ -106,9 +109,10 @@ const loadMapInfoBox = () => new Promise(((resolve, reject) => {
   script.type = 'text/javascript';
   script.src = '//api.map.baidu.com/library/InfoBox/1.2/src/InfoBox_min.js';
   script.onerror = reject;
-  document
-    .head
-    .appendChild(script);
+  const { head } = document;
+  if (head) {
+    head.appendChild(script);
+  }
   script.onload = function onload() {
     if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
       resolve();
@@ -122,18 +126,19 @@ const loadMapInfoBox = () => new Promise(((resolve, reject) => {
 const loadDrawScript = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
-  script.src = '//api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js';
+  script.src = 'https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js';
   script.onerror = reject;
   const link: any = document.createElement('link');
   link.rel = 'stylesheet';
   link.href = '//api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css';
-  document
-    .head
-    .appendChild(link);
+  const { head } = document;
+  if (head) {
+    head.appendChild(link);
+    head.appendChild(script);
+  }
   script.onload = function onload() {
     if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
       // map ok
-      console.log('load DrawingManager ok');
       resolve(window.BMapLib);
     }
     script.onload = null;
@@ -147,9 +152,10 @@ const loadCanvasLayer = () => new Promise(((resolve, reject) => {
   script.type = 'text/javascript';
   script.src = '/canvaslayer.js';
   script.onerror = reject;
-  document
-    .head
-    .appendChild(script);
+  const { head } = document;
+  if (head) {
+    head.appendChild(script);
+  }
   script.onload = function onload() {
     if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
       resolve(window.CanvasLayer);
@@ -160,10 +166,20 @@ const loadCanvasLayer = () => new Promise(((resolve, reject) => {
   script.onreadystatechange = script.onload;
 }));
 
+function postDownload(url: string) {
+  const Form = document.createElement('form');
+  document.body.appendChild(Form);
+  Form.method = 'get';
+  Form.action = url;
+  Form.target = '_blank';
+  Form.submit();
+}
+
 export default {
   param2Obj,
   levelcodeToArray,
   routeToArray,
+  postDownload,
   loadMap,
   loadMapLib,
   loadMapTextIcon,

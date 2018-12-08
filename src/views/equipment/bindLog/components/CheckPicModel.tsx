@@ -29,7 +29,7 @@ export default class UnbindModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <div style="margin: 0 auto;height: 200px;textAlign:center">
+        <div style="margin: 0 auto;textAlign:center">
           <img alt="安装图片" src={this.data} style="maxWidth: 100%;maxHeight: 100%;"/>
         </div>
       </el-dialog>

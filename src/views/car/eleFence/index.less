@@ -21,23 +21,7 @@
       margin-left: 20px;
     }
   }
-  .loc-change-box {
-    position: absolute;
-    bottom: 10px;
-    right: 20px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    transition: all .5s ease-in-out;
-    .btn {
-      margin-left: 0px;
-      margin-bottom: 10px;
-    }
-    .less {
-      margin-bottom: 10px;
-    }
-  }
-  .car-detail-box {
+  .car-detail-box1 {
     position: absolute;
     top: -520px;
     left: 10px;
@@ -53,6 +37,7 @@
       background-color: @primary-color;
       .top {
         margin-bottom: 10px;
+        text-align: left;
         .plateNumber {
           font-size: 16px;
           font-weight: 500;
@@ -71,7 +56,7 @@
         }
       }
       .bottom {
-        margin-top: 5px;
+        margin-top: 10px;
         display: flex;
         justify-content: space-between;
         span {
@@ -124,6 +109,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        height: 18px;
         .icon {
           position: absolute;
           top: 1px;
@@ -131,7 +117,9 @@
           font-size: 14px;
         }
         span {
-          margin-left: -128px;
+          position: absolute;
+          top: 0px;
+          left: 16px;
         }
       }
       .time {
@@ -159,10 +147,10 @@
         height: 100%;
         display: inline-block;
         .item {
-          display: inline-block;
+          list-style: none;
+          float: left;
           width: 90px;
           margin-top: 10px;
-          text-align: center;
         }
       }
       .pageSet {
@@ -179,14 +167,11 @@
       cursor: pointer;
     }
   }
-  .car-table {
+  .car-table2 {
     width: 100%;
     position: absolute;
-    bottom: -440px;
-    transition: all .5s ease-in-out;
     background-color: #fff;
-    overflow-x: hidden;
-    overflow-y: auto;
+    transition: all .5s ease-in-out;
     .pagination{
       text-align: center;
       padding-top: 5px;
@@ -195,15 +180,29 @@
       height: auto;
       min-height: auto;
       th .cell {
-        text-align: left;
+        text-align: center;
+      }
+    }
+    .loc-change-box2 {
+      position: absolute;
+      top: -175px;
+      right: 15px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      transition: all .5s ease-in-out;
+      .btn {
+        margin-left: 0px;
+        margin-bottom: 10px;
+        padding: 10px;
+      }
+      .less {
+        margin-bottom: 10px;
       }
     }
   }
   .detail-active {
     top: 10px;
-  }
-  .loc-active {
-    bottom: 410px;
   }
   .table-active {
     bottom: 0;

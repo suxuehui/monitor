@@ -1,6 +1,9 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag } from 'element-ui';
+import { exportExcel } from '@/api/export';
+import { orgTree } from '@/api/app';
 import './index.less';
 
 @Component({
@@ -14,9 +17,15 @@ export default class Driving extends Vue {
   filterList: FilterFormList[] = [
     {
       key: 'shopName',
-      type: 'select',
-      label: '商户',
-      placeholder: '请选择商户',
+      type: 'levelcode',
+      label: '所属门店',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择所属门店',
       options: [],
     },
     {
@@ -116,6 +125,15 @@ export default class Driving extends Vue {
       },
     },
     {
+      label: '轻震动',
+      prop: 'ligntHitCount',
+      sortable: true,
+      sortBy: 'ligntHitCount',
+      formatter(row: any) {
+        return `${row.ligntHitCount} 次`;
+      },
+    },
+    {
       label: '轻碰撞',
       prop: 'ligntHitCount',
       sortable: true,
@@ -143,6 +161,34 @@ export default class Driving extends Vue {
       },
     },
   ];
+  created() {
+    // 门店
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '全部',
+        });
+        this.filterList[0].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+    const getNowRoles: string[] = [
+      // 操作
+      '/statistics/driving/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.exportBtn = !!(res[0]);
+    });
+  }
+  exportBtn:boolean = false;
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '数据统计列表', '/statistics/driving/exportExcel');
+  }
 
   render(h: any) {
     return (
@@ -158,7 +204,8 @@ export default class Driving extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={true}
+          export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
         />
       </div>
     );

@@ -33,13 +33,33 @@ export async function getAuthCodeToken(params: any) {
 export async function getAuthCode(params: any, token?: string) {
   const data = qs.stringify(params);
   return axios({
-    url: `${process.env.NODE_ENV === 'production' ? '' : '/rootApi'}/zuul/verify/send/image`,
+    url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}/zuul/verify/send/image`,
     method: 'post',
     data,
     headers: {
       token,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
+  });
+}
+// 所有商户名称--来自4S门户
+export async function getAllShopName(params: any, token?: string) {
+  return axios({
+    url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}/old/department/selectOptionsAll`,
+    method: 'post',
+    data: params,
+    headers: {
+      token,
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+export async function getAllShopNameMoni(params: any) {
+  return request({
+    url: '/customer/org/create/selectOptions',
+    method: 'post',
+    data: params,
   });
 }
 
@@ -76,6 +96,15 @@ export async function getDict(params: any) {
   });
 }
 
+// 设备表中的数据字典
+export async function terminalDict(params: any) {
+  return request({
+    url: '/dict/terminalDict',
+    method: 'post',
+    data: params,
+  });
+}
+
 export async function uploadFile(params: any) {
   return axios({
     url: '/verify/file/upload',
@@ -93,8 +122,11 @@ lat: number,
 lng: number,
 coordinateSystem?: string
 }) {
+  if (params.coordinateSystem === 'GCJ02') {
+    params.coordinateSystem = 'gcj02ll';
+  }
   return request({
-    url: `http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&coordtype=${params.coordinateSystem}&location=${params.lat},${params.lng}&output=json&pois=1&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
+    url: `https://api.map.baidu.com/geocoder/v2/?callback=renderReverse&coordtype=${params.coordinateSystem}&location=${params.lat},${params.lng}&output=json&pois=1&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
     method: 'get',
     fetchType: 'JSONP',
   });
@@ -102,7 +134,7 @@ coordinateSystem?: string
 
 export async function queryAddress(params: string) {
   return request({
-    url: `http://api.map.baidu.com/place/v2/suggestion?query=${params}&region=全国&city_limit=false&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
+    url: `https://api.map.baidu.com/place/v2/suggestion?query=${params}&region=全国&city_limit=false&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC`,
     method: 'get',
     fetchType: 'JSONP',
   });
@@ -110,7 +142,7 @@ export async function queryAddress(params: string) {
 
 export async function addressToGps(params: string) {
   return request({
-    url: `http://api.map.baidu.com/geocoder/v2/?address=${params}&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&callback=showLocation`,
+    url: `https://api.map.baidu.com/geocoder/v2/?address=${params}&output=json&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&callback=showLocation`,
     method: 'get',
     fetchType: 'JSONP',
   });

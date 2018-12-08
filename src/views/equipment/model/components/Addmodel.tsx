@@ -50,6 +50,9 @@ export default class AddModal extends Vue {
     ],
     productCode: [
       { required: true, message: '请输入产品编码', trigger: 'blur' },
+      {
+        min: 0, max: 20, message: '长度在20个字符以内', trigger: 'blur',
+      },
     ],
   }
   cfgParamRule = [
@@ -137,6 +140,7 @@ export default class AddModal extends Vue {
       this.modelForm.cfgParamAdd = [];
       this.reBootStatus = '1';
     }, 200);
+    this.loading = false;
   }
   reBootStatus: string = '1';
 

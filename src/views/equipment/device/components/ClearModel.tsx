@@ -21,6 +21,7 @@ export default class ClearModel extends Vue {
 
   closeModal() {
     this.$emit('close');
+    this.loading = false;
   }
 
   onSubmit() {

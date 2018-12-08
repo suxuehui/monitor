@@ -1,7 +1,7 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
-import { terminalUnbind } from '@/api/equipment';
-import './UnbindModel.less';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Dialog, Row, Col, Button } from 'element-ui';
+import { controlCar } from '@/api/monitor';
+import './ControlModel.less';
 @Component({
   components: {
   'el-dialog': Dialog,
@@ -10,7 +10,7 @@ import './UnbindModel.less';
   'el-button': Button,
   }
   })
-export default class UnbindModel extends Vue {
+export default class ControlModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
   @Prop() private data: any;
@@ -19,17 +19,14 @@ export default class UnbindModel extends Vue {
 
   closeModal() {
     this.$emit('close');
-    this.loading = false;
+    setTimeout(() => {
+      this.loading = false;
+    }, 200);
   }
-
-  newCfgVal: string = ''
 
   onSubmit() {
     this.loading = true;
-    const obj: any = {
-      imei: this.data.imei,
-    };
-    terminalUnbind(obj).then((res) => {
+    controlCar({ imei: this.data.imei, cmd: this.data.cmd }).then((res: any) => {
       if (res.result.resultCode === '0') {
         setTimeout(() => {
           this.loading = false;
@@ -48,14 +45,15 @@ export default class UnbindModel extends Vue {
   render() {
     return (
       <el-dialog
-        width="540px"
-        title="解绑车辆"
+        width="415px"
+        top="23vh"
+        title="车辆控制"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
         <div class="box">
-          <p>确定<span class="info">  解绑  </span>该车辆？</p>
+          <p>确定对该车辆进行<span class="info">{this.data.operateStr}</span>操作？</p>
         </div>
         <el-row>
           <el-col offset={6} span={12}>

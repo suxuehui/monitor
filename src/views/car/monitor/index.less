@@ -24,29 +24,11 @@
       padding: 9px 10px;
     }
   }
-  .loc-change-box {
-    position: absolute;
-    bottom: 10px;
-    right: 20px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    transition: all .5s ease-in-out;
-    .btn {
-      margin-left: 0px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .less {
-      margin-bottom: 10px;
-    }
-  }
   .car-detail-box {
-    max-height: e('calc(100vh - 480px)');
     position: absolute;
-    top: -100%;
+    z-index: 3000;
     left: 10px;
-    width: 380px;
+    width: 400px;
     border: 1px solid @primary-color;
     border-radius: 5px;
     background-color: #fff;
@@ -55,7 +37,13 @@
     &.big {
       max-height: e('calc(100vh - 100px)');
       .car-detail {
-        max-height: e('calc(100vh - 340px)');
+        max-height: e('calc(100vh - 680px)');
+      }
+    }
+    &:hover {
+      max-height: e('calc(100vh - 100px)') !important;
+      .car-detail {
+        max-height: e('calc(100vh - 300px)');
       }
     }
     .car-info {
@@ -70,7 +58,7 @@
           font-weight: 500;
         }
         .modelName {
-          font-size: 14px;
+          font-size: 12px;
         }
       }
       .center {
@@ -92,35 +80,11 @@
       }
     }
     .car-control {
-      padding: 10px;
+      padding: 4px 20px;
       border-bottom: 1px solid @primary-color;
-      display: flex;
-      height: 55px;
-      button {
-        margin: 0;
-      }
-      .el-button--mini, .el-button--mini.is-round{
-        padding: 7px 7px;
-      }
-      .left {
-        border-right: 1px solid #d8d8d8; 
-        padding-right: 10px;
-        padding-top: 4px;
-        button {
-          color: #fff;
-          background-color: @primary-color;
-        }
-        .fire {
-          margin-right: 5px;
-        }
-      }
-      .right {
-        .lock {
-          margin-right: 2px;
-        }
-        .unlock {
-          margin-right: 2px;
-        }
+      height: 40px;
+      i {
+        font-size: 16px;
       }
     }
     .car-address {
@@ -154,7 +118,8 @@
     .car-detail {
       padding: 10px;
       word-spacing: 2px;
-      max-height: e('calc(100vh - 710px)');
+      max-height: e('calc(100vh - 340px)');
+      // max-height: e('calc(100vh - 710px)');
       overflow: auto;
       transition: all .5s ease-in-out;
       .line {
@@ -187,23 +152,44 @@
       cursor: pointer;
     }
   }
-  .car-table {
+  .car-table1 {
     width: 100%;
-    height: 340px;
     position: absolute;
-    bottom: -340px;
     transition: all .5s ease-in-out;
     background-color: #fff;
-    overflow-x: hidden;
-    overflow-y: auto;
+    margin-bottom: -10px;
     .pagination{
       text-align: center;
+    }
+    .filter-wrap {
+      margin-bottom: -10px;
     }
     .filter-table {
       height: auto;
       min-height: auto;
       th .cell {
-        text-align: left;
+        text-align: center;
+      }
+    }
+    .loc-change-box1 {
+      position: absolute;
+      top: -175px;
+      right: 15px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      transition: all .5s ease-in-out;
+      .btn {
+        margin-left: 0px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      .less {
+        margin-bottom: 10px;
+      }
+      .mapTable {
+        max-height: 320px;
+        overflow: auto;
       }
     }
   }

@@ -1,4 +1,4 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
 import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader } from 'element-ui';
 import { brandAll, seriesAll, modelAll } from '@/api/model';
 import { terminalBind } from '@/api/equipment';
@@ -80,9 +80,29 @@ export default class BindModal extends Vue {
     ],
     plateNum: [
       { required: true, message: '请输入车牌号', trigger: 'blur' },
+      {
+        validator: this.checkPlateNum, trigger: 'blur',
+      },
     ],
   }
   logoUrl: any = [];
+
+  // 验证车牌号
+  @Emit()
+  checkPlateNum(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        const exp: any = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4,5}[A-Z0-9挂学警港澳]{1}$/;
+        if (exp.test(value)) {
+          callback();
+        } else {
+          callback(new Error('车牌号输入不合法，请重新输入'));
+        }
+      } else {
+        callback(new Error('车牌号不能为空，请输入'));
+      }
+    }, 500);
+  }
 
   created() {
     brandAll(null).then((res) => {
@@ -102,7 +122,7 @@ export default class BindModal extends Vue {
     this.headers = {
       token: window.localStorage.getItem('token'),
     };
-    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/zuul/verify/file/upload' : '/rootApi/zuul/verify/file/upload';
+    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/zuul/verify/file/upload' : '/rootApi/zuul/verify/file/upload';
   }
 
   @Watch('data')
@@ -223,6 +243,7 @@ export default class BindModal extends Vue {
       From.resetFields();
       upModel.$children[0].clearFiles();
     }, 200);
+    this.loading = false;
   }
 
   removeBack(file: any, fileList: any) {

@@ -1,4 +1,4 @@
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { Table, TableColumn, Pagination, Dropdown, DropdownItem, DropdownMenu, Tooltip } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import request from '@/utils/request';
@@ -60,6 +60,8 @@ export default class MTable extends Vue {
   @Prop({ default: 10 }) private defaultPageSize!: number;
 
   @Prop() private highlightCurrentRow!: boolean;
+
+  @Prop() private headerAlign!: string;
   // data
   tableData: any = [];
   pageParams: {
@@ -78,7 +80,16 @@ export default class MTable extends Vue {
     this.getData();
   }
 
-  reload() {
+  returnData() {
+    return this.tableData;
+  }
+
+  reload(type: string) {
+    if (type === 'delete' && this.tableData.length === 1) {
+      if (this.pageParams.pageNum !== 1) {
+        this.pageParams.pageNum = this.pageParams.pageNum - 1;
+      }
+    }
     this.getData();
   }
 
@@ -101,8 +112,18 @@ export default class MTable extends Vue {
           this.tableData = [];
           this.dataTotal = 0;
         } else {
-          this.tableData = this.getValue(this.BackParams.data, res);
-          this.dataTotal = this.getValue(this.BackParams.total, res);
+          // 总数
+          if (this.getValue(this.BackParams.total, res)) {
+            this.dataTotal = this.getValue(this.BackParams.total, res);
+          } else {
+            this.dataTotal = 0;
+          }
+          // 数据
+          if (this.getValue(this.BackParams.data, res)) {
+            this.tableData = this.getValue(this.BackParams.data, res);
+          } else {
+            this.tableData = [];
+          }
         }
       } else {
         this.$message.error(this.getValue(this.BackParams.message, res));
@@ -131,31 +152,44 @@ export default class MTable extends Vue {
     this.$emit('currentChange', val);
   }
 
+  showOperate(operaList: any) {
+    const optArr: number[] = [];
+    operaList.forEach((item: any) => {
+      if (item.roles) {
+        optArr.push(1);
+      }
+    });
+    if (optArr.length > 0) {
+      return <el-table-column width={this.opreatWidth} label="操作" formatter={this.opreatJSX}></el-table-column>;
+    }
+    return null;
+  }
+
   render() {
     return (
       <div class="m-table" >
         <m-spin show={this.loading} />
         <el-table
           data={this.tableData}
-          on-current-change={this.currentChange}
+          on-row-click={this.currentChange}
           on-selection-change={this.selectChange}
           highlightCurrentRow={this.highlightCurrentRow}>
           {
             this.tableList.map((item, index) => {
               if (!item.formatter) {
                 item.formatter = (row: any) =>
-                (row[item.prop] !== null && row[item.prop] !== ''?
-                <el-tooltip effect="dark" content={ row[item.prop] !== null ? `${row[item.prop]}` : '--' } placement="top">
-                    <p class="text-over">{ row[item.prop] !== null ? `${row[item.prop]}` : '--' }</p>
-                  </el-tooltip>:'--');
+                  (row[item.prop] !== null && row[item.prop] !== '' ?
+                    <el-tooltip effect="dark" content={row[item.prop] !== null ? `${row[item.prop]}` : '--'} placement="top">
+                      <p class="text-over">{row[item.prop] !== null ? `${row[item.prop]}` : '--'}</p>
+                    </el-tooltip> : '--');
               }
               return <el-table-column
-                key={index} {...{ props: item }}>
+                key={index} {...{ props: item }} align={this.headerAlign}>
               </el-table-column>;
             })
           }
           {
-            this.opreat.length ? <el-table-column width={this.opreatWidth} label="操作" formatter={this.opreatJSX}></el-table-column> : null
+            this.showOperate(this.opreat)
           }
         </el-table>
         <el-pagination
@@ -174,19 +208,25 @@ export default class MTable extends Vue {
 
   opreatJSX(row: any, column: string, cellValue: any, index: number) {
     if (this.opreat.length > 4) {
-      return <el-dropdown on-command={(command: string) => this.menuClick(command, row)}>
+      return <el-dropdown on-command={(command: string) => this.menuClick(null, command, row)}>
         <span class="el-dropdown-link">
           下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           {
-            this.opreat.map((item, indexs) => <el-dropdown-item
-              key={indexs}
-              command={item.key}
-              disabled={item.disabled && item.disabled(row)}
-            >
-              {typeof item.text === 'function' ? item.text(row) : item.text}
-            </el-dropdown-item>)
+            this.opreat.map((item, indexs) => {
+              if (item.roles) {
+                return <el-dropdown-item
+                  id={`${item.key}`}
+                  key={indexs}
+                  command={item.key}
+                  disabled={item.disabled && item.disabled(row)}
+                >
+                  {typeof item.text === 'function' ? item.text(row) : item.text}
+                </el-dropdown-item>;
+              }
+              return true;
+            })
           }
         </el-dropdown-menu>
       </el-dropdown>;
@@ -195,30 +235,36 @@ export default class MTable extends Vue {
       {
         this.opreat.map((item, indexs) => {
           const whiteList = ['red', 'orange'];
-          if (item.disabled && item.disabled(row)) {
-            return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
-              {typeof item.text === 'function' ? item.text(row) : item.text}
-            </a>;
-          } else if (typeof item.color === 'function'
-            && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
-            return <pop-confirm
-              on-confirm={() => this.menuClick(item.key, row)}
-              title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
-              <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
+          if (item.roles) {
+            if (item.disabled && item.disabled(row)) {
+              return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
                 {typeof item.text === 'function' ? item.text(row) : item.text}
-              </a>
-            </pop-confirm>;
-          } else if (typeof item.color === 'string'
-          && whiteList.indexOf(item.color) >= 0) {
-            return <pop-confirm
-            on-confirm={() => this.menuClick(item.key, row)}
-            title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
-            <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${item.color}`}>
-              {typeof item.text === 'function' ? item.text(row) : item.text}
-            </a>
-          </pop-confirm>;
+              </a>;
+            } else if (typeof item.color === 'function'
+              && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
+              return <pop-confirm
+                keyName={item.key}
+                on-confirm={() => this.menuClick(null, item.key, row)}
+                title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
+                <a id={`${item.key}-${row[item.rowKey]}`} key={indexs}
+                  class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`}>
+                  {typeof item.text === 'function' ? item.text(row) : item.text}
+                </a>
+              </pop-confirm>;
+            } else if (typeof item.color === 'string'
+              && whiteList.indexOf(item.color) >= 0) {
+              return <pop-confirm
+                keyName={item.key}
+                on-confirm={() => this.menuClick(null, item.key, row)}
+                title={typeof item.msg === 'function' ? item.msg(row) : item.msg}>
+                <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class={`link-${item.color}`}>
+                  {typeof item.text === 'function' ? item.text(row) : item.text}
+                </a>
+              </pop-confirm>;
+            }
+            return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={(e: any) => this.menuClick(e, item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
           }
-          return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={() => this.menuClick(item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
+          return true;
         })
       }
     </div>;
@@ -234,7 +280,10 @@ export default class MTable extends Vue {
     this.getData();
   }
 
-  menuClick(key: string, row: any) {
+  menuClick(e: any, key: string, row: any) {
+    if (e) {
+      e.stopPropagation();
+    }
     this.$emit('tableClick', key, row);
   }
 }

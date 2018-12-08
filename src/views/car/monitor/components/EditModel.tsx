@@ -80,34 +80,38 @@ export default class EditModel extends Vue {
   // 验证车架号
   @Emit()
   checkVinRule(rule: any, value: string, callback: Function) {
-    if (value) {
-      const upperVin = value.toUpperCase();
-      // 车架号不包含I\O\Q
-      if (upperVin.indexOf('O') >= 0 || upperVin.indexOf('I') >= 0 || upperVin.indexOf('Q') >= 0) {
-        callback(new Error('车架号输入不合法，请重新输入'));
-      } else if (upperVin.length === 17) {
-        callback();
+    setTimeout(() => {
+      if (value) {
+        const upperVin = value.toUpperCase();
+        // 车架号不包含I\O\Q
+        if (upperVin.indexOf('O') >= 0 || upperVin.indexOf('I') >= 0 || upperVin.indexOf('Q') >= 0) {
+          callback(new Error('车架号输入不合法，请重新输入'));
+        } else if (upperVin.length === 17) {
+          callback();
+        } else {
+          callback(new Error('车架号长度为17位，请重新输入'));
+        }
       } else {
-        callback(new Error('车架号长度为17位，请重新输入'));
+        callback(new Error('车架号不能为空，请输入'));
       }
-    } else {
-      callback(new Error('车架号不能为空，请输入'));
-    }
+    }, 500);
   }
 
   // 验证车牌号
   @Emit()
   checkPlateNum(rule: any, value: string, callback: Function) {
-    if (value) {
-      const exp: any = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/;
-      if (exp.test(value)) {
-        callback();
+    setTimeout(() => {
+      if (value) {
+        const exp: any = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4,5}[A-Z0-9挂学警港澳]{1}$/;
+        if (exp.test(value)) {
+          callback();
+        } else {
+          callback(new Error('车牌号输入不合法，请重新输入'));
+        }
       } else {
-        callback(new Error('车牌号输入不合法，请重新输入'));
+        callback(new Error('车牌号不能为空，请输入'));
       }
-    } else {
-      callback(new Error('车牌号不能为空，请输入'));
-    }
+    }, 500);
   }
 
   created() {
@@ -135,7 +139,6 @@ export default class EditModel extends Vue {
   }
 
   handleChangeModel(val: any) {
-    console.log(val);
     this.brandId = val[0] ? parseInt(val[0], 10) : null;
     this.seriesId = val[1] ? parseInt(val[1], 10) : -1;
     this.modelId = val[2] ? parseInt(val[2], 10) : -1;
@@ -156,6 +159,7 @@ export default class EditModel extends Vue {
     setTimeout(() => {
       From.resetFields();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {
@@ -251,7 +255,7 @@ export default class EditModel extends Vue {
             </el-row>
           </el-form>
           <el-row>
-            <el-col offset={9} span={12}>
+            <el-col offset={7} span={12}>
               <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
               <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
             </el-col>

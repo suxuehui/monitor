@@ -17,6 +17,14 @@ export async function getSolution(params: any) {
     data: params,
   });
 }
+// 未阅读告警
+export async function getNotHandled(params: any) {
+  return request({
+    url: '/message/alarm/notHandled',
+    method: 'post',
+    data: params,
+  });
+}
 
 // 通知公告
 // 新增
@@ -32,6 +40,24 @@ export async function noticeAdd(params: any) {
 export async function noticeDelete(params: any) {
   return request({
     url: '/message/notice/delete',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 未阅读通知公告
+export async function noticeNotHandled(params: any) {
+  return request({
+    url: '/message/notice/notHandled',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 查看消息
+export async function noticeView(params: any) {
+  return request({
+    url: '/message/notice/view',
     method: 'post',
     data: params,
   });

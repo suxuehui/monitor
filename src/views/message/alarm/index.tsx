@@ -1,8 +1,13 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import qs from 'qs';
 import { Tag } from 'element-ui';
+
+import { exportExcel } from '@/api/export';
 import { orgTree, getDict } from '@/api/app';
 import { getSolution } from '@/api/message';
+import CoordTrasns from '@/utils/coordTrasns';
+
 import HandleModel from '@/views/message/alarm/components/HandleModel';
 import CheckModel from '@/views/message/alarm/components/CheckModel';
 import './index.less';
@@ -50,32 +55,92 @@ export default class Alarm extends Vue {
     {
       key: 'query',
       type: 'datetimerange',
-      label: '角色名称',
+      label: '告警时间',
       placeholder: ['开始', '结束'],
-      value: ['queryStartTime', 'queryEndTime'],
+      change: this.dateChange,
     },
   ];
   // 高级筛选
-  filterGrade: FilterFormList[] = [];
+  filterGrade: FilterFormList[] = [
+    {
+      key: 'levelcode',
+      type: 'levelcode',
+      label: '所属商户',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择所属商户',
+      options: [],
+    },
+    {
+      key: 'alarmType',
+      type: 'select',
+      label: '告警类型',
+      placeholder: '请选择告警类型',
+      options: [],
+    },
+    {
+      key: 'status',
+      type: 'select',
+      label: '状态',
+      placeholder: '请选择状态',
+      options: [],
+    },
+    {
+      key: 'plateNum',
+      type: 'input',
+      label: '车牌号',
+      placeholder: '请输入车牌号',
+    },
+    {
+      key: 'vin',
+      type: 'input',
+      label: '车架号',
+      placeholder: '请输入车架号',
+    },
+    {
+      key: 'query',
+      type: 'datetimerange',
+      label: '告警时间',
+      placeholder: ['开始', '结束'],
+      change: this.dateChange,
+    },
+  ];
   // 筛选参数
   filterParams: any = {
     levelcode: '',
-    status: '',
-    queryStartTime: '',
-    queryEndTime: '',
+    status: 'false',
     alarmType: '',
     shopName: '',
+    plateNum: '',
+    vin: '',
+    query: [null, null],
   };
-  outParams: any = {};
+  outParams: any = {
+    queryStartTime: '',
+    queryEndTime: '',
+  };
   // 请求地址
   url: string = '/message/alarm/list';
 
   opreat: Opreat[] = [
     {
       key: 'handle',
-      rowKey: 'id',
+      rowKey: 'vin',
+      color: (row: any) => (row.activeStatus === 2 ? 'green' : 'blue'),
+      text: '处理',
+      disabled: (row: any) => (!row.status === false),
+      roles: true,
+    },
+    {
+      key: 'check',
+      rowKey: 'vin',
       color: 'blue',
-      text: (row: any) => (row.status ? '查看' : '处理'),
+      text: '查看',
+      disabled: (row: any) => (row.status === false),
       roles: true,
     },
   ];
@@ -85,33 +150,91 @@ export default class Alarm extends Vue {
     { label: '车牌号', prop: 'plateNum' },
     { label: '车架号', prop: 'vin' },
     { label: '告警类型', prop: 'alarmTypeName' },
-    { label: '告警时间', prop: 'formatMsgTime' },
+    {
+      label: '告警时间',
+      prop: 'formatMsgTime',
+      sortable: true,
+      sortBy: 'formatMsgTime',
+    },
     { label: '告警内容', prop: 'content' },
     { label: '地点', prop: 'address', formatter: this.checkLoc },
     { label: '状态', prop: 'status', formatter: this.statusDom },
   ];
 
+  dateChange(val: any) {
+    if (val) {
+      if ((val[1].getTime() - val[0].getTime()) > 7 * 24 * 60 * 60 * 1000) {
+        this.$message.error('查询时间不能超过7天');
+      } else {
+        this.outParams.queryStartTime = val[0].Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.queryEndTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
+      }
+    } else {
+      this.clear();
+    }
+  }
+
+  clear() {
+    this.outParams = {
+      queryStartTime: '',
+      queryEndTime: '',
+    };
+  }
+  clearOut() {
+    const date = new Date();
+    const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
+    this.filterParams.query[0] = new Date(starTime);
+    this.filterParams.query[1] = date;
+    this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
+  }
+
   checkLoc(row: any) {
     return <i class="iconfont iconfont-location" on-click={() => { this.checkMapLoc(row); }} ></i>;
   }
-
   statusDom(row: any) {
     const type = row.status ? 'success' : 'danger';
     return <el-tag size="medium" type={type}>{row.status ? '已处理' : '未处理'}</el-tag>;
   }
   checkMapLoc(row: any) {
-    this.$router.push({ name: '告警地点', query: { lng: row.lng, lat: row.lat } });
+    if (row.lat > 0) {
+      const point: any = CoordTrasns.transToBaidu(
+        {
+          lat: row.lat,
+          lng: row.lng,
+        },
+        row.coordinateSystem,
+      );
+      this.$router.push({ name: '告警地点', query: { lng: point.lng, lat: point.lat } });
+    } else {
+      this.$message.error('告警地点位置信息缺失');
+    }
   }
 
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '状态(全部)' },
-    { key: true, value: true, label: '已处理' },
-    { key: false, value: false, label: '未处理' },
+    { key: 'true', value: 'true', label: '已处理' },
+    { key: 'false', value: 'false', label: '未处理' },
   ]
 
   alarmType: any = [];
 
+  // 导出按钮展示
+  exportBtn: boolean = true;
+
+  // 权限设置
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/message/alarm/handle',
+      '/message/alarm/getSolution',
+      '/message/alarm/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]);
+      this.opreat[1].roles = !!(res[1]);
+      this.exportBtn = !!(res[2]);
+    });
     // 门店搜索
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -121,6 +244,7 @@ export default class Alarm extends Vue {
           orgName: '全部',
         });
         this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -140,15 +264,24 @@ export default class Alarm extends Vue {
           label: '告警类型(全部)',
         });
         this.filterList[1].options = this.alarmType;
+        this.filterGrade[1].options = this.alarmType;
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // 当前月份
+    const date = new Date();
+    const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
+    this.filterParams.query[0] = new Date(starTime);
+    this.filterParams.query[1] = date;
+    this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
   mounted() {
     // 处理状态
     this.filterList[2].options = this.activeTypes;
+    this.filterGrade[2].options = this.activeTypes;
   }
 
   modelForm: any = {};
@@ -189,6 +322,11 @@ export default class Alarm extends Vue {
     this.closeModal();
   }
 
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '告警列表', '/message/alarm/exportExcel');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -205,8 +343,10 @@ export default class Alarm extends Vue {
           url={this.url}
           dataType={'JSON'}
           opreatWidth='180px'
-          export-btn={true}
+          export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
+          on-clearOutParams={this.clearOut}
         />
         <handle-model
           visible={this.handleVisible}

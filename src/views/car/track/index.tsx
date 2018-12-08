@@ -5,7 +5,6 @@ import config from '@/utils';
 import RecordTable from '@/views/car/track/record/RecordTable';
 import EquipmentTable from '@/views/car/track/equip/EquipTable';
 import './index.less';
-import '../../../styles/var.less';
 
 // 坐标图片
 const locaIcon = require('@/assets/point.png');
@@ -42,13 +41,27 @@ export default class Track extends Vue {
       });
       this.SMap.centerAndZoom(new BMap.Point(106.560421, 29.563694), 15);
       this.SMap.enableScrollWheelZoom(true);
+    });
+  }
 
-      // 创建坐标点
-      const pt = new this.BMap.Point(106.560421, 29.563694);
-      const myIcon = new this.BMap.Icon(locaIcon, new BMap.Size(32, 32));
-      const point = new this.BMap.Marker(pt, { icon: myIcon });
-      // this.SMap.addOverlay(point);
-      // point.enableDragging(); // 点可拖拽
+  // 设备、记录
+  deviceTable: boolean = false;
+  logTable: boolean = false;
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      '/vehicle/tracke/findTerminalList',
+      '/vehicle/tracke/findRecordList',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.deviceTable = !!(res[0]);
+      this.logTable = !!(res[1]);
+      if (res[1]) {
+        this.tabActive = 'record';
+      } else {
+        this.tabActive = 'equipment';
+      }
     });
   }
 
@@ -62,29 +75,7 @@ export default class Track extends Vue {
     });
   }
 
-  modelForm: any = {
-
-  }
-
-
-  // 页数
-  total: number = 1;
-  pageSize: number = 5;
-  pageCount: number = 5;
-  // 多选项目
-  multipleSelection: any = []
-  // 时间范围
-  startSet: any = {
-    start: '00:00',
-    step: '00:10',
-    end: '24:00',
-  }
-  endSet: any = {
-    start: '00:00',
-    step: '00:10',
-    end: '24:00',
-    minTime: this.modelForm.startTime,
-  }
+  modelForm: any = {}
 
   locChange: boolean = false;
   tabActive: string = 'record';
@@ -96,18 +87,6 @@ export default class Track extends Vue {
       return true;
     });
   }
-
-  submit = () => {
-
-  }
-
-  mounted() {
-    this.tableDom = this.$refs.tabList;
-  }
-
-  tableDom: any = null;
-  tableHeight: number = 0
-
 
   addZoom = () => {
     const newZoom = this.SMap.getZoom() + 1;
@@ -121,40 +100,77 @@ export default class Track extends Vue {
 
   // 表格显示隐藏
   showTable(): any {
-    this.locChange = true;
-    this.tableHeight = this.tableDom.offsetHeight;
+    this.locChange = false;
   }
   hideTable(): any {
-    this.locChange = false;
+    this.locChange = true;
   }
 
   tabClick(data: any) {
   }
+
+  setMapLoc = (val: any) => {
+    const infoWindow = new this.BMap.InfoWindow(this.msgContent(val));
+    const pt = new this.BMap.Point(val.lng, val.lat);
+    const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
+    const point = new this.BMap.Marker(pt, { icon: myIcon });
+    this.SMap.removeOverlay(point);
+    this.SMap.addOverlay(point);
+    this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
+    this.SMap.openInfoWindow(
+      infoWindow,
+      new this.BMap.Point(val.lng, val.lat),
+    );
+    point.addEventListener('click', () => {
+      this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+    });
+  }
+
+  msgContent(content: any) {
+    return `<div class="makerMsgTrack">
+      <ul class="msg">
+        <li>
+          <i class="icon iconfont-time-circle"></i>
+          <span class="txt">${content.date}</span>
+        </li>
+        <li>
+          <i class="icon iconfont-location"></i>
+          <span class="txt">${content.address}</span>
+        </li>
+      </ul>
+    </div>`;
+  }
+
   render() {
     return (
       <div class="monitor-wrap">
         <div id="map"></div>
-        {/* 右下角控制台 */}
-        <div ref="btnControl" id="btnControl" style={{ bottom: this.locChange ? `${this.tableHeight}px` : '0' }} class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
-          <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
-          <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
-          {!this.locChange ?
-            <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
-            <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
-          }
-        </div>
-        <div ref="tabList" class={['tab-table', this.locChange ? 'table-active' : '']}>
+        <div ref="tabList" class={['tab-table-track', !this.locChange ? 'table-active' : '']}>
+          <div ref="btnControl" id="btnControl" class={'loc-change-box-track'}>
+            <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
+            <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
+            {!this.locChange ?
+              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button> :
+              <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
+            }
+          </div>
           <el-tabs
             v-model={this.tabActive}
             type="card"
             on-tab-click={this.tabClick}
           >
-            <el-tab-pane label="记录" name="record">
-              <record-table></record-table>
-            </el-tab-pane>
-            <el-tab-pane label="设备" name="equipment">
-              <equipment-table></equipment-table>
-            </el-tab-pane>
+            {
+              this.logTable ?
+                <el-tab-pane label="记录" id="record" name="record">
+                  <record-table on-location={this.setMapLoc}></record-table>
+                </el-tab-pane> : null
+            }
+            {
+              this.deviceTable ?
+                <el-tab-pane label="设备" id="equipment" name="equipment">
+                  <equipment-table></equipment-table>
+                </el-tab-pane> : null
+            }
           </el-tabs>
         </div>
       </div >

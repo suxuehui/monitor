@@ -41,7 +41,9 @@ export default class HandleModel extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.resetData();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {
@@ -64,7 +66,9 @@ export default class HandleModel extends Vue {
           if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
+              this.$store.dispatch('getAlarm');
               this.$message.success(res.result.resultMessage);
+              this.resetData();
               this.$emit('refresh');
             }, 1500);
           } else {

@@ -93,6 +93,22 @@ const user = {
         reject(error);
       });
     }),
+    checkPermission: (context: any, roleList:string[]) => new Promise((resolve, reject) => {
+      const allPer: string[] = user.state.roles;
+      const perArr: boolean[] = [];
+      try {
+        roleList.forEach((item: string) => {
+          if (allPer.indexOf(item) > -1) {
+            perArr.push(true);
+          } else {
+            perArr.push(false);
+          }
+        });
+        resolve(perArr);
+      } catch (error) {
+        reject(error);
+      }
+    }),
   },
 };
 

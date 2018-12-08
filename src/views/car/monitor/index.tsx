@@ -1,14 +1,17 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip } from 'element-ui';
 import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete, vehicleUpdate, controlCar } from '@/api/monitor';
+import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
+import { exportExcel } from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
-import { allList, brandAll } from '@/api/model';
+import { terminalType } from '@/api/equipment';
+import qs from 'qs';
+import { allList } from '@/api/model';
 import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import EditModel from './components/EditModel';
+import ControlModel from './components/ControlModel';
 import './index.less';
-import '../../../styles/var.less';
 
 // 车子图片
 const carIcon = require('@/assets/car.png');
@@ -25,6 +28,7 @@ const pointIcon = require('@/assets/point.png');
   'el-tooltip': Tooltip,
   'el-cascader': Cascader,
   'edit-model': EditModel,
+  'control-model': ControlModel,
   }
   })
 export default class Monitor extends Vue {
@@ -33,7 +37,7 @@ export default class Monitor extends Vue {
     brandModelArr: [],
     levelCode: '',
     energyType: '',
-    onliine: '',
+    online: '',
     noMoveTime: '',
   };
   backParams: object = {
@@ -69,6 +73,7 @@ export default class Monitor extends Vue {
       label: '品牌车型',
       placeholder: '品牌车型',
       options: [],
+      filterable: true,
       props: {
         value: 'id',
         children: 'children',
@@ -198,13 +203,17 @@ export default class Monitor extends Vue {
       prop: 'vin',
     },
     {
-      label: 'imei号(OTU)',
+      label: 'imei号',
       prop: 'otuImei',
     },
     {
+      label: '设备类型',
+      prop: 'clientType',
+      formatter: this.clientTypeCheck,
+    },
+    {
       label: '品牌车系',
-      prop: 'brandName',
-      formatter: this.brandChange,
+      prop: 'bsmName',
     },
     {
       label: '能源类型',
@@ -214,34 +223,43 @@ export default class Monitor extends Vue {
     {
       label: '剩余油量',
       prop: 'leftOil',
+      sortable: true,
+      sortBy: 'leftOil',
       formatter: (row: any) => this.changeStatus(row.leftOil, 'L'),
     },
     {
       label: '剩余电量',
       prop: 'leftElectricPercent',
+      sortable: true,
+      sortBy: 'leftElectricPercent',
       formatter: (row: any) => this.changeStatus(row.leftElectricPercent, '%'),
     },
     {
       label: '续航里程',
       prop: 'leftMileage',
+      sortable: true,
+      sortBy: 'leftMileage',
       formatter: (row: any) => this.changeStatus(row.leftMileage, 'km'),
     },
     {
       label: '累计里程',
       prop: 'totalMileage',
+      sortable: true,
+      sortBy: 'totalMileage',
       formatter: (row: any) => this.changeStatus(row.totalMileage, 'km'),
     },
     {
       label: '电瓶电压',
       prop: 'voltage',
+      sortable: true,
+      sortBy: 'voltage',
       formatter: (row: any) => this.changeStatus(row.voltage, 'V'),
     },
     {
       label: '无位置变化',
-      prop: 'minutes',
-      formatter(row: any) {
-        return row.minutes !== null ? `${row.minutes}分钟` : '--';
-      },
+      prop: 'minutesString',
+      sortable: true,
+      sortBy: 'minutesString',
     },
     {
       label: '网络状态',
@@ -249,14 +267,42 @@ export default class Monitor extends Vue {
       formatter: this.onlineFormat,
     },
   ];
-  brandChange(row:any) {
-    const str= `${row.brandName}--${row.seriesName}--${row.modelName}`;
-    return row.brandName ?
+
+  clientTypeCheck(row: any) {
+    let str: string = '';
+    this.typeList.forEach((item: any) => {
+      if (row.clientType !== null) {
+        if (item.value === row.clientType) {
+          str = item.label;
+        }
+      } else {
+        str = '--';
+      }
+    });
+    return str;
+  }
+
+  changeMinutes(row: any) {
+    const str: string = this.timeChange(row);
+    return row.minutes !== null ?
       <el-tooltip class="item" effect="dark" content={str} placement="top">
-        <div>
-          <p>{str}</p>
-        </div>
-      </el-tooltip>: '--';
+        <span>{str}</span>
+      </el-tooltip> : '--';
+  }
+
+  // 时间格式转换
+  timeChange(row: any) {
+    const day: any = row.minutes / 60 / 24;
+    const hour: any = (row.minutes / 60) % 24;
+    const min: any = row.minutes % 60;
+    const strDay = parseInt(day, 10) > 0 ? `${parseInt(day, 10)}天` : '';
+    const strHour = parseInt(hour, 10) > 0 ? `${parseInt(hour, 10)}小时` : '';
+    const strMin = parseInt(min, 10) > 0 ? `${parseInt(min, 10)}分钟` : '';
+    const str = `${strDay}${strHour}${strMin}`;
+    if (day === 0 && hour === 0 && min === 0) {
+      return '--';
+    }
+    return str;
   }
 
   changeStatus(data: any, unit: string) {
@@ -271,16 +317,9 @@ export default class Monitor extends Vue {
       roles: true,
     },
     {
-      key: 'tracking',
-      rowKey: 'vin',
-      color: 'blue',
-      text: '追踪',
-      roles: true,
-    },
-    {
       key: 'trip',
       rowKey: 'vin',
-      color: 'blue',
+      color: 'green',
       text: '轨迹',
       roles: true,
     },
@@ -290,6 +329,13 @@ export default class Monitor extends Vue {
       color: 'red',
       text: '删除',
       msg: '确定删除？',
+      roles: true,
+    },
+    {
+      key: 'tracking',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '追踪',
       roles: true,
     },
   ];
@@ -308,35 +354,35 @@ export default class Monitor extends Vue {
   carDetail: any = {}; // 车辆详情数据
   locChange: boolean = false; // 底部表格开关
   carDetailArr: any = [
-    { label: '卫星星数:', prop: 'star', unit: '' },
+    { label: '卫星星数:', prop: 'star', unit: '颗' },
     { label: '网络质量:', prop: 'gsm', unit: '' },
     { label: 'ACC状态:', prop: 'acc' },
     { label: '引擎状态:', prop: 'engine' },
-    { label: '排挡档位:', prop: 'gear', unit: '' },
+    { label: '排挡档位:', prop: 'gear', unit: '档' },
     { label: '电瓶电压:', prop: 'voltage', unit: 'V' },
     { label: '剩余油量:', prop: 'leftOil', unit: 'L' },
     { label: '剩余电量:', prop: 'leftElectricPercent', unit: '%' },
     { label: '累计里程:', prop: 'totalMileage', unit: 'km' },
     { label: '续航里程:', prop: 'leftMileage', unit: 'km' },
-    { label: '总灯状态:', prop: 'allLight' },
-    // { label: '大灯状态:', prop: 'bigLight' },
-    // { label: '小灯状态:', prop: 'smallLight' },
-    { label: '设防状态:', prop: 'defenceStatus' },
+    { label: '设防状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
+    { label: '授权状态:', prop: 'authorizedStatus', unit: 'authorizedStatus' },
+    { label: '油路状态:', prop: 'oilStatus', unit: 'oilStatus' },
     { label: '充电状态:', prop: 'chargeLight' },
+    { label: '车灯状态:', prop: 'allLight' },
+    { label: '天窗状态:', prop: 'skyWindow' },
     { label: '引擎盖:', prop: 'hood' },
     { label: '后备箱:', prop: 'trunk' },
-    { label: '天窗状态:', prop: 'skyWindow' },
-    { label: '左前车门:', prop: 'leftFrontDoor' },
-    { label: '右前车门:', prop: 'rightFrontDoor' },
-    { label: '左后车门:', prop: 'leftRearDoor' },
-    { label: '右后车门:', prop: 'rightRearDoor' },
+    { label: '左前车门:', prop: 'leftFrontDoor', unit: 'leftFrontLock' },
+    { label: '右前车门:', prop: 'rightFrontDoor', unit: 'rightFrontLock' },
+    { label: '左后车门:', prop: 'leftRearDoor', unit: 'leftRearLock' },
+    { label: '右后车门:', prop: 'rightRearDoor', unit: 'rightRearLock' },
     { label: '左前车窗:', prop: 'leftFrontWindow' },
     { label: '右前车窗:', prop: 'rightFrontWindow' },
     { label: '左后车窗:', prop: 'leftRearWindow' },
     { label: '右后车窗:', prop: 'rightRearWindow' },
   ];
   geolocationControl: any = null; // 定位
-  mapCenter: { lat: number, lng: number } = { lat: 29.35, lng: 106.33 };
+  mapCenter: { lat: number, lng: number } = { lat: 29.563694, lng: 106.560421 };
   // 地图查询半径
   radius: number = 5000;
   mapCarData: MapCarData[] = [];
@@ -360,7 +406,6 @@ export default class Monitor extends Vue {
       this.SMap.centerAndZoom(new BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
       this.geolocationControl = new BMap.GeolocationControl();
       this.geolocationControl.addEventListener('locationSuccess', () => {
-        console.log(1);
       });
       this.SMap.enableScrollWheelZoom(true);
       // 创建新的图标
@@ -377,8 +422,12 @@ export default class Monitor extends Vue {
     });
     allList(null).then((res) => {
       if (res.result.resultCode === '0') {
-        this.filterList[1].options = res.entity;
         this.brandList = res.entity;
+        res.entity.unshift({
+          id: Math.random(),
+          name: '全部',
+        });
+        this.filterList[1].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -395,7 +444,21 @@ export default class Monitor extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // 设备类型
+    terminalType(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.typeList.push({
+          key: Math.random(),
+          value: item.enumValue,
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
+  // 设备类型
+  typeList: any = [];
 
   clearOutParams() {
     this.outParams = {
@@ -409,7 +472,9 @@ export default class Monitor extends Vue {
     // 获取地图车辆
     vehicleRadiusQuery({ radius: this.radius, ...this.mapCenter }).then((res) => {
       if (res.result.resultCode === '0') {
-        this.initMap(res.entity, id);
+        if (res.entity) {
+          this.initMap(res.entity, id);
+        }
       }
     });
   }
@@ -447,8 +512,7 @@ export default class Monitor extends Vue {
     this.CarMarker.forEach((item: any, index: number) => {
       item.addEventListener('click', () => {
         this.openMsg(this.mapCarData[index]);
-        // this.getCarDetail(this.mapCarData[index].id);
-        this.getCarDetail('28');
+        this.getCarDetail(this.mapCarData[index].id);
       });
     });
   }
@@ -469,7 +533,6 @@ export default class Monitor extends Vue {
   }
 
   msgContent(content: any) {
-    console.log(content);
     return `<div class="makerMsg">
       <h3 class="plateNum">车牌号：${content.plateNum}</h3>
       <ul class="msg clearfix">
@@ -479,7 +542,7 @@ export default class Monitor extends Vue {
         </li>
         <li>
           <i class="icon iconfont-speed"></i>
-          <span class="txt">${content.speed}km/h</span>
+          <span class="txt">${content.speed !== null ? `${content.speed}km/h` : '未知'}</span>
         </li>
       </ul>
     </div>`;
@@ -527,6 +590,9 @@ export default class Monitor extends Vue {
               this.detailShow = true;
             }
           });
+          if (this.currentCarId !== 0) {
+            this.setNowCarPosi(res.entity);
+          }
         } else {
           carDetail = {
             address: '未知位置',
@@ -536,10 +602,21 @@ export default class Monitor extends Vue {
           this.detailShow = true;
         }
       } else {
-        this.$message.error(res.result.resultMessage || '未知错误');
+        this.$message.error(res.result.resultMessage || '暂无车辆信息');
       }
     });
   }
+
+  // 刷新后重置车辆信息
+  setNowCarPosi = (val: any) => {
+    this.mapCenter = {
+      lat: val.lat,
+      lng: val.lng,
+    };
+    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+    this.radiusGetData(val.id);
+  }
+
   // online
   onlineFormat(row: any) {
     if (row.online) {
@@ -576,13 +653,22 @@ export default class Monitor extends Vue {
     return type;
   }
 
-  // 地图搜索
-  search(): void {
-    console.log(this.address);
+  // 清除覆盖物
+  clear = () => {
+    this.SMap.clearOverlays();
   }
 
   // 刷新
-  refresh(): void {
+  refreshLoad(): void {
+    // 详情
+    if (this.currentCarId !== 0) {
+      this.getCarDetail(`${this.currentCarId}`);
+    }
+    // 根据该车坐标查车,按id匹配信息
+    this.radiusGetData(`${this.currentCarId}`);
+    // 刷新table
+    const MapTable: any = this.$refs.mapTable;
+    MapTable.reloadTable();
   }
 
   // 关闭详情
@@ -591,30 +677,46 @@ export default class Monitor extends Vue {
   }
 
   // 增加zoom
-  zoomAdd(): any {
-    this.SMapZoom += 1;
+  zoomAdd = () => {
+    const newZoom = this.SMap.getZoom() + 1;
+    this.SMap.setZoom(newZoom);
   }
   // 减少zoom
-  zoomReduce(): any {
-    this.SMapZoom -= 1;
+  zoomReduce = () => {
+    const newZoom = this.SMap.getZoom() - 1;
+    this.SMap.setZoom(newZoom);
   }
 
-  // 定位
-  getLoc(e: any): any {
-    console.log(e);
-  }
-
-  setCenter(): void {
+  // 到当前定位
+  nowMk: any = '';
+  nowPosition: any = {};
+  setCenter = () => {
+    // 创建查询对象
+    const geolocation = new this.BMap.Geolocation();
+    if (this.nowPosition.lat) {
+      this.SMap.addOverlay(this.nowMk);
+      this.SMap.panTo(this.nowPosition, { noAnimation: false });
+    } else {
+      geolocation.getCurrentPosition((r: any) => {
+        if (geolocation.getStatus() === 0) {
+          this.nowMk = new this.BMap.Marker(r.point);
+          this.nowPosition = r.point;
+          this.SMap.addOverlay(this.nowMk);
+          this.SMap.panTo(this.nowPosition.lat ? this.nowPosition : r.point);
+        } else {
+          this.$message.error('定位失败');
+        }
+      });
+    }
   }
 
   // 表格显示隐藏
   showTable(): void {
-    this.locChange = true;
-  }
-  hideTable(): void {
     this.locChange = false;
   }
-
+  hideTable(): void {
+    this.locChange = true;
+  }
 
   menuClick(key: string, row: any): void {
     switch (key) {
@@ -633,7 +735,7 @@ export default class Monitor extends Vue {
         }).then((res) => {
           if (res.result.resultCode === '0') {
             this.$message.success(res.result.resultMessage);
-            this.reloadTable();
+            this.reloadTable('delete');
           } else {
             this.$message.error(res.result.resultMessage);
           }
@@ -650,18 +752,102 @@ export default class Monitor extends Vue {
     }
   }
 
-  reloadTable() {
-    const MapTable: any = this.$refs.mapTable;
-    MapTable.reloadTable();
+  // 新增、导出按钮展示
+  exportBtn: boolean = true;
+  controlBtn: boolean = true;
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/monitor/edit',
+      '/device/trip/list',
+      '/vehicle/monitor/delete',
+      '/vehicle/monitor/control',
+      '/vehicle/monitor/exportExcel',
+      '/vehicle/tracke/findTerminalList',
+      '/vehicle/tracke/findRecordList',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]);
+      this.opreat[1].roles = !!(res[1]);
+      this.opreat[2].roles = !!(res[2]);
+      this.opreat[3].roles = !!(res[5] || res[6]);
+      this.controlBtn = !!(res[3]);
+      this.exportBtn = !!(res[4]);
+    });
   }
 
-  renderStatus(value: boolean | string | number, unit?: string) {
+  reloadTable(key: string) {
+    const MapTable: any = this.$refs.mapTable;
+    MapTable.reloadTable(key);
+  }
+
+  renderStatus(value: boolean | string | number, data: any, unit?: any) {
     const gettype = Object.prototype.toString;
+    // 剩余油量%
+    if (unit === 'L') {
+      const num: any = value; // 剩余油量
+      const num1: any = data.fuelTankCap; // 油箱容量
+      if (num && num > 0) {
+        if (num1 && num1 > 0) {
+          const str = (num / num1) * 100;
+          return `${str.toFixed(2)}% (${num}L)`;
+        }
+        return `--% (${num}L)`;
+      }
+      return '未知';
+    }
+    // 剩余电量
+    if (unit === '%') {
+      if (value && value >= 0) {
+        return `${value}${unit}`;
+      }
+      return '未知';
+    }
+    // 累计里程、续航里程
+    if (unit === 'km') {
+      if (value && value >= 0) {
+        return `${value}${unit}`;
+      }
+      return '未知';
+    }
+    // 电瓶电压
+    if (unit === 'V') {
+      if (value && value >= 0) {
+        return `${value}${unit}`;
+      }
+      return '未知';
+    }
+    if (unit === 'leftFrontLock') {
+      return this.setDoorStatus(data.leftFrontDoor, data.leftFrontLock);
+    } else if (unit === 'rightFrontLock') {
+      return this.setDoorStatus(data.rightFrontDoor, data.rightFrontLock);
+    } else if (unit === 'leftRearLock') {
+      return this.setDoorStatus(data.leftRearDoor, data.leftRearLock);
+    } else if (unit === 'rightRearLock') {
+      return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
+    } else if (unit === 'defenceStatus') {
+      if (data.defenceStatus !== null) {
+        return data.defenceStatus ? '设防' : '撤防';
+      }
+      return '未知';
+    } else if (unit === 'authorizedStatus') {
+      if (data.authorizedStatus !== null) {
+        return data.authorizedStatus ? '授权' : '夺权';
+      }
+      return '未知';
+    } else if (unit === 'oilStatus') {
+      if (data.authorizedStatus !== null) {
+        return data.authorizedStatus ? '通油' : '断油';
+      }
+      return '未知';
+    }
     switch (gettype.call(value)) {
       case '[object Boolean]':
-        return value ? '开' : '关';
+        return value ? '开启' : '关闭';
       case '[object String]':
-        return value;
+        return value ? value + unit : value;
       case '[object Number]':
         return unit ? value + unit : value;
       case '[object Null]':
@@ -670,19 +856,53 @@ export default class Monitor extends Vue {
         return value;
     }
   }
+
+  // 车门关闭、锁状态
+  setDoorStatus(doorStatus: boolean, lockStatus: boolean) {
+    let str1: string = '';
+    let str2: string = '';
+    if (doorStatus !== null) {
+      str1 = doorStatus ? '开启' : '关闭';
+    } else {
+      str1 = '未知';
+    }
+    if (lockStatus !== null) {
+      str2 = lockStatus ? '已上锁' : '未上锁';
+    } else {
+      str2 = '未知';
+    }
+    return `${str1}；${str2}`;
+  }
+
+  currentCarId: number = 0;
+
+  setCarId(val: number) {
+    this.currentCarId = val;
+  }
+
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
+      this.setCarId(val.id);
       if (val.lat && val.lng) {
+        this.currentCarId = val.id;
         this.mapCenter = {
           lat: val.lat,
           lng: val.lng,
         };
         this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
         this.radiusGetData(val.id);
+        this.getCarDetail(val.id);
       } else {
-        this.$message.error('车辆暂无定位');
+        this.$message.error('车辆暂无定位，使用默认位置！');
+        this.currentCarId = val.id;
+        this.mapCenter = {
+          lat: 29.627258,
+          lng: 106.496422,
+        };
+        this.SMap.centerAndZoom(new this.BMap.Point(106.496422, 29.627258), 15);
         this.radiusGetData(val.id);
+        this.getCarDetail(val.id);
       }
     }
   }
@@ -718,15 +938,19 @@ export default class Monitor extends Vue {
         icon: new this.BMap.Icon(pointIcon, new this.BMap.Size(28, 40)),
       },
     );
+    this.SMap.clearOverlays();
     this.SMap.addOverlay(marker); // 创建标注
   }
   // 编辑开关
   editVisible: boolean = false;
   editData: any = {};
-
+  // 设备控制
+  controlData: any = {}
+  controlVisible: boolean = false;
   // 关闭编辑
   closeEdit() {
     this.editVisible = false;
+    this.controlVisible = false;
   }
 
   brandList: any = [];
@@ -734,6 +958,7 @@ export default class Monitor extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.editVisible = false;
+    this.controlVisible = false;
     const editBlock: any = this.$refs.editTable;
     setTimeout(() => {
       editBlock.resetData();
@@ -746,18 +971,51 @@ export default class Monitor extends Vue {
     this.closeModal();
   }
 
-  controlLoading: boolean[] = [false, false, false, false, false, false, false]
   // 车辆控制
   controlCar(type: string, index: number): void {
-    this.controlLoading[index] = true;
-    controlCar({ imei: this.carDetail.otuImei, cmd: type }).then((res: any) => {
-      this.controlLoading[index] = false;
-      if (res.result.resultCode === '0') {
-        this.$message.success(res.result.resultMessage);
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
+    let str: string = '';
+    switch (type) {
+      case 'CMD_START':
+        str = '点火';
+        break;
+      case 'CMD_STOP':
+        str = '熄火';
+        break;
+      case 'CMD_SET_DEFENCE':
+        str = '设防';
+        break;
+      case 'CMD_CANCEl_DEFENCE':
+        str = '撤防';
+        break;
+      case 'CMD_LOCK':
+        str = '上锁';
+        break;
+      case 'CMD_UNLOCK':
+        str = '解锁';
+        break;
+      case 'CMD_CALL':
+        str = '寻车';
+        break;
+      default:
+        break;
+    }
+    this.controlData = {
+      cmd: type,
+      imei: this.carDetail.otuImei,
+      operateStr: str,
+    };
+    this.controlVisible = true;
+  }
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '车辆列表', '/vehicle/monitor/exportExcel');
+  }
+
+  infoBox(data: any) {
+    const bName = data.brandName !== null ? `${data.brandName}-` : '';
+    const sName = data.seriesName !== null ? `${data.seriesName}-` : '';
+    const mName = data.modelName !== null ? data.modelName : '';
+    return `${bName}${sName}${mName}`;
   }
 
   render() {
@@ -767,24 +1025,15 @@ export default class Monitor extends Vue {
         <div id="map"></div>
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
-            <el-button slot="append" icon="el-icon-search" on-click={this.search}></el-button>
           </el-autocomplete>
-          <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
-        </div>
-        <div class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
-          <el-button class="loc btn" size="small" icon="el-icon-location" on-click={this.setCenter}></el-button>
-          <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>
-          <el-button class="less btn" size="small" icon="el-icon-minus" on-click={this.zoomReduce}></el-button>
-          {!this.locChange ?
-            <el-button class="up btn" size="small" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> : <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
-          }
+          <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refreshLoad}></el-button>
         </div>
         <div class={['car-detail-box', this.detailShow ? 'detail-active' : '', this.locChange ? '' : 'big']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
           <div class="car-info">
             <div class="top">
               <span class="plateNumber">{carDetail.plateNum}</span>
-              <span class="modelName">（{carDetail.brandName + carDetail.modelName}）</span>
+              <span class="modelName">（{this.infoBox(carDetail)}）</span>
             </div>
             <div class="center">
               <span class="brandName">{carDetail.orgName}</span>
@@ -795,19 +1044,18 @@ export default class Monitor extends Vue {
               <span>imei号：{carDetail.otuImei}</span>
             </div>
           </div>
-          <div class="car-control">
-            <div class="left">
-              <el-button class="fire" size="mini" loading={this.controlLoading[0]} on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
-              <el-button class="unfire" size="mini" loading={this.controlLoading[1]} on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
-            </div>
-            <div class="right">
-              <el-button class="lock" type="text" size="mini" loading={this.controlLoading[2]} on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
-              <el-button class="lock" type="text" size="mini" loading={this.controlLoading[3]} on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
-              <el-button class="lock" type="text" icon="iconfont-lock" loading={this.controlLoading[4]} size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
-              <el-button class="unlock" type="text" icon="iconfont-unlock" loading={this.controlLoading[5]} size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
-              <el-button class="find" type="text" icon="iconfont-wifi" loading={this.controlLoading[6]} size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
-            </div>
-          </div>
+          {
+            this.controlBtn ?
+              <div class="car-control">
+                <el-button id="CMD_START" type="text" size="mini" icon="iconfont-powerOn" on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
+                <el-button id="CMD_STOP" type="text" size="mini" icon="iconfont-powerOff" on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
+                <el-button id="CMD_SET_DEFENCE" type="text" size="mini" icon="iconfont-fenceOn" on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
+                <el-button id="CMD_CANCEl_DEFENCE" type="text" size="mini" icon="iconfont-fenceOff" on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
+                <el-button id="CMD_LOCK" type="text" icon="iconfont-lock" size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
+                <el-button id="CMD_UNLOCK" type="text" icon="iconfont-unlock" size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
+                <el-button id="CMD_CALL" type="text" icon="iconfont-wifi" size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
+              </div> : null
+          }
           <div class="car-address">
             <div class="loc">
               <i class="iconfont-location icon"></i>
@@ -819,7 +1067,7 @@ export default class Monitor extends Vue {
                 {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
               </span>
               <span class="status">
-                ({carDetail.minutes}分钟无位置变化)
+                ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
               </span>
             </div>
           </div>
@@ -828,16 +1076,25 @@ export default class Monitor extends Vue {
               {
                 this.carDetailArr.map((item: any) => <li class="item">
                   <span class="label">{item.label}</span>
-                  <span class="val">{this.renderStatus(carDetail[item.prop], item.unit)}</span>
+                  <span class="val">{this.renderStatus(carDetail[item.prop], carDetail, item.unit)}</span>
                 </li>)
               }
             </ul>
           </div>
         </div>
-        <div class={['car-table', this.locChange ? 'table-active' : '']}>
+        <div class={['car-table1', !this.locChange ? 'table-active' : '']}>
+          <div class='loc-change-box1'>
+            <el-button class="loc btn" size="small" icon="el-icon-location" on-click={this.setCenter}></el-button>
+            <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>
+            <el-button class="less btn" size="small" icon="el-icon-minus" on-click={this.zoomReduce}></el-button>
+            {!this.locChange ?
+              <el-button class="down btn" size="small" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button> :
+              <el-button class="up btn" size="small" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
+            }
+          </div>
           <filter-table
             ref="mapTable"
-            class="mapTable"
+            class="mapTable1"
             filter-list={this.filterList}
             filter-grade={[]}
             filter-params={this.filterParams}
@@ -848,7 +1105,8 @@ export default class Monitor extends Vue {
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
-            export-btn={true}
+            export-btn={this.exportBtn}
+            on-downBack={this.downLoad}
             localName={'monitor'}
             on-menuClick={this.menuClick}
             table-list={this.tableList}
@@ -866,6 +1124,14 @@ export default class Monitor extends Vue {
           on-close={this.closeModal}
           on-refresh={this.reFresh}
         ></edit-model>
+        <control-model
+          ref="controlTable"
+          data={this.controlData}
+          visible={this.controlVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        >
+        </control-model>
       </div>
     );
   }

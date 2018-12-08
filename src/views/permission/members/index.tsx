@@ -1,7 +1,9 @@
 import { Component, Vue } from 'vue-property-decorator';
+import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { roleSelect, userLock, userUnlock, userInfo, getUserInfo } from '@/api/permission';
+import { exportExcel } from '@/api/export';
+import { roleSelect, userLock, userUnlock, userInfo } from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
 import './index.less';
@@ -89,14 +91,15 @@ export default class Member extends Vue {
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'roleId',
+      rowKey: 'userName',
       color: 'blue',
       text: '编辑',
       roles: true,
+      disabled: (row: any) => (row.userName === 'admin'),
     },
     {
       key: 'freeze',
-      rowKey: 'roleId',
+      rowKey: 'userName',
       color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
       text: (row: any) => (row.activeStatus === 1 ? '冻结' : '解冻'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要冻结？' : '是否要解冻？'),
@@ -109,18 +112,18 @@ export default class Member extends Vue {
     { label: '成员姓名', prop: 'realName' },
     { label: '登录账号', prop: 'userName' },
     { label: '角色类型', prop: 'roleNames', formatter: this.roleChange },
-    { label: '备注', prop: 'remark' },
+    { label: '成员描述', prop: 'remark' },
     {
       label: '添加时间',
       prop: 'crtTime',
       sortable: true,
-      sortBy: 'crtTime',
+      sortBy: ['crtTime'],
     },
     {
       label: '最后登录',
       prop: 'lastLoginTime',
       sortable: true,
-      sortBy: 'lastLoginTime',
+      sortBy: ['lastLoginTime'],
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
@@ -211,6 +214,12 @@ export default class Member extends Vue {
     FromTable.reloadTable();
     this.closeModal();
   }
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '成员列表', '/sys/user/exportExcel');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -227,6 +236,7 @@ export default class Member extends Vue {
           url={this.url}
           localName={'remembers'}
           export-btn={true}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />
         <add-modal

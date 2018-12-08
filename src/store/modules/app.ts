@@ -10,10 +10,15 @@ function findMenu(
   tabActiveKey: string,
   params?: string,
   query?: any,
+  key?: string[],
 ) {
-  let result = { tabList, tabActiveKey, key: '' };
+  let result: any = { tabList, tabActiveKey };
   data.forEach((item: any) => {
     if (url.indexOf(item.path.replace(/\/:\w+/g, '')) > -1) {
+      if (!key) {
+        key = [];
+      }
+      key.push(item.meta.key);
       if (url.length === 1) {
         result.tabList.push({
           ...item,
@@ -21,13 +26,13 @@ function findMenu(
           query,
         });
         result.tabActiveKey = item.name;
-        result.key = item.meta.key;
       } else {
         url.shift();
-        result = findMenu(item.children, url, tabList, tabActiveKey, params, query);
+        result = findMenu(item.children, url, tabList, tabActiveKey, params, query, key);
       }
     }
   });
+  result.key = key;
   return result;
 }
 
@@ -81,12 +86,20 @@ const app = {
       context.commit('SAVE_MENU', menuData);
     },
     // 新增缓存页面
-    addKeep: async (context: any, name: string) => {
+    addKeep: async (context: any, name: string | string[]) => {
       // 新增tab，增加缓存状态
-      const { keepList } = context.state;
+      let { keepList } = context.state;
       if (keepList.indexOf(name) === -1) {
-        keepList.push(name);
+        if (typeof name === 'object') {
+          keepList = keepList.concat(name);
+        } else {
+          keepList.push(name);
+        }
       }
+      const newList = new Set();
+      keepList.forEach((x: string) => newList.add(x));
+      keepList = [];
+      newList.forEach((x: string) => keepList.push(x));
       await context.commit('KEEP_CHANGE', keepList);
     },
     // 清除列表
@@ -100,9 +113,15 @@ const app = {
       let resultData = { tabList, tabActiveKey, key: '' };
       let haveMenu = false;
       const ArrPath = utils.routeToArray(url);
-      tabList.map((item: any) => {
+      tabList.map((item: any, index: number) => {
         if (ArrPath.routeArr.indexOf(item.path.replace(/\/:\w+/g, '')) > -1) {
           resultData.tabActiveKey = item.name;
+          resultData.tabList[index].params = ArrPath.params;
+          const rep = /\?.+/g;
+          const query = window.location.href.match(rep);
+          if (query) {
+            resultData.tabList[index].query = query;
+          }
           haveMenu = true;
           return false;
         }
@@ -116,19 +135,19 @@ const app = {
           context.dispatch('addKeep', resultData.key);
         }
       }
-      context.commit('KEEP_CHANGE', keepList);
+      // context.commit('KEEP_CHANGE', keepList);
       context.commit('TAB_CHANGE', resultData);
       resolve(true);
     }),
     RemoveTab: (context: any, name: string) => {
       let { tabList } = context.state;
       const { keepList } = context.state;
+      let onTab: any = null;
       const resultData = { tabList: [], tabActiveKey: '' };
       tabList = tabList.filter((item: any, index: number) => {
         if (item.name === name) {
           // 关闭tab后，页面跳转到前一个TAB，特殊情况是关闭第一个TAB应该打开第二个TAB
-          const onTab = index ? tabList[index - 1] : tabList[index + 1];
-          router.push({ name: onTab.name, query: onTab.query, params: onTab.params });
+          onTab = index ? tabList[index - 1] : tabList[index + 1];
           keepList.splice(keepList.indexOf(item.meta.key), 1);
           context.commit('KEEP_CHANGE', keepList);
           return false;
@@ -137,6 +156,15 @@ const app = {
       });
       resultData.tabList = tabList;
       context.commit('TAB_CHANGE', resultData);
+      const params: any = {};
+      if (onTab.params) {
+        const pattern = /:\w+/g;
+        const str = pattern.exec(onTab.path);
+        if (str) {
+          params[str[0].replace(':', '')] = onTab.params;
+        }
+      }
+      router.push({ name: onTab.name, query: onTab.query, params });
     },
     TabChange: (context: any, name: string) => {
       const { tabList } = context.state;

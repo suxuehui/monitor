@@ -87,8 +87,9 @@ export default class MFilter extends Vue {
       this.checkList = saveList.split(',');
     }
   }
-  created() {
-    if (!this.checkList) {
+
+  mounted() {
+    if (!this.checkList.length) {
       this.tableList.map((item) => {
         if (item.prop) {
           this.checkList.push(item.prop);
@@ -102,11 +103,15 @@ export default class MFilter extends Vue {
   @Emit()
   onSearch(): void {
     this.$emit('search', this.params);
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
   }
   @Emit()
   reset(): void {
     this.params = JSON.parse(JSON.stringify(this.initParams));
     this.$emit('clearOut');
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
     this.$emit('search', this.params);
   }
   @Emit()
@@ -137,8 +142,21 @@ export default class MFilter extends Vue {
 
   @Emit()
   downloadFun(): void {
-    // this.$emit('addFun');
-    console.log(1);
+    // 参数
+    const obj: any = JSON.parse(JSON.stringify(this.params));
+    obj.headerName = [];
+    obj.headerKey = [];
+    // 表格参数
+    this.tableList.forEach((item: any) => {
+      if (this.checkList.indexOf(item.prop) > -1) {
+        obj.headerName.push(item.label);
+        obj.headerKey.push(item.prop);
+      }
+    });
+    obj.headerName = obj.headerName.join(',');
+    obj.headerKey = obj.headerKey.join(',');
+    obj.page = false;
+    this.$emit('downloadFun', obj);
   }
 
   formItem(item: FilterFormList, index: number, grade?: boolean) {
@@ -163,6 +181,7 @@ export default class MFilter extends Vue {
       case 'cascader':
         itemDom = <el-cascader style="width: 100%;"
           id={item.key}
+          clearable={true}
           options={item.options}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}
@@ -206,7 +225,10 @@ export default class MFilter extends Vue {
           type="datetimerange"
           align="right"
           pickerOptions={item.pickerOptions}
-          on-change={(e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])}
+          on-change={item.change ?
+            item.change :
+            (e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])
+          }
           start-placeholder={item.placeholder[0]}
           end-placeholder={item.placeholder[1]}>
         </el-date-picker>;

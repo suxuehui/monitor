@@ -17,12 +17,10 @@ export default class MenuList extends Vue {
   @Emit()
   handleOpen(key: string, keyPath: string) {
     const self = this;
-    console.log(key, keyPath);
   }
   @Emit()
   handleClose(key: string, keyPath: string) {
     const self = this;
-    console.log(key, keyPath);
   }
   render() {
     const { menuData, sidebar: { opened } } = this.$store.state.app;
@@ -31,6 +29,7 @@ export default class MenuList extends Vue {
         collapse={!opened}
         default-active="2"
         class="left-menu"
+        id="left-menu"
         background-color={this.bgColor}
         text-color={this.txtColor}
         unique-opened={true}
