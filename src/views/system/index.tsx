@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component
+@Component({name:'System'})
 export default class System extends Vue {
   render() {
     const { keepList } = this.$store.state.app;

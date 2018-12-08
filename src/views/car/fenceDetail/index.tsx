@@ -30,7 +30,8 @@ interface AlarmType { key: any, value: any, label: string }
   'el-radio-group': RadioGroup,
   'el-radio-button': RadioButton,
   'el-cascader': Cascader,
-  }
+  },
+  name: "FenceDetail"
   })
 export default class FenceDetail extends Vue {
   BMap: any = null; // 百度地图对象

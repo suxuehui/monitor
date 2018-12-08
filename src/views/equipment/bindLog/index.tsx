@@ -22,7 +22,8 @@ const noPic = require('@/assets/noPic.png');
   'checkPic-model': CheckPicModel,
   'el-tag': Tag,
   'el-tooltip': Tooltip,
-  }
+  },
+  name:'BindLog'
   })
 export default class BindLog extends Vue {
   modelForm: any = {}

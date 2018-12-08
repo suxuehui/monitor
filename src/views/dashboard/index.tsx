@@ -7,7 +7,8 @@ import './index.less';
   'el-button': Button,
   'el-date-picker': DatePicker,
   'el-dialog': Dialog,
-  }
+  },
+  name:'Dashboard'
   })
 export default class Dashboard extends Vue {
   // 告警数据

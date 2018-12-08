@@ -16,7 +16,8 @@ const locaIcon = require('@/assets/point.png');
   'el-tab-pane': TabPane,
   'record-table': RecordTable,
   'equipment-table': EquipmentTable
-  }
+  },
+  name: "Track"
   })
 export default class Track extends Vue {
   BMap: any = null; // 百度地图对象

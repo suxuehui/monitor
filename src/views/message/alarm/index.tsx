@@ -19,7 +19,8 @@ interface ActiveType { key: any, value: any, label: string }
   'el-tag': Tag,
   'handle-model': HandleModel,
   'check-model': CheckModel,
-  }
+  },
+  name:'Alarm'
   })
 export default class Alarm extends Vue {
   // data

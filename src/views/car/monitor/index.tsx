@@ -29,7 +29,8 @@ const pointIcon = require('@/assets/point.png');
   'el-cascader': Cascader,
   'edit-model': EditModel,
   'control-model': ControlModel,
-  }
+  },
+  name: "Monitor"
   })
 export default class Monitor extends Vue {
   filterParams: object = {

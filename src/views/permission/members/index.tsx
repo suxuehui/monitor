@@ -16,7 +16,8 @@ interface ActiveType { key: any, value: any, label: string }
   'el-tag': Tag,
   'add-modal': AddModal,
   'el-tooltip': Tooltip,
-  }
+  },
+  name:'Member'
   })
 export default class Member extends Vue {
   // data

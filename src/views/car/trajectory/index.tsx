@@ -19,7 +19,8 @@ function getTimeDay(day: number) { }
   'el-select': Select,
   'el-option': Option,
   'el-tooltip': Tooltip,
-  }
+  },
+  name:'Trajectory'
   })
 export default class Trajectory extends Vue {
   locChange: boolean = false; // 底部表格开关

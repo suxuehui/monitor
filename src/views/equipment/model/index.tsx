@@ -12,7 +12,8 @@ interface ActiveType { key: any, value: any, label: string }
   components: {
   'el-tag': Tag,
   'add-model': AddModel,
-  }
+  },
+  name:'DeviceModel'
   })
 export default class DeviceModel extends Vue {
   // data

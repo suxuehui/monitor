@@ -33,7 +33,8 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   'unbind-model': UnbindModel,
   'el-popover': Popover,
   'popconfirm-block': PopconfirmBlock,
-  }
+  },
+  name:'Device'
   })
 export default class Device extends Vue {
   // data

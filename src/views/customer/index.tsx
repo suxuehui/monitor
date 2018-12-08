@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component
+@Component({name:'Customer'})
 export default class Customer extends Vue {
   render() {
     const { keepList } = this.$store.state.app;

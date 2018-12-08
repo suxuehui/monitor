@@ -17,7 +17,8 @@ interface Params {
   'el-button': Button,
   'el-form': Form,
   'el-form-item': FormItem,
-  }
+  },
+  name: 'Setting'
   })
 export default class Setting extends Vue {
   alarmModelList: any = [];

@@ -9,7 +9,8 @@ import AddModel from './components/Addmodel';
   components: {
   'el-tag': Tag,
   'add-model': AddModel,
-  }
+  },
+  name:'CarModel'
   })
 export default class CarModel extends Vue {
   // data

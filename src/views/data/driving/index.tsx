@@ -9,7 +9,8 @@ import './index.less';
 @Component({
   components: {
   'el-tag': Tag,
-  }
+  },
+  name:'Driving'
   })
 export default class Driving extends Vue {
   // data

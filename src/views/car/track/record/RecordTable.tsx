@@ -11,9 +11,10 @@ import './RecordTable.less';
   'el-tabs': Tabs,
   'el-tab-pane': TabPane,
   'el-tooltip': Tooltip,
-  }
+  },
+  name:'RecordTable'
   })
-export default class Equipment extends Vue {
+export default class RecordTable extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [
     {

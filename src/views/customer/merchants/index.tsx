@@ -21,7 +21,8 @@ interface ActiveType { key: any, value: any, label: string }
   'el-row': Row,
   'el-col': Col,
   'add-modal': AddModal,
-  }
+  },
+  name:'Merchants'
   })
 export default class Merchants extends Vue {
   // data

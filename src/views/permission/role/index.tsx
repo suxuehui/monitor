@@ -13,7 +13,8 @@ interface ActiveType { key: any, value: any, label: string }
   'el-tag': Tag,
   'add-modal': AddModal,
   'set-modal': SetModal,
-  }
+  },
+  name:'Role'
   })
 export default class Role extends Vue {
   // data

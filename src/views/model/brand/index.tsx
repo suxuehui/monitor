@@ -12,7 +12,8 @@ const noPic = require('@/assets/noPic.png');
   'el-tag': Tag,
   'el-tooltip': Tooltip,
   'add-model': AddModel,
-  }
+  },
+  name:'Brand'
   })
 
 export default class Brand extends Vue {

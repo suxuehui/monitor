@@ -16,9 +16,10 @@ import './EquipTable.less';
   'deploy-model': DeployModel,
   'reverse-model': ReverseModel,
   'el-tooltip': Tooltip
-  }
+  },
+  name:'EquipTable'
   })
-export default class Equipment extends Vue {
+export default class EquipTable extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [
     {

@@ -23,7 +23,8 @@ const carIcon = require('@/assets/point.png');
   'el-pagination': Pagination,
   'el-autocomplete': Autocomplete,
   'el-tooltip': Tooltip,
-  }
+  },
+  name: "EleFence"
   })
 export default class EleFence extends Vue {
   BMap: any = null; // 百度地图对象

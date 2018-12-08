@@ -11,7 +11,8 @@ import CheckModel from '@/views/message/notice/components/CheckModel';
   'add-modal': AddModal,
   'check-modal': CheckModel,
   'el-tooltip': Tooltip,
-  }
+  },
+  name: 'Notice'
   })
 export default class Notice extends Vue {
   // data

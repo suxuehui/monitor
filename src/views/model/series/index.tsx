@@ -10,7 +10,8 @@ import AddModel from './components/Addmodel';
   components: {
   'el-tag': Tag,
   'add-model': AddModel,
-  }
+  },
+  name:'Series'
   })
 export default class Series extends Vue {
   // data

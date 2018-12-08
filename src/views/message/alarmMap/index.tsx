@@ -9,7 +9,8 @@ const pointIcon = require('@/assets/point.png');
   components: {
   'el-input': Input,
   'el-button': Button,
-  }
+  },
+  name:'AlarmMap'
   })
 
 export default class AlarmMap extends Vue {
