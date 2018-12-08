@@ -192,20 +192,23 @@ export default class Alarm extends Vue {
   checkLoc(row: any) {
     return <i class="iconfont iconfont-location" on-click={() => { this.checkMapLoc(row); }} ></i>;
   }
-
   statusDom(row: any) {
     const type = row.status ? 'success' : 'danger';
     return <el-tag size="medium" type={type}>{row.status ? '已处理' : '未处理'}</el-tag>;
   }
   checkMapLoc(row: any) {
-    const point: any = CoordTrasns.transToBaidu(
-      {
-        lat: row.lat,
-        lng: row.lng,
-      },
-      row.coordinateSystem,
-    );
-    this.$router.push({ name: '告警地点', query: { lng: point.lng, lat: point.lat } });
+    if (row.lat > 0) {
+      const point: any = CoordTrasns.transToBaidu(
+        {
+          lat: row.lat,
+          lng: row.lng,
+        },
+        row.coordinateSystem,
+      );
+      this.$router.push({ name: '告警地点', query: { lng: point.lng, lat: point.lat } });
+    } else {
+      this.$message.error('告警地点位置信息缺失');
+    }
   }
 
   activeTypes: ActiveType[] = [

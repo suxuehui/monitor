@@ -74,11 +74,6 @@ export default class Equipment extends Vue {
       prop: 'address',
     },
     {
-      label: '上报类型',
-      prop: 'type',
-      formatter: this.checkType,
-    },
-    {
       label: '型号',
       prop: 'clientType',
       formatter: this.checkClientType,
@@ -108,19 +103,6 @@ export default class Equipment extends Vue {
     let str = '';
     if (row.clientType === 17) {
       str = 'GL500';
-    } else {
-      str = '--';
-    }
-    return <el-tooltip class="item" effect="dark" content={str} placement="top">
-      <span>{str}</span>
-    </el-tooltip>;
-  }
-  checkType(row: any) {
-    let str = '';
-    if (row.clientType === 1) {
-      str = '正常上报';
-    } else if (row.clientType === 2) {
-      str = '追踪上报';
     } else {
       str = '--';
     }

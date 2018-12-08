@@ -19,6 +19,7 @@ export default class AlarmMap extends Vue {
   akNums: string = 'K52pNzWT61z1EHvdZptaSmlPRc7mKbjC'
   locAddress: string = '';
   mounted() {
+    this.Address = this.$route.query;
     config.loadMap().then((BMap: any) => {
       this.BMap = BMap;
       this.SMap = new BMap.Map('map', { enableMapClick: false });
@@ -41,7 +42,6 @@ export default class AlarmMap extends Vue {
   }
   activated() {
     this.Address = this.$route.query;
-    console.log(this.Address);
     setTimeout(() => {
       this.SMap.centerAndZoom(new this.BMap.Point(this.Address.lng, this.Address.lat), 15);
       this.getFormAddress(this.Address.lng, this.Address.lat);
@@ -54,6 +54,7 @@ export default class AlarmMap extends Vue {
     const pt = new this.BMap.Point(lng, lat);
     const myIcon = new this.BMap.Icon(pointIcon, new this.BMap.Size(16, 16));
     const marker2 = new this.BMap.Marker(pt);
+    this.SMap.clearOverlays();
     this.SMap.addOverlay(marker2);
 
     gpsToAddress({ lat, lng }).then((response: any) => {
@@ -81,6 +82,7 @@ export default class AlarmMap extends Vue {
     // 创建查询对象
     const geolocation = new this.BMap.Geolocation();
     if (this.nowPosition.lat) {
+      this.SMap.clearOverlays();
       this.SMap.addOverlay(this.nowMk);
       this.SMap.panTo(this.nowPosition, { noAnimation: false });
     } else {
@@ -88,6 +90,7 @@ export default class AlarmMap extends Vue {
         if (geolocation.getStatus() === 0) {
           this.nowMk = new this.BMap.Marker(r.point);
           this.nowPosition = r.point;
+          this.SMap.clearOverlays();
           this.SMap.addOverlay(this.nowMk);
           this.SMap.centerAndZoom(
             new this.BMap.Point(this.nowPosition.lng, this.nowPosition.lat),

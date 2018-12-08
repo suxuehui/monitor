@@ -171,7 +171,7 @@ export default class MTable extends Vue {
         <m-spin show={this.loading} />
         <el-table
           data={this.tableData}
-          on-current-change={this.currentChange}
+          on-row-click={this.currentChange}
           on-selection-change={this.selectChange}
           highlightCurrentRow={this.highlightCurrentRow}>
           {

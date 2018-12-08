@@ -12,7 +12,7 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const service = axios.create({
   baseURL: process.env.NODE_ENV === 'production' ? '/api/monitor' : '/api', // api的base_url
-  timeout: 20000, // 请求超时时间
+  timeout: 50000, // 请求超时时间
 });
 
 const fetch = (options: Option) => {

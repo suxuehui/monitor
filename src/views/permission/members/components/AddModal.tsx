@@ -99,11 +99,11 @@ export default class AddModal extends Vue {
           this.phoneNumber = value;
           if (res.result.resultCode === '0') {
             if (this.isInstaller) {
-              const exp: any = /^[1][3,4,5,7,8,9][0-9]{9}$/;
+              const exp: any = /^1[0-9]{10}$/;
               if (exp.test(value)) {
                 callback();
               } else {
-                callback(new Error('安装员登录账号必须为手机号,请核实后输入'));
+                callback(new Error('安装员登录账号必须为手机号!!!'));
               }
             } else {
               callback();
@@ -152,12 +152,12 @@ export default class AddModal extends Vue {
     });
     if (this.isInstaller) {
       if (this.phoneNumber) {
-        const exp: any = /^[1][3,4,5,7,8,9[0-9]{9}$/;
+        const exp: any = /^1[0-9]{10}$/;
         if (exp.test(this.phoneNumber)) {
           this.isPhoneNumber = true;
         } else {
           this.isPhoneNumber = false;
-          this.$message.error('安装员登录账号必须为手机号,请重新输入');
+          this.$message.error('安装员登录账号必须为手机号!!!');
         }
       }
     }
