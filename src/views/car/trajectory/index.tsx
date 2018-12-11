@@ -139,16 +139,14 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '用时',
-      prop: 'period',
+      prop: 'periodMinute',
       sortable: true,
-      sortBy: 'period',
-      formatter: this.changeMinutes,
+      sortBy: 'periodMinute',
     }, {
       label: '耗油',
-      prop: 'fuelCons',
+      prop: 'oilConsumption',
       sortable: true,
-      sortBy: 'fuelCons',
-      formatter: this.oilCount,
+      sortBy: 'oilConsumption',
     }, {
       label: '耗电',
       prop: 'powerCons',
@@ -161,10 +159,9 @@ export default class Trajectory extends Vue {
       },
     }, {
       label: '平均油耗',
-      prop: 'avgfuelCons',
+      prop: 'avgfuelConsString',
       sortable: true,
-      sortBy: 'avgfuelCons',
-      formatter: this.avgOilCount,
+      sortBy: 'avgfuelConsString',
     }, {
       label: '平均速度',
       prop: 'avgSpeed',
@@ -187,51 +184,6 @@ export default class Trajectory extends Vue {
       },
     },
   ];
-
-  changeMinutes(data: any) {
-    const str: string = data.period !== null && data.period >= 0 ? this.timeChange(data.period) : '--';
-    return data.period !== null ?
-      <el-tooltip class="item" effect="dark" content={str} placement="top">
-        <span>{str}</span>
-      </el-tooltip> : '--';
-  }
-
-  // 时间格式转换
-  timeChange(data: any) {
-    const day: any = data / 60 / 24;
-    const hour: any = (data / 60) % 24;
-    const min: any = data % 60;
-    const strDay = parseInt(day, 10) > 0 ? `${parseInt(day, 10)}天` : '';
-    const strHour = parseInt(hour, 10) > 0 ? `${parseInt(hour, 10)}小时` : '';
-    const strMin = parseInt(min, 10) > 0 ? `${parseInt(min, 10)}分钟` : '';
-    const str = `${strDay}${strHour}${strMin}`;
-    if (day === 0 && hour === 0 && min === 0) {
-      return '--';
-    }
-    return str;
-  }
-
-  // 耗油计算
-  oilCount(row: any) {
-    if (row.fuelCons && row.fuelTankCap) {
-      const percent = (row.fuelCons / row.fuelTankCap) * 100;
-      const str = `${percent.toFixed(2)}%  (${row.fuelCons}L)`;
-      return <el-tooltip class="item" effect="dark" content={str} placement="top">
-        <span>{str}</span>
-      </el-tooltip>;
-    }
-    return '--';
-  }
-
-  // 平均油耗
-  avgOilCount(row: any) {
-    if (row.avgfuelCons) {
-      return <el-tooltip class="item" effect="dark" content={`${row.avgfuelCons}L/100km`} placement="top">
-        <span>{`${row.avgfuelCons}L/100km`}</span>
-      </el-tooltip>;
-    }
-    return '--';
-  }
 
   BMap: any = null; // 百度地图对象
   SMap: any = null; // 当前地图对象实例
