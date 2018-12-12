@@ -154,17 +154,17 @@ export default class Header extends Vue {
           <ul class="header-menu">
             {
               this.showNotice ?
-                <li id="noticeList">
+                <li id="noticeList" on-click={this.checkInfo}>
                   <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
-                    <i class="iconfont-email" on-click={this.checkInfo}></i>
+                    <i class="iconfont-email"></i>
                   </el-badge>
                 </li> : null
             }
             {
               this.showAlarm ?
-                <li id="alarmList">
+                <li id="alarmList" on-click={this.checkAlarm}>
                   <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
-                    <i class="iconfont-bell" on-click={this.checkAlarm}></i>
+                    <i class="iconfont-bell"></i>
                   </el-badge>
                 </li> : null
             }
