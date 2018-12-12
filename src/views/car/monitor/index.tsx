@@ -839,8 +839,8 @@ export default class Monitor extends Vue {
       }
       return '未知';
     } else if (unit === 'oilStatus') {
-      if (data.authorizedStatus !== null) {
-        return data.authorizedStatus ? '通油' : '断油';
+      if (data.oilStatus !== null) {
+        return data.oilStatus ? '通油' : '断油';
       }
       return '未知';
     }
