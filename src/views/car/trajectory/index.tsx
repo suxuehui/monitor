@@ -698,6 +698,10 @@ export default class Trajectory extends Vue {
       tripGPS({ id: val.tripId }).then((res) => {
         if (res.result.resultCode === '0') {
           let data = res.entity;
+          if (!data || !data.length) {
+            this.$message.error('轨迹信息为空！');
+            return false;
+          }
           data = data.filter((item: any, index: number) => {
             if (item.lat > 0 || item.lng > 0) {
               const point = coordTrasns.transToBaidu(item, 'bd09ll');
@@ -720,6 +724,7 @@ export default class Trajectory extends Vue {
           this.playTime = this.timeFormat(val.period);
           this.defaultTime = this.playTime;
         }
+        return true;
       });
     }
   }
