@@ -369,6 +369,7 @@ export default class Device extends Vue {
             ref={`popBlock${row.id}`}
             title="确定要对此设备进行续期1年？"
             width="225"
+            keyName='续期'
             disabled={row.status !== 3}
             loading={this.loading}
             on-confirm={() => this.onResetTime(row)}
@@ -379,6 +380,7 @@ export default class Device extends Vue {
       }
     </div>;
   }
+
   closePop() {
     this.loading = false;
   }

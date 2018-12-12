@@ -45,8 +45,10 @@ export default class Popconfirm extends Vue {
 
   @Emit()
   stopClick(e: any) {
-    this.visible = true;
-    e.stopPropagation();
+    if (!this.disabled) {
+      this.visible = true;
+      e.stopPropagation();
+    }
   }
 
   checkOptName(name: String) {
@@ -59,6 +61,8 @@ export default class Popconfirm extends Vue {
       str = '冻结';
     } else if (name === 'forbid') {
       str = '禁用';
+    } else if (name === '续期') {
+      str = '续期';
     }
     return str;
   }
