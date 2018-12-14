@@ -9,12 +9,12 @@ import AddModel from './components/Addmodel';
 const noPic = require('@/assets/noPic.png');
 @Component({
   components: {
-  'el-tag': Tag,
-  'el-tooltip': Tooltip,
-  'add-model': AddModel,
+    'el-tag': Tag,
+    'el-tooltip': Tooltip,
+    'add-model': AddModel,
   },
-  name:'Brand'
-  })
+  name: 'Brand',
+})
 
 export default class Brand extends Vue {
   // 当前页面权限

@@ -1,18 +1,22 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Dialog, Input, Button, Form, Tree } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Dialog, Input, Button, Form, Tree,
+} from 'element-ui';
 import { roleSaveRoleMenu, roleInfo } from '@/api/permission';
 import { menuSelect } from '@/api/menu';
 import './setModal.less';
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tree': Tree,
-  'el-input': Input,
-  'el-button': Button,
-  'el-form': Form,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tree': Tree,
+    'el-input': Input,
+    'el-button': Button,
+    'el-form': Form,
+  },
+})
 export default class SetModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;

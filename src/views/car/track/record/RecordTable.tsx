@@ -1,19 +1,21 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList } from '@/interface';
-import { Button, Tabs, TabPane, Tooltip } from 'element-ui';
+import {
+  Button, Tabs, TabPane, Tooltip,
+} from 'element-ui';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
 
 import './RecordTable.less';
 @Component({
   components: {
-  'el-button': Button,
-  'el-tabs': Tabs,
-  'el-tab-pane': TabPane,
-  'el-tooltip': Tooltip,
+    'el-button': Button,
+    'el-tabs': Tabs,
+    'el-tab-pane': TabPane,
+    'el-tooltip': Tooltip,
   },
-  name:'RecordTable'
-  })
+  name: 'RecordTable',
+})
 export default class RecordTable extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [

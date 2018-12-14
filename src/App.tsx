@@ -1,13 +1,15 @@
-import { Component, Prop, Emit, Vue, Inject, Provide } from 'vue-property-decorator';
+import {
+  Component, Vue,
+} from 'vue-property-decorator';
 import AppMain from '@/components/Layout/AppMain';
 import Loader from '@/components/Loader/index.vue';
 import './App.less';
 
 @Component({
   components: {
-  'loader': Loader,
-  }
-  })
+    loader: Loader,
+  },
+})
 export default class App extends Vue {
   created() {
     this.isMobile();

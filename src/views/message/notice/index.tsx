@@ -1,5 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import {
+  FilterFormList, tableList, tableTag, Opreat,
+} from '@/interface';
 import { Tag, Tooltip } from 'element-ui';
 import { noticeDelete, noticeView } from '@/api/message';
 import AddModal from '@/views/message/notice/components/AddModal';
@@ -7,13 +9,13 @@ import CheckModel from '@/views/message/notice/components/CheckModel';
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'check-modal': CheckModel,
-  'el-tooltip': Tooltip,
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'check-modal': CheckModel,
+    'el-tooltip': Tooltip,
   },
-  name: 'Notice'
-  })
+  name: 'Notice',
+})
 export default class Notice extends Vue {
   // data
   // 普通筛选

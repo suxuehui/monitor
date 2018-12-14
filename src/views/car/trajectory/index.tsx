@@ -1,5 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Button, Slider, Select, Option, Tooltip } from 'element-ui';
+import {
+  Button, Slider, Select, Option, Tooltip,
+} from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
@@ -14,14 +16,14 @@ function getTimeDay(day: number) { }
 
 @Component({
   components: {
-  'el-button': Button,
-  'el-slider': Slider,
-  'el-select': Select,
-  'el-option': Option,
-  'el-tooltip': Tooltip,
+    'el-button': Button,
+    'el-slider': Slider,
+    'el-select': Select,
+    'el-option': Option,
+    'el-tooltip': Tooltip,
   },
-  name:'Trajectory'
-  })
+  name: 'Trajectory',
+})
 export default class Trajectory extends Vue {
   locChange: boolean = false; // 底部表格开关
   filterList: FilterFormList[] = [
@@ -275,8 +277,8 @@ export default class Trajectory extends Vue {
   }
 
   clearCanvas = () => {
-    if (this.canvasLayer || this.canvasLayerBack ||
-      this.CanvasLayerPointer || this.canvasBehavior) {
+    if (this.canvasLayer || this.canvasLayerBack
+      || this.CanvasLayerPointer || this.canvasBehavior) {
       this.SMap.removeOverlay(this.CanvasLayerPointer);
       this.SMap.removeOverlay(this.canvasLayer);
       this.SMap.removeOverlay(this.canvasLayerBack);
@@ -522,8 +524,8 @@ export default class Trajectory extends Vue {
     }
     const render = () => {
       if (totalPoints.length > 0) {
-        if (this.canvasLayer || this.canvasLayerBack ||
-          this.CanvasLayerPointer || this.canvasBehavior) {
+        if (this.canvasLayer || this.canvasLayerBack
+          || this.CanvasLayerPointer || this.canvasBehavior) {
           this.SMap.removeOverlay(this.CanvasLayerPointer);
           this.SMap.removeOverlay(this.canvasLayer);
           this.SMap.removeOverlay(this.canvasLayerBack);
@@ -818,8 +820,8 @@ export default class Trajectory extends Vue {
         </ul>
         <div id="map"></div>
         {
-          this.currentTrackData.length ?
-            <div class={`play-box ${this.locChange ? '' : 'bottom'} ${this.isEnd ? '' : 'hide'}`}>
+          this.currentTrackData.length
+            ? <div class={`play-box ${this.locChange ? '' : 'bottom'} ${this.isEnd ? '' : 'hide'}`}>
               <i on-click={this.trackPlay} class={`play-icon iconfont-${this.playStatus ? 'pass' : 'play'}`}></i>
               <span class="dot-left">{this.timeFormat(this.playOnTime)}</span>
               <el-slider
@@ -863,8 +865,8 @@ export default class Trajectory extends Vue {
               size="small"
               type="primary"
               icon="el-icon-arrow-down"
-              on-click={this.hideTable}></el-button> :
-            <el-button
+              on-click={this.hideTable}></el-button>
+            : <el-button
               class="up btn"
               size="small"
               type="primary"

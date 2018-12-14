@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component({name:'Equipment'})
+@Component({ name: 'Equipment' })
 export default class Equipment extends Vue {
   render() {
     const { keepList } = this.$store.state.app;
@@ -13,4 +13,3 @@ export default class Equipment extends Vue {
     );
   }
 }
-

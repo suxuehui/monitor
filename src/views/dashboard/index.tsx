@@ -4,12 +4,12 @@ import './index.less';
 
 @Component({
   components: {
-  'el-button': Button,
-  'el-date-picker': DatePicker,
-  'el-dialog': Dialog,
+    'el-button': Button,
+    'el-date-picker': DatePicker,
+    'el-dialog': Dialog,
   },
-  name:'Dashboard'
-  })
+  name: 'Dashboard',
+})
 export default class Dashboard extends Vue {
   // 告警数据
   alarmData: any = [
@@ -303,8 +303,8 @@ export default class Dashboard extends Vue {
             <div class="title">
               <span style="marginRight:20px">{this.helloWord}好！当前{this.count}辆车处于监控中</span>
               {
-                this.toMonitor ?
-                  <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+                this.toMonitor
+                  ? <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
                   : null
               }
             </div>
@@ -363,8 +363,7 @@ export default class Dashboard extends Vue {
             <div class="leftPart">
               <ul class="top">
                 {
-                  this.driveData.map((item: any) =>
-                    <li class="item">
+                  this.driveData.map((item: any) => <li class="item">
                       {item.name}
                       <br />
                       {item.count}次

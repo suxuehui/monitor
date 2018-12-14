@@ -1,24 +1,28 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option, Cascader } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch, Emit,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option, Cascader,
+} from 'element-ui';
 import { modelAdd, modelEdit, seriesAll } from '@/api/model';
 import './Addmodel.less';
 
 interface ActiveType { key: number, value: number, label: string }
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-upload': Upload,
-  'el-select': Select,
-  'el-option': Option,
-  'el-cascader': Cascader
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-upload': Upload,
+    'el-select': Select,
+    'el-option': Option,
+    'el-cascader': Cascader,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
@@ -283,8 +287,8 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             {
-              this.oilInput ?
-                <el-col span={24}>
+              this.oilInput
+                ? <el-col span={24}>
                   <el-form-item label="油箱容量" prop="fuelTankCap" rules={!this.oilInput ? null : this.fuelTankCapRule}>
                     <el-input
                       id="fuelTankCap"

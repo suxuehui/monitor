@@ -7,11 +7,11 @@ import './index.less';
 const pointIcon = require('@/assets/point.png');
 @Component({
   components: {
-  'el-input': Input,
-  'el-button': Button,
+    'el-input': Input,
+    'el-button': Button,
   },
-  name:'AlarmMap'
-  })
+  name: 'AlarmMap',
+})
 
 export default class AlarmMap extends Vue {
   BMap: any = null; // 百度地图对象

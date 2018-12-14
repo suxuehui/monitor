@@ -13,4 +13,3 @@ export default class Model extends Vue {
     );
   }
 }
-

@@ -1,23 +1,27 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch, Emit,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup,
+} from 'element-ui';
 import { terminalCheck } from '@/api/equipment';
 import './AcceptModal.less';
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tag': Tag,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-select': Select,
-  'el-button': Button,
-  'el-radio': Radio,
-  'el-radio-group': RadioGroup
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tag': Tag,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-select': Select,
+    'el-button': Button,
+    'el-radio': Radio,
+    'el-radio-group': RadioGroup,
+  },
+})
 export default class AcceptModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
@@ -128,8 +132,8 @@ export default class AcceptModal extends Vue {
             </el-form-item>
           </el-col>
           {
-            this.modelForm.terminalStatus === '4' ?
-              <el-col span={24}>
+            this.modelForm.terminalStatus === '4'
+              ? <el-col span={24}>
                 <el-form-item
                   label="备注"
                   prop="remark"

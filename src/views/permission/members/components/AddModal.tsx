@@ -1,23 +1,27 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option,
+} from 'element-ui';
 import { userUpdate, userAdd, userCheck } from '@/api/permission';
 
 interface RoleType { key: number, value: string, label: string }
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tag': Tag,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-select': Select,
-  'el-button': Button,
-  'el-option': Option
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tag': Tag,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-select': Select,
+    'el-button': Button,
+    'el-option': Option,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
@@ -287,8 +291,8 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             {
-              this.isAdmin ?
-                <el-col span={12}>
+              this.isAdmin
+                ? <el-col span={12}>
                   <el-form-item label="角色类型" prop="roleIdList1">
                     <el-input
                       id="roleIdList1"
@@ -297,8 +301,8 @@ export default class AddModal extends Vue {
                       placeholder="请输入角色类型"
                     ></el-input>
                   </el-form-item>
-                </el-col> :
-                <el-col span={12}>
+                </el-col>
+                : <el-col span={12}>
                   <el-form-item label="角色类型" prop="roleIdList" rules={this.visible ? this.roleIdRule : null}>
                     <el-select
                       id="roleIdList"

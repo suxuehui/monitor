@@ -1,6 +1,10 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { Input, Button, Tag, Pagination, Autocomplete, Tooltip } from 'element-ui';
+import {
+  tableList, Opreat, FilterFormList, MapCarData,
+} from '@/interface';
+import {
+  Input, Button, Tag, Pagination, Autocomplete, Tooltip,
+} from 'element-ui';
 import qs from 'qs';
 import { getFenceCars } from '@/api/fence';
 import { exportExcel } from '@/api/export';
@@ -17,15 +21,15 @@ interface AlarmType { key: any, value: any, label: string }
 const carIcon = require('@/assets/point.png');
 @Component({
   components: {
-  'el-input': Input,
-  'el-button': Button,
-  'el-tag': Tag,
-  'el-pagination': Pagination,
-  'el-autocomplete': Autocomplete,
-  'el-tooltip': Tooltip,
+    'el-input': Input,
+    'el-button': Button,
+    'el-tag': Tag,
+    'el-pagination': Pagination,
+    'el-autocomplete': Autocomplete,
+    'el-tooltip': Tooltip,
   },
-  name: "EleFence"
-  })
+  name: 'EleFence',
+})
 export default class EleFence extends Vue {
   BMap: any = null; // 百度地图对象
   SMap: any = null; // 当前地图对象实例
@@ -597,16 +601,16 @@ export default class EleFence extends Vue {
           <div class="car-detail">
             <ul class="line">
               {
-                this.carList ?
-                  this.carList.map((item: any) => <li class="item">
+                this.carList
+                  ? this.carList.map((item: any) => <li class="item">
                     <span class="label">{item.platenum}</span>
-                  </li>) :
-                  '暂无监控车辆'
+                  </li>)
+                  : '暂无监控车辆'
               }
             </ul>
             {
-              this.carList ?
-                <el-pagination
+              this.carList
+                ? <el-pagination
                   class="pageSet"
                   small
                   background
@@ -624,9 +628,9 @@ export default class EleFence extends Vue {
             <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
             <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
             <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
-            {!this.locChange ?
-              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button> :
-              <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
+            {!this.locChange
+              ? <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+              : <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
             }
           </div>
           <filter-table

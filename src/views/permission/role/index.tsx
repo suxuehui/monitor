@@ -10,12 +10,12 @@ import SetModal from '@/views/permission/role/components/setModal';
 interface ActiveType { key: any, value: any, label: string }
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'set-modal': SetModal,
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'set-modal': SetModal,
   },
-  name:'Role'
-  })
+  name: 'Role',
+})
 export default class Role extends Vue {
   // data
   // 普通筛选

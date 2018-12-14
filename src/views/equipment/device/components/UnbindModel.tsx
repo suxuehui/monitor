@@ -1,15 +1,19 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option,
+} from 'element-ui';
 import { terminalUnbind } from '@/api/equipment';
 import './UnbindModel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-button': Button,
+  },
+})
 export default class UnbindModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;

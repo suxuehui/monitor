@@ -1,12 +1,14 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
 import { Dialog } from 'element-ui';
 import './CheckModel.less';
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  }
-  })
+    'el-dialog': Dialog,
+  },
+})
 
 
 export default class CheckModel extends Vue {

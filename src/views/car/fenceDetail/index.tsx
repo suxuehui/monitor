@@ -1,5 +1,8 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Input, Button, Form, Col, Row, FormItem, Table, TableColumn, Pagination, Select, Option, TimeSelect, Tag, RadioGroup, RadioButton, Cascader } from 'element-ui';
+import {
+  Input, Button, Form, Col, Row, FormItem, Table, TableColumn,
+  Pagination, Select, Option, TimeSelect, Tag, RadioGroup, RadioButton, Cascader,
+} from 'element-ui';
 import { getCarList, findCar } from '@/api/equipment';
 import { gpsToAddress, addressToGps } from '@/api/app';
 import { getFenceDetail, updateFence, addFence } from '@/api/fence';
@@ -14,25 +17,25 @@ const locaIcon = require('@/assets/point.png');
 interface AlarmType { key: any, value: any, label: string }
 @Component({
   components: {
-  'el-input': Input,
-  'el-button': Button,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-col': Col,
-  'el-row': Row,
-  'el-table': Table,
-  'el-table-column': TableColumn,
-  'el-pagination': Pagination,
-  'el-select': Select,
-  'el-option': Option,
-  'el-time-select': TimeSelect,
-  'el-tag': Tag,
-  'el-radio-group': RadioGroup,
-  'el-radio-button': RadioButton,
-  'el-cascader': Cascader,
+    'el-input': Input,
+    'el-button': Button,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-col': Col,
+    'el-row': Row,
+    'el-table': Table,
+    'el-table-column': TableColumn,
+    'el-pagination': Pagination,
+    'el-select': Select,
+    'el-option': Option,
+    'el-time-select': TimeSelect,
+    'el-tag': Tag,
+    'el-radio-group': RadioGroup,
+    'el-radio-button': RadioButton,
+    'el-cascader': Cascader,
   },
-  name: "FenceDetail"
-  })
+  name: 'FenceDetail',
+})
 export default class FenceDetail extends Vue {
   BMap: any = null; // 百度地图对象
   SMap: any = null; // 当前地图对象实例
@@ -70,8 +73,7 @@ export default class FenceDetail extends Vue {
         this.SMap.panTo(new BMap.Point(position.lng, position.lat));
         gpsToAddress({ lat: position.lat, lng: position.lng }).then((res) => {
           if (res.status === 0) {
-            this.modelForm.address =
-              `${res.result.formatted_address}-${res.result.sematic_description}`;
+            this.modelForm.address = `${res.result.formatted_address}-${res.result.sematic_description}`;
           }
         });
       });
@@ -266,9 +268,7 @@ export default class FenceDetail extends Vue {
   getLocAddress(lng: any, lat: any) {
     gpsToAddress({ lat, lng }).then((res) => {
       if (res.status === 0) {
-        this.modelForm.address =
-          // `${res.result.formatted_address}-${res.result.sematic_description}`;
-          `${res.result.formatted_address}`;
+        this.modelForm.address = `${res.result.formatted_address}`;
       }
     });
   }

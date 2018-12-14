@@ -90,7 +90,7 @@ export default class MapContorl {
       this.myCarOverlay.div.style.top = `${pixel.y - 14}px`;
       this.rotateAnimate(this.myCarOverlay.div, this.trackData[this.playNumber].direction);
       this.playNumber += 1;
-    }, this.oneTime.toFixed(6));
+    }, parseFloat(this.oneTime.toFixed(6)));
   }
   rotateAnimate(dom: any, direction: number) {
     const patt = /\d+/g;
@@ -336,24 +336,26 @@ export default class MapContorl {
   haoverMap = ['', '轻震动', '轻碰撞', '重碰撞', '翻滚', '急加速', '急减速', '急转弯'];
 
   getDirection(itm: number) {
+    let direction = '';
     if (itm > 337.5 || itm <= 22.5) {
-      return '北方';
+      direction = '北方';
     } else if (itm > 22.5 && itm <= 67.5) {
-      return '东北方';
+      direction = '东北方';
     } else if (itm > 67.5 && itm <= 112.5) {
-      return '东方';
+      direction = '东方';
     } else if (itm > 112.5 && itm <= 157.5) {
-      return '东南方';
+      direction = '东南方';
     } else if (itm > 157.5 && itm <= 202.5) {
-      return '南方';
+      direction = '南方';
     } else if (itm > 202.5 && itm <= 247.5) {
-      return '西南方';
+      direction = '西南方';
     } else if (itm > 247.5 && itm <= 292.5) {
-      return '西方';
+      direction = '西方';
     } else if (itm > 292.5 && itm <= 337.5) {
-      return '西北方';
+      direction = '西北方';
     }
-    return '未知';
+    direction = '未知';
+    return direction;
   }
 
   showTrackInfoBox(data: any) {

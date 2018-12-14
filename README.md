@@ -1,4 +1,4 @@
-# vue-car-admin
+# fzk-moinior
 
 ## Project setup
 ```
@@ -15,9 +15,20 @@ yarn run serve
 yarn run build
 ```
 
+### Run your tests
+```
+yarn run test
+```
+
 ### Lints and fixes files
 ```
 yarn run lint
 ```
 
-test aliyun
+### Run your end-to-end tests
+```
+yarn run test:e2e
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

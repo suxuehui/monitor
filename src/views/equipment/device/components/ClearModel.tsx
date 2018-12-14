@@ -1,16 +1,18 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Dialog, Row, Col, Button } from 'element-ui';
+import {
+  Dialog, Row, Col, Button,
+} from 'element-ui';
 import { deliveryCfg, clearCfg } from '@/api/equipment';
 import './ClearModel.less';
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-button': Button,
-  'el-col': Col,
-  'el-row': Row,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-button': Button,
+    'el-col': Col,
+    'el-row': Row,
+  },
+})
 export default class ClearModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;

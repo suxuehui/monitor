@@ -1,5 +1,9 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch, Emit,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option,
+} from 'element-ui';
 import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
 import { terminalType } from '@/api/equipment';
 import { getAllShopName, getAllShopNameMoni } from '@/api/app';
@@ -7,17 +11,17 @@ import { userCheck } from '@/api/permission';
 import './AddModal.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-select': Select,
-  'el-option': Option,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-select': Select,
+    'el-option': Option,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
@@ -140,12 +144,11 @@ export default class AddModal extends Vue {
     // 设备类型
     terminalType(null).then((res) => {
       if (res.result.resultCode === '0') {
-        res.entity.forEach((item: any) =>
-          this.typeList.push({
-            key: Math.random(),
-            value: item.enumValue,
-            label: item.name,
-          }));
+        res.entity.forEach((item: any) => this.typeList.push({
+          key: Math.random(),
+          value: item.enumValue,
+          label: item.name,
+        }));
         // 设备类型(全部)
         this.typeList.unshift({
           key: Math.random(),

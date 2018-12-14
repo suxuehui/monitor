@@ -8,10 +8,10 @@ import './index.less';
 
 @Component({
   components: {
-  'el-tag': Tag,
+    'el-tag': Tag,
   },
-  name:'Driving'
-  })
+  name: 'Driving',
+})
 export default class Driving extends Vue {
   // data
   // 普通筛选

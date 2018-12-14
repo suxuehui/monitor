@@ -56,18 +56,20 @@ import {
   Inject,
   Provide,
 } from 'vue-property-decorator';
-import { Form, FormItem, Button, Input, Message } from 'element-ui';
+import {
+  Form, FormItem, Button, Input, Message,
+} from 'element-ui';
 import config from '@/utils/config';
 import { login, getAuthCodeToken, getAuthCode } from '@/api/app';
 
 @Component({
   components: {
-  "el-form": Form,
-  "el-form-item": FormItem,
-  "el-button": Button,
-  "el-input": Input
-  }
-  })
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-button': Button,
+    'el-input': Input,
+  },
+})
 export default class Login extends Vue {
   codeImg = '';
   loginForm: {

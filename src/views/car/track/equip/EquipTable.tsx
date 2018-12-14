@@ -1,6 +1,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList } from '@/interface';
-import { Button, Tabs, TabPane, Tag, Tooltip } from 'element-ui';
+import {
+  Button, Tabs, TabPane, Tag, Tooltip,
+} from 'element-ui';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
 import DeployModel from './components/deployModel';
@@ -9,16 +11,16 @@ import './EquipTable.less';
 
 @Component({
   components: {
-  'el-button': Button,
-  'el-tabs': Tabs,
-  'el-tab-pane': TabPane,
-  'el-tag': Tag,
-  'deploy-model': DeployModel,
-  'reverse-model': ReverseModel,
-  'el-tooltip': Tooltip
+    'el-button': Button,
+    'el-tabs': Tabs,
+    'el-tab-pane': TabPane,
+    'el-tag': Tag,
+    'deploy-model': DeployModel,
+    'reverse-model': ReverseModel,
+    'el-tooltip': Tooltip,
   },
-  name:'EquipTable'
-  })
+  name: 'EquipTable',
+})
 export default class EquipTable extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [

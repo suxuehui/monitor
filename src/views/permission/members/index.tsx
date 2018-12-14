@@ -3,7 +3,9 @@ import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { exportExcel } from '@/api/export';
-import { roleSelect, userLock, userUnlock, userInfo } from '@/api/permission';
+import {
+  roleSelect, userLock, userUnlock, userInfo,
+} from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
 import './index.less';
@@ -13,12 +15,12 @@ interface ActiveType { key: any, value: any, label: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'el-tooltip': Tooltip,
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'el-tooltip': Tooltip,
   },
-  name:'Members'
-  })
+  name: 'Members',
+})
 export default class Members extends Vue {
   // data
   // 普通筛选

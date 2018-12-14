@@ -8,11 +8,11 @@ import AddModel from './components/Addmodel';
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-model': AddModel,
+    'el-tag': Tag,
+    'add-model': AddModel,
   },
-  name:'Series'
-  })
+  name: 'Series',
+})
 export default class Series extends Vue {
   // data
   // 普通筛选

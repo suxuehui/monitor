@@ -10,11 +10,11 @@ interface ActiveType { key: any, value: any, label: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-model': AddModel,
+    'el-tag': Tag,
+    'add-model': AddModel,
   },
-  name:'DeviceModel'
-  })
+  name: 'DeviceModel',
+})
 export default class DeviceModel extends Vue {
   // data
   // 普通筛选
@@ -88,7 +88,7 @@ export default class DeviceModel extends Vue {
   statusDom(row: any) {
     if (row.reboot === 1) {
       return <el-tag size="medium" type="success">是</el-tag>;
-    } else if (row.reboot === 2) {
+    } if (row.reboot === 2) {
       return <el-tag size="medium" type="danger">否</el-tag>;
     }
     return <el-tag size="medium" type="info">未知</el-tag>;

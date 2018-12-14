@@ -1,5 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import {
+  FilterFormList, tableList, tableTag, Opreat,
+} from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
 
@@ -16,12 +18,12 @@ interface ActiveType { key: any, value: any, label: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'handle-model': HandleModel,
-  'check-model': CheckModel,
+    'el-tag': Tag,
+    'handle-model': HandleModel,
+    'check-model': CheckModel,
   },
-  name:'Alarm'
-  })
+  name: 'Alarm',
+})
 export default class Alarm extends Vue {
   // data
   // 普通筛选

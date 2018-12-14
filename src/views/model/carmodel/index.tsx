@@ -3,15 +3,17 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
-import { modelInfo, modelDelete, brandAll, seriesAll } from '@/api/model';
+import {
+  modelInfo, modelDelete, brandAll, seriesAll,
+} from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-model': AddModel,
+    'el-tag': Tag,
+    'add-model': AddModel,
   },
-  name:'CarModel'
-  })
+  name: 'CarModel',
+})
 export default class CarModel extends Vue {
   // data
   // 普通筛选

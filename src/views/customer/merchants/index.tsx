@@ -1,29 +1,30 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
-import { Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col } from 'element-ui';
+import {
+  Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col,
+} from 'element-ui';
 import { exportExcel } from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';
-
 
 interface ActiveType { key: any, value: any, label: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'el-dialog': Dialog,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-select': Select,
-  'el-input': Input,
-  'el-button': Button,
-  'el-row': Row,
-  'el-col': Col,
-  'add-modal': AddModal,
+    'el-tag': Tag,
+    'el-dialog': Dialog,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-select': Select,
+    'el-input': Input,
+    'el-button': Button,
+    'el-row': Row,
+    'el-col': Col,
+    'add-modal': AddModal,
   },
-  name:'Merchants'
-  })
+  name: 'Merchants',
+})
 export default class Merchants extends Vue {
   // data
   // 普通筛选

@@ -1,18 +1,22 @@
-import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator';
-import { Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect } from 'element-ui';
+import {
+  Component, Prop, Vue, Emit, Watch,
+} from 'vue-property-decorator';
+import {
+  Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect,
+} from 'element-ui';
 import { vehicleCalvalid, vehicleDeviceRev } from '@/api/monitor';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-time-select': TimeSelect,
-  'el-col': Col,
-  'el-row': Row
-  }
-  })
+    'el-dialog': Dialog,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-time-select': TimeSelect,
+    'el-col': Col,
+    'el-row': Row,
+  },
+})
 export default class ReverseModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
   @Prop() private data: any;

@@ -1,5 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Card, Input, Row, Form, Col, Checkbox, Button, FormItem } from 'element-ui';
+import {
+  Card, Input, Row, Form, Col, Checkbox, Button, FormItem,
+} from 'element-ui';
 import { getAlarmSetting, getAlarmModelList, saveAlarmModelList } from '@/api/system';
 import './index.less';
 
@@ -9,17 +11,17 @@ interface Params {
 
 @Component({
   components: {
-  'el-card': Card,
-  'el-input': Input,
-  'el-row': Row,
-  'el-col': Col,
-  'el-checkbox': Checkbox,
-  'el-button': Button,
-  'el-form': Form,
-  'el-form-item': FormItem,
+    'el-card': Card,
+    'el-input': Input,
+    'el-row': Row,
+    'el-col': Col,
+    'el-checkbox': Checkbox,
+    'el-button': Button,
+    'el-form': Form,
+    'el-form-item': FormItem,
   },
-  name: 'Setting'
-  })
+  name: 'Setting',
+})
 export default class Setting extends Vue {
   alarmModelList: any = [];
   alarmValueList: any = [];
@@ -198,8 +200,8 @@ export default class Setting extends Vue {
             </div>) : null
           }
           {
-            this.saveBtn ?
-              <div class="bottom-btn">
+            this.saveBtn
+              ? <div class="bottom-btn">
                 <el-button id="button" on-click={this.onSubmit} disabled={this.btnDisable} loading={this.loading} type="primary">保存</el-button>
               </div> : null
           }

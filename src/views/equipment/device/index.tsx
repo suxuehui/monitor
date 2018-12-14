@@ -3,7 +3,9 @@ import { Tag, Button, Popover } from 'element-ui';
 import qs from 'qs';
 
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
+import {
+  terminalType, getBluetooth, resetTime, terminalExport,
+} from '@/api/equipment';
 import { orgTree } from '@/api/app';
 
 import PopconfirmBlock from '@/components/Popconfirm/index';
@@ -22,20 +24,20 @@ interface TerminalType { key: number, value: number, label: string, color: strin
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'el-button': Button,
-  'add-modal': AddModal,
-  'bind-modal': BindModal,
-  'accept-modal': AcceptModal,
-  'down-model': DownModel,
-  'clear-model': ClearModel,
-  'auth-model': AuthModel,
-  'unbind-model': UnbindModel,
-  'el-popover': Popover,
-  'popconfirm-block': PopconfirmBlock,
+    'el-tag': Tag,
+    'el-button': Button,
+    'add-modal': AddModal,
+    'bind-modal': BindModal,
+    'accept-modal': AcceptModal,
+    'down-model': DownModel,
+    'clear-model': ClearModel,
+    'auth-model': AuthModel,
+    'unbind-model': UnbindModel,
+    'el-popover': Popover,
+    'popconfirm-block': PopconfirmBlock,
   },
-  name:'Device'
-  })
+  name: 'Device',
+})
 export default class Device extends Vue {
   // data
   // 普通筛选
@@ -364,8 +366,8 @@ export default class Device extends Vue {
     return <div>
       <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
       {
-        this.resetBtn ?
-          <popconfirm-block
+        this.resetBtn
+          ? <popconfirm-block
             ref={`popBlock${row.id}`}
             title="确定要对此设备进行续期1年？"
             width="225"

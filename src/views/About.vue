@@ -102,4 +102,3 @@ export default class About extends Vue {
 <style lang="less" scoped>
 
 </style>
-
