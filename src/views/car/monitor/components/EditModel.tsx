@@ -1,5 +1,9 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch, Emit,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader,
+} from 'element-ui';
 import { allList } from '@/api/model';
 import { vehicleUpdate } from '@/api/monitor';
 import UploadBlock from '@/components/Upload/index.vue';
@@ -9,25 +13,27 @@ interface ActiveType { key: number, value: string, label: string }
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tag': Tag,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-select': Select,
-  'el-button': Button,
-  'el-option': Option,
-  'el-upload': Upload,
-  'el-cascader': Cascader,
-  'upload-Model': UploadBlock,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tag': Tag,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-select': Select,
+    'el-button': Button,
+    'el-option': Option,
+    'el-upload': Upload,
+    'el-cascader': Cascader,
+    'upload-Model': UploadBlock,
+  },
+})
 export default class EditModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -35,9 +41,11 @@ export default class EditModel extends Vue {
     vin: '',
     plateNum: '',
   };
+
   loading: boolean = false;
 
   brandList: any = [];
+
   props: any = {
     value: 'id',
     children: 'children',
@@ -46,15 +54,21 @@ export default class EditModel extends Vue {
 
   // 设备类型
   typeList: any = [];
+
   // 门店列表
   shopList: any = [];
 
   // 品牌、车系、车型
   brandId: any = null;
+
   seriesId: any = null;
+
   modelId: any = null;
+
   oldBrandId: any = null;
+
   oldSeriesId: any = null;
+
   oldModelId: any = null;
 
   // 车型列表
@@ -77,6 +91,7 @@ export default class EditModel extends Vue {
       },
     ],
   }
+
   // 验证车架号
   @Emit()
   checkVinRule(rule: any, value: string, callback: Function) {

@@ -1,29 +1,34 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
+} from 'element-ui';
 import { noticeAdd } from '@/api/message';
 import './AddModal.less';
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+  },
+})
 
 
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   // 编辑器
   editor: any = null;
+
   noticeTitle: any = '';
+
   loading: boolean = false;
 
   // 重置数据

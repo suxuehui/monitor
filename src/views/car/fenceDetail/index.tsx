@@ -1,9 +1,11 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Input, Button, Form, Col, Row, FormItem, Table, TableColumn, Pagination, Select, Option, TimeSelect, Tag, RadioGroup, RadioButton, Cascader } from 'element-ui';
-import { getCarList, findCar } from '@/api/equipment';
+import {
+  Input, Button, Form, Col, Row, FormItem, Table, TableColumn,
+  Pagination, Select, Option, TimeSelect, Tag, RadioGroup, RadioButton, Cascader,
+} from 'element-ui';
+import { findCar } from '@/api/equipment';
 import { gpsToAddress, addressToGps } from '@/api/app';
-import { getFenceDetail, updateFence, addFence } from '@/api/fence';
-import { getProvince, getCity, getDistrict } from '@/api/province';
+import { getFenceDetail, addFence } from '@/api/fence';
 import config from '@/utils';
 import './index.less';
 import '../../../styles/var.less';
@@ -14,29 +16,35 @@ const locaIcon = require('@/assets/point.png');
 interface AlarmType { key: any, value: any, label: string }
 @Component({
   components: {
-  'el-input': Input,
-  'el-button': Button,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-col': Col,
-  'el-row': Row,
-  'el-table': Table,
-  'el-table-column': TableColumn,
-  'el-pagination': Pagination,
-  'el-select': Select,
-  'el-option': Option,
-  'el-time-select': TimeSelect,
-  'el-tag': Tag,
-  'el-radio-group': RadioGroup,
-  'el-radio-button': RadioButton,
-  'el-cascader': Cascader,
+    'el-input': Input,
+    'el-button': Button,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-col': Col,
+    'el-row': Row,
+    'el-table': Table,
+    'el-table-column': TableColumn,
+    'el-pagination': Pagination,
+    'el-select': Select,
+    'el-option': Option,
+    'el-time-select': TimeSelect,
+    'el-tag': Tag,
+    'el-radio-group': RadioGroup,
+    'el-radio-button': RadioButton,
+    'el-cascader': Cascader,
   },
-  name: "FenceDetail"
-  })
+  name: 'FenceDetail',
+})
 export default class FenceDetail extends Vue {
-  BMap: any = null; // 百度地图对象
-  SMap: any = null; // 当前地图对象实例
-  BMapLib: any = null; // 百度地图lib对象
+  BMap: any = null;
+
+  // 百度地图对象
+  SMap: any = null;
+
+  // 当前地图对象实例
+  BMapLib: any = null;
+
+  // 百度地图lib对象
   constructor(props: any) {
     super(props);
     config.loadMap().then((BMap: any) => {
@@ -70,8 +78,7 @@ export default class FenceDetail extends Vue {
         this.SMap.panTo(new BMap.Point(position.lng, position.lat));
         gpsToAddress({ lat: position.lat, lng: position.lng }).then((res) => {
           if (res.status === 0) {
-            this.modelForm.address =
-              `${res.result.formatted_address}-${res.result.sematic_description}`;
+            this.modelForm.address = `${res.result.formatted_address}-${res.result.sematic_description}`;
           }
         });
       });
@@ -266,9 +273,7 @@ export default class FenceDetail extends Vue {
   getLocAddress(lng: any, lat: any) {
     gpsToAddress({ lat, lng }).then((res) => {
       if (res.status === 0) {
-        this.modelForm.address =
-          // `${res.result.formatted_address}-${res.result.sematic_description}`;
-          `${res.result.formatted_address}`;
+        this.modelForm.address = `${res.result.formatted_address}`;
       }
     });
   }
@@ -311,6 +316,7 @@ export default class FenceDetail extends Vue {
 
   // 覆盖物
   iMpl: any = {}
+
   // 线的样式
   styleOptions = {
     fillColor: 'blue', // 填充颜色。当参数为空时，圆形将没有填充效果。
@@ -322,10 +328,14 @@ export default class FenceDetail extends Vue {
 
   // 圆形半径、坐标
   inFenLat: number = 1;
+
   inFenLng: number = 1;
+
   circleRadius: number = 1;
+
   // 多边形坐标点
   polyPoint: any = {};
+
   // 矩形坐标点
   rectanglePoint: any = {};
 
@@ -340,15 +350,19 @@ export default class FenceDetail extends Vue {
     endTime: '',
     carList: [],
   }
+
   // 车辆列表
   tableData: any = []
+
   tableSelectData: any = []
+
   // 告警类型
   alarmTypes: AlarmType[] = [
     { key: 1, value: '1', label: '驶入监控' },
     { key: 2, value: '2', label: '驶出监控' },
     { key: 3, value: '3', label: '驶入驶出监控' },
   ]
+
   // 围栏形状
   alarmOptions: any = [
     { key: 0, value: 'circle', label: '圆形' },
@@ -359,16 +373,21 @@ export default class FenceDetail extends Vue {
 
   // 页数
   total: number = 1;
+
   pageSize: number = 5;
+
   pageCount: number = 5;
+
   // 多选项目
   multipleSelection: any = []
+
   // 时间范围
   startSet: any = {
     start: '00:00',
     step: '00:10',
     end: '24:00',
   }
+
   endSet: any = {
     start: '00:00',
     step: '00:10',
@@ -376,8 +395,12 @@ export default class FenceDetail extends Vue {
     minTime: this.modelForm.startTime,
   }
 
-  findCarPlate: string = ''; // 搜索车辆的车牌
-  fenceId: string = ''; // 围栏ID
+  findCarPlate: string = '';
+
+  // 搜索车辆的车牌
+  fenceId: string = '';
+
+  // 围栏ID
   options: any = [];
 
   detailHide: boolean = false; // 详情
@@ -461,6 +484,7 @@ export default class FenceDetail extends Vue {
   hideDetail() {
     this.detailHide = true;
   }
+
   showDetail() {
     this.detailHide = false;
   }

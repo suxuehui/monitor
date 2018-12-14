@@ -1,23 +1,31 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
 import { Dialog, Tooltip } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import MTable from '@/components/FilterTable/MTable';
 import './CheckLogModel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'm-table': MTable,
-  'el-tooltip': Tooltip,
-  }
-  })
+    'el-dialog': Dialog,
+    'm-table': MTable,
+    'el-tooltip': Tooltip,
+  },
+})
 export default class CheckLog extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   tableParams: any = {}
+
   url: string = '/terminal/accept/list';
+
   opreat: Opreat[] = [];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '验收员', prop: 'orgName', formatter: this.acceptPerson },
@@ -28,8 +36,8 @@ export default class CheckLog extends Vue {
   ];
 
   acceptPerson(row: any) {
-    return row.acceptOrgName && row.acceptRealName && row.acceptUsername ?
-      <el-tooltip class="item" effect="dark" content={`${row.acceptOrgName}+${row.acceptRealName}+${row.acceptUsername}`} placement="top">
+    return row.acceptOrgName && row.acceptRealName && row.acceptUsername
+      ? <el-tooltip class="item" effect="dark" content={`${row.acceptOrgName}+${row.acceptRealName}+${row.acceptUsername}`} placement="top">
         <div>
           <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
           <p>{`(${row.acceptUsername})`}</p>
@@ -62,6 +70,7 @@ export default class CheckLog extends Vue {
   tableClick() {
 
   }
+
   render() {
     return (
       <div>

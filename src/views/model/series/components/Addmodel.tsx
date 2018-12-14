@@ -1,26 +1,33 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option,
+} from 'element-ui';
 import { seriesAdd, seriesEdit } from '@/api/model';
 import './Addmodel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-upload': Upload,
-  'el-select': Select,
-  'el-option': Option
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-upload': Upload,
+    'el-select': Select,
+    'el-option': Option,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   @Prop() private brandAddList: any; // 品牌列表
 
   modelForm: any = {
@@ -29,10 +36,12 @@ export default class AddModal extends Vue {
     brandId: '',
     id: '',
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
 
 

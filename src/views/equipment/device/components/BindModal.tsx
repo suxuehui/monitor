@@ -1,5 +1,9 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch, Emit,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader,
+} from 'element-ui';
 import { brandAll, seriesAll, modelAll } from '@/api/model';
 import { terminalBind } from '@/api/equipment';
 import UploadBlock from '@/components/Upload/index.vue';
@@ -9,25 +13,27 @@ interface ActiveType { key: number, value: string, label: string }
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tag': Tag,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-select': Select,
-  'el-button': Button,
-  'el-option': Option,
-  'el-upload': Upload,
-  'el-cascader': Cascader,
-  'upload-Model': UploadBlock,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tag': Tag,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-select': Select,
+    'el-button': Button,
+    'el-option': Option,
+    'el-upload': Upload,
+    'el-cascader': Cascader,
+    'upload-Model': UploadBlock,
+  },
+})
 export default class BindModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -36,15 +42,20 @@ export default class BindModal extends Vue {
     vin: '',
     plateNum: '',
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
+
   headers: any = '';
+
   uploadUrl: string = '';
 
   brandList: any = [];
+
   props: any = {
     value: 'value',
     children: 'name',
@@ -52,15 +63,21 @@ export default class BindModal extends Vue {
 
   // 设备类型
   typeList: any = [];
+
   // 门店列表
   shopList: any = [];
 
   // 品牌、车系、车型
   brandId: number = 1;
+
   seriesId: number = 1;
+
   modelId: number = 1;
+
   brandName: string = '';
+
   seriesName: string = '';
+
   modelName: string = '';
 
   showUpBtn: boolean = true;
@@ -85,6 +102,7 @@ export default class BindModal extends Vue {
       },
     ],
   }
+
   logoUrl: any = [];
 
   // 验证车牌号

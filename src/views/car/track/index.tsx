@@ -11,18 +11,24 @@ const locaIcon = require('@/assets/point.png');
 
 @Component({
   components: {
-  'el-button': Button,
-  'el-tabs': Tabs,
-  'el-tab-pane': TabPane,
-  'record-table': RecordTable,
-  'equipment-table': EquipmentTable
+    'el-button': Button,
+    'el-tabs': Tabs,
+    'el-tab-pane': TabPane,
+    'record-table': RecordTable,
+    'equipment-table': EquipmentTable,
   },
-  name: "Track"
-  })
+  name: 'Track',
+})
 export default class Track extends Vue {
-  BMap: any = null; // 百度地图对象
-  SMap: any = null; // 当前地图对象实例
-  BMapLib: any = null; // 百度地图lib对象
+  BMap: any = null;
+
+  // 百度地图对象
+  SMap: any = null;
+
+  // 当前地图对象实例
+  BMapLib: any = null;
+
+  // 百度地图lib对象
   constructor(props: any) {
     super(props);
     config.loadMap().then((BMap: any) => {
@@ -47,6 +53,7 @@ export default class Track extends Vue {
 
   // 设备、记录
   deviceTable: boolean = false;
+
   logTable: boolean = false;
 
   // 权限设置
@@ -70,8 +77,7 @@ export default class Track extends Vue {
   getLocAddress(lng: any, lat: any) {
     gpsToAddress({ lat, lng }).then((res) => {
       if (res.status === 0) {
-        this.modelForm.address =
-          `${res.result.formatted_address}`;
+        this.modelForm.address = `${res.result.formatted_address}`;
       }
     });
   }
@@ -79,6 +85,7 @@ export default class Track extends Vue {
   modelForm: any = {}
 
   locChange: boolean = false;
+
   tabActive: string = 'record';
 
   handleSelectionChange(arr: any) {
@@ -103,6 +110,7 @@ export default class Track extends Vue {
   showTable(): any {
     this.locChange = false;
   }
+
   hideTable(): any {
     this.locChange = true;
   }
@@ -150,9 +158,9 @@ export default class Track extends Vue {
           <div ref="btnControl" id="btnControl" class={'loc-change-box-track'}>
             <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
             <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
-            {!this.locChange ?
-              <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button> :
-              <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
+            {!this.locChange
+              ? <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+              : <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
             }
           </div>
           <el-tabs
@@ -161,14 +169,14 @@ export default class Track extends Vue {
             on-tab-click={this.tabClick}
           >
             {
-              this.logTable ?
-                <el-tab-pane label="记录" id="record" name="record">
+              this.logTable
+                ? <el-tab-pane label="记录" id="record" name="record">
                   <record-table on-location={this.setMapLoc}></record-table>
                 </el-tab-pane> : null
             }
             {
-              this.deviceTable ?
-                <el-tab-pane label="设备" id="equipment" name="equipment">
+              this.deviceTable
+                ? <el-tab-pane label="设备" id="equipment" name="equipment">
                   <equipment-table></equipment-table>
                 </el-tab-pane> : null
             }

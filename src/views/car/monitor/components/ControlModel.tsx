@@ -1,18 +1,21 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Dialog, Row, Col, Button } from 'element-ui';
+import {
+  Dialog, Row, Col, Button,
+} from 'element-ui';
 import { controlCar } from '@/api/monitor';
 import './ControlModel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-button': Button,
+  },
+})
 export default class ControlModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   loading: boolean = false;

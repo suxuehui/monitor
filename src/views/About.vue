@@ -28,10 +28,13 @@ export default class About extends Vue {
       key: 'levelCode', type: 'levelcode', label: '所属门店', placeholder: '请选择门店', options: [],
     },
   ];
+
   filterParams: any = {
     caName: '', IMEI: '', levelCode: '', brandName: '', seriesName: '', vmName: '', vin: '',
   };
+
   outParams: any = { levelCode: '' };
+
   tableList: tableList[] = [
     {
       label: '品牌', prop: 'brandName',
@@ -50,6 +53,7 @@ export default class About extends Vue {
       label: 'IMEI', prop: 'IMEI',
     },
   ];
+
   deviceOptions: tableTag[] = [
     {
       key: 1, color: 'green', value: 1, label: '待发货',
@@ -70,6 +74,7 @@ export default class About extends Vue {
       key: 6, color: 'red', value: 6, label: '返厂',
     },
   ];
+
   filterGrade: FilterFormList[] = [
     {
       key: 'caName', type: 'input', label: '客户姓名', placeholder: '请输入客户姓名',
@@ -93,6 +98,7 @@ export default class About extends Vue {
       key: 'vin', type: 'input', label: '车架号', placeholder: '请输入车架号',
     },
   ];
+
   @Emit()
   change() {
   }
@@ -102,4 +108,3 @@ export default class About extends Vue {
 <style lang="less" scoped>
 
 </style>
-

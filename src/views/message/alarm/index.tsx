@@ -1,5 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import {
+  FilterFormList, tableList, tableTag, Opreat,
+} from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
 
@@ -16,12 +18,12 @@ interface ActiveType { key: any, value: any, label: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'handle-model': HandleModel,
-  'check-model': CheckModel,
+    'el-tag': Tag,
+    'handle-model': HandleModel,
+    'check-model': CheckModel,
   },
-  name:'Alarm'
-  })
+  name: 'Alarm',
+})
 export default class Alarm extends Vue {
   // data
   // 普通筛选
@@ -61,6 +63,7 @@ export default class Alarm extends Vue {
       change: this.dateChange,
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
@@ -110,6 +113,7 @@ export default class Alarm extends Vue {
       change: this.dateChange,
     },
   ];
+
   // 筛选参数
   filterParams: any = {
     levelcode: '',
@@ -120,10 +124,12 @@ export default class Alarm extends Vue {
     vin: '',
     query: [null, null],
   };
+
   outParams: any = {
     queryStartTime: '',
     queryEndTime: '',
   };
+
   // 请求地址
   url: string = '/message/alarm/list';
 
@@ -145,6 +151,7 @@ export default class Alarm extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
@@ -181,6 +188,7 @@ export default class Alarm extends Vue {
       queryEndTime: '',
     };
   }
+
   clearOut() {
     const date = new Date();
     const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
@@ -193,10 +201,12 @@ export default class Alarm extends Vue {
   checkLoc(row: any) {
     return <i class="iconfont iconfont-location" on-click={() => { this.checkMapLoc(row); }} ></i>;
   }
+
   statusDom(row: any) {
     const type = row.status ? 'success' : 'danger';
     return <el-tag size="medium" type={type}>{row.status ? '已处理' : '未处理'}</el-tag>;
   }
+
   checkMapLoc(row: any) {
     if (row.lat > 0) {
       const point: any = CoordTrasns.transToBaidu(
@@ -286,9 +296,12 @@ export default class Alarm extends Vue {
   }
 
   modelForm: any = {};
+
   checkData: any = {}
+
   // 处理
   handleVisible: boolean = false;
+
   // 查看
   checkVisible: boolean = false;
 
@@ -308,6 +321,7 @@ export default class Alarm extends Vue {
       this.handleVisible = true;
     }
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.checkData = '';

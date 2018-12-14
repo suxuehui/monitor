@@ -41,53 +41,71 @@
 </template>
 
 <script lang="ts">
-import { Prop, Emit, Vue, Component } from 'vue-property-decorator';
+import {
+  Prop, Emit, Vue, Component,
+} from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface/index';
 import MFilter from './MFilter';
 import MTable from './MTable';
 
 @Component({
   components: {
-  "m-filter": MFilter,
-  "m-table": MTable
-  }
-  })
+    'm-filter': MFilter,
+    'm-table': MTable,
+  },
+})
 export default class FilterTable extends Vue {
   // 筛选表单生成参数
   @Prop() private filterList!: FilterFormList[];
+
   // 筛选表单高级生成参数
   @Prop() private filterGrade!: FilterFormList[];
+
   // 筛选表单存储数据参数
   @Prop({ default: {} })
   private filterParams!: any;
+
   // 外部参数
   @Prop({ default: {} })
   private outParams!: any;
+
   // 是否展示新增按钮
   @Prop() private addBtn!: boolean;
+
   // 是否展示导出按钮
   @Prop() private exportBtn!: boolean;
+
   // 表格参数
   @Prop() private tableList!: tableList[];
+
   // 请求数据地址
   @Prop() private url!: string;
+
   // 请求数据类型
   @Prop({ default: 'formData' })
   private dataType!: string;
+
   // 表格行ID
   @Prop() private rowKey!: string;
+
   // 操作参数
   @Prop() private opreat!: Opreat[];
+
   // 操作栏width
   @Prop() private opreatWidth!: string;
+
   // 本地存储字段名
   @Prop({ default: 'filterTable' }) private localName!: string;
+
   // 请求错误回调事件
   @Prop() private fetchError!: string;
+
   // 默认分页数量
   @Prop() private defaultPageSize!: number;
+
   // 数据返回格式
   @Prop() private BackParams!: object;
+
   // 请求数据方法
   @Prop() private fetchType!: string;
 
@@ -95,6 +113,7 @@ export default class FilterTable extends Vue {
 
   @Prop({ default: false })
   private highlightCurrentRow!: boolean;
+
   // 初始化请求参数
   tableParams: any = Object.assign(this.filterParams, this.outParams);
 
@@ -108,8 +127,9 @@ export default class FilterTable extends Vue {
     const saveList = window.localStorage.getItem(this.localName);
     if (saveList) {
       const checkList = saveList.split(',');
-      const filterList = this.defalutTableList.filter((item, index) =>
-        checkList.indexOf(item.prop) > -1);
+      const filterList = this.defalutTableList.filter(
+        (item, index) => checkList.indexOf(item.prop) > -1,
+      );
       this.changeTableList = filterList;
     } else {
       this.changeTableList = this.tableList.filter(item => true);
@@ -139,6 +159,7 @@ export default class FilterTable extends Vue {
       table.reload();
     }, 100);
   }
+
   @Emit()
   clearFun() {
     this.$emit('clearOutParams');
@@ -148,32 +169,39 @@ export default class FilterTable extends Vue {
   addBack() {
     this.$emit('addBack');
   }
+
   @Emit()
   downBack(data: any) {
     this.$emit('downBack', data);
   }
+
   @Emit()
   tableHeight(params: any) {
     const table: any = this.$refs.MTable;
     table.$el.style.marginTop = `${params - 48}px`;
   }
+
   @Emit()
   exportBack() {
     this.$emit('exportBack');
   }
+
   @Emit()
   setTable(list: Array<string>) {
     const filterList = this.defalutTableList.filter((item, index) => list.indexOf(item.prop) > -1);
     this.changeTableList = filterList;
   }
+
   @Emit()
   tableClick(key: string, row: any) {
     this.$emit('menuClick', key, row);
   }
+
   @Emit()
   selectChange(val: any) {
     this.$emit('selectChange', val);
   }
+
   @Emit()
   currentChange(val: any) {
     this.$emit('currentChange', val);
@@ -187,4 +215,3 @@ export default class FilterTable extends Vue {
   min-height: e("calc(100vh - 100px)");
 }
 </style>
-

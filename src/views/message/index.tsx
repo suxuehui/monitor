@@ -13,4 +13,3 @@ export default class Message extends Vue {
     );
   }
 }
-

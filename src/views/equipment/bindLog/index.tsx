@@ -1,5 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Card, Form, FormItem, Input, Row, Col, Tag, Tooltip, Button } from 'element-ui';
+import {
+  Card, Form, FormItem, Input, Row, Col, Tag, Tooltip, Button,
+} from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
@@ -10,30 +12,34 @@ import './index.less';
 const noPic = require('@/assets/noPic.png');
 @Component({
   components: {
-  'el-card': Card,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-row': Row,
-  'el-col': Col,
-  "m-table": MTable,
-  'el-button' :Button,
-  'checkLog-model': CheckLogModel,
-  'checkPic-model': CheckPicModel,
-  'el-tag': Tag,
-  'el-tooltip': Tooltip,
+    'el-card': Card,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-row': Row,
+    'el-col': Col,
+    'm-table': MTable,
+    'el-button': Button,
+    'checkLog-model': CheckLogModel,
+    'checkPic-model': CheckPicModel,
+    'el-tag': Tag,
+    'el-tooltip': Tooltip,
   },
-  name:'BindLog'
-  })
+  name: 'BindLog',
+})
 export default class BindLog extends Vue {
   modelForm: any = {}
+
   tableParams: any = {
     page: true,
     pageNum: 1,
     pageSize: 5,
   }
+
   defaultPageSize: any = null;
+
   url: string = '/terminal/ops/list';
+
   opreat: Opreat[] = [
     {
       key: 'checkLog',
@@ -43,6 +49,7 @@ export default class BindLog extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
@@ -55,6 +62,7 @@ export default class BindLog extends Vue {
 
   // 新增、导出按钮展示
   acceptBtn: boolean = true;
+
   created() {
     const getNowRoles: string[] = [
       // 操作
@@ -88,16 +96,20 @@ export default class BindLog extends Vue {
 
   // 验收记录
   checkLogVisible: boolean = false;
+
   checkLogId: any = {};
+
   // 查看图片
   checkPicVisible: boolean = false;
+
   checkPicUrl: string = '';
+
   checkPicTitle: string = '';
 
   opsPerson(row: any) {
     const str= `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
-    return row.opsOrgName && row.opsRealName && row.opsUsername ?
-      <el-tooltip class="item" effect="dark" content={str} placement="top">
+    return row.opsOrgName && row.opsRealName && row.opsUsername
+      ? <el-tooltip class="item" effect="dark" content={str} placement="top">
         <div>
           <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
           <p>{`(${row.opsUsername})`}</p>
@@ -108,8 +120,7 @@ export default class BindLog extends Vue {
   showInstallPic(row: any) {
     if (row.installUrl !== null) {
       const imgArr = row.installUrl.indexOf(',') > 0 ? row.installUrl.split(',') : [row.installUrl];
-      return imgArr.map((item: any, index: number) =>
-        <div on-click={() => this.clickInstall(item, index)} class="pic">
+      return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
           <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
         </div>);
     }
@@ -135,8 +146,7 @@ export default class BindLog extends Vue {
   showVinPic(row: any) {
     if (row.vinUrl !== null) {
       const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
-      return imgArr.map((item: any, index: number) =>
-        <div on-click={() => this.clickInstall(item, index)} class="pic">
+      return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
           <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
         </div>);
     }

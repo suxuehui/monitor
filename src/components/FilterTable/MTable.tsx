@@ -1,5 +1,9 @@
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-import { Table, TableColumn, Pagination, Dropdown, DropdownItem, DropdownMenu, Tooltip } from 'element-ui';
+import {
+  Component, Prop, Vue, Emit,
+} from 'vue-property-decorator';
+import {
+  Table, TableColumn, Pagination, Dropdown, DropdownItem, DropdownMenu, Tooltip,
+} from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import request from '@/utils/request';
 import Popconfirm from '@/components/Popconfirm';
@@ -8,21 +12,24 @@ import './MTable.less';
 
 @Component({
   components: {
-  'el-table': Table,
-  'el-table-column': TableColumn,
-  'pop-confirm': Popconfirm,
-  'el-pagination': Pagination,
-  'el-tooltip': Tooltip,
-  'm-spin': Spin,
-  'el-dropdown': Dropdown,
-  'el-dropdown-item': DropdownItem,
-  'el-dropdown-menu': DropdownMenu,
-  }
-  })
+    'el-table': Table,
+    'el-table-column': TableColumn,
+    'pop-confirm': Popconfirm,
+    'el-pagination': Pagination,
+    'el-tooltip': Tooltip,
+    'm-spin': Spin,
+    'el-dropdown': Dropdown,
+    'el-dropdown-item': DropdownItem,
+    'el-dropdown-menu': DropdownMenu,
+  },
+})
 export default class MTable extends Vue {
   @Prop() private tableList!: tableList[];
+
   @Prop() private url!: string;
+
   @Prop() private dataType!: string;
+
   @Prop({
     default: () => ({
       code: 'result.resultCode',
@@ -38,22 +45,31 @@ export default class MTable extends Vue {
     codeOK: string | number,
     total: string
   };
+
   // 行ID
   @Prop({ default: 'id' }) private rowKey!: string;
+
   // 操作栏数据
   @Prop({ default: () => [] }) private opreat!: Opreat[];
+
   // 操作栏width
   @Prop({ default: '100px' }) private opreatWidth!: string;
+
   // 本地存储名称
   @Prop({ default: 'filter-table' }) private localName!: string;
+
   // 请求报错回调
   @Prop() private fetchError!: Function;
+
   // 表格列数据
   @Prop() private tableParams!: any;
+
   // 外部参数
   @Prop() private outParams!: any;
+
   // 请求类型
   @Prop({ default: 'post' }) private fetchType!: string;
+
   // 表格分页大小参数
   @Prop({ default: () => [5, 10, 15, 20, 50, 100] }) private pageSizeList!: number[];
 
@@ -62,8 +78,10 @@ export default class MTable extends Vue {
   @Prop() private highlightCurrentRow!: boolean;
 
   @Prop() private headerAlign!: string;
+
   // data
   tableData: any = [];
+
   pageParams: {
     pageSize: number,
     pageNum: number,
@@ -73,9 +91,12 @@ export default class MTable extends Vue {
     pageNum: 1,
     page: true,
   };
+
   loading: boolean = false;
+
   // 数据总数
   dataTotal: number = 0;
+
   created() {
     this.getData();
   }
@@ -130,6 +151,7 @@ export default class MTable extends Vue {
       }
     });
   }
+
   getValue(position: string, data: any) {
     const keyList = position.split('.');
     keyList.forEach((item) => {
@@ -143,10 +165,12 @@ export default class MTable extends Vue {
     });
     return data;
   }
+
   // 选择变化
   selectChange(val: any) {
     this.$emit('selectChange', val);
   }
+
   // 单选
   currentChange(val: any) {
     this.$emit('currentChange', val);
@@ -177,9 +201,8 @@ export default class MTable extends Vue {
           {
             this.tableList.map((item, index) => {
               if (!item.formatter) {
-                item.formatter = (row: any) =>
-                  (row[item.prop] !== null && row[item.prop] !== '' ?
-                    <el-tooltip effect="dark" content={row[item.prop] !== null ? `${row[item.prop]}` : '--'} placement="top">
+                item.formatter = (row: any) => (row[item.prop] !== null && row[item.prop] !== ''
+                  ? <el-tooltip effect="dark" content={row[item.prop] !== null ? `${row[item.prop]}` : '--'} placement="top">
                       <p class="text-over">{row[item.prop] !== null ? `${row[item.prop]}` : '--'}</p>
                     </el-tooltip> : '--');
               }
@@ -240,7 +263,7 @@ export default class MTable extends Vue {
               return <a id={`${item.key}-${row[item.rowKey]}`} key={indexs} class="btn disabled">
                 {typeof item.text === 'function' ? item.text(row) : item.text}
               </a>;
-            } else if (typeof item.color === 'function'
+            } if (typeof item.color === 'function'
               && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) {
               return <pop-confirm
                 keyName={item.key}
@@ -251,7 +274,7 @@ export default class MTable extends Vue {
                   {typeof item.text === 'function' ? item.text(row) : item.text}
                 </a>
               </pop-confirm>;
-            } else if (typeof item.color === 'string'
+            } if (typeof item.color === 'string'
               && whiteList.indexOf(item.color) >= 0) {
               return <pop-confirm
                 keyName={item.key}

@@ -3,7 +3,9 @@ import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { exportExcel } from '@/api/export';
-import { roleSelect, userLock, userUnlock, userInfo } from '@/api/permission';
+import {
+  roleSelect, userLock, userUnlock, userInfo,
+} from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
 import './index.less';
@@ -13,12 +15,12 @@ interface ActiveType { key: any, value: any, label: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'el-tooltip': Tooltip,
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'el-tooltip': Tooltip,
   },
-  name:'Members'
-  })
+  name: 'Members',
+})
 export default class Members extends Vue {
   // data
   // 普通筛选
@@ -44,15 +46,19 @@ export default class Members extends Vue {
       placeholder: '成员姓名或登录账号',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     roleId: '',
     active: '',
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/sys/user/list';
 
@@ -87,6 +93,7 @@ export default class Members extends Vue {
   }
 
   roleTypeList: RoleType[] = []
+
   roleTypeAddList: RoleType[] = []
 
   opreat: Opreat[] = [
@@ -108,6 +115,7 @@ export default class Members extends Vue {
       disabled: (row: any) => (row.userName === 'admin'),
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '成员姓名', prop: 'realName' },
@@ -151,7 +159,9 @@ export default class Members extends Vue {
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   addRoleList: any = [];
 
   modelForm: any = {};
@@ -195,11 +205,13 @@ export default class Members extends Vue {
       }
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.modelForm = {};
     this.addTitle = '新增成员';
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -209,6 +221,7 @@ export default class Members extends Vue {
       addBlock.resetData();
     }, 200);
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;

@@ -1,13 +1,15 @@
-import { Component, Prop, Emit, Vue, Inject, Provide } from 'vue-property-decorator';
+import {
+  Component, Vue,
+} from 'vue-property-decorator';
 import AppMain from '@/components/Layout/AppMain';
 import Loader from '@/components/Loader/index.vue';
 import './App.less';
 
 @Component({
   components: {
-  'loader': Loader,
-  }
-  })
+    loader: Loader,
+  },
+})
 export default class App extends Vue {
   created() {
     this.isMobile();
@@ -15,6 +17,7 @@ export default class App extends Vue {
       this.isMobile();
     };
   }
+
   // 屏幕width 是否 < 768
   isMobile() {
     const { isMobile } = this.$store.state.app;
@@ -26,6 +29,7 @@ export default class App extends Vue {
       this.$store.dispatch('ChangeMobile', true);
     }
   }
+
   render() {
     const self = this;
     return (

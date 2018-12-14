@@ -1,19 +1,21 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList } from '@/interface';
-import { Button, Tabs, TabPane, Tooltip } from 'element-ui';
+import {
+  Button, Tabs, TabPane, Tooltip,
+} from 'element-ui';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
 
 import './RecordTable.less';
 @Component({
   components: {
-  'el-button': Button,
-  'el-tabs': Tabs,
-  'el-tab-pane': TabPane,
-  'el-tooltip': Tooltip,
+    'el-button': Button,
+    'el-tabs': Tabs,
+    'el-tab-pane': TabPane,
+    'el-tooltip': Tooltip,
   },
-  name:'RecordTable'
-  })
+  name: 'RecordTable',
+})
 export default class RecordTable extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [
@@ -59,6 +61,7 @@ export default class RecordTable extends Vue {
       },
     },
   ];
+
   tableList: tableList[] = [
     {
       label: '车牌',
@@ -84,8 +87,11 @@ export default class RecordTable extends Vue {
       prop: 'imei',
     },
   ];
+
   opreat: Opreat[] = [];
+
   filterParams: object = {};
+
   backParams: object = {
     code: 'result.resultCode',
     codeOK: '0',
@@ -93,7 +99,10 @@ export default class RecordTable extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
-  tableUrl: string = '/vehicle/tracke/findRecordList'; // 表格请求地址
+
+  tableUrl: string = '/vehicle/tracke/findRecordList';
+
+  // 表格请求地址
   outParams: any = {
     startDate: '',
     endDate: '',
@@ -113,6 +122,7 @@ export default class RecordTable extends Vue {
   }
 
   exportBtn: boolean = false;
+
   created() {
     if (this.$route.params.id) {
       this.outParams.vehicleId = this.$route.params.id;
@@ -138,6 +148,7 @@ export default class RecordTable extends Vue {
       vehicleId: this.$route.params.id,
     };
   }
+
   timeRangeChange(val: any) {
     if (val) {
       if (val.length === 2) {
@@ -173,6 +184,7 @@ export default class RecordTable extends Vue {
     const data1 = qs.stringify(data);
     exportExcel(data1, '追踪记录列表', '/vehicle/tracke/exportExcelRecord');
   }
+
   render() {
     return (
       <div class="container-record">

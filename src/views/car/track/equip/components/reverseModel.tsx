@@ -1,20 +1,25 @@
-import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator';
-import { Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect } from 'element-ui';
+import {
+  Component, Prop, Vue, Emit, Watch,
+} from 'vue-property-decorator';
+import {
+  Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect,
+} from 'element-ui';
 import { vehicleCalvalid, vehicleDeviceRev } from '@/api/monitor';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-time-select': TimeSelect,
-  'el-col': Col,
-  'el-row': Row
-  }
-  })
+    'el-dialog': Dialog,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-time-select': TimeSelect,
+    'el-col': Col,
+    'el-row': Row,
+  },
+})
 export default class ReverseModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   @Watch('data')
@@ -40,6 +45,7 @@ export default class ReverseModel extends Vue {
     duration: '',
     valdate: '',
   };
+
   loading: boolean = false;
 
   rules = {
@@ -79,6 +85,7 @@ export default class ReverseModel extends Vue {
       }
     }, 500);
   }
+
   // 验证追踪时长
   @Emit()
   checkDuration(rule: any, value: string, callback: Function) {
@@ -112,6 +119,7 @@ export default class ReverseModel extends Vue {
       valdate: '',
     };
   }
+
   timeChange(val: any) {
     const obj = {
       id: this.data.id,

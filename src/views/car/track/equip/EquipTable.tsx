@@ -1,6 +1,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { tableList, Opreat, FilterFormList } from '@/interface';
-import { Button, Tabs, TabPane, Tag, Tooltip } from 'element-ui';
+import {
+  Button, Tabs, TabPane, Tag, Tooltip,
+} from 'element-ui';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
 import DeployModel from './components/deployModel';
@@ -9,16 +11,16 @@ import './EquipTable.less';
 
 @Component({
   components: {
-  'el-button': Button,
-  'el-tabs': Tabs,
-  'el-tab-pane': TabPane,
-  'el-tag': Tag,
-  'deploy-model': DeployModel,
-  'reverse-model': ReverseModel,
-  'el-tooltip': Tooltip
+    'el-button': Button,
+    'el-tabs': Tabs,
+    'el-tab-pane': TabPane,
+    'el-tag': Tag,
+    'deploy-model': DeployModel,
+    'reverse-model': ReverseModel,
+    'el-tooltip': Tooltip,
   },
-  name:'EquipTable'
-  })
+  name: 'EquipTable',
+})
 export default class EquipTable extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [
@@ -36,6 +38,7 @@ export default class EquipTable extends Vue {
       placeholder: '请输入imei号',
     },
   ];
+
   tableList: tableList[] = [
     {
       label: 'imei号',
@@ -94,6 +97,7 @@ export default class EquipTable extends Vue {
       formatter: this.formatStatus,
     },
   ];
+
   opreat: Opreat[] = [
     {
       key: 'deploy',
@@ -110,10 +114,12 @@ export default class EquipTable extends Vue {
       roles: true,
     },
   ];
+
   filterParams: object = {
     clientType: '',
     imei: '',
   };
+
   backParams: object = {
     code: 'result.resultCode',
     codeOK: '0',
@@ -121,7 +127,10 @@ export default class EquipTable extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
-  tableUrl: string = '/vehicle/tracke/findTerminalList'; // 表格请求地址
+
+  tableUrl: string = '/vehicle/tracke/findTerminalList';
+
+  // 表格请求地址
   outParams: any = {
     vehicleId: '',
   }
@@ -189,6 +198,7 @@ export default class EquipTable extends Vue {
   typeList: any = [];
 
   exportBtn: boolean = true;
+
   // 权限设置
   created() {
     if (this.$route.params.id) {
@@ -207,10 +217,12 @@ export default class EquipTable extends Vue {
       this.exportBtn = !!(res[3]);
     });
   }
+
   deviceTypes: any[] = [
     { key: '', value: '', label: '型号(全部)' },
     { key: '17', value: '17', label: 'GL500' },
   ]
+
   mounted() {
     this.filterList[0].options = this.deviceTypes;
   }
@@ -222,6 +234,7 @@ export default class EquipTable extends Vue {
   }
 
   deployVisible: boolean = false;
+
   reverseVisible: boolean = false;
 
   rowData: any = {};
@@ -261,6 +274,7 @@ export default class EquipTable extends Vue {
     this.deployVisible = false;
     this.reverseVisible = false;
   }
+
   // 关闭后刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;

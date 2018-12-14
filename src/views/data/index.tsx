@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component({name:'Data'})
+@Component({ name: 'Data' })
 export default class Data extends Vue {
   render() {
     const { keepList } = this.$store.state.app;
@@ -13,4 +13,3 @@ export default class Data extends Vue {
     );
   }
 }
-

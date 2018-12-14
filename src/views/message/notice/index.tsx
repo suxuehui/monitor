@@ -1,5 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { FilterFormList, tableList, tableTag, Opreat } from '@/interface';
+import {
+  FilterFormList, tableList, tableTag, Opreat,
+} from '@/interface';
 import { Tag, Tooltip } from 'element-ui';
 import { noticeDelete, noticeView } from '@/api/message';
 import AddModal from '@/views/message/notice/components/AddModal';
@@ -7,13 +9,13 @@ import CheckModel from '@/views/message/notice/components/CheckModel';
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'check-modal': CheckModel,
-  'el-tooltip': Tooltip,
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'check-modal': CheckModel,
+    'el-tooltip': Tooltip,
   },
-  name: 'Notice'
-  })
+  name: 'Notice',
+})
 export default class Notice extends Vue {
   // data
   // 普通筛选
@@ -25,13 +27,17 @@ export default class Notice extends Vue {
       placeholder: '请输入标题',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/message/notice/list';
 
@@ -51,6 +57,7 @@ export default class Notice extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '标题', prop: 'title' },
@@ -84,7 +91,9 @@ export default class Notice extends Vue {
 
   // 新增
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   // 查看
   checkVisible: boolean = false;
 
@@ -92,6 +101,7 @@ export default class Notice extends Vue {
     title: '',
     content: '',
   };
+
   checkData: any = {}
 
   contentChange(row: any) {
@@ -125,21 +135,25 @@ export default class Notice extends Vue {
       });
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.modelForm = null;
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
     this.checkVisible = false;
   }
+
   // 关闭后刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
     this.closeModal();
   }
+
   render(h: any) {
     return (
       <div class="member-wrap">

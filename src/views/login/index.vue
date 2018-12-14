@@ -56,33 +56,41 @@ import {
   Inject,
   Provide,
 } from 'vue-property-decorator';
-import { Form, FormItem, Button, Input, Message } from 'element-ui';
+import {
+  Form, FormItem, Button, Input, Message,
+} from 'element-ui';
 import config from '@/utils/config';
 import { login, getAuthCodeToken, getAuthCode } from '@/api/app';
 
 @Component({
   components: {
-  "el-form": Form,
-  "el-form-item": FormItem,
-  "el-button": Button,
-  "el-input": Input
-  }
-  })
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-button': Button,
+    'el-input': Input,
+  },
+})
 export default class Login extends Vue {
   codeImg = '';
+
   loginForm: {
     username: string;
     password: string;
     captcha: string;
   } = { username: '', password: '', captcha: '' };
+
   loginRules = {
     username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
     password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
     captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
   };
+
   config = config;
+
   imgToken = '';
+
   loading = false;
+
   created() {
     getAuthCodeToken(null).then((res) => {
       this.imgToken = res.entity;
@@ -90,6 +98,7 @@ export default class Login extends Vue {
       this.getCodeImg();
     });
   }
+
   getCodeImg() {
     getAuthCode({ account: this.imgToken }, this.imgToken).then((response) => {
       if (response.data) {
@@ -97,6 +106,7 @@ export default class Login extends Vue {
       }
     });
   }
+
   @Emit()
   submitForm() {
     (this.$refs.loginForm as Form).validate((valid: boolean) => {
@@ -123,10 +133,12 @@ export default class Login extends Vue {
       return false;
     });
   }
+
   @Emit()
   resetForm() {
     (this.$refs.loginForm as Form).resetFields();
   }
+
   @Emit()
   fleshCode() {
     this.codeImg = `/sys/user/getImg?r=${Math.random()}`;

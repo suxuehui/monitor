@@ -1,4 +1,6 @@
-import { Component, Prop, Emit, Vue, Watch, Provide } from 'vue-property-decorator';
+import {
+  Component, Prop, Emit, Vue, Watch, Provide,
+} from 'vue-property-decorator';
 import { Tabs, TabPane } from 'element-ui';
 import config from '@/utils/config';
 import { menuItem } from '@/interface';
@@ -9,12 +11,13 @@ import './AppMain.less';
 
 @Component({
   components: {
-  'el-tabs': Tabs,
-  'el-tab-pane': TabPane,
-  }
-  })
+    'el-tabs': Tabs,
+    'el-tab-pane': TabPane,
+  },
+})
 export default class AppMain extends Vue {
   @Prop() private menuData!: menuItem[];
+
   // data
   onTabs: any = '1';
 
@@ -27,6 +30,7 @@ export default class AppMain extends Vue {
   removeTab(index: string) {
     this.$store.dispatch('RemoveTab', index);
   }
+
   @Emit()
   tabChange(index: any) {
     this.tabList.forEach((item: any, indexs: number) => {

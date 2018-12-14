@@ -1,4 +1,6 @@
-import { Component, Prop, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Prop, Emit, Vue,
+} from 'vue-property-decorator';
 import {
   Row,
   Col,
@@ -23,59 +25,75 @@ import './MFilter.less';
 
 @Component({
   components: {
-  'el-input': Input,
-  'el-option': Option,
-  'el-select': Select,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-time-picker': TimePicker,
-  'el-date-picker': DatePicker,
-  'el-cascader': Cascader,
-  'el-row': Row,
-  'el-col': Col,
-  'el-button': Button,
-  'el-dialog': Dialog,
-  'el-checkbox-group': CheckboxGroup,
-  'el-checkbox': Checkbox,
-  'el-checkbox-button': CheckboxButton,
-  }
-  })
+    'el-input': Input,
+    'el-option': Option,
+    'el-select': Select,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-time-picker': TimePicker,
+    'el-date-picker': DatePicker,
+    'el-cascader': Cascader,
+    'el-row': Row,
+    'el-col': Col,
+    'el-button': Button,
+    'el-dialog': Dialog,
+    'el-checkbox-group': CheckboxGroup,
+    'el-checkbox': Checkbox,
+    'el-checkbox-button': CheckboxButton,
+  },
+})
 export default class MFilter extends Vue {
   // 筛选表单生成参数
   @Prop()
   private filterList!: FilterFormList[];
+
   // 筛选表单高级生成参数
   @Prop()
   private filterGrade!: FilterFormList[];
+
   // 筛选表单存储数据参数
   @Prop({ default: {} }) private filterParams!: any;
+
   // 是否展示新增按钮
   @Prop({ default: false }) private addBtn!: boolean;
+
   // 是否展示导出按钮
   @Prop({ default: false }) private exportBtn!: boolean;
+
   // 导出按钮回调事件
   @Prop({ default: () => { } }) private exportFun!: Function;
+
   // tablelist 参数
   @Prop() private tableList!: tableList[];
+
   @Prop({ default: '100px' }) private labelWidth!: string;
 
   // 按钮是否能点击
   @Prop({ default: true }) private btnFalse!: boolean;
 
   @Prop() private localName!: string;
+
   // data
   params: any = JSON.parse(JSON.stringify(this.filterParams));
+
   // 初始化表格筛选参数
   initParams: any = JSON.parse(JSON.stringify(this.filterParams));
+
   btnXl: number = 24 - (this.filterList.length * 3);
+
   btnlg: number = 24 - (this.filterList.length * 3);
+
   btnmd: number = 24 - (this.filterList.length * 4);
+
   // 弹出窗开关
   setModel: boolean = false;
+
   // 表格显示的列表
   checkList: Array<string> = [];
+
   // 高级搜索开关
   showGrade: boolean = false;
+
   // 高级筛选高度
   tableMarginTop: number = 0;
 
@@ -106,6 +124,7 @@ export default class MFilter extends Vue {
     this.$store.dispatch('getNotice');
     this.$store.dispatch('getAlarm');
   }
+
   @Emit()
   reset(): void {
     this.params = JSON.parse(JSON.stringify(this.initParams));
@@ -114,27 +133,32 @@ export default class MFilter extends Vue {
     this.$store.dispatch('getAlarm');
     this.$emit('search', this.params);
   }
+
   @Emit()
   levelcodeChange(val: any, key: string): void {
     const value = JSON.parse(JSON.stringify(val));
     this.params[key] = value.pop();
   }
+
   @Emit()
   openSetting(): void {
     this.setModel = true;
   }
+
   @Emit()
   closeModal(): void {
     this.setModel = false;
   }
+
   @Emit()
   gradeSwitch(val: boolean): void {
     this.showGrade = val;
-    this.tableMarginTop = val ?
-      (this.$refs.filterGrade as Element).clientHeight :
-      (this.$refs.filterNormal as Element).clientHeight;
+    this.tableMarginTop = val
+      ? (this.$refs.filterGrade as Element).clientHeight
+      : (this.$refs.filterNormal as Element).clientHeight;
     this.$emit('tableHeight', this.tableMarginTop);
   }
+
   @Emit()
   addFun(): void {
     this.$emit('addFun');
@@ -225,9 +249,9 @@ export default class MFilter extends Vue {
           type="datetimerange"
           align="right"
           pickerOptions={item.pickerOptions}
-          on-change={item.change ?
-            item.change :
-            (e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])
+          on-change={item.change
+            ? item.change
+            : (e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])
           }
           start-placeholder={item.placeholder[0]}
           end-placeholder={item.placeholder[1]}>
@@ -293,8 +317,8 @@ export default class MFilter extends Vue {
           </el-form>
         </div>
         {
-          this.filterGrade.length ?
-            <div class="filter-grade" ref="filterGrade" id="filter-grade">
+          this.filterGrade.length
+            ? <div class="filter-grade" ref="filterGrade" id="filter-grade">
               <el-form model={this.params} size="mini" label-width={isMobile ? '' : this.labelWidth}>
                 <el-row gutter={20}>
                   {

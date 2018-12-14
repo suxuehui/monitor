@@ -10,12 +10,12 @@ import SetModal from '@/views/permission/role/components/setModal';
 interface ActiveType { key: any, value: any, label: string }
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'set-modal': SetModal,
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'set-modal': SetModal,
   },
-  name:'Role'
-  })
+  name: 'Role',
+})
 export default class Role extends Vue {
   // data
   // 普通筛选
@@ -34,14 +34,18 @@ export default class Role extends Vue {
       placeholder: '请输入角色名称',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     active: 0,
     roleName: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/sys/role/list';
 
@@ -72,6 +76,7 @@ export default class Role extends Vue {
       disabled: (row: any) => (row.roleType !== 2),
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '角色名称', prop: 'roleName' },
@@ -110,15 +115,19 @@ export default class Role extends Vue {
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   // 权限设置
   setVisible: boolean = false;
+
   setTitle: string = '';
 
   modelForm: any = {
     roleName: '',
     remark: '',
   };
+
   setAuthData: any = {}
 
   // 操作
@@ -147,11 +156,13 @@ export default class Role extends Vue {
       this.setTitle = `权限设置-${row.roleName}`;
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.modelForm = null;
     this.addTitle = '新增角色';
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;

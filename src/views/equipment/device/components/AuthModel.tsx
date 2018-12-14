@@ -1,19 +1,25 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option,
+} from 'element-ui';
 import { createBluetooth } from '@/api/equipment';
 import './AuthModel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-button': Button,
+  },
+})
 export default class AuthModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
+
   @Prop() private updateAble: any;
 
   loading: boolean = false;
@@ -66,8 +72,8 @@ export default class AuthModel extends Vue {
         <el-row>
           <el-col offset={6} span={12}>
             {
-              this.updateAble ?
-                <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>重新生成</el-button> : null
+              this.updateAble
+                ? <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>重新生成</el-button> : null
             }
             <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
           </el-col>

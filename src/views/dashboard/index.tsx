@@ -4,12 +4,12 @@ import './index.less';
 
 @Component({
   components: {
-  'el-button': Button,
-  'el-date-picker': DatePicker,
-  'el-dialog': Dialog,
+    'el-button': Button,
+    'el-date-picker': DatePicker,
+    'el-dialog': Dialog,
   },
-  name:'Dashboard'
-  })
+  name: 'Dashboard',
+})
 export default class Dashboard extends Vue {
   // 告警数据
   alarmData: any = [
@@ -23,12 +23,14 @@ export default class Dashboard extends Vue {
     { name: '驶出围栏8', count: 8 },
     { name: '驶出围栏9', count: 9 },
   ]
+
   // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
   // 圆环数据
   circleData: any = [
     { item: '在线', count: 40, percent: 0.8 },
     { item: '离线', count: 21, percent: 0.2 },
   ];
+
   columData: any = [
     { name: '急加速', num: 38 },
     { name: '急减速', num: 41 },
@@ -47,6 +49,7 @@ export default class Dashboard extends Vue {
     { name: '耗油量', count: 40, bgColor: '#9A3FC0' },
     { name: '平均油耗', count: 40, bgColor: '#CC5676' },
   ];
+
   // 行驶数据排行
   driveRankData: any = [
     {
@@ -92,24 +95,33 @@ export default class Dashboard extends Vue {
   ];
 
   count: number = 100;
+
   helloWord: string = ''
+
   // 搜索时间范围
   nowDate: any = ''
+
   startTime: string = ''
+
   endTime: string = ''
+
   defaultTime: any = [
     new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
     new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
   ]
 
   todayActive: boolean = true;
+
   sevendayActive: boolean = false;
+
   thirtydayActive: boolean = false;
+
   allActive: boolean = false;
 
   openVisible: boolean = false;
 
   toMonitor: boolean = true;
+
   created() {
     const getNowRoles: string[] = [
       // 操作
@@ -187,6 +199,7 @@ export default class Dashboard extends Vue {
     const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
     this.setHelloWord(myTime);
   }
+
   setHelloWord(time: any) {
     if (time > 0 && time < 12) {
       this.helloWord = '早上';
@@ -196,6 +209,7 @@ export default class Dashboard extends Vue {
       this.helloWord = '晚上';
     }
   }
+
   goMonitor() {
     this.$router.push({ name: '车辆监控' });
   }
@@ -224,6 +238,7 @@ export default class Dashboard extends Vue {
       D2,
     };
   }
+
   cancelAllActive() {
     this.todayActive = false;
     this.sevendayActive = false;
@@ -285,6 +300,7 @@ export default class Dashboard extends Vue {
       this.endTime = t2;
     }
   }
+
   openLink() {
     this.openVisible = true;
   }
@@ -303,8 +319,8 @@ export default class Dashboard extends Vue {
             <div class="title">
               <span style="marginRight:20px">{this.helloWord}好！当前{this.count}辆车处于监控中</span>
               {
-                this.toMonitor ?
-                  <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+                this.toMonitor
+                  ? <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
                   : null
               }
             </div>
@@ -363,8 +379,7 @@ export default class Dashboard extends Vue {
             <div class="leftPart">
               <ul class="top">
                 {
-                  this.driveData.map((item: any) =>
-                    <li class="item">
+                  this.driveData.map((item: any) => <li class="item">
                       {item.name}
                       <br />
                       {item.count}次

@@ -3,7 +3,9 @@ import { Tag, Button, Popover } from 'element-ui';
 import qs from 'qs';
 
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { terminalType, getBluetooth, resetTime, terminalExport } from '@/api/equipment';
+import {
+  terminalType, getBluetooth, resetTime, terminalExport,
+} from '@/api/equipment';
 import { orgTree } from '@/api/app';
 
 import PopconfirmBlock from '@/components/Popconfirm/index';
@@ -22,20 +24,20 @@ interface TerminalType { key: number, value: number, label: string, color: strin
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'el-button': Button,
-  'add-modal': AddModal,
-  'bind-modal': BindModal,
-  'accept-modal': AcceptModal,
-  'down-model': DownModel,
-  'clear-model': ClearModel,
-  'auth-model': AuthModel,
-  'unbind-model': UnbindModel,
-  'el-popover': Popover,
-  'popconfirm-block': PopconfirmBlock,
+    'el-tag': Tag,
+    'el-button': Button,
+    'add-modal': AddModal,
+    'bind-modal': BindModal,
+    'accept-modal': AcceptModal,
+    'down-model': DownModel,
+    'clear-model': ClearModel,
+    'auth-model': AuthModel,
+    'unbind-model': UnbindModel,
+    'el-popover': Popover,
+    'popconfirm-block': PopconfirmBlock,
   },
-  name:'Device'
-  })
+  name: 'Device',
+})
 export default class Device extends Vue {
   // data
   // 普通筛选
@@ -67,6 +69,7 @@ export default class Device extends Vue {
       placeholder: 'imei、车牌、配置名称、产品编码',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
@@ -110,6 +113,7 @@ export default class Device extends Vue {
       placeholder: 'imei、车牌、配置名称、产品编码',
     },
   ];
+
   // 筛选参数
   filterParams: any = {
     levelCode: '',
@@ -119,9 +123,12 @@ export default class Device extends Vue {
     keyword: '',
     // active: 1,
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/device/terminal/list';
+
   // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   // 网络状态online 1-在线，0-离线
   opreat: Opreat[] = [
@@ -175,6 +182,7 @@ export default class Device extends Vue {
       roles: true,
     },
   ];
+
   acceptDisable(row: any) {
     if (row.status === 1 || row.status === 3 || row.status === 5) {
       return true;
@@ -196,6 +204,7 @@ export default class Device extends Vue {
     }
     return true;
   }
+
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
@@ -232,6 +241,7 @@ export default class Device extends Vue {
       key: 5, value: 5, label: '已返厂', color: 'danger',
     },
   ]
+
   // 网络状态 1-在线，0-离线 ,
   onlineStatus: any = [
     { key: -1, value: -1, label: '全部' },
@@ -241,33 +251,45 @@ export default class Device extends Vue {
 
   // 新增
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   updateData: any = {}
 
   // 绑定
   bindVisible: boolean = false;
+
   bindTitle: string = '';
+
   // 解绑
   unbindVisible: boolean = false;
+
   unbindData: any = {}
 
   // 鉴权码
   authVisible: boolean = false;
+
   authData: any = {}
 
   // 验收
   acceptVisible: boolean = false;
+
   acceptTitle: string = '';
+
   acceptData: any = {}
 
   // 下发配置
   downVisible: boolean = false;
+
   downTitle: string = '下发配置';
+
   downData: any = {}
 
   // 清除配置
   clearVisible: boolean = false;
+
   clearTitle: string = '';
+
   clearData: any = {}
 
   modelForm: any = {
@@ -276,6 +298,7 @@ export default class Device extends Vue {
 
   // 设备类型
   typeList: any = [];
+
   // 门店列表
   shopList: any = [];
 
@@ -283,9 +306,13 @@ export default class Device extends Vue {
 
   // 新增、导出、重置、查看安绑记录按钮展示 更新鉴权码
   addBtn: boolean = true;
+
   exportBtn: boolean = true;
+
   resetBtn: boolean = true;
+
   opsBtn: boolean = true;
+
   authBtn: boolean = true;
 
   created() {
@@ -364,8 +391,8 @@ export default class Device extends Vue {
     return <div>
       <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
       {
-        this.resetBtn ?
-          <popconfirm-block
+        this.resetBtn
+          ? <popconfirm-block
             ref={`popBlock${row.id}`}
             title="确定要对此设备进行续期1年？"
             width="225"
@@ -384,6 +411,7 @@ export default class Device extends Vue {
   closePop() {
     this.loading = false;
   }
+
   onResetTime(data: any) {
     const popModel: any = this.$refs[`popBlock${data.id}`];
     const formTable: any = this.$refs.table;
@@ -415,6 +443,7 @@ export default class Device extends Vue {
     const type = row.online === 1 ? 'success' : 'danger';
     return <el-tag size="medium" type={type}>{row.online ? '在线' : '离线'}</el-tag>;
   }
+
   terSelect(row: any) {
     let type;
     // 1-待安绑，2-待验收，3-已合格，4-未合格,5-已返厂 ,
@@ -517,6 +546,7 @@ export default class Device extends Vue {
     const data1 = qs.stringify(data);
     terminalExport(data1, '设备管理列表');
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -532,6 +562,7 @@ export default class Device extends Vue {
     }, 200);
     this.loading = false;
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;
