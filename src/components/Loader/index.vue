@@ -15,6 +15,7 @@ import {
 @Component
 export default class Loader extends Vue {
   @Prop() private spinning!: boolean;
+
   @Prop() private fullScreen!: boolean;
 }
 </script>

@@ -1,26 +1,37 @@
-import { Component, Prop, Emit, Vue, Inject, Provide } from 'vue-property-decorator';
-import { Popover, Button, Dialog, Row, Col } from 'element-ui';
+import {
+  Component, Prop, Emit, Vue, Inject, Provide,
+} from 'vue-property-decorator';
+import {
+  Popover, Button, Dialog, Row, Col,
+} from 'element-ui';
 import './index.less';
 
 @Component({
   components: {
-  'el-popover': Popover,
-  'el-button': Button,
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  }
-  })
+    'el-popover': Popover,
+    'el-button': Button,
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+  },
+})
 export default class Popconfirm extends Vue {
   @Prop({ default: '操作确认！' }) private title!: string;
+
   @Prop({ default: '取消' }) private cancelText!: string;
+
   @Prop({ default: '确定' }) private okText!: string;
+
   @Prop({ default: '160' }) private width!: string;
+
   @Prop() private keyName!: string;
+
   @Prop({ default: false }) private disabled!: boolean;
 
   visible: boolean = false;
+
   loading: boolean = false;
+
   @Emit()
   closeModel() {
     this.visible = false;

@@ -19,15 +19,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
+import {
+  Component, Prop, Vue, Emit,
+} from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface/index';
 import { Upload } from 'element-ui';
 import './index.less';
 @Component({
   components: {
-  "el-upload": Upload
-  }
-  })
+    'el-upload': Upload,
+  },
+})
 export default class FilterTable extends Vue {
   // 请求数据地址
   @Prop() private url!: string;

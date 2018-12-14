@@ -1,5 +1,9 @@
-import { Component, Prop, Emit, Vue, Watch } from 'vue-property-decorator';
-import { Badge, Dropdown, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem, Popover } from 'element-ui';
+import {
+  Component, Prop, Emit, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Badge, Dropdown, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem, Popover,
+} from 'element-ui';
 import { routerItem } from '@/interface';
 import utils from '@/utils';
 import MenuList from '@/components/Layout/Sidebar/MenuList';
@@ -13,22 +17,25 @@ interface breadItem {
 
 @Component({
   components: {
-  'el-badge': Badge,
-  'el-dropdown': Dropdown,
-  'el-dropdown-menu': DropdownMenu,
-  'el-dropdown-item': DropdownItem,
-  'el-breadcrumb': Breadcrumb,
-  'el-breadcrumb-item': BreadcrumbItem,
-  'el-popover': Popover,
-  'menu-list': MenuList,
-  'changePsw-modal': ChangePswModal,
-  }
-  })
+    'el-badge': Badge,
+    'el-dropdown': Dropdown,
+    'el-dropdown-menu': DropdownMenu,
+    'el-dropdown-item': DropdownItem,
+    'el-breadcrumb': Breadcrumb,
+    'el-breadcrumb-item': BreadcrumbItem,
+    'el-popover': Popover,
+    'menu-list': MenuList,
+    'changePsw-modal': ChangePswModal,
+  },
+})
 export default class Header extends Vue {
   @Prop() private username!: string;
+
   // data
   menuData: routerItem[] = [];
+
   breadList: breadItem[] = [];
+
   onIndex: number = 0;
 
   @Watch('$route', { immediate: true, deep: true })
@@ -38,6 +45,7 @@ export default class Header extends Vue {
     this.breadList = [];
     this.routerBread(this.menuData, toDepth.routeArr);
   }
+
   @Watch('menuData')
   initRouteBread() {
     const toDepth = utils.routeToArray(this.$route.path);
@@ -60,8 +68,10 @@ export default class Header extends Vue {
       return true;
     });
   }
+
   // 通知、告警按钮展示
   showNotice: boolean = true;
+
   showAlarm: boolean = true;
 
   mounted() {
@@ -120,6 +130,7 @@ export default class Header extends Vue {
   checkInfo() {
     this.$router.push({ name: '通知公告' });
   }
+
   checkAlarm() {
     this.$router.push({ name: '告警消息' });
   }
@@ -128,6 +139,7 @@ export default class Header extends Vue {
   switchSidebar(): void {
     this.$store.dispatch('ToggleSideBar');
   }
+
   render() {
     const { menuData, sidebar: { opened }, isMobile } = this.$store.state.app;
     this.menuData = menuData;
@@ -153,16 +165,16 @@ export default class Header extends Vue {
           </div>
           <ul class="header-menu">
             {
-              this.showNotice ?
-                <li id="noticeList" on-click={this.checkInfo}>
+              this.showNotice
+                ? <li id="noticeList" on-click={this.checkInfo}>
                   <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
                     <i class="iconfont-email"></i>
                   </el-badge>
                 </li> : null
             }
             {
-              this.showAlarm ?
-                <li id="alarmList" on-click={this.checkAlarm}>
+              this.showAlarm
+                ? <li id="alarmList" on-click={this.checkAlarm}>
                   <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
                     <i class="iconfont-bell"></i>
                   </el-badge>
