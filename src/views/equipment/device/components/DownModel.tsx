@@ -23,12 +23,15 @@ import { deliveryCfg } from '@/api/equipment';
 export default class DownModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
     productCode: '',
   };
+
   loading: boolean = false;
 
   rules = {

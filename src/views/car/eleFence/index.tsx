@@ -31,12 +31,22 @@ const carIcon = require('@/assets/point.png');
   name: 'EleFence',
 })
 export default class EleFence extends Vue {
-  BMap: any = null; // 百度地图对象
-  SMap: any = null; // 当前地图对象实例
-  BMapLib: any = null; // 百度地图lib对象
+  BMap: any = null;
+
+  // 百度地图对象
+  SMap: any = null;
+
+  // 当前地图对象实例
+  BMapLib: any = null;
+
+  // 百度地图lib对象
   address: string = '';
-  detailShow: boolean = false; // 围栏详情展示
+
+  detailShow: boolean = false;
+
+  // 围栏详情展示
   locChange: boolean = false;
+
   constructor(props: any) {
     super(props);
     config.loadMap().then((BMap: any) => {
@@ -58,10 +68,14 @@ export default class EleFence extends Vue {
       this.SMap.enableScrollWheelZoom(true);
     });
   }
-  tableUrl: string = '/vehicle/fence/list'; // 表格请求地址
+
+  tableUrl: string = '/vehicle/fence/list';
+
+  // 表格请求地址
   outParams: any = {
     area: '',
   }
+
   // 表格参数
   filterList: FilterFormList[] = [
     {
@@ -108,6 +122,7 @@ export default class EleFence extends Vue {
       placeholder: '围栏名称或围栏地址',
     },
   ];
+
   tableList: tableList[] = [
     {
       label: '所属商户',
@@ -140,7 +155,9 @@ export default class EleFence extends Vue {
       formatter: this.formatStatus,
     },
   ];
+
   opreat: Opreat[] = [];
+
   filterParams: object = {
     areaValue: '',
     levelCode: '',
@@ -148,6 +165,7 @@ export default class EleFence extends Vue {
     available: '',
     keyword: '',
   };
+
   backParams: object = {
     code: 'result.resultCode',
     codeOK: '0',
@@ -172,6 +190,7 @@ export default class EleFence extends Vue {
     }
     return type;
   }
+
   // 格式化状态
   formatStatus(row: any) {
     let type;
@@ -199,7 +218,9 @@ export default class EleFence extends Vue {
 
   // 页数
   total: number = 1;
+
   pageSize: number = 5;
+
   pageCount: number = 5;
 
   // 监控状态  全部、未启用、已启用
@@ -208,7 +229,10 @@ export default class EleFence extends Vue {
     { key: 2, value: 2, label: '未启用' },
     { key: 1, value: 1, label: '已启用' },
   ]
-  geolocationControl: any = null; // 定位
+
+  geolocationControl: any = null;
+
+  // 定位
   mapCenter: { lat: number, lng: number } = { lat: 29.563694, lng: 106.560421 };
 
   styleOptions = {
@@ -221,10 +245,12 @@ export default class EleFence extends Vue {
 
   // 到当前定位
   nowMk: any = '';
+
   nowPosition: any = {};
 
   // 省
   provinceList: any = [];
+
   // 省市区三级联动
   areaLoad(val: any) {
     if (val.length === 0) {
@@ -263,6 +289,7 @@ export default class EleFence extends Vue {
       }
     });
   }
+
   // 根据市级编码获取市辖区
   getDistricts(data: number) {
     getDistrict({ regionalismCode: data }).then((res) => {
@@ -332,6 +359,7 @@ export default class EleFence extends Vue {
       this.exportBtn = !!(res[0]);
     });
   }
+
   exportBtn: boolean = true;
 
   // 围栏详情
@@ -370,10 +398,12 @@ export default class EleFence extends Vue {
     this.detailShow = false;
     this.fenceDetail = {};
   }
+
   // 表格显示隐藏
   showTable(): any {
     this.locChange = false;
   }
+
   hideTable(): any {
     this.locChange = true;
   }
@@ -416,6 +446,7 @@ export default class EleFence extends Vue {
       }
     });
   }
+
   // 展开并且显示详情
   showDetailBox(data: any) {
     this.detailShow = true;
@@ -432,6 +463,7 @@ export default class EleFence extends Vue {
   }
 
   currentFenceId: number = 0;
+
   setCurrentFenceId(id: number) {
     this.currentFenceId = id;
   }
@@ -475,6 +507,7 @@ export default class EleFence extends Vue {
       this.polygonInMap(data);
     }
   }
+
   circleInMap = (lng: number, lat: number, radius: number) => {
     const point: any = new this.BMap.Point(lng, lat);
     const circle: any = new this.BMap.Circle(point, radius, this.styleOptions);
@@ -483,6 +516,7 @@ export default class EleFence extends Vue {
     this.SMap.addOverlay(marker);
     this.SMap.addOverlay(circle);
   }
+
   polygonInMap = (data: any) => {
     const polyPointArr: any = [];
     JSON.parse(data.latLngArray).forEach((itm: any) => {
@@ -544,6 +578,7 @@ export default class EleFence extends Vue {
       }
     });
   }
+
   // 选择地址，跳转到相应位置，并查询周围车辆
   setAddress = (val: any) => {
     this.mapCenter = {

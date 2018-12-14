@@ -20,11 +20,15 @@ import './setModal.less';
 export default class SetModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   modelForm: any = {};
 
   menuList: any = []
+
   checkList: number[] = [] // 权限选中项
 
   loading: boolean = false;

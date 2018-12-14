@@ -19,6 +19,7 @@ import { vehicleCalvalid, vehicleDeviceRev } from '@/api/monitor';
 })
 export default class ReverseModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   @Watch('data')
@@ -44,6 +45,7 @@ export default class ReverseModel extends Vue {
     duration: '',
     valdate: '',
   };
+
   loading: boolean = false;
 
   rules = {
@@ -83,6 +85,7 @@ export default class ReverseModel extends Vue {
       }
     }, 500);
   }
+
   // 验证追踪时长
   @Emit()
   checkDuration(rule: any, value: string, callback: Function) {
@@ -116,6 +119,7 @@ export default class ReverseModel extends Vue {
       valdate: '',
     };
   }
+
   timeChange(val: any) {
     const obj = {
       id: this.data.id,

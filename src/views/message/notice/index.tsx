@@ -27,13 +27,17 @@ export default class Notice extends Vue {
       placeholder: '请输入标题',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/message/notice/list';
 
@@ -53,6 +57,7 @@ export default class Notice extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '标题', prop: 'title' },
@@ -86,7 +91,9 @@ export default class Notice extends Vue {
 
   // 新增
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   // 查看
   checkVisible: boolean = false;
 
@@ -94,6 +101,7 @@ export default class Notice extends Vue {
     title: '',
     content: '',
   };
+
   checkData: any = {}
 
   contentChange(row: any) {
@@ -127,21 +135,25 @@ export default class Notice extends Vue {
       });
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.modelForm = null;
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
     this.checkVisible = false;
   }
+
   // 关闭后刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
     this.closeModal();
   }
+
   render(h: any) {
     return (
       <div class="member-wrap">

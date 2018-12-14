@@ -31,7 +31,9 @@ interface ActiveType { key: number, value: string, label: string }
 export default class EditModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -39,9 +41,11 @@ export default class EditModel extends Vue {
     vin: '',
     plateNum: '',
   };
+
   loading: boolean = false;
 
   brandList: any = [];
+
   props: any = {
     value: 'id',
     children: 'children',
@@ -50,15 +54,21 @@ export default class EditModel extends Vue {
 
   // 设备类型
   typeList: any = [];
+
   // 门店列表
   shopList: any = [];
 
   // 品牌、车系、车型
   brandId: any = null;
+
   seriesId: any = null;
+
   modelId: any = null;
+
   oldBrandId: any = null;
+
   oldSeriesId: any = null;
+
   oldModelId: any = null;
 
   // 车型列表
@@ -81,6 +91,7 @@ export default class EditModel extends Vue {
       },
     ],
   }
+
   // 验证车架号
   @Emit()
   checkVinRule(rule: any, value: string, callback: Function) {

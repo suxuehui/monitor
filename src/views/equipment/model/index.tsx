@@ -26,15 +26,19 @@ export default class DeviceModel extends Vue {
       placeholder: '配置名称、产品编码',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     shopName: '',
     available: '',
     confName: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/vehicle/config/list';
 
@@ -55,6 +59,7 @@ export default class DeviceModel extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '配置名称', prop: 'cfgName' },
@@ -83,6 +88,7 @@ export default class DeviceModel extends Vue {
 
   // 新增、导出按钮展示
   addBtn: boolean = true;
+
   exportBtn: boolean = true;
 
   statusDom(row: any) {
@@ -96,6 +102,7 @@ export default class DeviceModel extends Vue {
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
 
   rowData: any = {};
@@ -126,6 +133,7 @@ export default class DeviceModel extends Vue {
       });
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增配置';
@@ -139,6 +147,7 @@ export default class DeviceModel extends Vue {
       addBlock.resetData();
     }, 200);
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;

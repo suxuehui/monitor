@@ -26,7 +26,9 @@ import './Addmodel.less';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -37,6 +39,7 @@ export default class AddModal extends Vue {
     remark: '',
     productCode: '',
   };
+
   loading: boolean = false;
 
   rules = {
@@ -59,6 +62,7 @@ export default class AddModal extends Vue {
       },
     ],
   }
+
   cfgParamRule = [
     { required: true, message: '请输入配置参数', trigger: 'blur' },
     {
@@ -146,6 +150,7 @@ export default class AddModal extends Vue {
     }, 200);
     this.loading = false;
   }
+
   reBootStatus: string = '1';
 
   rebootChange(data: any) {

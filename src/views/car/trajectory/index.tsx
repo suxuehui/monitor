@@ -25,7 +25,9 @@ function getTimeDay(day: number) { }
   name: 'Trajectory',
 })
 export default class Trajectory extends Vue {
-  locChange: boolean = false; // 底部表格开关
+  locChange: boolean = false;
+
+  // 底部表格开关
   filterList: FilterFormList[] = [
     {
       key: 'time',
@@ -69,16 +71,19 @@ export default class Trajectory extends Vue {
       },
     },
   ];
+
   filterParams: any = {
     checkboxTime: '',
     time: '',
     startTime: '',
     endTime: '',
   };
+
   outParams: any = {
     startTime: '',
     endTime: '',
   }
+
   backParams: object = {
     code: 'result.resultCode',
     codeOK: '0',
@@ -93,6 +98,7 @@ export default class Trajectory extends Vue {
       endTime: '',
     };
   }
+
   timeRangeChange(val: any) {
     if (val) {
       if (val.length === 2) {
@@ -109,6 +115,7 @@ export default class Trajectory extends Vue {
       this.outParams.endTime = '';
     }
   }
+
   tableList: tableList[] = [
     {
       label: '车牌号',
@@ -187,11 +194,21 @@ export default class Trajectory extends Vue {
     },
   ];
 
-  BMap: any = null; // 百度地图对象
-  SMap: any = null; // 当前地图对象实例
-  SMapZoom: number = 15; // 当前地图对象zoom
-  geolocationControl: any = null; // 定位
-  CanvasLayer: any = null; // 轨迹渲染层
+  BMap: any = null;
+
+  // 百度地图对象
+  SMap: any = null;
+
+  // 当前地图对象实例
+  SMapZoom: number = 15;
+
+  // 当前地图对象zoom
+  geolocationControl: any = null;
+
+  // 定位
+  CanvasLayer: any = null;
+
+  // 轨迹渲染层
   mapCenter: {
     lat: number,
     lng: number
@@ -199,11 +216,21 @@ export default class Trajectory extends Vue {
     lat: 29.563694,
     lng: 106.560421,
   };
-  CarPoint: any = null; // 车辆位置
-  CarIcon: any = null; // 车辆图标
-  CarMarker: object[] = []; // 车辆标记
+
+  CarPoint: any = null;
+
+  // 车辆位置
+  CarIcon: any = null;
+
+  // 车辆图标
+  CarMarker: object[] = [];
+
+  // 车辆标记
   tableUrl: string = '';
-  mapContorl: any = null; // 地图方法类
+
+  mapContorl: any = null;
+
+  // 地图方法类
   constructor(props: any) {
     super(props);
     config
@@ -239,7 +266,9 @@ export default class Trajectory extends Vue {
         });
       });
   }
+
   currentTrackData = [];
+
   first = true;
 
   exportBtn: boolean = true;
@@ -287,9 +316,13 @@ export default class Trajectory extends Vue {
   }
 
   canvasLayer: any = null;
+
   canvasLayerBack: any = null;
+
   CanvasLayerPointer: any = null;
+
   canvasBehavior: any = null;
+
   pointCollection: any = [];
 
   utc2now(time: string) {
@@ -593,6 +626,7 @@ export default class Trajectory extends Vue {
   getPlateNum() {
     return this.plateNum;
   }
+
   // 根据速度获取相应颜色
   getColorBySpeed = (speed: number) => {
     let color = '';
@@ -656,6 +690,7 @@ export default class Trajectory extends Vue {
     const newZoom = this.SMap.getZoom() + 1;
     this.SMap.setZoom(newZoom);
   }
+
   // 减少zoom
   zoomReduce = () => {
     const newZoom = this.SMap.getZoom() - 1;
@@ -666,14 +701,17 @@ export default class Trajectory extends Vue {
   showTable(): void {
     this.locChange = false;
   }
+
   hideTable(): void {
     this.locChange = true;
   }
+
   plateNum = '';
 
   behaivorData: { num: number, txt: string }[] = []
 
   isEnd: boolean = true;
+
   // 表格单选
   currentChange(val: any) {
     if (val) {
@@ -730,17 +768,28 @@ export default class Trajectory extends Vue {
       });
     }
   }
+
   /**
    * 播放轨迹动画-start
    */
-  playOnTime: number = 0; // 播放当前时间点
+  playOnTime: number = 0;
+
+  // 播放当前时间点
   defaultTime: string = '';
-  playTime: string = '1:00'; // 播放时长
-  playStatus: boolean = false; // 播放状态
-  playMultiple: number = 1; // 播放速度
+
+  playTime: string = '1:00';
+
+  // 播放时长
+  playStatus: boolean = false;
+
+  // 播放状态
+  playMultiple: number = 1;
+
+  // 播放速度
   timeFormat(val: number) { // 格式化时间
     return `${parseInt((val / 60).toString(), 10)}:${(val % 60) < 10 ? `0${(val % 60).toFixed(0)}` : (val % 60).toFixed(0)}`;
   }
+
   playTimeNumber(time: string) {
     const timeArr = time.split(':');
     let timeNumber = 0;
@@ -748,14 +797,19 @@ export default class Trajectory extends Vue {
     timeNumber += parseInt(timeArr[1], 10);
     return timeNumber;
   }
+
   // 播放seInterval值
   playTimer: any = null;
+
   // 是否第一次播放轨迹
   firstPlay: boolean = true;
+
   getTrackData() {
     return this.currentTrackData;
   }
+
   getMapContorl = () => this.mapContorl
+
   // 播放轨迹动画
   trackPlay() {
     const mapContorl = this.getMapContorl();
@@ -783,9 +837,11 @@ export default class Trajectory extends Vue {
       }, 1000);
     }
   }
+
   jumpPlay(val: number) {
     this.getMapContorl().jumpPlay(val);
   }
+
   clearPlay() {
     // this.trackPlay();
     clearInterval(this.playTimer);
@@ -794,6 +850,7 @@ export default class Trajectory extends Vue {
     this.firstPlay = true;
     this.getMapContorl().clearPlay();
   }
+
   playChange(val: number) {
     this.playTime = this.timeFormat(this.playTimeNumber(this.defaultTime) / val);
     this.clearPlay();
@@ -807,6 +864,7 @@ export default class Trajectory extends Vue {
     const data1 = qs.stringify(data);
     exportExcel(data1, '轨迹列表', '/device/trip/exportExcel');
   }
+
   render() {
     return (
       <div class="trajectory-wrap">

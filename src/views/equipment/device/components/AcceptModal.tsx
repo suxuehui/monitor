@@ -25,7 +25,9 @@ import './AcceptModal.less';
 export default class AcceptModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -34,11 +36,13 @@ export default class AcceptModal extends Vue {
   };
 
   loading: boolean = false;
+
   rules = {
     terminalStatus: [
       { required: true, message: '请确认是否合格', trigger: 'change' },
     ],
   }
+
   remarkRule = [
     { required: true, validator: this.checkRule, trigger: 'blur' },
   ]

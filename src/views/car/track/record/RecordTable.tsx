@@ -61,6 +61,7 @@ export default class RecordTable extends Vue {
       },
     },
   ];
+
   tableList: tableList[] = [
     {
       label: '车牌',
@@ -86,8 +87,11 @@ export default class RecordTable extends Vue {
       prop: 'imei',
     },
   ];
+
   opreat: Opreat[] = [];
+
   filterParams: object = {};
+
   backParams: object = {
     code: 'result.resultCode',
     codeOK: '0',
@@ -95,7 +99,10 @@ export default class RecordTable extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
-  tableUrl: string = '/vehicle/tracke/findRecordList'; // 表格请求地址
+
+  tableUrl: string = '/vehicle/tracke/findRecordList';
+
+  // 表格请求地址
   outParams: any = {
     startDate: '',
     endDate: '',
@@ -115,6 +122,7 @@ export default class RecordTable extends Vue {
   }
 
   exportBtn: boolean = false;
+
   created() {
     if (this.$route.params.id) {
       this.outParams.vehicleId = this.$route.params.id;
@@ -140,6 +148,7 @@ export default class RecordTable extends Vue {
       vehicleId: this.$route.params.id,
     };
   }
+
   timeRangeChange(val: any) {
     if (val) {
       if (val.length === 2) {
@@ -175,6 +184,7 @@ export default class RecordTable extends Vue {
     const data1 = qs.stringify(data);
     exportExcel(data1, '追踪记录列表', '/vehicle/tracke/exportExcelRecord');
   }
+
   render() {
     return (
       <div class="container-record">

@@ -23,8 +23,11 @@ import './Addmodel.less';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   @Prop() private brandAddList: any; // 品牌列表
 
   modelForm: any = {
@@ -33,10 +36,12 @@ export default class AddModal extends Vue {
     brandId: '',
     id: '',
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
 
 

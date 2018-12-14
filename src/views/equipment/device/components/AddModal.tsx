@@ -24,7 +24,9 @@ import { orgTree } from '@/api/app';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -32,6 +34,7 @@ export default class AddModal extends Vue {
     terminalType: '',
     imei: '',
   };
+
   loading: boolean = false;
 
   rules = {
@@ -48,6 +51,7 @@ export default class AddModal extends Vue {
 
   // 设备类型
   typeList: any = [];
+
   // 门店列表
   shopList: any = [];
 

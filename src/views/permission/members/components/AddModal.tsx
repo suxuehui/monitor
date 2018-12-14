@@ -25,14 +25,19 @@ interface RoleType { key: number, value: string, label: string }
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   @Prop() private roleAddList: any;
+
   @Prop() private roleIds: any;
 
   created() {
     this.modelForm = JSON.parse(JSON.stringify(this.data));
   }
+
   modelForm: any = {
     realName: '',
     userName: '',
@@ -43,10 +48,13 @@ export default class AddModal extends Vue {
   };
 
   isInstaller: boolean = false;
+
   isPhoneNumber: boolean = false;
+
   phoneNumber: string = '';
 
   loading: boolean = false;
+
   rules = {
     realName: [
       { required: true, message: '请输入成员姓名', trigger: 'blur' },
@@ -66,6 +74,7 @@ export default class AddModal extends Vue {
   passwordRule = [
     { validator: this.checkPassword, trigger: 'blur' },
   ];
+
   userNameRule = [
     { required: true, message: '请输入登录账号' },
     { validator: this.checkUsername, trigger: 'blur' },
@@ -74,6 +83,7 @@ export default class AddModal extends Vue {
   roleIdRule = [
     { required: true, message: '请选择角色类型', trigger: 'change' },
   ];
+
   checkPassword(rule: any, value: string, callback: Function) {
     if (this.modelForm.password) {
       if (this.isChineseChar(this.modelForm.password)) {
@@ -136,6 +146,7 @@ export default class AddModal extends Vue {
       this.resetData();
     }
   }
+
   isAdmin: boolean = false;
 
   // 编辑时角色数组长度

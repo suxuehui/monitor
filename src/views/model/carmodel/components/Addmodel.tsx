@@ -26,8 +26,11 @@ interface ActiveType { key: number, value: number, label: string }
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   @Prop() private brandAddList: any; // 品牌列表
 
   modelForm: any = {
@@ -36,10 +39,12 @@ export default class AddModal extends Vue {
     fuelTankCap: '',
     brandSeries: [],
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
 
 
@@ -54,6 +59,7 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入车型名称', trigger: 'blur' },
     ],
   }
+
   fuelTankCapRule = [
     { required: true, message: '请输入油箱容量' },
     {
@@ -73,6 +79,7 @@ export default class AddModal extends Vue {
   ]
 
   selectStatus: boolean = false;
+
   oilInput: boolean = true;
 
   // 验证油箱容量
@@ -97,6 +104,7 @@ export default class AddModal extends Vue {
     };
     this.getSeries(obj, val[0]);
   }
+
   getSeries(obj: any, val: number) {
     seriesAll(obj).then((res) => {
       if (res.result.resultCode === '0') {

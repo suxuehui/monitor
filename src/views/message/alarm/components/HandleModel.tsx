@@ -20,11 +20,13 @@ import './HandleModel.less';
 export default class HandleModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   modelForm: any = {
     solution: '',
   };
+
   loading: boolean = false;
 
   rules = {

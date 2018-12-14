@@ -17,6 +17,7 @@ export default class App extends Vue {
       this.isMobile();
     };
   }
+
   // 屏幕width 是否 < 768
   isMobile() {
     const { isMobile } = this.$store.state.app;
@@ -28,6 +29,7 @@ export default class App extends Vue {
       this.$store.dispatch('ChangeMobile', true);
     }
   }
+
   render() {
     const self = this;
     return (

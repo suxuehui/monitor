@@ -11,6 +11,7 @@ import './CheckModel.less';
 export default class CheckModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   closeModal() {

@@ -21,11 +21,14 @@ import './AddModal.less';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   // 编辑器
   editor: any = null;
+
   noticeTitle: any = '';
+
   loading: boolean = false;
 
   // 重置数据

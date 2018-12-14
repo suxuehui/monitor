@@ -31,14 +31,18 @@ export default class Series extends Vue {
       placeholder: '请输入车系名称',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     brandId: '',
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/vehicle/series/list';
 
@@ -60,6 +64,7 @@ export default class Series extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '品牌名称', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
@@ -71,6 +76,7 @@ export default class Series extends Vue {
 
   // 新增、导出按钮展示
   addBtn: boolean = true;
+
   exportBtn: boolean = true;
 
   // 权限设置
@@ -113,10 +119,13 @@ export default class Series extends Vue {
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
 
   rowData: any = {};
+
   brandList: any = [];
+
   brandAddList: any = [];
 
   // 操作
@@ -145,6 +154,7 @@ export default class Series extends Vue {
       });
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增车系';
@@ -159,6 +169,7 @@ export default class Series extends Vue {
       addBlock.resetData();
     }, 200);
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     this.closeModal();

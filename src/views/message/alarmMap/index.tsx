@@ -14,11 +14,18 @@ const pointIcon = require('@/assets/point.png');
 })
 
 export default class AlarmMap extends Vue {
-  BMap: any = null; // 百度地图对象
-  SMap: any = null; // 当前地图对象实例
+  BMap: any = null;
+
+  // 百度地图对象
+  SMap: any = null;
+
+  // 当前地图对象实例
   Address: any = {};
+
   akNums: string = 'K52pNzWT61z1EHvdZptaSmlPRc7mKbjC'
+
   locAddress: string = '';
+
   mounted() {
     this.Address = this.$route.query;
     config.loadMap().then((BMap: any) => {
@@ -41,6 +48,7 @@ export default class AlarmMap extends Vue {
       this.getFormAddress(this.Address.lng, this.Address.lat);
     });
   }
+
   activated() {
     this.Address = this.$route.query;
     setTimeout(() => {
@@ -76,6 +84,7 @@ export default class AlarmMap extends Vue {
 
   // 到当前定位
   nowMk: any = '';
+
   nowPosition: any = {};
 
   // 定位至当前位置

@@ -20,9 +20,15 @@ const locaIcon = require('@/assets/point.png');
   name: 'Track',
 })
 export default class Track extends Vue {
-  BMap: any = null; // 百度地图对象
-  SMap: any = null; // 当前地图对象实例
-  BMapLib: any = null; // 百度地图lib对象
+  BMap: any = null;
+
+  // 百度地图对象
+  SMap: any = null;
+
+  // 当前地图对象实例
+  BMapLib: any = null;
+
+  // 百度地图lib对象
   constructor(props: any) {
     super(props);
     config.loadMap().then((BMap: any) => {
@@ -47,6 +53,7 @@ export default class Track extends Vue {
 
   // 设备、记录
   deviceTable: boolean = false;
+
   logTable: boolean = false;
 
   // 权限设置
@@ -78,6 +85,7 @@ export default class Track extends Vue {
   modelForm: any = {}
 
   locChange: boolean = false;
+
   tabActive: string = 'record';
 
   handleSelectionChange(arr: any) {
@@ -102,6 +110,7 @@ export default class Track extends Vue {
   showTable(): any {
     this.locChange = false;
   }
+
   hideTable(): any {
     this.locChange = true;
   }

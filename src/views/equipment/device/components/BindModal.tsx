@@ -31,7 +31,9 @@ interface ActiveType { key: number, value: string, label: string }
 export default class BindModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -40,15 +42,20 @@ export default class BindModal extends Vue {
     vin: '',
     plateNum: '',
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
+
   headers: any = '';
+
   uploadUrl: string = '';
 
   brandList: any = [];
+
   props: any = {
     value: 'value',
     children: 'name',
@@ -56,15 +63,21 @@ export default class BindModal extends Vue {
 
   // 设备类型
   typeList: any = [];
+
   // 门店列表
   shopList: any = [];
 
   // 品牌、车系、车型
   brandId: number = 1;
+
   seriesId: number = 1;
+
   modelId: number = 1;
+
   brandName: string = '';
+
   seriesName: string = '';
+
   modelName: string = '';
 
   showUpBtn: boolean = true;
@@ -89,6 +102,7 @@ export default class BindModal extends Vue {
       },
     ],
   }
+
   logoUrl: any = [];
 
   // 验证车牌号

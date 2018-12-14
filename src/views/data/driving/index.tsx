@@ -44,8 +44,10 @@ export default class Driving extends Vue {
       placeholder: '车牌号或车架号',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     shopName: '',
@@ -53,11 +55,14 @@ export default class Driving extends Vue {
     queryEndTime: '',
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/statistics/driving/list';
 
   opreat: Opreat[] = [];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'shopName' },
@@ -162,6 +167,7 @@ export default class Driving extends Vue {
       },
     },
   ];
+
   created() {
     // 门店
     orgTree(null).then((res) => {
@@ -184,6 +190,7 @@ export default class Driving extends Vue {
       this.exportBtn = !!(res[0]);
     });
   }
+
   exportBtn:boolean = false;
 
   downLoad(data: any) {

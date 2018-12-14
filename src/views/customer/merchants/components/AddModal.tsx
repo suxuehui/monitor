@@ -25,8 +25,11 @@ import './AddModal.less';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   modelForm: any = {
     orgName: '',
     contactUser: '',
@@ -39,9 +42,11 @@ export default class AddModal extends Vue {
   };
 
   shopFilteredList: any = [];
+
   typeList: any = [];
 
   loading: boolean = false;
+
   selectLoading: boolean = true;
 
   rules = {
@@ -55,11 +60,13 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入联系地址', trigger: 'blur' },
     ],
   }
+
   passwordRule = [
     {
       validator: this.checkPassword, trigger: 'blur',
     },
   ];
+
   @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
     setTimeout(() => {
@@ -86,16 +93,19 @@ export default class AddModal extends Vue {
       validator: this.checkUsername, trigger: 'blur',
     },
   ]
+
   oldLevelCodeRule = [
     {
       validator: this.checkShopValue,
     },
   ]
+
   typeRule = [
     {
       validator: this.checkValue,
     },
   ]
+
   ruleStatus: boolean = true;
 
   checkShopValue(rule: any, value: string, callback: Function) {
@@ -109,6 +119,7 @@ export default class AddModal extends Vue {
       }, 200);
     }
   }
+
   checkValue(rule: any, value: string, callback: Function) {
     if (this.deviceType) {
       setTimeout(() => {
@@ -311,10 +322,13 @@ export default class AddModal extends Vue {
 
   // 名字加levelCode
   nameAndLev: string = '';
+
   shopChecked(val: any) {
     this.nameAndLev = val;
   }
+
   deviceType: any = [];
+
   typeChecked(val: any) {
     if (val.length > 1) {
       if (val.indexOf('1026') > -1) {

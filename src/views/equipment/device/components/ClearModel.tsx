@@ -16,7 +16,9 @@ import './ClearModel.less';
 export default class ClearModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   loading: boolean = false;

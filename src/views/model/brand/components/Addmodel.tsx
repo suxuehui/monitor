@@ -24,7 +24,9 @@ import './Addmodel.less';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -32,13 +34,18 @@ export default class AddModal extends Vue {
     description: '',
     logo: '',
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
+
   headers: any = '';
+
   uploadUrl: string = '';
+
   fileName: string = '';
 
   rules = {
@@ -54,7 +61,9 @@ export default class AddModal extends Vue {
   }
 
   logoUrl: any = [];
+
   showUpBtn: boolean = true;
+
   @Watch('data')
   onDataChange() {
     if (this.data.id > 0) {

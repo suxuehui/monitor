@@ -43,16 +43,21 @@ export default class Merchants extends Vue {
       placeholder: '商户名称或登录账号',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     activeStatus: 0,
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/customer/org/list';
+
   // 地址
   opreat: Opreat[] = [
     {
@@ -71,6 +76,7 @@ export default class Merchants extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '商户名称', prop: 'orgName' },
@@ -122,11 +128,14 @@ export default class Merchants extends Vue {
 
   // 新增、导出按钮展示
   addBtn: boolean = true;
+
   exportBtn: boolean = true;
 
   // 新增、编辑
   modelVisible: boolean = false;
+
   modelTitle: string = '';
+
   modelForm: any = {
     orgName: '',
     contactUser: '',
@@ -135,6 +144,7 @@ export default class Merchants extends Vue {
     contactPhone: '',
     contactAddress: '',
   }
+
   freezeData: any = {}
 
   // 是否激活:1，正常、激活，2,冻结
@@ -155,11 +165,15 @@ export default class Merchants extends Vue {
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   // 冻结、解冻
   freezeVisible: boolean = false;
+
   // 权限设置
   setVisible: boolean = false;
+
   setTitle: string = '';
 
   // 操作
@@ -200,10 +214,12 @@ export default class Merchants extends Vue {
       }
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增商户';
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -214,6 +230,7 @@ export default class Merchants extends Vue {
       addBlock.resetData();
     }, 200);
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;

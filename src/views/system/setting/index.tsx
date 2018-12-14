@@ -24,12 +24,14 @@ interface Params {
 })
 export default class Setting extends Vue {
   alarmModelList: any = [];
+
   alarmValueList: any = [];
 
   loading: boolean = false;
 
   // 编辑按钮
   saveBtn: boolean = true;
+
   // 权限设置
   created() {
     this.initData();
@@ -41,6 +43,7 @@ export default class Setting extends Vue {
       this.saveBtn = !!(res[0]);
     });
   }
+
   initData() {
     getAlarmModelList(null).then((res: any) => {
       if (res.result.resultCode === '0') {

@@ -19,6 +19,7 @@ const noPic = require('@/assets/noPic.png');
 export default class Brand extends Vue {
   // 当前页面权限
   nowArr: boolean[] = [];
+
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
@@ -29,13 +30,17 @@ export default class Brand extends Vue {
       placeholder: '请输入品牌名称',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/vehicle/brand/list';
 
@@ -57,6 +62,7 @@ export default class Brand extends Vue {
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '品牌图标', prop: 'logo', formatter: this.showLogo },
@@ -87,10 +93,12 @@ export default class Brand extends Vue {
 
   // 新增、导出按钮展示
   addBtn: boolean = true;
+
   exportBtn: boolean = true;
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
 
   rowData: any = {};
@@ -125,6 +133,7 @@ export default class Brand extends Vue {
       });
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增品牌';
@@ -139,6 +148,7 @@ export default class Brand extends Vue {
       addBlock.resetData();
     }, 200);
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     this.closeModal();

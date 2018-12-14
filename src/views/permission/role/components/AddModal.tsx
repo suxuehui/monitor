@@ -19,12 +19,16 @@ import { roleAdd, roleUpdate } from '@/api/permission';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   modelForm: any = {
     roleName: '',
     remark: '',
   };
+
   loading: boolean = false;
 
   rules = {

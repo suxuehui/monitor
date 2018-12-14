@@ -17,6 +17,7 @@ import './UnbindModel.less';
 export default class UnbindModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   loading: boolean = false;
