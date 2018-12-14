@@ -932,7 +932,7 @@ export default class Trajectory extends Vue {
               on-click={this.showTable}></el-button>
           }
         </div>
-        <div class={`car-table3 ${!this.locChange ? 'table-active' : ''}`}>
+        <div class={`car-table-tra-fzk ${!this.locChange ? 'table-active' : ''}`}>
           <filter-table
             ref="table"
             class="map-table"
