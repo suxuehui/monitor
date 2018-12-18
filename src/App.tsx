@@ -3,8 +3,10 @@ import {
 } from 'vue-property-decorator';
 import AppMain from '@/components/Layout/AppMain';
 import Loader from '@/components/Loader/index.vue';
-import './App.less';
+import Raven from 'raven-js';
+import RavenVue from 'raven-js/plugins/vue';
 
+import './App.less';
 @Component({
   components: {
     loader: Loader,
@@ -32,6 +34,10 @@ export default class App extends Vue {
 
   render() {
     const self = this;
+    Raven
+      .config('https://95130553210b494592fdb8be63b291be@monitor-blacktea.mysirui.com//2')
+      .addPlugin(RavenVue, Vue)
+      .install();
     return (
       <div id="app">
         <loader spinning={self.$store.getters.spinning} fullScreen></loader>

@@ -9,8 +9,13 @@ interface Window {
   BMAP_DRAWING_CIRCLE: any,
   BMAP_DRAWING_POLYGON: any,
   BMAP_DRAWING_RECTANGLE: any,
-  G2 : any,
+  G2: any,
 }
 interface Date {
-  Format(fmt : string): string
+  Format(fmt: string): string
+}
+
+declare module 'raven-js/plugins/vue' {
+  const ravenJs: any;
+  export default ravenJs;
 }
