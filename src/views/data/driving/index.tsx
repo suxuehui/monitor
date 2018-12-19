@@ -65,43 +65,43 @@ export default class Driving extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'shopName' },
-    { label: '车牌号', prop: 'plateNum' },
+    { label: '所属商户', prop: 'orgName' },
+    { label: '车牌号', prop: 'platenum' },
     { label: '车架号', prop: 'vin' },
     {
       label: '行驶次数',
-      prop: 'driveCount',
+      prop: 'drivingCount',
       sortable: true,
-      sortBy: 'driveCount',
+      sortBy: 'drivingCount',
       formatter(row: any) {
-        return `${row.driveCount} 次`;
+        return `${row.drivingCount} 次`;
       },
     },
     {
       label: '行驶里程',
-      prop: 'mileageSum',
+      prop: 'mileageCount',
       sortable: true,
-      sortBy: 'mileageSum',
+      sortBy: 'mileageCount',
       formatter(row: any) {
-        return `${row.mileageSum} km`;
+        return `${row.mileageCount} km`;
       },
     },
     {
       label: '行驶时间',
-      prop: 'driveMinSum',
+      prop: 'drivingTimeCount',
       sortable: true,
-      sortBy: 'driveMinSum',
+      sortBy: 'drivingTimeCount',
       formatter(row: any) {
-        return `${row.mileageSum} 分钟`;
+        return `${row.drivingTimeCount} 分钟`;
       },
     },
     {
       label: '耗油量',
-      prop: 'oilSum',
+      prop: 'oilCount',
       sortable: true,
-      sortBy: 'oilSum',
+      sortBy: 'oilCount',
       formatter(row: any) {
-        return `${row.mileageSum} L`;
+        return `${row.oilCount} L`;
       },
     }, {
       label: '急加速',
@@ -132,11 +132,11 @@ export default class Driving extends Vue {
     },
     {
       label: '轻震动',
-      prop: 'ligntHitCount',
+      prop: 'lightShakeCount',
       sortable: true,
-      sortBy: 'ligntHitCount',
+      sortBy: 'lightShakeCount',
       formatter(row: any) {
-        return `${row.ligntHitCount} 次`;
+        return `${row.lightShakeCount} 次`;
       },
     },
     {
