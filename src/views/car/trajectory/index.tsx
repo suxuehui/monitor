@@ -742,6 +742,15 @@ export default class Trajectory extends Vue {
             this.$message.error('轨迹信息为空！');
             return false;
           }
+          this.behaivorData = [
+            { num: 0, txt: '轻震动' },
+            { num: 0, txt: '轻碰撞' },
+            { num: 0, txt: '重碰撞' },
+            { num: 0, txt: '翻滚' },
+            { num: 0, txt: '急加速' },
+            { num: 0, txt: '急减速' },
+            { num: 0, txt: '急转弯' },
+          ];
           data = data.filter((item: any, index: number) => {
             if (item.lat > 0 || item.lng > 0) {
               const point = coordTrasns.transToBaidu(item, 'bd09ll');
