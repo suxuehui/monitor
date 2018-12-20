@@ -17,7 +17,7 @@ export default class Driving extends Vue {
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'shopName',
+      key: 'levelcode',
       type: 'levelcode',
       label: '所属门店',
       filterable: true,
@@ -30,12 +30,11 @@ export default class Driving extends Vue {
       options: [],
     },
     {
-      key: 'queryTime',
+      key: 'query',
       type: 'datetimerange',
-      label: '时间',
-      placeholder: ['开始时间', '结束时间'],
-      value: ['queryStartTime', 'queryEndTime'],
-      options: [],
+      label: '告警时间',
+      placeholder: ['开始', '结束'],
+      change: this.dateChange,
     },
     {
       key: 'keyword',
@@ -50,13 +49,15 @@ export default class Driving extends Vue {
 
   // 筛选参数
   filterParams: any = {
-    shopName: '',
-    queryStartTime: '',
-    queryEndTime: '',
+    levelcode: '',
+    query: [null, null],
     keyword: '',
   };
 
-  outParams: any = {};
+  outParams: any = {
+    startTime: '',
+    endTime: '',
+  };
 
   // 请求地址
   url: string = '/statistics/driving/list';
@@ -168,6 +169,30 @@ export default class Driving extends Vue {
     },
   ];
 
+  dateChange(val: any) {
+    if (val) {
+      if ((val[1].getTime() - val[0].getTime()) > 90 * 24 * 60 * 60 * 1000) {
+        this.$message.error('查询时间不能超过90天');
+      } else {
+        this.outParams.startTime = val[0].Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.endTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
+      }
+    } else {
+      this.clearOutParams();
+    }
+  }
+
+  clearOutParams() {
+    this.outParams = {
+      startTime: '',
+      endTime: '',
+    };
+  }
+
+  clear() {
+    this.setDays();
+  }
+
   created() {
     // 门店
     orgTree(null).then((res) => {
@@ -189,6 +214,17 @@ export default class Driving extends Vue {
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.exportBtn = !!(res[0]);
     });
+    this.setDays();
+  }
+
+  setDays() {
+    // 三个月
+    const date = new Date();
+    const starTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+    this.filterParams.query[0] = new Date(starTime);
+    this.filterParams.query[1] = date;
+    this.outParams.startTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
   exportBtn:boolean = false;
@@ -206,6 +242,7 @@ export default class Driving extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           dataType={'JSON'}
+          on-clearOutParams={this.clear}
           localName={'driving'}
           add-btn={false}
           opreat={this.opreat}

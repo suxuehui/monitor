@@ -68,10 +68,6 @@ export default class Dashboard extends Vue {
   // 搜索时间范围
   nowDate: any = '';
 
-  startTime: string = '';
-
-  endTime: string = '';
-
   defaultTime: any = [
     new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
     new Date(new Date().getFullYear(), new Date().getMonth(),
@@ -89,6 +85,10 @@ export default class Dashboard extends Vue {
 
   toMonitor: boolean = true;
 
+  columnarChart: any = null;
+
+  circleChart: any = null;
+
   created() {
     const getNowRoles: string[] = [
       // 操作
@@ -104,7 +104,6 @@ export default class Dashboard extends Vue {
     // 获取行驶统计数据
     this.GetDrivingData();
   }
-
 
   resetDriveData() {
     this.driveData = [
@@ -125,10 +124,6 @@ export default class Dashboard extends Vue {
       },
     ];
   }
-
-  columnarChart: any = null;
-
-  circleChart: any = null;
 
   createdDrivingData(time: any, str?: string) {
     getDrivingData(time).then((res) => {
