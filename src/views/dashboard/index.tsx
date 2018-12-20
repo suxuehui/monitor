@@ -16,7 +16,10 @@ export default class Dashboard extends Vue {
 
   // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
   // 圆环数据
-  circleData: any = [];
+  circleData: any = [
+    { item: '在线', count: 80, percent: 0.8 },
+    { item: '离线', count: 20, percent: 0.2 },
+  ];
 
   columData: any = [
     { name: '急加速', num: 0 },
@@ -56,9 +59,9 @@ export default class Dashboard extends Vue {
     { name: '平均油耗', arr: [] },
   ];
 
-  totalCount: number = 0;
+  totalCount: number = 100;
 
-  drivingCount: number = 0;
+  drivingCount: number = 100;
 
   helloWord: string = '';
 
@@ -97,7 +100,7 @@ export default class Dashboard extends Vue {
     // 获取告警统计数据
     this.GetAlarmData();
     // 获取车辆统计数据
-    this.GetVehicleData();
+    // this.GetVehicleData();
     // 获取行驶统计数据
     this.GetDrivingData();
   }
@@ -122,6 +125,10 @@ export default class Dashboard extends Vue {
       },
     ];
   }
+
+  columnarChart: any = null;
+
+  circleChart: any = null;
 
   createdDrivingData(time: any, str?: string) {
     getDrivingData(time).then((res) => {
@@ -273,14 +280,7 @@ export default class Dashboard extends Vue {
 
   // 环状图表
   createCircleChart() {
-    const circleChart = new window.G2.Chart({
-      container: 'mountNode',
-      forceFit: false,
-      height: 300,
-      width: 300,
-      animate: true,
-    });
-    circleChart.source(this.circleData, {
+    this.circleChart.source(this.circleData, {
       percent: {
         formatter: function formatter(val: any) {
           val = `${val * 100}%`;
@@ -288,22 +288,22 @@ export default class Dashboard extends Vue {
         },
       },
     });
-    circleChart.coord('theta', {
+    this.circleChart.coord('theta', {
       radius: 0.70,
       innerRadius: 0.65,
     });
-    circleChart.tooltip({
+    this.circleChart.tooltip({
       showTitle: false,
       itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>',
     });
     // 辅助文本
-    circleChart.guide().html({
+    this.circleChart.guide().html({
       position: ['50%', '50%'],
       html: `<div style="color: #333333;font-size: 14px;text-align: center;width: 10em;">运行车辆<br><span style="color:#333333;font-size:20px">${this.totalCount}</span>台</div>`,
       alignX: 'middle',
       alignY: 'middle',
     });
-    circleChart.intervalStack()
+    this.circleChart.intervalStack()
       .position('percent')
       .color('item', ['#00CA68', '#F25D56'])
       .label('percent', {
@@ -315,15 +315,12 @@ export default class Dashboard extends Vue {
         lineWidth: 2,
         stroke: '#fff',
       });
-    circleChart.render();
+    this.circleChart.render();
   }
-
-  columnarChart: any = null
 
   // 柱状图表
   createColumnarChart(str?: string) {
     // 柱状图
-
     this.columnarChart.source(this.columData);
     this.columnarChart.scale(this.columData.name, {
       tickInterval: 10,
@@ -349,6 +346,14 @@ export default class Dashboard extends Vue {
       height: 370,
       animate: true,
     });
+    this.circleChart = new window.G2.Chart({
+      container: 'mountNode',
+      forceFit: false,
+      height: 300,
+      width: 300,
+      animate: true,
+    });
+    this.createCircleChart();
   }
 
   setHelloWord(time: any) {
