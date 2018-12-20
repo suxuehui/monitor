@@ -126,6 +126,7 @@ export default class Dashboard extends Vue {
   createdDrivingData(time: any, str?: string) {
     getDrivingData(time).then((res) => {
       if (res.result.resultCode === '0') {
+        this.$message.success('查询成功');
         const {
           drivingCount, mileageCount, drivingTimeCount, oilCount,
           avgOilCons, speedUpCount, speedDownCount, turnCount,
@@ -218,10 +219,8 @@ export default class Dashboard extends Vue {
   GetDrivingData() {
     const day: any = new Date();
     const time = {
-      // endTime: day.Format('yyyy-MM-dd hh:mm:ss'),
-      // startTime: `${day.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`,
-      endTime: '2018-12-19 14:21:29',
-      startTime: '2018-10-19 14:21:29',
+      endTime: day.Format('yyyy-MM-dd hh:mm:ss'),
+      startTime: `${day.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`,
     };
     this.createdDrivingData(time);
   }
@@ -366,31 +365,6 @@ export default class Dashboard extends Vue {
     this.$router.push({ name: '车辆监控' });
   }
 
-  timeForMat(count: number) {
-    // 拼接时间
-    // 当前时间
-    const time1 = new Date();
-    time1.setTime(time1.getTime());
-    const Y1 = time1.getFullYear();
-    const M1 = ((time1.getMonth() + 1) > 10 ? (time1.getMonth() + 1) : `0${time1.getMonth() + 1}`);
-    const D1 = (time1.getDate() > 10 ? time1.getDate() : `0${time1.getDate()}`);
-    const timer1 = `${Y1}-${M1}-${D1}`;
-    // 之前的7天或者30天
-    const time2 = new Date();
-    time2.setTime(time2.getTime() - (24 * 60 * 60 * 1000 * count));
-    const Y2 = time2.getFullYear();
-    const M2 = ((time2.getMonth() + 1) > 9 ? (time2.getMonth() + 1) : `0${time2.getMonth() + 1}`);
-    const D2 = (time2.getDate() > 9 ? time2.getDate() : `0${time2.getDate()}`);
-    const timer2 = `${Y2}-${M2}-${D2}`;
-    return {
-      t1: timer1,
-      t2: timer2,
-      Y2,
-      M2,
-      D2,
-    };
-  }
-
   cancelAllActive() {
     this.todayActive = false;
     this.sevendayActive = false;
@@ -439,7 +413,7 @@ export default class Dashboard extends Vue {
       new Date(),
     ];
     const time = {
-      startTime: oldTimestamp,
+      startTime: this.unix2time(oldTimestamp),
       endTime,
     };
     this.createdDrivingData(time, 'refresh');
@@ -456,7 +430,7 @@ export default class Dashboard extends Vue {
       new Date(),
     ];
     const time = {
-      startTime: oldTimestamp,
+      startTime: this.unix2time(oldTimestamp),
       endTime,
     };
     this.createdDrivingData(time, 'refresh');
@@ -465,18 +439,34 @@ export default class Dashboard extends Vue {
   allData() {
     this.cancelAllActive();
     this.allActive = true;
-    this.startTime = '';
-    this.endTime = '';
-    this.defaultTime = [];
+    const day: any = new Date();
+    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const oldTimestamp = new Date().getTime() - 90 * 24 * 60 * 60 * 1000;
+    this.defaultTime = [
+      new Date(oldTimestamp),
+      new Date(),
+    ];
+    const time = {
+      startTime: this.unix2time(oldTimestamp),
+      endTime,
+    };
+    this.createdDrivingData(time, 'refresh');
   }
 
   timeSelect(data: any) {
     this.cancelAllActive();
     if (data) {
-      const t1 = data[0];
-      const t2 = data[1];
-      this.startTime = t1;
-      this.endTime = t2;
+      const start = new Date(data[0]).getTime();
+      const end = new Date(data[1]).getTime();
+      if (end - start < 90 * 24 * 60 * 60 * 1000) {
+        const time = {
+          startTime: data[0],
+          endTime: data[1],
+        };
+        this.createdDrivingData(time, 'refresh');
+      } else {
+        this.$message.error('查询时间范围最大为三个月，请重新选择');
+      }
     }
   }
 
@@ -538,7 +528,7 @@ export default class Dashboard extends Vue {
               type="datetimerange"
               class="datePicker"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               on-change={(val: any) => this.timeSelect(val)}
               range-separator="至"
               start-placeholder="开始"
