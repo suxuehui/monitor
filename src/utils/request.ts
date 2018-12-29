@@ -7,6 +7,7 @@ import pathToRegexp from 'path-to-regexp';
 import { Message } from 'element-ui';
 import config from '@/utils/config';
 import router from '@/router';
+import Raven from 'raven-js';
 
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
@@ -117,6 +118,16 @@ export default function request(options: Option): Promise<any> {
         list: data,
       };
     }
+    if (response.data.result.resultCode !== '0') {
+      const responseData = {
+        url: options.url,
+        data: options.data,
+        result: response.data.result,
+      };
+      if (process.env.NODE_ENV === 'production') {
+        Raven.captureException(JSON.stringify(responseData));
+      }
+    }
     return Promise.resolve({
       success: true,
       message: response.data.result
@@ -128,6 +139,9 @@ export default function request(options: Option): Promise<any> {
     const { response } = error;
     let msg;
     let statusCode;
+    if (process.env.NODE_ENV === 'production') {
+      Raven.captureException(JSON.stringify(error));
+    }
     if (response && response instanceof Object) {
       const { data, statusText } = response;
       statusCode = response.status;

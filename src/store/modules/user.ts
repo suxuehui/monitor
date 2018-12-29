@@ -3,6 +3,7 @@ import { getUserInfo } from '@/api/app';
 import config from '@/utils/config';
 import router, { asyncRouterMap, constantRouterMap } from '@/router';
 import { routerItem } from '@/interface';
+import Raven from 'raven-js';
 
 interface UserData {
   username: string,
@@ -71,6 +72,11 @@ const user = {
             avatarUri: '',
             email: entity.remark,
           };
+          Raven.setUserContext({
+            userName: entity.userName,
+            userId: entity.userId,
+            lastLoginTime: entity.lastLoginTime,
+          });
           const permissions: string[] = [];
           if (entity.menus) {
             entity.menus.forEach((item: any, index: number) => {
