@@ -59,7 +59,7 @@ const fetch = (options: Option) => {
         resolve({ statusText: 'OK', status: 200, data: result });
       });
     });
-  } else if (fetchType === 'YQL') {
+  } if (fetchType === 'YQL') {
     url = `http://query.yahooapis.com/v1/public/yql?q=select * from json where url='${options.url}?${encodeURIComponent(qs.stringify(options.data))}'&format=json`;
   } else if (fetchType === 'JSON') {
     return service({
@@ -119,8 +119,8 @@ export default function request(options: Option): Promise<any> {
     }
     return Promise.resolve({
       success: true,
-      message: response.data.result ?
-        response.data.result.resultMessage : null || statusText || null,
+      message: response.data.result
+        ? response.data.result.resultMessage : null || statusText || null,
       statusCode: status,
       ...data,
     });
@@ -141,7 +141,6 @@ export default function request(options: Option): Promise<any> {
       router.replace('/login');
     } else if (statusCode === 401) {
       if (config.noLoginList.indexOf(window.location.hash) < 0) {
-        Message.error('验证失效，请重新登录');
         router.replace('/login');
       }
     }
