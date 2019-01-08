@@ -2,7 +2,9 @@ import Vue from 'vue';
 import Router, { RouterOptions } from 'vue-router';
 import { routerItem } from '@/interface';
 
-const getComponent = require(`./import_${process.env.NODE_ENV}`);
+let getComponent = require(`./import_${process.env.NODE_ENV}`);
+
+getComponent = getComponent.default;
 
 export const constantRouterMap: routerItem[] & RouterOptions['routes'] = [
   {

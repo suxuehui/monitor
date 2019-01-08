@@ -366,7 +366,7 @@ export default class MapContorl {
    * 展示轨迹点详情
   */
 
-  haoverMap = ['', '轻震动', '轻碰撞', '重碰撞', '翻滚', '急加速', '急减速', '急转弯'];
+  haoverMap = ['', '震动', '碰撞', '翻滚', '急加速', '急减速', '急转弯'];
 
   getDirection(itm: number) {
     let direction = '';

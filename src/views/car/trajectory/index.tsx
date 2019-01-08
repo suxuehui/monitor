@@ -294,9 +294,8 @@ export default class Trajectory extends Vue {
       this.isEnd = false;
       this.locChange = false;
       this.behaivorData = [
-        { num: 0, txt: '轻震动' },
-        { num: 0, txt: '轻碰撞' },
-        { num: 0, txt: '重碰撞' },
+        { num: 0, txt: '震动' },
+        { num: 0, txt: '碰撞' },
         { num: 0, txt: '翻滚' },
         { num: 0, txt: '急加速' },
         { num: 0, txt: '急减速' },
@@ -483,8 +482,8 @@ export default class Trajectory extends Vue {
       }
     }
     function renderBehavior() {
-      const Map = ['', '震', '碰', '碰', '翻', '加', '减', '弯'];
-      const ColorMap = ['', '#52c41a', '#fa8c16', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2'];
+      const Map = ['', '震', '碰', '翻', '加', '减', '弯'];
+      const ColorMap = ['', '#52c41a', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2'];
       const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
       if (!ctx) {
         return;
@@ -721,9 +720,8 @@ export default class Trajectory extends Vue {
         this.isEnd = true;
       }
       this.behaivorData = [
-        { num: 0, txt: '轻震动' },
-        { num: 0, txt: '轻碰撞' },
-        { num: 0, txt: '重碰撞' },
+        { num: 0, txt: '震动' },
+        { num: 0, txt: '碰撞' },
         { num: 0, txt: '翻滚' },
         { num: 0, txt: '急加速' },
         { num: 0, txt: '急减速' },
@@ -743,9 +741,8 @@ export default class Trajectory extends Vue {
             return false;
           }
           this.behaivorData = [
-            { num: 0, txt: '轻震动' },
-            { num: 0, txt: '轻碰撞' },
-            { num: 0, txt: '重碰撞' },
+            { num: 0, txt: '震动' },
+            { num: 0, txt: '碰撞' },
             { num: 0, txt: '翻滚' },
             { num: 0, txt: '急加速' },
             { num: 0, txt: '急减速' },
