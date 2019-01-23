@@ -1,27 +1,34 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect,
+} from 'element-ui';
 import { vehicleCalvalid, vehicleDeviceSet } from '@/api/monitor';
 import { terminalDict } from '@/api/app';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-time-select': TimeSelect,
-  'el-col': Col,
-  'el-row': Row
-  }
-  })
+    'el-dialog': Dialog,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-time-select': TimeSelect,
+    'el-col': Col,
+    'el-row': Row,
+  },
+})
 export default class DeployModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
+
   modelForm: any = {
     startTime: '',
     frequency: '',
     duration: '',
   };
+
   loading: boolean = false;
 
   @Watch('data')

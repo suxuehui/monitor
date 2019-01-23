@@ -737,6 +737,10 @@ export default class Trajectory extends Vue {
         if (res.result.resultCode === '0') {
           let data = res.entity;
           if (!data || !data.length) {
+            this.getMapContorl().clearPlay();
+            this.clearPlay();
+            this.getMapContorl().removeTrackPointOverlay('trackpoint_in');
+            this.getMapContorl().removeTrackInfoBox();
             this.$message.error('轨迹信息为空！');
             return false;
           }
