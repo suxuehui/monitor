@@ -9,7 +9,6 @@ import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
 import CheckPicModel from '@/views/equipment/bindLog/components/CheckPicModel';
 import './index.less';
 
-const noPic = require('@/assets/noPic.png');
 @Component({
   components: {
     'el-card': Card,

@@ -242,7 +242,7 @@ export default class Device extends Vue {
     },
   ]
 
-  // 网络状态 1-在线，0-离线 ,
+  // 网络状态 1-在线，0-离线，
   onlineStatus: any = [
     { key: -1, value: -1, label: '全部' },
     { key: 1, value: 1, label: '在线' },
@@ -254,6 +254,7 @@ export default class Device extends Vue {
 
   addTitle: string = '';
 
+  // 更新
   updateData: any = {}
 
   // 绑定

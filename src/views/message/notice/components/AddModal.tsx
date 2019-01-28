@@ -1,6 +1,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
-  Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
+  Dialog, Row, Col, Form, FormItem, Input, Button,
 } from 'element-ui';
 import { noticeAdd } from '@/api/message';
 import './AddModal.less';
@@ -21,8 +21,6 @@ import './AddModal.less';
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
-
-  @Prop() private data: any;
 
   // 编辑器
   editor: any = null;

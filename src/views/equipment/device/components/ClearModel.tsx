@@ -2,7 +2,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
   Dialog, Row, Col, Button,
 } from 'element-ui';
-import { deliveryCfg, clearCfg } from '@/api/equipment';
+import { clearCfg } from '@/api/equipment';
 import './ClearModel.less';
 
 @Component({

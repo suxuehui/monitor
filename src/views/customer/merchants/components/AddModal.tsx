@@ -4,9 +4,9 @@ import {
 import {
   Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option,
 } from 'element-ui';
-import { checkOrgName, customerAdd, customerUpdate } from '@/api/customer';
+import { customerAdd, customerUpdate } from '@/api/customer';
 import { terminalType } from '@/api/equipment';
-import { getAllShopName, getAllShopNameMoni } from '@/api/app';
+import { getAllShopNameMoni } from '@/api/app';
 import { userCheck } from '@/api/permission';
 import './AddModal.less';
 @Component({

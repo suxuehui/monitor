@@ -350,47 +350,47 @@ export default class Monitor extends Vue {
     },
   ];
 
+  // 表格请求地址
   tableUrl: string = '/vehicle/monitor/list';
 
-  // 表格请求地址
+  // 百度地图对象
   BMap: any = null;
 
-  // 百度地图对象
+  // 百度地图lib对象
   BMapLib: any = null;
 
-  // 百度地图lib对象
+  // 当前地图对象实例
   SMap: any = null;
 
-  // 当前地图对象实例
+  // 当前地图对象zoom
   SMapZoom: number = 15;
 
-  // 当前地图对象zoom
+  // 车辆位置
   CarPoint: any = null;
 
-  // 车辆位置
+  // 车辆图标
   CarIcon: any = null;
 
-  // 车辆图标
+  // 车辆标记
   CarMarker: object[] = [];
 
-  // 车辆标记
+  // 标记集合
   markerClusterer: any = null;
 
-  // 标记集合
+  // 车辆坐标
   CarMarkerPos: number = 1;
 
-  // 车辆坐标
   address: string = '';
 
+  // 车辆详情展示
   detailShow: boolean = false;
 
-  // 车辆详情展示
+  // 车辆详情数据
   carDetail: any = {};
 
-  // 车辆详情数据
+  // 底部表格开关
   locChange: boolean = false;
 
-  // 底部表格开关
   carDetailArr: any = [
     { label: '卫星星数:', prop: 'star', unit: '颗' },
     { label: '网络质量:', prop: 'gsm', unit: '' },

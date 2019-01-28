@@ -1,6 +1,6 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import {
-  FilterFormList, tableList, tableTag, Opreat,
+  FilterFormList, tableList, Opreat,
 } from '@/interface';
 import { Tag, Tooltip } from 'element-ui';
 import { noticeDelete, noticeView } from '@/api/message';

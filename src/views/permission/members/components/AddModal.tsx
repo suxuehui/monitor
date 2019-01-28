@@ -32,8 +32,6 @@ export default class AddModal extends Vue {
 
   @Prop() private roleAddList: any;
 
-  @Prop() private roleIds: any;
-
   created() {
     this.modelForm = JSON.parse(JSON.stringify(this.data));
   }
@@ -59,13 +57,6 @@ export default class AddModal extends Vue {
     realName: [
       { required: true, message: '请输入成员姓名', trigger: 'blur' },
     ],
-    // userName: [
-    //   { validator: this.checkUsername, trigger: 'blur' },
-    // ],
-    // roleIdList: [
-    //   { required: true, message: '请选择角色类型' },
-    // ],
-
     remark: [
       { required: false },
     ],
@@ -154,6 +145,7 @@ export default class AddModal extends Vue {
 
   // 角色删除时调用
   removeTag(val: any) {
+    console.log(val);
   }
 
   selectChange(val: any) {

@@ -143,7 +143,7 @@ export default class Trajectory extends Vue {
       sortBy: 'mileage',
       formatter(row: any) {
         return row.mileage !== null
-          ? `${Math.abs(row.mileage)}km`
+          ? `${Math.abs(row.mileage)}km` // 里程可能为负
           : '--';
       },
     }, {

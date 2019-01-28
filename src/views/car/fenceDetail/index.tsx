@@ -69,13 +69,17 @@ export default class FenceDetail extends Vue {
       const pt = new this.BMap.Point(106.560421, 29.563694);
       const myIcon = new this.BMap.Icon(locaIcon, new BMap.Size(32, 32));
       const point = new this.BMap.Marker(pt, { icon: myIcon });
-      // this.SMap.addOverlay(point);
-      // point.enableDragging(); // 点可拖拽
 
-      // 拖动标点
+      // 对每个点添加拖动事件
       point.addEventListener('dragend', () => {
         const position = point.getPosition();
+        // 把点移动到地图中心
         this.SMap.panTo(new BMap.Point(position.lng, position.lat));
+        /**
+         * @method 坐标转地点
+         * @param {String} lat 经度
+         * @param {String} lng 纬度
+        */
         gpsToAddress({ lat: position.lat, lng: position.lng }).then((res) => {
           if (res.status === 0) {
             this.modelForm.address = `${res.result.formatted_address}-${res.result.sematic_description}`;
@@ -92,7 +96,7 @@ export default class FenceDetail extends Vue {
           isOpen: false, // 是否开启绘制模式
           enableDrawingTool: true, // 是否显示工具栏
           drawingToolOptions: {
-            anchor: 'BMAP_ANCHOR_TOP_LEFT', // 位置
+            anchor: 'BMAP_ANCHOR_TOP_LEFT', //  控制框位置
             offset: new this.BMap.Size(5, 5), // 偏离值
             drawingModes: [
               window.BMAP_DRAWING_CIRCLE,
@@ -107,8 +111,8 @@ export default class FenceDetail extends Vue {
         });
 
         drawingManager.addEventListener('overlaycomplete', (e: any) => {
-          this.SMap.clearOverlays();
-          this.iMpl = e.overlay;
+          this.SMap.clearOverlays(); // 清除样式
+          this.iMpl = e.overlay; // 构建覆盖物对象
           this.SMap.addOverlay(e.overlay);
           drawingManager.close();
           if (e.drawingMode === 'circle') {
@@ -154,6 +158,10 @@ export default class FenceDetail extends Vue {
     });
   }
 
+  /**
+   * @method 按类型画图
+   * @param {String} data 地点名称
+  */
   remark(data: any) {
     if (data.type === 'circle') {
       this.modelForm.type = 'circle';
@@ -262,13 +270,6 @@ export default class FenceDetail extends Vue {
     }, 500);
   }
 
-  created() {
-    // getCarList(null).then((res) => {
-    //   this.total = res.count;
-    //   this.tableData = res.entity;
-    // });
-  }
-
   // 获取地址
   getLocAddress(lng: any, lat: any) {
     gpsToAddress({ lat, lng }).then((res) => {
@@ -278,7 +279,11 @@ export default class FenceDetail extends Vue {
     });
   }
 
-  // 删除覆盖物
+  /**
+   * @method 删除覆盖物
+   * @param {Object} ret 覆盖物对象
+   * @param {String} name 删除提示文字
+  */
   deleteCover = (ret: any, name: string) => {
     const deleteMenu = new this.BMap.ContextMenu();
     deleteMenu.addItem(new this.BMap.MenuItem(name, (() => {
@@ -320,7 +325,7 @@ export default class FenceDetail extends Vue {
   // 线的样式
   styleOptions = {
     fillColor: 'blue', // 填充颜色。当参数为空时，圆形将没有填充效果。
-    strokeColor: 'red',
+    strokeColor: 'red', // 边线的颜色。
     strokeWeight: 3, // 边线的宽度，以像素为单位。
     fillOpacity: 0.4, // 填充的透明度，取值范围0 - 1。
     strokeOpacity: 0.4, // 边线透明度，取值范围0 - 1。

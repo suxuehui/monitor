@@ -31,20 +31,22 @@ const carIcon = require('@/assets/point.png');
   name: 'EleFence',
 })
 export default class EleFence extends Vue {
+  // 百度地图对象
   BMap: any = null;
 
-  // 百度地图对象
+  // 当前地图对象实例
   SMap: any = null;
 
-  // 当前地图对象实例
+  // 百度地图lib对象
   BMapLib: any = null;
 
-  // 百度地图lib对象
+  // 搜索地点
   address: string = '';
 
+  // 围栏详情展示
   detailShow: boolean = false;
 
-  // 围栏详情展示
+  // 表格显示隐藏
   locChange: boolean = false;
 
   constructor(props: any) {
@@ -174,7 +176,10 @@ export default class EleFence extends Vue {
     total: 'entity.count',
   };
 
-  // 格式化监控类型
+  /**
+   * @method 格式化监控类型
+   * @param {Array} row 单行数据
+  */
   formatAlarmType(row: any) {
     let type;
     switch (row.alarmType) {
@@ -191,7 +196,10 @@ export default class EleFence extends Vue {
     return type;
   }
 
-  // 格式化状态
+  /**
+   * @method 格式化状态
+   * @param {Array} row 单行数据
+  */
   formatStatus(row: any) {
     let type;
     switch (row.available === 1) {
@@ -230,11 +238,10 @@ export default class EleFence extends Vue {
     { key: 1, value: 1, label: '已启用' },
   ]
 
-  geolocationControl: any = null;
-
   // 定位
   mapCenter: { lat: number, lng: number } = { lat: 29.563694, lng: 106.560421 };
 
+  // 围栏样式
   styleOptions = {
     fillColor: 'blue', // 填充颜色。当参数为空时，圆形将没有填充效果。
     strokeColor: 'red',
@@ -246,12 +253,16 @@ export default class EleFence extends Vue {
   // 到当前定位
   nowMk: any = '';
 
+  // 当前位置
   nowPosition: any = {};
 
-  // 省
+  // 省列表
   provinceList: any = [];
 
-  // 省市区三级联动
+  /**
+   * @method 省市区三级联动
+   * @param {Array} val 省市区数据
+  */
   areaLoad(val: any) {
     if (val.length === 0) {
       this.outParams.area = '';
@@ -266,7 +277,10 @@ export default class EleFence extends Vue {
     }
   }
 
-  // 根据省级编码获取地级市
+  /**
+   * @method 根据省级编码获取地级市
+   * @param {Number} data 省级编码
+  */
   getCitys(data: any) {
     getCity({ regionalismCode: data }).then((res) => {
       if (res.result.resultCode === '0') {
@@ -290,7 +304,10 @@ export default class EleFence extends Vue {
     });
   }
 
-  // 根据市级编码获取市辖区
+  /**
+   * @method 根据市级编码获取市辖区
+   * @param {Number} data 市级编码
+  */
   getDistricts(data: number) {
     getDistrict({ regionalismCode: data }).then((res) => {
       if (res.result.resultCode === '0') {
@@ -319,7 +336,9 @@ export default class EleFence extends Vue {
   }
 
   created() {
-    // 门店
+    /**
+     * @method 查询门店列表
+    */
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.unshift({
@@ -332,7 +351,9 @@ export default class EleFence extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    // 省市区
+    /**
+     * @method 省市区
+    */
     getProvince(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.forEach((item: any, index: number) => {
@@ -352,7 +373,6 @@ export default class EleFence extends Vue {
     this.filterList[3].options = this.statusOptions;
     // 权限设置
     const getNowRoles: string[] = [
-      // 操作
       '/vehicle/fence/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
@@ -360,6 +380,7 @@ export default class EleFence extends Vue {
     });
   }
 
+  // 导出按钮
   exportBtn: boolean = true;
 
   // 围栏详情
@@ -375,11 +396,12 @@ export default class EleFence extends Vue {
   search(): void {
   }
 
+  // 刷新table
   refresh(): void {
-    // 刷新table
     const MapTable: any = this.$refs.mapTable;
     MapTable.reloadTable();
     setTimeout(() => {
+      // 恢复选中状态
       const pageData: any = JSON.parse(JSON.stringify(MapTable.getCurrentPageData()));
       pageData.forEach((item: any) => {
         if (item.id === this.currentFenceId) {
@@ -394,20 +416,26 @@ export default class EleFence extends Vue {
     this.SMap.clearOverlays();
   }
 
+  // 取消展示详情
   cancel(): any {
     this.detailShow = false;
     this.fenceDetail = {};
   }
 
-  // 表格显示隐藏
+  // 表格显示
   showTable(): any {
     this.locChange = false;
   }
 
+  // 表格隐藏
   hideTable(): any {
     this.locChange = true;
   }
 
+  /**
+   * @method 告警类型确认
+   * @param {Number} data 告警类型编码
+  */
   alarmTypeSet(data: string) {
     let type;
     switch (data) {
@@ -447,7 +475,10 @@ export default class EleFence extends Vue {
     });
   }
 
-  // 展开并且显示详情
+  /**
+   * @method 展开并且显示详情
+   * @param {Object} data 详情
+  */
   showDetailBox(data: any) {
     this.detailShow = true;
     this.fenceDetail = {
@@ -468,6 +499,10 @@ export default class EleFence extends Vue {
     this.currentFenceId = id;
   }
 
+  /**
+   * @method 点击行数据显示
+   * @param {Object} val 单行数据
+  */
   currentChange = (val: any) => {
     if (val) {
       this.setCurrentFenceId(val.id);
@@ -485,7 +520,7 @@ export default class EleFence extends Vue {
       // 新建点
       this.SMap.addOverlay(point);
       this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
-      // 新建圆圈、多边形、矩形
+      // 新建圆圈、多边形
       this.remark(val);
       const opts = {
         width: 200, // 信息窗口宽度
@@ -500,6 +535,10 @@ export default class EleFence extends Vue {
     }
   }
 
+  /**
+   * @method 新建圆圈、多边形
+   * @param {Object} data 画图所需数据
+  */
   remark(data: any) {
     if (data.fenceType === '1') {
       this.circleInMap(data.lng, data.lat, data.radius);
@@ -508,6 +547,12 @@ export default class EleFence extends Vue {
     }
   }
 
+  /**
+   * @method 新建圆圈
+   * @param {Number} lng 经度
+   * @param {Number} lat 纬度
+   * @param {Number} radius 半径
+  */
   circleInMap = (lng: number, lat: number, radius: number) => {
     const point: any = new this.BMap.Point(lng, lat);
     const circle: any = new this.BMap.Circle(point, radius, this.styleOptions);
@@ -517,6 +562,10 @@ export default class EleFence extends Vue {
     this.SMap.addOverlay(circle);
   }
 
+  /**
+   * @method 新建多边形
+   * @param {Object} data 多边形坐标点集合
+  */
   polygonInMap = (data: any) => {
     const polyPointArr: any = [];
     JSON.parse(data.latLngArray).forEach((itm: any) => {
@@ -562,7 +611,11 @@ export default class EleFence extends Vue {
     this.SMap.setZoom(newZoom);
   }
 
-  // 地址搜索
+  /**
+   * @method 地址搜索
+   * @param {String} val 地点值
+   * @param {any} cb
+  */
   searchAddress(val: string, cb: any) {
     queryAddress(val).then((res) => {
       if (res.status === 0) {
@@ -579,7 +632,10 @@ export default class EleFence extends Vue {
     });
   }
 
-  // 选择地址，跳转到相应位置，并查询周围车辆
+  /**
+   * @method 选择地址，跳转到相应位置，并查询周围车辆
+   * @param {String} val 地点名称
+  */
   setAddress = (val: any) => {
     this.mapCenter = {
       lat: val.lat,
@@ -598,6 +654,10 @@ export default class EleFence extends Vue {
     this.SMap.addOverlay(marker); // 创建标注
   }
 
+  /**
+   * @method 下载表单
+   * @param {Array} data 列表表头
+  */
   downLoad(data: any) {
     const data1 = qs.stringify(data);
     exportExcel(data1, '围栏列表', '/vehicle/fence/exportExcel');
