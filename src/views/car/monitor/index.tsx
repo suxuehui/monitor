@@ -595,7 +595,8 @@ export default class Monitor extends Vue {
     </div>`;
   }
 
-  getDirection(itm: number) {
+  getDirection(item: number) {
+    const itm = Number(item);
     let direction = '';
     if (itm > 337.5 || itm <= 22.5) {
       direction = '北方';
@@ -613,8 +614,9 @@ export default class Monitor extends Vue {
       direction = '西方';
     } else if (itm > 292.5 && itm <= 337.5) {
       direction = '西北方';
+    } else {
+      direction = '未知';
     }
-    direction = '未知';
     return direction;
   }
 
