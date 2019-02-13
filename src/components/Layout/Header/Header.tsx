@@ -155,22 +155,24 @@ export default class Header extends Vue {
             </el-breadcrumb>
           </div>
           <ul class="header-menu">
-            {
-              this.showNotice
-                ? <li id="noticeList" on-click={this.checkInfo}>
-                  <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
-                    <i class="iconfont-email"></i>
-                  </el-badge>
-                </li> : null
-            }
-            {
-              this.showAlarm
-                ? <li id="alarmList" on-click={this.checkAlarm}>
-                  <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
+            <li id="noticeList" on-click={this.checkInfo}>
+              {
+                this.showNotice
+                  ? <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
+                  <i class="iconfont-email"></i>
+                </el-badge>
+                  : <i class="iconfont-email"></i>
+              }
+            </li>
+            <li id="alarmList" on-click={this.checkAlarm}>
+              {
+                this.showAlarm
+                  ? <el-badge value={this.$store.getters.alarmCount === 0 ? '' : this.$store.getters.alarmCount} max={9} class="item">
                     <i class="iconfont-bell"></i>
                   </el-badge>
-                </li> : null
-            }
+                  : <i class="iconfont-bell"></i>
+              }
+            </li>
             <li class="user" id="userList">
               <el-dropdown on-command={this.menuClick} size="medium">
                 <span class="el-dropdown-link">
