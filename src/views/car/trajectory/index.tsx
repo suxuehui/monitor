@@ -549,14 +549,17 @@ export default class Trajectory extends Vue {
         img.src = url;
       }
       if (totalPoints.length !== 0) {
+        // 轨迹开始点
         const oneXY = self.SMap.pointToPixel(totalPoints[0]);
         iconRender(oneXY.x - 13, oneXY.y - 26, require('@/assets/start.png'));
         if (self.getIsEnd()) {
+          // 轨迹结束点
           const endXY = self.SMap.pointToPixel(totalPoints[totalPoints.length - 1]);
           iconRender(endXY.x - 13, endXY.y - 26, require('@/assets/end.png'));
         }
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           if (totalPoints[i].event && totalPoints[i].event.length && totalPoints[i].event[0] !== '0') {
+            // pointToPixel：经纬度坐标转像素坐标
             const pixel = self.SMap.pointToPixel(totalPoints[i]);
             if (totalPoints[i].event.length === 1) {
               addPoint(pixel.x, pixel.y, NameMap[parseInt(totalPoints[i].event[0], 10)], ColorMap[parseInt(totalPoints[i].event[0], 10)], '12px', 'one');
