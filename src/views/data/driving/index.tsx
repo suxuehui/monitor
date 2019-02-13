@@ -17,7 +17,7 @@ export default class Driving extends Vue {
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'shopName',
+      key: 'levelcode',
       type: 'levelcode',
       label: '所属门店',
       filterable: true,
@@ -30,12 +30,11 @@ export default class Driving extends Vue {
       options: [],
     },
     {
-      key: 'queryTime',
+      key: 'query',
       type: 'datetimerange',
-      label: '时间',
-      placeholder: ['开始时间', '结束时间'],
-      value: ['queryStartTime', 'queryEndTime'],
-      options: [],
+      label: '告警时间',
+      placeholder: ['开始', '结束'],
+      change: this.dateChange,
     },
     {
       key: 'keyword',
@@ -50,13 +49,15 @@ export default class Driving extends Vue {
 
   // 筛选参数
   filterParams: any = {
-    shopName: '',
-    queryStartTime: '',
-    queryEndTime: '',
+    levelcode: '',
+    query: [null, null],
     keyword: '',
   };
 
-  outParams: any = {};
+  outParams: any = {
+    startTime: '',
+    endTime: '',
+  };
 
   // 请求地址
   url: string = '/statistics/driving/list';
@@ -65,43 +66,43 @@ export default class Driving extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'shopName' },
-    { label: '车牌号', prop: 'plateNum' },
+    { label: '所属商户', prop: 'orgName' },
+    { label: '车牌号', prop: 'platenum' },
     { label: '车架号', prop: 'vin' },
     {
       label: '行驶次数',
-      prop: 'driveCount',
+      prop: 'drivingCount',
       sortable: true,
-      sortBy: 'driveCount',
+      sortBy: 'drivingCount',
       formatter(row: any) {
-        return `${row.driveCount} 次`;
+        return `${row.drivingCount} 次`;
       },
     },
     {
       label: '行驶里程',
-      prop: 'mileageSum',
+      prop: 'mileageCount',
       sortable: true,
-      sortBy: 'mileageSum',
+      sortBy: 'mileageCount',
       formatter(row: any) {
-        return `${row.mileageSum} km`;
+        return `${row.mileageCount} km`;
       },
     },
     {
       label: '行驶时间',
-      prop: 'driveMinSum',
+      prop: 'drivingTimeCount',
       sortable: true,
-      sortBy: 'driveMinSum',
+      sortBy: 'drivingTimeCount',
       formatter(row: any) {
-        return `${row.mileageSum} 分钟`;
+        return `${row.drivingTimeCount} 分钟`;
       },
     },
     {
       label: '耗油量',
-      prop: 'oilSum',
+      prop: 'oilCount',
       sortable: true,
-      sortBy: 'oilSum',
+      sortBy: 'oilCount',
       formatter(row: any) {
-        return `${row.mileageSum} L`;
+        return `${row.oilCount} L`;
       },
     }, {
       label: '急加速',
@@ -131,25 +132,16 @@ export default class Driving extends Vue {
       },
     },
     {
-      label: '轻震动',
-      prop: 'ligntHitCount',
+      label: '震动',
+      prop: 'lightShakeCount',
       sortable: true,
-      sortBy: 'ligntHitCount',
+      sortBy: 'lightShakeCount',
       formatter(row: any) {
-        return `${row.ligntHitCount} 次`;
+        return `${row.lightShakeCount} 次`;
       },
     },
     {
-      label: '轻碰撞',
-      prop: 'ligntHitCount',
-      sortable: true,
-      sortBy: 'ligntHitCount',
-      formatter(row: any) {
-        return `${row.ligntHitCount} 次`;
-      },
-    },
-    {
-      label: '重碰撞',
+      label: '碰撞',
       prop: 'heavyHitCount',
       sortable: true,
       sortBy: 'heavyHitCount',
@@ -167,6 +159,30 @@ export default class Driving extends Vue {
       },
     },
   ];
+
+  dateChange(val: any) {
+    if (val) {
+      if ((val[1].getTime() - val[0].getTime()) > 90 * 24 * 60 * 60 * 1000) {
+        this.$message.error('查询时间不能超过90天');
+      } else {
+        this.outParams.startTime = val[0].Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.endTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
+      }
+    } else {
+      this.clearOutParams();
+    }
+  }
+
+  clearOutParams() {
+    this.outParams = {
+      startTime: '',
+      endTime: '',
+    };
+  }
+
+  clear() {
+    this.setDays();
+  }
 
   created() {
     // 门店
@@ -189,6 +205,17 @@ export default class Driving extends Vue {
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.exportBtn = !!(res[0]);
     });
+    this.setDays();
+  }
+
+  setDays() {
+    // 三个月
+    const date = new Date();
+    const starTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+    this.filterParams.query[0] = new Date(starTime);
+    this.filterParams.query[1] = date;
+    this.outParams.startTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
   exportBtn:boolean = false;
@@ -206,6 +233,7 @@ export default class Driving extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           dataType={'JSON'}
+          on-clearOutParams={this.clear}
           localName={'driving'}
           add-btn={false}
           opreat={this.opreat}

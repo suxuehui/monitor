@@ -6,7 +6,6 @@ import { brandDelete, brandInfo } from '@/api/model';
 import { exportExcel } from '@/api/export';
 import AddModel from './components/Addmodel';
 
-const noPic = require('@/assets/noPic.png');
 @Component({
   components: {
     'el-tag': Tag,

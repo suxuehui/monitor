@@ -46,9 +46,6 @@ export default class AddModal extends Vue {
     cfgName: [
       { required: true, message: '请输入配置名称', trigger: 'blur' },
     ],
-    // cfgParam: [
-    //   { required: true, message: '请输入配置参数', trigger: 'blur' },
-    // ],
     reboot: [
       { required: false, message: '请确认是否重启' },
     ],

@@ -77,7 +77,7 @@ export default class MTable extends Vue {
 
   @Prop() private highlightCurrentRow!: boolean;
 
-  @Prop() private headerAlign!: string;
+  @Prop({ default: 'center' }) private headerAlign!: string;
 
   // data
   tableData: any = [];

@@ -6,8 +6,6 @@ import { configDelete, configInfo } from '@/api/config';
 import { exportExcel } from '@/api/export';
 import AddModel from './components/Addmodel';
 
-interface ActiveType { key: any, value: any, label: string }
-
 @Component({
   components: {
     'el-tag': Tag,

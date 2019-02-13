@@ -47,8 +47,8 @@ const loadMap = () => new Promise(((resolve, reject) => {
   if (!window.BMap) {
     const script: any = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://api.map.baidu.com/getscript?v=2.0&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&ser' +
-      'vices=&t=20180629105706&s=1';
+    script.src = 'https://api.map.baidu.com/getscript?v=2.0&ak=K52pNzWT61z1EHvdZptaSmlPRc7mKbjC&ser'
+      + 'vices=&t=20180629105706&s=1';
     script.onerror = reject;
     const { head } = document;
     if (head) {

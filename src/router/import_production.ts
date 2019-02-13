@@ -1,5 +1,1 @@
-module.exports = (file: string) => {
-  'use strict';
-
-  return () => import(`@/views/${file}`);
-};
+export default (file: string) => () => import(`@/views/${file}`);

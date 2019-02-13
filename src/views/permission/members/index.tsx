@@ -78,7 +78,7 @@ export default class Members extends Vue {
           item.label = item.roleName;
         });
         this.roleTypeList = res.entity;
-        this.roleTypeAddList = res.entity.filter((item:any) => item);
+        this.roleTypeAddList = res.entity.filter((item: any) => item);
         // 所有品牌
         this.roleTypeList.unshift({
           key: Math.random(),

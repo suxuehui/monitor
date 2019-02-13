@@ -62,7 +62,6 @@ export default class Setting extends Vue {
   }
 
   contentRender(field: string, str: string, ind: number) {
-    console.log(field);
     const regular = /\[input\(\w*\)\]/g;
     // 分割字符串和替换掉input框
     const content: string[] = str.split(regular);

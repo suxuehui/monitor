@@ -1,8 +1,8 @@
 import {
-  Component, Prop, Vue, Watch,
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 import {
-  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option,
+  Dialog, Row, Col, Button,
 } from 'element-ui';
 import { createBluetooth } from '@/api/equipment';
 import './AuthModel.less';

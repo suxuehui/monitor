@@ -1,8 +1,8 @@
 import {
-  Component, Prop, Vue, Watch,
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 import {
-  Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
+  Dialog, Row, Col, Form, FormItem, Input, Button,
 } from 'element-ui';
 import { handleAlarm } from '@/api/message';
 import './HandleModel.less';

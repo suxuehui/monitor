@@ -74,32 +74,23 @@ export default class Header extends Vue {
 
   showAlarm: boolean = true;
 
-  mounted() {
-    setTimeout(() => {
-      this.timeGet();
-    }, 3000);
+  created() {
     const getNowRoles: string[] = [
       '/message/notice/list',
       '/message/alarm/list',
     ];
     setTimeout(() => {
       this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+        this.showNotice = !!(res[0]);
+        this.showAlarm = !!(res[1]);
         if (res[0]) {
           this.$store.dispatch('getNotice');
         }
         if (res[1]) {
           this.$store.dispatch('getAlarm');
         }
-        this.showNotice = !!(res[0]);
-        this.showAlarm = !!(res[1]);
       });
     }, 400);
-  }
-
-  // 每30s拉取一次
-  timeGet() {
-    this.$store.dispatch('getNotice');
-    this.$store.dispatch('getAlarm');
   }
 
   pswVisible: boolean = false;

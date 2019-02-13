@@ -7,6 +7,7 @@ import pathToRegexp from 'path-to-regexp';
 import { Message } from 'element-ui';
 import config from '@/utils/config';
 import router from '@/router';
+import Raven from 'raven-js';
 
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
@@ -59,7 +60,7 @@ const fetch = (options: Option) => {
         resolve({ statusText: 'OK', status: 200, data: result });
       });
     });
-  } else if (fetchType === 'YQL') {
+  } if (fetchType === 'YQL') {
     url = `http://query.yahooapis.com/v1/public/yql?q=select * from json where url='${options.url}?${encodeURIComponent(qs.stringify(options.data))}'&format=json`;
   } else if (fetchType === 'JSON') {
     return service({
@@ -117,10 +118,20 @@ export default function request(options: Option): Promise<any> {
         list: data,
       };
     }
+    if (response.data.result.resultCode !== '0') {
+      const responseData = {
+        url: options.url,
+        data: options.data,
+        result: response.data.result,
+      };
+      if (process.env.NODE_ENV === 'production') {
+        Raven.captureException(JSON.stringify(responseData));
+      }
+    }
     return Promise.resolve({
       success: true,
-      message: response.data.result ?
-        response.data.result.resultMessage : null || statusText || null,
+      message: response.data.result
+        ? response.data.result.resultMessage : null || statusText || null,
       statusCode: status,
       ...data,
     });
@@ -128,6 +139,9 @@ export default function request(options: Option): Promise<any> {
     const { response } = error;
     let msg;
     let statusCode;
+    if (process.env.NODE_ENV === 'production') {
+      Raven.captureException(JSON.stringify(error));
+    }
     if (response && response instanceof Object) {
       const { data, statusText } = response;
       statusCode = response.status;
@@ -141,7 +155,6 @@ export default function request(options: Option): Promise<any> {
       router.replace('/login');
     } else if (statusCode === 401) {
       if (config.noLoginList.indexOf(window.location.hash) < 0) {
-        Message.error('验证失效，请重新登录');
         router.replace('/login');
       }
     }

@@ -9,8 +9,6 @@ import { terminalBind } from '@/api/equipment';
 import UploadBlock from '@/components/Upload/index.vue';
 import './BindModal.less';
 
-interface ActiveType { key: number, value: string, label: string }
-
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -61,11 +59,9 @@ export default class BindModal extends Vue {
     children: 'name',
   }
 
-  // 设备类型
-  typeList: any = [];
+  typeList: any = []; // 设备类型
 
-  // 门店列表
-  shopList: any = [];
+  shopList: any = []; // 门店列表
 
   // 品牌、车系、车型
   brandId: number = 1;
@@ -80,7 +76,7 @@ export default class BindModal extends Vue {
 
   modelName: string = '';
 
-  showUpBtn: boolean = true;
+  showUpBtn: boolean = true; // 上传按钮展示
 
   // 车型列表
   modelList: any = []

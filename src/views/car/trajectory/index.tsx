@@ -12,8 +12,6 @@ import commonfun from './commonfun';
 import MapControl from './mapContorl';
 import './index.less';
 
-function getTimeDay(day: number) { }
-
 @Component({
   components: {
     'el-button': Button,
@@ -143,7 +141,7 @@ export default class Trajectory extends Vue {
       sortBy: 'mileage',
       formatter(row: any) {
         return row.mileage !== null
-          ? `${Math.abs(row.mileage)}km`
+          ? `${Math.abs(row.mileage)}km` // 里程可能为负
           : '--';
       },
     }, {
@@ -194,21 +192,21 @@ export default class Trajectory extends Vue {
     },
   ];
 
+  // 百度地图对象
   BMap: any = null;
 
-  // 百度地图对象
+  // 当前地图对象实例
   SMap: any = null;
 
-  // 当前地图对象实例
+  // 当前地图对象zoom
   SMapZoom: number = 15;
 
-  // 当前地图对象zoom
+  // 定位
   geolocationControl: any = null;
 
-  // 定位
+  // 轨迹渲染层
   CanvasLayer: any = null;
 
-  // 轨迹渲染层
   mapCenter: {
     lat: number,
     lng: number
@@ -217,20 +215,20 @@ export default class Trajectory extends Vue {
     lng: 106.560421,
   };
 
+  // 车辆位置
   CarPoint: any = null;
 
-  // 车辆位置
+  // 车辆图标
   CarIcon: any = null;
 
-  // 车辆图标
+  // 车辆标记
   CarMarker: object[] = [];
 
-  // 车辆标记
   tableUrl: string = '';
 
+  // 地图方法类
   mapContorl: any = null;
 
-  // 地图方法类
   constructor(props: any) {
     super(props);
     config
@@ -257,10 +255,12 @@ export default class Trajectory extends Vue {
         this.geolocationControl.addEventListener('locationSuccess', () => {
           console.log('locationSuccess');
         });
-        this.SMap.enableScrollWheelZoom(true);
+        this.SMap.enableScrollWheelZoom(true); // 设置鼠标滚动
+        // 加载地图信息框
         config.loadMapInfoBox().then((BMapLib: any) => {
           this.mapContorl = new MapControl({ SMap: this.SMap });
         });
+        // 加载canvas图层
         config.loadCanvasLayer().then((CanvasLayer: any) => {
           this.CanvasLayer = CanvasLayer;
         });
@@ -294,9 +294,8 @@ export default class Trajectory extends Vue {
       this.isEnd = false;
       this.locChange = false;
       this.behaivorData = [
-        { num: 0, txt: '轻震动' },
-        { num: 0, txt: '轻碰撞' },
-        { num: 0, txt: '重碰撞' },
+        { num: 0, txt: '震动' },
+        { num: 0, txt: '碰撞' },
         { num: 0, txt: '翻滚' },
         { num: 0, txt: '急加速' },
         { num: 0, txt: '急减速' },
@@ -305,6 +304,7 @@ export default class Trajectory extends Vue {
     }
   }
 
+  // 清除图层
   clearCanvas = () => {
     if (this.canvasLayer || this.canvasLayerBack
       || this.CanvasLayerPointer || this.canvasBehavior) {
@@ -351,6 +351,9 @@ export default class Trajectory extends Vue {
       return;
     }
     for (let i = 0; i < data.length; i += 1) {
+      /**
+       * BMap.PointCollection中的元素为BMap.Point，在加入点集合BMap.PointCollection之前，让BMap.Point携带数据
+       */
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
       tempPoint.speed = data[i].obdSpeed >= 0 ? data[i].obdSpeed : data[i].gpsSpeed;
       tempPoint.uTCTime = this.utc2now(data[i].utctime);
@@ -361,79 +364,92 @@ export default class Trajectory extends Vue {
       totalPoints.push(tempPoint);
     }
     if (that.first) {
+      // 所有的点都在地图上的可视区域内
       this.SMap.setViewport(totalPoints, { margins: [20, 0, 0, 20] });
     }
     function updateBack() {
-      const nextArray = [];
+      // ctx：返回一个用于在画布上绘图的环境
       const ctx = self.canvasLayerBack.canvas.getContext('2d');
       if (!ctx) {
         return;
       }
+      // 清空给定矩形内的canvas图像
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      /**
+       * 地图都是显示在确定大小的矩形框中的，这个矩形框通常是开发者在初始化地图传入的某个容器元素。
+       * 这个矩形框也有自己的坐标系，在百度地图API中称之为可视区域坐标系，它的原点位于矩形的左上角。
+       * pointToPixel:可视区域坐标转经纬度坐标
+       * 利用canvas将前后两点连接起来
+       */
       if (totalPoints.length !== 0) {
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           const pixel = self.SMap.pointToPixel(totalPoints[i]);
           const nextPixel = self.SMap.pointToPixel(totalPoints[i + 1]);
-          ctx.beginPath();
+          ctx.beginPath(); // 开始一条路径
           ctx.moveTo(pixel.x, pixel.y);
           ctx.lineWidth = 8;
           ctx.strokeStyle = '#8b8b89';
           ctx.lineTo(nextPixel.x, nextPixel.y);
           ctx.lineCap = 'round';
-          ctx.stroke();
+          ctx.stroke(); // 开始绘制
         }
       }
     }
+    // 绘制带颜色的轨迹
     function update() {
       const ctx = self.canvasLayer.canvas.getContext('2d');
       if (!ctx) {
         return;
       }
+      // 清空给定矩形内的canvas图像
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       if (totalPoints.length !== 0) {
         // 绘制带速度颜色的轨迹
         for (let i = 0, len = totalPoints.length; i < len - 2; i += 1) {
+          // pointToPixel:可视区域坐标转经纬度坐标
           const pixel = self.SMap.pointToPixel(totalPoints[i]);
           const nextPixel = self.SMap.pointToPixel(totalPoints[i + 1]);
           ctx.beginPath();
           ctx.moveTo(pixel.x, pixel.y);
           ctx.lineCap = 'round';
           ctx.lineWidth = 6;
+          // 两点之间的颜色渐变
           const grd = ctx.createLinearGradient(pixel.x, pixel.y, nextPixel.x, nextPixel.y);
           const { speed } = totalPoints[i];
           const speedNext = totalPoints[i + 1].speed;
-          grd.addColorStop(0, self.getColorBySpeed(speed));
-          grd.addColorStop(1, self.getColorBySpeed(speedNext));
+          grd.addColorStop(0, self.getColorBySpeed(speed)); // 开始时点的颜色
+          grd.addColorStop(1, self.getColorBySpeed(speedNext)); // 结束时点的颜色
           ctx.strokeStyle = grd;
           ctx.lineTo(nextPixel.x, nextPixel.y);
           ctx.stroke();
         }
       }
     }
+    // 绘制轨迹方向
     function updatePointer() {
       const ctx = self.CanvasLayerPointer.canvas.getContext('2d');
       if (!ctx) {
         return;
       }
+      // 清空给定矩形内的canvas图像
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       if (totalPoints.length !== 0) {
-        const lineObj = {};
         let pixelPart = 0;
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
+          // pointToPixel:可视区域坐标转经纬度坐标
           const pixel = self.SMap.pointToPixel(totalPoints[i]);
           const nextPixel = self.SMap.pointToPixel(totalPoints[i + 1]);
-
           ctx.beginPath();
           pixelPart += Math.abs(nextPixel.x - pixel.x) + Math.abs(nextPixel.y - pixel.y);
           // 根据渲染像素距离渲染箭头
           if (pixelPart > 40) {
             // 箭头一共需要5个点：起点、终点、中心点、箭头端点1、箭头端点2
             pixelPart = 0;
+            // 两点之间的中心点
             const midPixel = new self.BMap.Pixel(
               (pixel.x + nextPixel.x) / 2,
               (pixel.y + nextPixel.y) / 2,
             );
-
             // 起点终点距离
             const distance = (((nextPixel.x - pixel.x) ** 2)
               + ((nextPixel.y - pixel.y) ** 2)) ** 0.5;
@@ -482,18 +498,30 @@ export default class Trajectory extends Vue {
         }
       }
     }
+    // 绘制标记点
     function renderBehavior() {
-      const Map = ['', '震', '碰', '碰', '翻', '加', '减', '弯'];
-      const ColorMap = ['', '#52c41a', '#fa8c16', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2'];
+      // 定义车辆驾驶行为及对应颜色
+      const NameMap = ['', '震', '碰', '翻', '加', '减', '弯'];
+      const ColorMap = ['', '#52c41a', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2'];
       const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
       if (!ctx) {
         return;
       }
+      // 清空给定矩形内的canvas图像
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       const mulPoint: { x: number, y: number, event: string[] }[] = [];
+      /**
+       * @method 画圆
+       * @param {Number} x X轴
+       * @param {Number} y Y轴
+       * @param {String} text 展示文字
+       * @param {String} color 颜色
+       * @param {String} fontSize 文字大小
+       * @param {String} type 驾驶行为个数
+      */
       function addPoint(x: number, y: number, text: string, color: string, fontSize: string, type: 'one' | 'mul') {
         ctx.beginPath();
-        ctx.arc(x, y, 9, 0, 2 * Math.PI);
+        ctx.arc(x, y, 9, 0, 2 * Math.PI); // (x轴,y轴,半径,开始角度,结束角度)
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.fillStyle = color;
@@ -506,7 +534,7 @@ export default class Trajectory extends Vue {
       function hoverMul(x: number, y: number, event: string[]) {
         let py = 0;
         event.forEach((item) => {
-          addPoint(x + py, y - 30, Map[parseInt(item, 10)], ColorMap[parseInt(item, 10)], '12px', 'one');
+          addPoint(x + py, y - 30, NameMap[parseInt(item, 10)], ColorMap[parseInt(item, 10)], '12px', 'one');
           py += 30;
         });
       }
@@ -531,7 +559,7 @@ export default class Trajectory extends Vue {
           if (totalPoints[i].event && totalPoints[i].event.length && totalPoints[i].event[0] !== '0') {
             const pixel = self.SMap.pointToPixel(totalPoints[i]);
             if (totalPoints[i].event.length === 1) {
-              addPoint(pixel.x, pixel.y, Map[parseInt(totalPoints[i].event[0], 10)], ColorMap[parseInt(totalPoints[i].event[0], 10)], '12px', 'one');
+              addPoint(pixel.x, pixel.y, NameMap[parseInt(totalPoints[i].event[0], 10)], ColorMap[parseInt(totalPoints[i].event[0], 10)], '12px', 'one');
             } else {
               addPoint(pixel.x, pixel.y, totalPoints[i].event.length, '#faad14', '14px', 'mul');
               mulPoint.push({
@@ -721,9 +749,8 @@ export default class Trajectory extends Vue {
         this.isEnd = true;
       }
       this.behaivorData = [
-        { num: 0, txt: '轻震动' },
-        { num: 0, txt: '轻碰撞' },
-        { num: 0, txt: '重碰撞' },
+        { num: 0, txt: '震动' },
+        { num: 0, txt: '碰撞' },
         { num: 0, txt: '翻滚' },
         { num: 0, txt: '急加速' },
         { num: 0, txt: '急减速' },
@@ -739,9 +766,21 @@ export default class Trajectory extends Vue {
         if (res.result.resultCode === '0') {
           let data = res.entity;
           if (!data || !data.length) {
+            this.getMapContorl().clearPlay();
+            this.clearPlay();
+            this.getMapContorl().removeTrackPointOverlay('trackpoint_in');
+            this.getMapContorl().removeTrackInfoBox();
             this.$message.error('轨迹信息为空！');
             return false;
           }
+          this.behaivorData = [
+            { num: 0, txt: '震动' },
+            { num: 0, txt: '碰撞' },
+            { num: 0, txt: '翻滚' },
+            { num: 0, txt: '急加速' },
+            { num: 0, txt: '急减速' },
+            { num: 0, txt: '急转弯' },
+          ];
           data = data.filter((item: any, index: number) => {
             if (item.lat > 0 || item.lng > 0) {
               const point = coordTrasns.transToBaidu(item, 'bd09ll');

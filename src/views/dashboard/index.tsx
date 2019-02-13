@@ -1,113 +1,78 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Button, DatePicker, Dialog } from 'element-ui';
+import { Button, DatePicker } from 'element-ui';
+import { getAlarmData, getDrivingData, getVehicleData } from '@/api/dashboard';
 import './index.less';
 
 @Component({
   components: {
     'el-button': Button,
     'el-date-picker': DatePicker,
-    'el-dialog': Dialog,
   },
   name: 'Dashboard',
 })
 export default class Dashboard extends Vue {
   // 告警数据
-  alarmData: any = [
-    { name: '驶出围栏1', count: 1 },
-    { name: '驶出围栏2', count: 2 },
-    { name: '驶出围栏3', count: 3 },
-    { name: '驶出围栏4', count: 4 },
-    { name: '驶出围栏5', count: 5 },
-    { name: '驶出围栏6', count: 6 },
-    { name: '驶出围栏7', count: 7 },
-    { name: '驶出围栏8', count: 8 },
-    { name: '驶出围栏9', count: 9 },
-  ]
+  alarmData: any = []
 
   // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
   // 圆环数据
   circleData: any = [
-    { item: '在线', count: 40, percent: 0.8 },
-    { item: '离线', count: 21, percent: 0.2 },
+    { item: '在线', count: 80, percent: 0.8 },
+    { item: '离线', count: 20, percent: 0.2 },
   ];
 
   columData: any = [
-    { name: '急加速', num: 38 },
-    { name: '急减速', num: 41 },
-    { name: '急转弯', num: 56 },
-    { name: '轻震动', num: 29 },
-    { name: '轻碰撞', num: 23 },
-    { name: '重碰撞', num: 10 },
-    { name: '翻滚', num: 69 },
+    { name: '急加速', num: 0 },
+    { name: '急减速', num: 0 },
+    { name: '急转弯', num: 0 },
+    { name: '震动', num: 0 },
+    { name: '轻碰撞', num: 0 },
+    { name: '重碰撞', num: 0 },
+    { name: '翻滚', num: 0 },
   ];
 
   // 行驶数据
   driveData: any = [
-    { name: '行驶次数', count: 40, bgColor: '#339999' },
-    { name: '行驶里程', count: 40, bgColor: '#437BBD' },
-    { name: '行驶时间', count: 40, bgColor: '#C37F42' },
-    { name: '耗油量', count: 40, bgColor: '#9A3FC0' },
-    { name: '平均油耗', count: 40, bgColor: '#CC5676' },
+    {
+      name: '行驶次数', count: 0, bgColor: '#339999', unit: '次',
+    },
+    {
+      name: '行驶里程', count: 0, bgColor: '#437BBD', unit: 'Km',
+    },
+    {
+      name: '行驶时间', count: 0, bgColor: '#C37F42', unit: '分钟',
+    },
+    {
+      name: '耗油量', count: 0, bgColor: '#9A3FC0', unit: 'L',
+    },
+    {
+      name: '平均油耗', count: 0, bgColor: '#CC5676', unit: 'L/100Km',
+    },
   ];
 
   // 行驶数据排行
   driveRankData: any = [
-    {
-      name: '行驶次数',
-      arr: [
-        { plateNum: '渝BPA418', count: 80 },
-        { plateNum: '渝BPA418', count: 70 },
-        { plateNum: '渝BPA418', count: 60 },
-      ],
-    },
-    {
-      name: '行驶里程',
-      arr: [
-        { plateNum: '渝BPA418', count: 80 },
-        { plateNum: '渝BPA418', count: 70 },
-        { plateNum: '渝BPA418', count: 60 },
-      ],
-    },
-    {
-      name: '行驶时间',
-      arr: [
-        { plateNum: '渝BPA418', count: 80 },
-        { plateNum: '渝BPA418', count: 70 },
-        { plateNum: '渝BPA418', count: 60 },
-      ],
-    },
-    {
-      name: '耗油量',
-      arr: [
-        { plateNum: '渝BPA418', count: 80 },
-        { plateNum: '渝BPA418', count: 70 },
-        { plateNum: '渝BPA418', count: 60 },
-      ],
-    },
-    {
-      name: '平均油耗',
-      arr: [
-        { plateNum: '渝BPA418', count: 80 },
-        { plateNum: '渝BPA418', count: 70 },
-        { plateNum: '渝BPA418', count: 60 },
-      ],
-    },
+    { name: '行驶次数', arr: [] },
+    { name: '行驶里程', arr: [] },
+    { name: '行驶时间', arr: [] },
+    { name: '耗油量', arr: [] },
+    { name: '平均油耗', arr: [] },
   ];
 
-  count: number = 100;
+  totalCount: number = 100;
 
-  helloWord: string = ''
+  drivingCount: number = 100;
+
+  helloWord: string = '';
 
   // 搜索时间范围
-  nowDate: any = ''
-
-  startTime: string = ''
-
-  endTime: string = ''
+  nowDate: any = '';
 
   defaultTime: any = [
-    new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
-    new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+    new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
+    new Date(new Date().getFullYear(), new Date().getMonth(),
+      new Date().getDate(), new Date().getHours(), new Date().getMinutes(),
+      new Date().getSeconds()),
   ]
 
   todayActive: boolean = true;
@@ -118,9 +83,11 @@ export default class Dashboard extends Vue {
 
   allActive: boolean = false;
 
-  openVisible: boolean = false;
-
   toMonitor: boolean = true;
+
+  columnarChart: any = null;
+
+  circleChart: any = null;
 
   created() {
     const getNowRoles: string[] = [
@@ -130,18 +97,185 @@ export default class Dashboard extends Vue {
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.toMonitor = !!(res[0]);
     });
+    // 获取告警统计数据
+    this.GetAlarmData();
+    // 获取车辆统计数据
+    // this.GetVehicleData();
+    // 获取行驶统计数据
+    this.GetDrivingData();
   }
 
-  mounted() {
-    // 环状图表
-    const circleChart = new window.G2.Chart({
-      container: 'mountNode',
-      forceFit: false,
-      height: 300,
-      width: 300,
-      animate: true,
+  resetDriveData() {
+    this.driveData = [
+      {
+        name: '行驶次数', count: 0, bgColor: '#339999', unit: '次',
+      },
+      {
+        name: '行驶里程', count: 0, bgColor: '#437BBD', unit: 'Km',
+      },
+      {
+        name: '行驶时间', count: 0, bgColor: '#C37F42', unit: '分钟',
+      },
+      {
+        name: '耗油量', count: 0, bgColor: '#9A3FC0', unit: 'L',
+      },
+      {
+        name: '平均油耗', count: 0, bgColor: '#CC5676', unit: 'L/100Km',
+      },
+    ];
+  }
+
+  createdDrivingData(time: any, str?: string) {
+    getDrivingData(time).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.$message.success('查询成功');
+        const {
+          drivingCount, mileageCount, drivingTimeCount, oilCount,
+          avgOilCons, speedUpCount, speedDownCount, turnCount,
+          lightShakeCount, ligntHitCount, heavyHitCount, rollCount,
+          avgOilCountTop3, drivingCountTop3, drivingTimeTop3, mileageCountTop3, oilCountTop3,
+        } = res.entity;
+        // 行驶数据
+        this.resetDriveData();
+        this.driveData[0].count = drivingCount || 0;
+        this.driveData[1].count = mileageCount || 0;
+        this.driveData[2].count = drivingTimeCount || 0;
+        this.driveData[3].count = oilCount || 0;
+        this.driveData[4].count = avgOilCons ? avgOilCons.toFixed(2) : 0;
+        // 柱状图
+        this.columData[0].num = speedUpCount || 0;
+        this.columData[1].num = speedDownCount || 0;
+        this.columData[2].num = turnCount || 0;
+        this.columData[3].num = lightShakeCount || 0;
+        this.columData[4].num = ligntHitCount || 0;
+        this.columData[5].num = heavyHitCount || 0;
+        this.columData[6].num = rollCount || 0;
+        this.createColumnarChart(str);
+        // 行驶次数
+        if (drivingCountTop3.length > 0) {
+          this.driveRankData[0].arr = [];
+          drivingCountTop3.forEach((item: any) => {
+            this.driveRankData[0].arr.push({
+              plateNum: item.platenum,
+              count: item.drivingCount,
+            });
+          });
+        } else {
+          this.driveRankData[0].arr = [];
+        }
+        // 行驶里程
+        if (mileageCountTop3.length > 0) {
+          this.driveRankData[1].arr = [];
+          mileageCountTop3.forEach((item: any) => {
+            this.driveRankData[1].arr.push({
+              plateNum: item.platenum,
+              count: item.mileageCount,
+            });
+          });
+        } else {
+          this.driveRankData[1].arr = [];
+        }
+        // 行驶时间
+        if (drivingTimeTop3.length > 0) {
+          this.driveRankData[2].arr = [];
+          drivingTimeTop3.forEach((item: any) => {
+            this.driveRankData[2].arr.push({
+              plateNum: item.platenum,
+              count: item.drivingTimeCount,
+            });
+          });
+        } else {
+          this.driveRankData[2].arr = [];
+        }
+        // 耗油量
+        if (oilCountTop3.length > 0) {
+          this.driveRankData[3].arr = [];
+          oilCountTop3.forEach((item: any) => {
+            this.driveRankData[3].arr.push({
+              plateNum: item.platenum,
+              count: item.oilCount,
+            });
+          });
+        } else {
+          this.driveRankData[3].arr = [];
+        }
+        // 平均油耗
+        if (avgOilCountTop3.length > 0) {
+          this.driveRankData[4].arr = [];
+          avgOilCountTop3.forEach((item: any) => {
+            this.driveRankData[4].arr.push({
+              plateNum: item.platenum,
+              count: item.avgOilCount,
+            });
+          });
+        } else {
+          this.driveRankData[4].arr = [];
+        }
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
-    circleChart.source(this.circleData, {
+  }
+
+  // 获取行驶统计数据
+  GetDrivingData() {
+    const day: any = new Date();
+    const time = {
+      endTime: day.Format('yyyy-MM-dd hh:mm:ss'),
+      startTime: `${day.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`,
+    };
+    this.createdDrivingData(time);
+  }
+
+  // 获取告警统计数据
+  GetAlarmData() {
+    getAlarmData(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((item: any) => {
+          item.name = item.type;
+        });
+        this.alarmData = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  // 获取车辆统计数据
+  GetVehicleData() {
+    getVehicleData(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        const data: any = JSON.parse(JSON.stringify(res.entity));
+        const onlinePercent = Math.round(
+          data.onlineCount / (data.onlineCount + data.offlineCount) * 100,
+        ) / 100;
+        const offlinePercent = Math.round(
+          data.offlineCount / (data.onlineCount + data.offlineCount) * 100,
+        ) / 100;
+        const obj1 = {
+          item: '在线',
+          count: data.onlineCount,
+          percent: onlinePercent,
+        };
+        const obj2 = {
+          item: '离线',
+          count: data.offlineCount,
+          percent: offlinePercent,
+        };
+        this.totalCount = data.count;
+        this.circleData.push(obj1, obj2);
+        this.drivingCount = data.drivingCount;
+        // 环状图表
+        this.createCircleChart();
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  // 环状图表
+  createCircleChart() {
+    this.circleChart.source(this.circleData, {
       percent: {
         formatter: function formatter(val: any) {
           val = `${val * 100}%`;
@@ -149,22 +283,22 @@ export default class Dashboard extends Vue {
         },
       },
     });
-    circleChart.coord('theta', {
+    this.circleChart.coord('theta', {
       radius: 0.70,
       innerRadius: 0.65,
     });
-    circleChart.tooltip({
+    this.circleChart.tooltip({
       showTitle: false,
       itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>',
     });
     // 辅助文本
-    circleChart.guide().html({
+    this.circleChart.guide().html({
       position: ['50%', '50%'],
-      html: '<div style="color:#333333;font-size: 14px;text-align: center;width: 10em;">运行车辆<br><span style="color:#333333;font-size:20px">200</span>台</div>',
+      html: `<div style="color: #333333;font-size: 14px;text-align: center;width: 10em;">运行车辆<br><span style="color:#333333;font-size:20px">${this.totalCount}</span>台</div>`,
       alignX: 'middle',
       alignY: 'middle',
     });
-    circleChart.intervalStack()
+    this.circleChart.intervalStack()
       .position('percent')
       .color('item', ['#00CA68', '#F25D56'])
       .label('percent', {
@@ -176,28 +310,45 @@ export default class Dashboard extends Vue {
         lineWidth: 2,
         stroke: '#fff',
       });
-    circleChart.render();
+    this.circleChart.render();
+  }
 
+  // 柱状图表
+  createColumnarChart(str?: string) {
     // 柱状图
-    const columnarChart = new window.G2.Chart({
+    this.columnarChart.source(this.columData);
+    this.columnarChart.scale(this.columData.name, {
+      tickInterval: 10,
+    });
+    this.columnarChart
+      .interval()
+      .position('name*num');
+    if (str) {
+      this.columnarChart.changeData(this.columData);
+    } else {
+      this.columnarChart.render();
+    }
+  }
+
+  mounted() {
+    // 时间
+    this.nowDate = new Date();// 获取系统当前时间
+    const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
+    this.setHelloWord(myTime);
+    this.columnarChart = new window.G2.Chart({
       container: 'columnar',
       forceFit: true,
       height: 370,
       animate: true,
     });
-
-    columnarChart.source(this.columData);
-    columnarChart.scale('num', {
-      tickInterval: 10,
+    this.circleChart = new window.G2.Chart({
+      container: 'mountNode',
+      forceFit: false,
+      height: 300,
+      width: 300,
+      animate: true,
     });
-    columnarChart
-      .interval()
-      .position('name*num');
-    columnarChart.render();
-    // 时间
-    this.nowDate = new Date();// 获取系统当前时间
-    const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
-    this.setHelloWord(myTime);
+    this.createCircleChart();
   }
 
   setHelloWord(time: any) {
@@ -214,31 +365,6 @@ export default class Dashboard extends Vue {
     this.$router.push({ name: '车辆监控' });
   }
 
-  timeForMat(count: number) {
-    // 拼接时间
-    // 当前时间
-    const time1 = new Date();
-    time1.setTime(time1.getTime());
-    const Y1 = time1.getFullYear();
-    const M1 = ((time1.getMonth() + 1) > 10 ? (time1.getMonth() + 1) : `0${time1.getMonth() + 1}`);
-    const D1 = (time1.getDate() > 10 ? time1.getDate() : `0${time1.getDate()}`);
-    const timer1 = `${Y1}-${M1}-${D1}`;
-    // 之前的7天或者30天
-    const time2 = new Date();
-    time2.setTime(time2.getTime() - (24 * 60 * 60 * 1000 * count));
-    const Y2 = time2.getFullYear();
-    const M2 = ((time2.getMonth() + 1) > 9 ? (time2.getMonth() + 1) : `0${time2.getMonth() + 1}`);
-    const D2 = (time2.getDate() > 9 ? time2.getDate() : `0${time2.getDate()}`);
-    const timer2 = `${Y2}-${M2}-${D2}`;
-    return {
-      t1: timer1,
-      t2: timer2,
-      Y2,
-      M2,
-      D2,
-    };
-  }
-
   cancelAllActive() {
     this.todayActive = false;
     this.sevendayActive = false;
@@ -249,64 +375,99 @@ export default class Dashboard extends Vue {
   toDayData() {
     this.cancelAllActive();
     this.todayActive = true;
-    const time = this.nowDate.toLocaleDateString().split('/').join('-');
-    this.startTime = time;
-    this.endTime = time;
+    const day: any = new Date();
+    const startTime = `${day.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`;
+    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
     this.defaultTime = [
-      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
-      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
+      new Date(new Date().getFullYear(), new Date().getMonth(),
+        new Date().getDate(), new Date().getHours(), new Date().getMinutes(),
+        new Date().getSeconds()),
     ];
+    const time = {
+      startTime,
+      endTime,
+    };
+    this.createdDrivingData(time, 'refresh');
   }
 
+  unix2time(num: any) {
+    const date = new Date(num);
+    const Y = `${date.getFullYear()}-`;
+    const M = `${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-`;
+    const D = `${date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()} `;
+    const h = `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:`;
+    const m = `${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}:`;
+    const s = (date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds());
+    return Y + M + D + h + m + s;
+  }
 
   sevenData() {
     this.cancelAllActive();
     this.sevendayActive = true;
-    const timer = this.timeForMat(7);
-    this.startTime = timer.t2;
-    this.endTime = timer.t1;
+    const day: any = new Date();
+    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const oldTimestamp = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
-      new Date(timer.Y2, Number(timer.M2) - 1, Number(timer.D2)),
-      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+      new Date(oldTimestamp),
+      new Date(),
     ];
+    const time = {
+      startTime: this.unix2time(oldTimestamp),
+      endTime,
+    };
+    this.createdDrivingData(time, 'refresh');
   }
 
   thirtyData() {
     this.cancelAllActive();
     this.thirtydayActive = true;
-    const timer = this.timeForMat(30);
-    this.startTime = timer.t2;
-    this.endTime = timer.t1;
+    const day: any = new Date();
+    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const oldTimestamp = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
-      new Date(timer.Y2, Number(timer.M2) - 1, Number(timer.D2)),
-      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+      new Date(oldTimestamp),
+      new Date(),
     ];
+    const time = {
+      startTime: this.unix2time(oldTimestamp),
+      endTime,
+    };
+    this.createdDrivingData(time, 'refresh');
   }
 
   allData() {
     this.cancelAllActive();
     this.allActive = true;
-    this.startTime = '';
-    this.endTime = '';
-    this.defaultTime = [];
+    const day: any = new Date();
+    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const oldTimestamp = new Date().getTime() - 90 * 24 * 60 * 60 * 1000;
+    this.defaultTime = [
+      new Date(oldTimestamp),
+      new Date(),
+    ];
+    const time = {
+      startTime: this.unix2time(oldTimestamp),
+      endTime,
+    };
+    this.createdDrivingData(time, 'refresh');
   }
 
   timeSelect(data: any) {
     this.cancelAllActive();
     if (data) {
-      const t1 = data[0];
-      const t2 = data[1];
-      this.startTime = t1;
-      this.endTime = t2;
+      const start = new Date(data[0]).getTime();
+      const end = new Date(data[1]).getTime();
+      if (end - start < 90 * 24 * 60 * 60 * 1000) {
+        const time = {
+          startTime: data[0],
+          endTime: data[1],
+        };
+        this.createdDrivingData(time, 'refresh');
+      } else {
+        this.$message.error('查询时间范围最大为三个月，请重新选择');
+      }
     }
-  }
-
-  openLink() {
-    this.openVisible = true;
-  }
-
-  closeDialog() {
-    this.openVisible = false;
   }
 
   render(h: any) {
@@ -317,7 +478,7 @@ export default class Dashboard extends Vue {
           <div class="monitorCenter">
             <div id="mountNode" class="mountNode"></div>
             <div class="title">
-              <span style="marginRight:20px">{this.helloWord}好！当前{this.count}辆车处于监控中</span>
+              <span style="marginRight:20px">{this.helloWord}好！当前{this.drivingCount}辆车处于监控中</span>
               {
                 this.toMonitor
                   ? <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
@@ -364,11 +525,10 @@ export default class Dashboard extends Vue {
             <el-date-picker
               id="datePicker"
               v-model={this.defaultTime}
+              type="datetimerange"
               class="datePicker"
-              type="daterange"
-              // default-value={this.defaultTime}
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               on-change={(val: any) => this.timeSelect(val)}
               range-separator="至"
               start-placeholder="开始"
@@ -380,9 +540,9 @@ export default class Dashboard extends Vue {
               <ul class="top">
                 {
                   this.driveData.map((item: any) => <li class="item">
-                      {item.name}
-                      <br />
-                      {item.count}次
+                    {item.name}
+                    <br />
+                    {item.count}{item.unit}
                   </li>)
                 }
               </ul>
@@ -397,10 +557,11 @@ export default class Dashboard extends Vue {
                   </div>
                   <ul class="carList">
                     {
-                      item.arr.map((data: any) => <li class="carDetail">
-                        <span>{data.plateNum}</span>
-                        <span>{data.count}</span>
-                      </li>)
+                      item.arr.length > 0
+                        ? item.arr.map((data: any) => <li class="carDetail">
+                          <span>{data.plateNum}</span>
+                          <span>{data.count}</span>
+                        </li>) : <span class="noData">暂无数据</span>
                     }
                   </ul>
                 </li>)
@@ -416,7 +577,7 @@ export default class Dashboard extends Vue {
             {
               this.alarmData.map((item: any) => <li class="alarmItem">
                 <span>{item.name}</span>
-                <span><span style="color:red">{item.count}</span>次</span>
+                <span><span style="color:red;marginRight: 3px;">{item.count}</span>次</span>
               </li>)
             }
           </ul>

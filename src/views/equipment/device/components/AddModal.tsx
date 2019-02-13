@@ -27,8 +27,6 @@ export default class AddModal extends Vue {
 
   @Prop({ default: '' }) private title!: string;
 
-  @Prop() private data: any;
-
   modelForm: any = {
     levelCode: '',
     terminalType: '',

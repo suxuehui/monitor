@@ -1,5 +1,5 @@
 import {
-  Component, Prop, Vue, Watch,
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 import { Dialog } from 'element-ui';
 import './CheckModel.less';
