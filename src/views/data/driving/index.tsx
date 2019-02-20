@@ -169,19 +169,26 @@ export default class Driving extends Vue {
         this.outParams.endTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
       }
     } else {
-      this.clearOutParams();
+      this.clear();
     }
   }
 
-  clearOutParams() {
+  clear() {
     this.outParams = {
       startTime: '',
       endTime: '',
     };
   }
 
-  clear() {
-    this.setDays();
+  clearOut(callBack: Function) {
+    const newParams = JSON.parse(JSON.stringify(this.filterParams));
+    const date = new Date();
+    const starTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+    newParams.query[0] = new Date(starTime);
+    newParams.query[1] = date;
+    callBack(newParams);
+    this.outParams.startTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
   created() {
@@ -233,7 +240,8 @@ export default class Driving extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           dataType={'JSON'}
-          on-clearOutParams={this.clear}
+          isResetChange={true}
+          on-clearOutParams={this.clearOut}
           localName={'driving'}
           add-btn={false}
           opreat={this.opreat}

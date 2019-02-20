@@ -9,6 +9,7 @@
       :add-btn="addBtn"
       :export-btn="exportBtn"
       :local-name="localName"
+      :is-reset-change="isResetChange"
       @search="searchFun"
       @clearOut="clearFun"
       @export="exportBack"
@@ -114,6 +115,9 @@ export default class FilterTable extends Vue {
   @Prop({ default: false })
   private highlightCurrentRow!: boolean;
 
+  // 重置时，是否改变初始值
+  @Prop({ default: false }) private isResetChange!: boolean;
+
   // 初始化请求参数
   tableParams: any = Object.assign(this.filterParams, this.outParams);
 
@@ -160,11 +164,17 @@ export default class FilterTable extends Vue {
     }, 100);
   }
 
+  /**
+   * @method 重置按钮点击回调事件
+  */
   @Emit()
-  clearFun() {
-    this.$emit('clearOutParams');
+  clearFun(callBack: Function) {
+    this.$emit('clearOutParams', callBack);
   }
 
+  /**
+   * @method 新增回调事件
+   */
   @Emit()
   addBack() {
     this.$emit('addBack');

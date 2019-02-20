@@ -73,6 +73,8 @@ export default class MFilter extends Vue {
 
   @Prop() private localName!: string;
 
+  @Prop({ default: false }) private isResetChange!: boolean;
+
   // data
   params: any = JSON.parse(JSON.stringify(this.filterParams));
 
@@ -127,11 +129,22 @@ export default class MFilter extends Vue {
 
   @Emit()
   reset(): void {
-    this.params = JSON.parse(JSON.stringify(this.initParams));
-    this.$emit('clearOut');
-    this.$store.dispatch('getNotice');
-    this.$store.dispatch('getAlarm');
-    this.$emit('search', this.params);
+    if (this.isResetChange) {
+      this.$emit('clearOut', (newParams: object) => {
+        if (newParams) {
+          this.initParams = JSON.parse(JSON.stringify(newParams));
+        }
+        this.params = JSON.parse(JSON.stringify(this.initParams));
+        this.$store.dispatch('getNotice');
+        this.$store.dispatch('getAlarm');
+        this.$emit('search', this.params);
+      });
+    } else {
+      this.params = JSON.parse(JSON.stringify(this.initParams));
+      this.$store.dispatch('getNotice');
+      this.$store.dispatch('getAlarm');
+      this.$emit('search', this.params);
+    }
   }
 
   @Emit()
