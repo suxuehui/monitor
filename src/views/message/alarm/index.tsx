@@ -189,11 +189,13 @@ export default class Alarm extends Vue {
     };
   }
 
-  clearOut() {
+  clearOut(callBack: Function) {
+    const newParams = JSON.parse(JSON.stringify(this.filterParams));
     const date = new Date();
     const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
-    this.filterParams.query[0] = new Date(starTime);
-    this.filterParams.query[1] = date;
+    newParams.query[0] = new Date(starTime);
+    newParams.query[1] = date;
+    callBack(newParams);
     this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
     this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
@@ -354,6 +356,7 @@ export default class Alarm extends Vue {
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
+          isResetChange={true}
           localName={'alarm'}
           url={this.url}
           dataType={'JSON'}

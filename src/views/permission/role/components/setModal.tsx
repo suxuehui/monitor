@@ -25,6 +25,8 @@ export default class SetModal extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private time: any;
+
   modelForm: any = {};
 
   menuList: any = []
@@ -43,14 +45,15 @@ export default class SetModal extends Vue {
     });
   }
 
-  @Watch('data')
+
+  @Watch('time')
   onDataChange(data: any) {
     const trees: any = this.$refs.tree;
     if (trees) {
       trees.setCheckedKeys([]);
     }
     this.checkList = [];
-    roleInfo({ roleId: data.roleId }).then((res) => {
+    roleInfo({ roleId: this.data.roleId }).then((res) => {
       const { result: { resultCode, resultMessage }, entity } = res;
       if (resultCode === '0') {
         if (entity.menuIds) {

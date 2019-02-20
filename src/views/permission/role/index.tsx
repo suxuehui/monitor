@@ -3,7 +3,7 @@ import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import { exportExcel } from '@/api/export';
-import { roleUpdateStatus } from '@/api/permission';
+import { roleUpdateStatus, roleInfo } from '@/api/permission';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
 
@@ -130,6 +130,8 @@ export default class Role extends Vue {
 
   setAuthData: any = {}
 
+  setTime: string = ''
+
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
@@ -153,6 +155,7 @@ export default class Role extends Vue {
     } else if (key === 'setAuth') {
       this.setVisible = true;
       this.setAuthData = row;
+      this.setTime = `${new Date().getTime()}`;
       this.setTitle = `权限设置-${row.roleName}`;
     }
   }
@@ -217,6 +220,7 @@ export default class Role extends Vue {
           title={this.setTitle}
           visible={this.setVisible}
           data={this.setAuthData}
+          time={this.setTime}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></set-modal>

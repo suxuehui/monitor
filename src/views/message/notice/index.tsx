@@ -125,7 +125,7 @@ export default class Notice extends Vue {
       });
     } else if (key === 'delete') {
       noticeDelete({ id: row.id }).then((res) => {
-        if (res.result.resultCode === 0) {
+        if (res.result.resultCode === '0') {
           FromTable.reloadTable(key);
           this.$store.dispatch('getNotice');
           this.$message.success(res.result.resultMessage);
