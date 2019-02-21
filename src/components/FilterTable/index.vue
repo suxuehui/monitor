@@ -42,19 +42,17 @@
 </template>
 
 <script lang="ts">
-import {
-  Prop, Emit, Vue, Component,
-} from 'vue-property-decorator';
+import { Prop, Emit, Vue, Component } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface/index';
 import MFilter from './MFilter';
 import MTable from './MTable';
 
 @Component({
   components: {
-    'm-filter': MFilter,
-    'm-table': MTable,
+  'm-filter': MFilter,
+  'm-table': MTable,
   },
-})
+  })
 export default class FilterTable extends Vue {
   // 筛选表单生成参数
   @Prop() private filterList!: FilterFormList[];
@@ -110,8 +108,10 @@ export default class FilterTable extends Vue {
   // 请求数据方法
   @Prop() private fetchType!: string;
 
+  // 头部对齐方式
   @Prop({ default: 'center' }) private headerAlign!: string;
 
+  // 表格行是否可点击
   @Prop({ default: false })
   private highlightCurrentRow!: boolean;
 
@@ -128,18 +128,25 @@ export default class FilterTable extends Vue {
   constructor(props: any) {
     super(props);
     const self = this;
+    // 获取本地表格配置缓存
     const saveList = window.localStorage.getItem(this.localName);
+    // 判断是否有值
     if (saveList) {
       const checkList = saveList.split(',');
-      const filterList = this.defalutTableList.filter(
-        (item, index) => checkList.indexOf(item.prop) > -1,
-      );
+      // 根据换成过滤表格配置
+      const filterList =
+      this.defalutTableList.filter((item, index) => checkList.indexOf(item.prop) > -1);
+      // 保存改变后的tableList
       this.changeTableList = filterList;
     } else {
+      // 没有就默认全部展示
       this.changeTableList = this.tableList.filter(item => true);
     }
   }
-
+  /**
+   * @method 重新加载数据
+   * @param {string} type delete 或者其他字符串，用于当前页只有一条数据，并点击了删除，要回退到上一页
+  */
   reloadTable(type?:string) {
     const table: any = this.$refs.MTable;
     // 延迟100ms加载数据
@@ -147,16 +154,21 @@ export default class FilterTable extends Vue {
       table.reload(type);
     }, 100);
   }
-
+  /**
+   * @method 获取当前页数据
+  */
   getCurrentPageData() {
     const table: any = this.$refs.MTable;
     return table.returnData();
   }
-
+  /**
+   * @method 搜索回调事件
+  */
   @Emit()
   searchFun(params: any) {
     this.tableParams = params;
     const table: any = this.$refs.MTable;
+    // 恢复当前页面到第一页
     table.clearPageParams();
     // 延迟100ms加载数据
     setTimeout(() => {
@@ -184,34 +196,47 @@ export default class FilterTable extends Vue {
   downBack(data: any) {
     this.$emit('downBack', data);
   }
-
+  /**
+   * @method 点击高级搜索时-设置表格样式
+   */
   @Emit()
   tableHeight(params: any) {
     const table: any = this.$refs.MTable;
     table.$el.style.marginTop = `${params - 48}px`;
   }
-
+  /**
+   * @method 导出回调事件
+   */
   @Emit()
   exportBack() {
     this.$emit('exportBack');
   }
-
+  /**
+   * @method 表格列配置函数
+   * @param {array} list 列id数组
+   */
   @Emit()
   setTable(list: Array<string>) {
     const filterList = this.defalutTableList.filter((item, index) => list.indexOf(item.prop) > -1);
     this.changeTableList = filterList;
   }
-
+  /**
+   * @method 操作栏回调事件
+   */
   @Emit()
   tableClick(key: string, row: any) {
     this.$emit('menuClick', key, row);
   }
-
+  /**
+   * @method select回调事件
+   */
   @Emit()
   selectChange(val: any) {
     this.$emit('selectChange', val);
   }
-
+  /**
+   * @method 点击行回调事件
+   */
   @Emit()
   currentChange(val: any) {
     this.$emit('currentChange', val);
