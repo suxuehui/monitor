@@ -16,14 +16,20 @@ const service = axios.create({
   timeout: 50000, // 请求超时时间
 });
 
+/**
+ * @method 封装axios组件
+ * @param {object} options
+ */
 const fetch = (options: Option) => {
   const { data } = options;
   let { url } = options;
   const { method = 'get', fetchType } = options;
+  // 合并请求头，每次都带上token值
   options.headers = {
     ...options.headers,
     token: window.localStorage.getItem('token'),
   };
+  // 对数据进行处理
   let cloneData: any = lodash.cloneDeep(data);
   cloneData = qs.stringify(cloneData);
 
@@ -46,7 +52,7 @@ const fetch = (options: Option) => {
   } catch (e) {
     Message.error(e.message);
   }
-
+  // jsonp 请求
   if (fetchType === 'JSONP') {
     return new Promise((resolve, reject) => {
       jsonp(url, {
@@ -61,8 +67,10 @@ const fetch = (options: Option) => {
       });
     });
   } if (fetchType === 'YQL') {
+    // 天气查询
     url = `http://query.yahooapis.com/v1/public/yql?q=select * from json where url='${options.url}?${encodeURIComponent(qs.stringify(options.data))}'&format=json`;
   } else if (fetchType === 'JSON') {
+    // 请求数据为json格式的请求
     return service({
       url,
       method: method.toLowerCase(),
@@ -74,6 +82,7 @@ const fetch = (options: Option) => {
       data,
     });
   }
+  // 默认的formData请求方式
   switch (method.toLowerCase()) {
     case 'post':
       return service.post(url, cloneData, { headers: options.headers });
@@ -86,20 +95,24 @@ const fetch = (options: Option) => {
   }
 };
 
+/**
+ * @todo ajax请求函数的参数声明
+ */
 interface Option {
-  url: string,
-  method: string,
-  data?: object,
-  fetchType?: string,
-  headers?: any,
-  responseType?: 'blob' | 'json',
-  fileName?: string,
+  url: string, // 请求地址
+  method: string, // 请求方法
+  data?: object, // 请求数据
+  fetchType?: string, // 请求类型，JSONP, YQL, JSON
+  headers?: any, // 请求头部
+  responseType?: 'blob' | 'json', // 返回数据类型
+  fileName?: string, // 如果是下载文件，下载的文件名称
 }
 
 export default function request(options: Option): Promise<any> {
   return fetch(options).then((response: any) => {
     const { statusText, status } = response;
     let { data } = response;
+    // 判断返回是否为文件
     if (options.responseType === 'blob') {
       const reader = new FileReader();
       reader.readAsDataURL(data);
@@ -113,11 +126,13 @@ export default function request(options: Option): Promise<any> {
       };
       return false;
     }
+    // 首页模拟数据的特殊处理
     if (data instanceof Array) {
       data = {
         list: data,
       };
     }
+    // 判断返回数据是否报错，方便搜集错误日志
     if (response.data.result.resultCode !== '0') {
       const responseData = {
         url: options.url,
@@ -128,6 +143,7 @@ export default function request(options: Option): Promise<any> {
         Raven.captureException(JSON.stringify(responseData));
       }
     }
+    // 返回数据
     return Promise.resolve({
       success: true,
       message: response.data.result
@@ -150,6 +166,7 @@ export default function request(options: Option): Promise<any> {
       statusCode = 600;
       msg = error.message || 'Network Error';
     }
+    // 判断错误码是否为4，4为登录超时，跳转到登录页，或者是http的状态码为401也代表会话失效
     if (response.data.result.resultCode === 4) {
       Message.error(response.data.result.resultMessage);
       router.replace('/login');

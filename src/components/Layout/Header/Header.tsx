@@ -31,13 +31,18 @@ interface breadItem {
 export default class Header extends Vue {
   @Prop() private username!: string;
 
-  // data
+  // 菜单数据
   menuData: routerItem[] = [];
 
+  // 面包屑数据
   breadList: breadItem[] = [];
 
+  // 用于判断面包屑匹配层级
   onIndex: number = 0;
 
+  /**
+   * @method 深度监听路由变化，更新面包屑
+   */
   @Watch('$route', { immediate: true, deep: true })
   routeChange(to: any, from: any) {
     const toDepth = utils.routeToArray(to.path);
@@ -46,20 +51,30 @@ export default class Header extends Vue {
     this.routerBread(this.menuData, toDepth.routeArr);
   }
 
+  /**
+   * @method 初始化面包屑
+   */
   @Watch('menuData')
   initRouteBread() {
     const toDepth = utils.routeToArray(this.$route.path);
     this.routerBread(this.menuData, toDepth.routeArr);
   }
 
+  /**
+   * @method 更新面包屑函数
+   * @param {Array} data 菜单数据
+   * @param {Array} toDepth 当前路由数组
+   */
   @Emit()
   routerBread(data: routerItem[], toDepth: string[]) {
     data.map((item: routerItem) => {
+      // 匹配路由path值
       if (item.path === toDepth[this.onIndex]) {
         this.breadList.push({
           url: item.path,
           text: item.name ? item.name : '',
         });
+        // 判断是否还有子路由，有就进行递归操作，层级+1
         if (item.children && (toDepth.length - 1) >= this.onIndex) {
           this.onIndex += 1;
           this.routerBread(item.children, toDepth);
@@ -80,6 +95,7 @@ export default class Header extends Vue {
       '/message/alarm/list',
     ];
     setTimeout(() => {
+      // 判断是否有通知公告和告警消息的权限
       this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
         this.showNotice = !!(res[0]);
         this.showAlarm = !!(res[1]);
@@ -95,6 +111,10 @@ export default class Header extends Vue {
 
   pswVisible: boolean = false;
 
+  /**
+   * @method 下拉菜单回调事件
+   * @param {string} type 下拉菜单回调参数
+   */
   @Emit()
   menuClick(type: string): void {
     const self = this;
@@ -102,9 +122,11 @@ export default class Header extends Vue {
       case '1':
         break;
       case '2':
+        // 修改密码
         this.pswVisible = true;
         break;
       case '3':
+        // 退出登录
         localStorage.removeItem('token');
         window.location.reload();
         break;

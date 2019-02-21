@@ -16,8 +16,10 @@ import './MenuList.less';
   },
 })
 export default class MenuList extends Vue {
+  // 背景颜色
   @Prop({ default: '#010101' }) private bgColor!: string;
 
+  // 文字颜色
   @Prop({ default: '#fff' }) private txtColor!: string;
 
   @Emit()
@@ -49,6 +51,11 @@ export default class MenuList extends Vue {
     );
   }
 
+  /**
+   * @method 递归渲染菜单组件
+   * @param {Array} menuData 路由数据
+   * @param {string} parentPath 父级路由
+   */
   renderMenu(menuData: routerItem[], parentPath?: string): (JSX.Element | null)[] {
     return menuData.map((item: routerItem) => {
       if (item.children) {
@@ -93,6 +100,11 @@ export default class MenuList extends Vue {
     });
   }
 
+  /**
+   * @method 路由跳转函数
+   * @param {string} path 路由地址
+   * @param {string} name 路由名称
+   */
   openPage(path: string, name: string | undefined) {
     this.$router.push(path);
   }
