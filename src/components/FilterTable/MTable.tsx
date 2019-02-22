@@ -218,13 +218,16 @@ export default class MTable extends Vue {
           on-selection-change={this.selectChange}
           highlightCurrentRow={this.highlightCurrentRow}>
           {
+            // 循环渲染表格
             this.tableList.map((item, index) => {
+              // 不对数据源进行处理的，进行判空和溢出处理
               if (!item.formatter) {
                 item.formatter = (row: any) => (row[item.prop] !== null && row[item.prop] !== ''
                   ? <el-tooltip effect="dark" content={row[item.prop] !== null ? `${row[item.prop]}` : '--'} placement="top">
                       <p class="text-over">{row[item.prop] !== null ? `${row[item.prop]}` : '--'}</p>
                     </el-tooltip> : '--');
               }
+              // 对数据源进行处理的
               return <el-table-column
                 key={index} {...{ props: item }} align={this.headerAlign}>
               </el-table-column>;
@@ -293,7 +296,7 @@ export default class MTable extends Vue {
                 {typeof item.text === 'function' ? item.text(row) : item.text}
               </a>;
             } if (typeof item.color === 'function'
-              && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) { // 操作颜色匹配
+              && whiteList.indexOf(typeof item.color === 'function' ? item.color(row) : item.color) >= 0) { // 操作颜色根据当前行数据匹配
               return <pop-confirm
                 keyName={item.key}
                 on-confirm={() => this.menuClick(null, item.key, row)}
@@ -304,7 +307,7 @@ export default class MTable extends Vue {
                 </a>
               </pop-confirm>;
             } if (typeof item.color === 'string'
-              && whiteList.indexOf(item.color) >= 0) { //
+              && whiteList.indexOf(item.color) >= 0) { // 判断颜色是否为红和橙色，增加操作提示
               return <pop-confirm
                 keyName={item.key}
                 on-confirm={() => this.menuClick(null, item.key, row)}
@@ -314,6 +317,7 @@ export default class MTable extends Vue {
                 </a>
               </pop-confirm>;
             }
+            // 没有提示的操作
             return <a id={`${item.key}-${row[item.rowKey]}`} class={`link-${typeof item.color === 'function' ? item.color(row) : item.color}`} key={indexs} on-click={(e: any) => this.menuClick(e, item.key, row)}>{typeof item.text === 'function' ? item.text(row) : item.text}</a>;
           }
           return true;
@@ -322,16 +326,17 @@ export default class MTable extends Vue {
     </div>;
   }
 
+  // 分页大小改变回调事件
   handleSizeChange(val: number) {
     this.pageParams.pageSize = val;
     this.getData();
   }
-
+  // 页数切换回调事件
   handleCurrentChange(val: number) {
     this.pageParams.pageNum = val;
     this.getData();
   }
-
+  // 操作栏点击回调事件
   menuClick(e: any, key: string, row: any) {
     if (e) {
       e.stopPropagation();

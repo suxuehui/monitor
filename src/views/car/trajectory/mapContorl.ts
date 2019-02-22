@@ -390,7 +390,7 @@ export default class MapContorl {
     direction = '未知';
     return direction;
   }
-
+  // 展示轨迹点信息窗口
   showTrackInfoBox(data: any) {
     this.removeTrackPointOverlay('trackpoint_in');
     this.removeTrackInfoBox();
