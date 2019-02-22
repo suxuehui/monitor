@@ -14,6 +14,7 @@ const infoCount = {
     },
   },
   actions: {
+    // 获取通知数量
     getNotice: (context: any) => new Promise((resolve, reject) => {
       noticeNotHandled({ status: 1 }).then(({ result, entity }) => {
         if (result.resultCode === '0') {
@@ -24,6 +25,7 @@ const infoCount = {
         reject(error);
       });
     }),
+    // 获取新的告警消息数量
     getAlarm: (context: any) => new Promise((resolve, reject) => {
       getNotHandled({ status: 1 }).then(({ result, entity }) => {
         if (result.resultCode === '0') {
