@@ -1,7 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
-import {
-  Button, Slider, Select, Option, Tooltip,
-} from 'element-ui';
+import { Button, Slider, Select, Option, Tooltip } from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
@@ -14,14 +12,14 @@ import './index.less';
 
 @Component({
   components: {
-    'el-button': Button,
-    'el-slider': Slider,
-    'el-select': Select,
-    'el-option': Option,
-    'el-tooltip': Tooltip,
+  'el-button': Button,
+  'el-slider': Slider,
+  'el-select': Select,
+  'el-option': Option,
+  'el-tooltip': Tooltip,
   },
   name: 'Trajectory',
-})
+  })
 export default class Trajectory extends Vue {
   locChange: boolean = false;
 
@@ -286,6 +284,7 @@ export default class Trajectory extends Vue {
   }
   // 切换回当前页面的时候，重新获取数据，去掉前面的轨迹数据
   activated() {
+    // 判断是否新的id值传入
     if (this.$route.params.id !== this.outParams.vehicleId) {
       this.outParams.vehicleId = this.$route.params.id;
       const TableRecord: any = this.$refs.table;
@@ -335,10 +334,7 @@ export default class Trajectory extends Vue {
 
   /**
    * view内部，绘制轨迹线路
-   *
-   * @param {Array} data 轨迹数据 可选
-   * @param {number} starttime 时间区间起点 可选
-   * @param {number} endtime 时间区间终点 可选
+   * @param {Array} data 轨迹数据
    */
   trackView = (data: any) => {
     const self = this;
@@ -368,6 +364,7 @@ export default class Trajectory extends Vue {
       // 所有的点都在地图上的可视区域内
       this.SMap.setViewport(totalPoints, { margins: [20, 0, 0, 20] });
     }
+    // 渲染轨迹边框
     function updateBack() {
       // ctx：返回一个用于在画布上绘图的环境
       const ctx = self.canvasLayerBack.canvas.getContext('2d');
@@ -435,6 +432,7 @@ export default class Trajectory extends Vue {
       // 清空给定矩形内的canvas图像
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       if (totalPoints.length !== 0) {
+        // 坐标像素距离累加值，大于40就渲染一个箭头
         let pixelPart = 0;
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           // pointToPixel:可视区域坐标转经纬度坐标
@@ -851,7 +849,7 @@ export default class Trajectory extends Vue {
 
   /**
    * @method 时间转为秒数
-   * @param {string} time 时间 格式为 10:00 
+   * @param {string} time 时间 格式为 10:00
    */
   playTimeNumber(time: string) {
     const timeArr = time.split(':');

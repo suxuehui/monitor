@@ -58,8 +58,7 @@ export default class MapContorl {
   myCarOverlay: any = null;
 
   /**
-   * 添加车辆覆盖物
-   *
+   * @method 添加车辆覆盖物
    * @param {Object} point 点
    * @param {string} type 点类型
    */
@@ -80,36 +79,56 @@ export default class MapContorl {
   // 当前轨迹点
   playNumber: number = 0;
 
-  // 初始化播放轨迹
+  /**
+   * @method 初始化播放轨迹
+   * @param {Array} data 轨迹数据
+   * @param {number} playSeconds 播放秒数
+   * */
   initMapPlay(data: any, playSeconds: number) {
+    // 缓存轨迹数据
     this.trackData = data;
+    // 初始化定时器时间
     this.oneTime = (playSeconds * 1000) / this.trackData.length;
+    // 初始化车辆图标
     const firstPoint = new window.BMap.Point(data[0].lng, data[0].lat);
     this.removeTrackCarOverlay('playCar');
     this.addTrackCarOverlay(firstPoint, 'playCar');
     this.myCarOverlay.div.style.transition = `left ${this.oneTime / 1000}s linear, top ${this.oneTime / 1000}s linear`;
   }
-
+  /**
+   * @method 播放定时器
+   */
   playInterVal() {
     return setInterval(() => {
+      // 判断是否为最后一个坐标点
       if (this.playNumber === this.trackData.length - 1) {
         window.clearInterval(this.playTimers);
         this.playNumber = 0;
       }
+      // 创建坐标点对象
       const Point = new window.BMap.Point(
         this.trackData[this.playNumber].lng,
         this.trackData[this.playNumber].lat,
       );
+      // 坐标点 -> 像素点坐标
       const pixel = this.SMap.pointToOverlayPixel(Point);
       this.myCarOverlay.div.style.left = `${pixel.x - 14}px`;
       this.myCarOverlay.div.style.top = `${pixel.y - 14}px`;
+      // 方向的特殊处理
       this.rotateAnimate(this.myCarOverlay.div, this.trackData[this.playNumber].direction);
+      // 坐标点像前加1
       this.playNumber += 1;
     }, parseFloat(this.oneTime.toFixed(6)));
   }
 
+  /**
+   * @method 避免 从 10度到350度这种，会顺时针旋转，正常是逆时针旋转
+   * @param dom
+   * @param direction
+   */
   rotateAnimate(dom: any, direction: number) {
     const patt = /\d+/g;
+    // 获取当前元素的方向值
     let startVal: any = patt.exec(dom.style.transform);
     startVal = parseInt(startVal ? startVal[0] : '0', 10);
     // 是否反方向旋转
@@ -153,8 +172,7 @@ export default class MapContorl {
   }
 
   /**
-   * 初始化轨迹点信息覆盖物
-   *
+   * @method 初始化轨迹点信息覆盖物
    */
   initTrackPointOverlay() {
     const self = this;

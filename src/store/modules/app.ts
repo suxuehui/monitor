@@ -5,7 +5,7 @@ import qs from 'qs';
 /**
  * @method 循环匹配菜单
  * @param {Array} data 菜单数据-参考router.ts
- * @param {Array} url 需要匹配的路由 ['/infoMange', 'list', 'public']
+ * @param {Array} url 需要匹配的路由 /infoMange/list/pulbic -> ['/infoMange', 'list', 'public']
  * @param {Array} tabList tab页面组件数据源-由菜单数据过滤生成
  * @param {string} tabActiveKey 当前激活页面的key值, 匹配菜单的里的meta.key值
  * @param {string} params 路由参数 list/2
@@ -23,11 +23,14 @@ function findMenu(
 ) {
   let result: any = { tabList, tabActiveKey };
   data.forEach((item: any) => {
+    // 过滤 /:id 路由，匹配url数组
     if (url.indexOf(item.path.replace(/\/:\w+/g, '')) > -1) {
       if (!key) {
         key = [];
       }
+      // 增加缓存页面的key值
       key.push(item.meta.key);
+      // 判断是否是最后一级路由
       if (url.length === 1) {
         result.tabList.push({
           ...item,
@@ -36,6 +39,7 @@ function findMenu(
         });
         result.tabActiveKey = item.name;
       } else {
+        // 如果不是，删除第一个路由，递归匹配后面的路由
         url.shift();
         result = findMenu(item.children, url, tabList, tabActiveKey, params, query, key);
       }
