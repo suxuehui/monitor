@@ -145,7 +145,7 @@ export default class FilterTable extends Vue {
     // 延迟100ms加载数据
     setTimeout(() => {
       table.reload(type);
-    }, 100);
+    }, 50);
   }
 
   getCurrentPageData() {

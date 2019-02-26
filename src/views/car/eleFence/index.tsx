@@ -1,6 +1,6 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import {
-  tableList, Opreat, FilterFormList, MapCarData,
+  tableList, Opreat, FilterFormList,
 } from '@/interface';
 import {
   Input, Button, Tag, Pagination, Autocomplete, Tooltip,
@@ -18,7 +18,7 @@ import '../../../styles/var.less';
 interface AlarmType { key: any, value: any, label: string }
 
 // 坐标图片
-const carIcon = require('@/assets/point.png');
+const pointIcon = require('@/assets/point.png');
 @Component({
   components: {
     'el-input': Input,
@@ -222,7 +222,7 @@ export default class EleFence extends Vue {
     { key: 2, value: 2, label: '驶出监控' },
   ]
 
-  carList: any = []
+  carList: any = []; // 车辆列表
 
   // 页数
   total: number = 1;
@@ -513,7 +513,7 @@ export default class EleFence extends Vue {
       };
       // 点击设点
       const pt = new this.BMap.Point(val.lng, val.lat);
-      const myIcon = new this.BMap.Icon(carIcon, new this.BMap.Size(32, 32));
+      const myIcon = new this.BMap.Icon(pointIcon, new this.BMap.Size(32, 32));
       const point = new this.BMap.Marker(pt, { icon: myIcon });
       // 清除之前所涉标点
       this.SMap.clearOverlays();
@@ -647,7 +647,7 @@ export default class EleFence extends Vue {
     const marker = new this.BMap.Marker(
       PT,
       {
-        icon: new this.BMap.Icon(carIcon, new this.BMap.Size(28, 40)),
+        icon: new this.BMap.Icon(pointIcon, new this.BMap.Size(28, 40)),
       },
     );
     this.SMap.clearOverlays();

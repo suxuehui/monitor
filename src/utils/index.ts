@@ -9,6 +9,7 @@ function param2Obj(url: string): { token?: string } {
   }
   return JSON.parse(`{"${decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"')}"}`);
 }
+
 /**
  * @method 路由地址转换为/router/index.ts 里面的格式，已方便匹配
  * @return 返回一级路由带有‘/’，二级及后面的路由没带‘/’，并且带上路由参数字符串
@@ -40,6 +41,7 @@ function routeToArray(route: string): { routeArr: string[], params: string } {
     params,
   };
 }
+
 /**
  * @method levelcode转换为梯级数组
  * @param {string} levelcode
@@ -57,6 +59,7 @@ function levelcodeToArray(levelcode: string) {
   });
   return ret;
 }
+
 /**
  * @method 异步加载百度地图组件
  */
@@ -83,6 +86,7 @@ const loadMap = () => new Promise(((resolve, reject) => {
     resolve(window.BMap);
   }
 }));
+
 /**
  * @method 异步加载百度地图插件
  * @detail MarkerClusterer标记聚合器用来解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能
@@ -105,6 +109,7 @@ const loadMapLib = () => new Promise(((resolve, reject) => {
   };
   script.onreadystatechange = script.onload;
 }));
+
 /**
  * @method 异步加载百度地图工具包
  */
@@ -126,6 +131,7 @@ const loadMapTextIcon = () => new Promise(((resolve, reject) => {
   };
   script.onreadystatechange = script.onload;
 }));
+
 const loadMapInfoBox = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
@@ -144,6 +150,7 @@ const loadMapInfoBox = () => new Promise(((resolve, reject) => {
   };
   script.onreadystatechange = script.onload;
 }));
+
 /**
  * @method 异步加载百度地图画图插件
  */
