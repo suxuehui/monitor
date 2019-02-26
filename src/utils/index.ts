@@ -89,7 +89,7 @@ const loadMap = () => new Promise(((resolve, reject) => {
 
 /**
  * @method 异步加载百度地图插件
- * @detail MarkerClusterer标记聚合器用来解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能
+ * @todo 用来解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能 
  */
 const loadMapLib = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
@@ -111,7 +111,7 @@ const loadMapLib = () => new Promise(((resolve, reject) => {
 }));
 
 /**
- * @method 异步加载百度地图工具包
+ * @method 异步加载百度地图覆盖层工具包
  */
 const loadMapTextIcon = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
