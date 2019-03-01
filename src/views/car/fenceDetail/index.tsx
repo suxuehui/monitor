@@ -36,15 +36,15 @@ interface AlarmType { key: any, value: any, label: string }
   name: 'FenceDetail',
 })
 export default class FenceDetail extends Vue {
+  // 百度地图对象
   BMap: any = null;
 
-  // 百度地图对象
+  // 当前地图对象实例
   SMap: any = null;
 
-  // 当前地图对象实例
+  // 百度地图lib对象
   BMapLib: any = null;
 
-  // 百度地图lib对象
   constructor(props: any) {
     super(props);
     config.loadMap().then((BMap: any) => {
@@ -65,8 +65,7 @@ export default class FenceDetail extends Vue {
       this.SMap.centerAndZoom(new BMap.Point(106.560421, 29.563694), 15);
       this.SMap.enableScrollWheelZoom(true);
 
-      // 创建坐标点
-      const pt = new this.BMap.Point(106.560421, 29.563694);
+      const pt = new this.BMap.Point(106.560421, 29.563694); // 创建坐标点
       const myIcon = new this.BMap.Icon(locaIcon, new BMap.Size(32, 32));
       const point = new this.BMap.Marker(pt, { icon: myIcon });
 
@@ -90,7 +89,6 @@ export default class FenceDetail extends Vue {
       // 画线
       config.loadDrawScript().then((BMapLib: any) => {
         this.BMapLib = BMapLib;
-        const overlays = [];
         // 实例化鼠标绘制工具
         const drawingManager = new BMapLib.DrawingManager(this.SMap, {
           isOpen: false, // 是否开启绘制模式

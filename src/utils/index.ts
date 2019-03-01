@@ -1,3 +1,7 @@
+/**
+ * @method 获取路由参数
+ * @param {string} url 路由字符串（包含参数）
+ */
 function param2Obj(url: string): { token?: string } {
   const search = url.split('?')[1];
   if (!search) {
@@ -6,6 +10,11 @@ function param2Obj(url: string): { token?: string } {
   return JSON.parse(`{"${decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"')}"}`);
 }
 
+/**
+ * @method 路由地址转换为/router/index.ts 里面的格式，已方便匹配
+ * @return 返回一级路由带有‘/’，二级及后面的路由没带‘/’，并且带上路由参数字符串
+ * @param {string} route 路由地址
+ */
 function routeToArray(route: string): { routeArr: string[], params: string } {
   if (!route) {
     return {
@@ -16,8 +25,11 @@ function routeToArray(route: string): { routeArr: string[], params: string } {
   const arr: string[] = route.split('/');
   const ret: string[] = [];
   let params = '';
+  // 去掉#号
   arr.shift();
+  // 循环拆分路由
   arr.forEach((item, index) => {
+    // 判断是否为路由参数 :id这种
     if (parseInt(item, 10)) {
       params = item;
       return;
@@ -30,6 +42,11 @@ function routeToArray(route: string): { routeArr: string[], params: string } {
   };
 }
 
+/**
+ * @method levelcode转换为梯级数组
+ * @param {string} levelcode
+ * @return 返回梯级levelcode数组 ['/1', '/1/2', '/1/2/3']
+ */
 function levelcodeToArray(levelcode: string) {
   if (!levelcode) {
     return [];
@@ -43,6 +60,9 @@ function levelcodeToArray(levelcode: string) {
   return ret;
 }
 
+/**
+ * @method 异步加载百度地图组件
+ */
 const loadMap = () => new Promise(((resolve, reject) => {
   if (!window.BMap) {
     const script: any = document.createElement('script');
@@ -67,6 +87,10 @@ const loadMap = () => new Promise(((resolve, reject) => {
   }
 }));
 
+/**
+ * @method 异步加载百度地图插件
+ * @todo 用来解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能 
+ */
 const loadMapLib = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
@@ -86,6 +110,9 @@ const loadMapLib = () => new Promise(((resolve, reject) => {
   script.onreadystatechange = script.onload;
 }));
 
+/**
+ * @method 异步加载百度地图覆盖层工具包
+ */
 const loadMapTextIcon = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
@@ -104,6 +131,7 @@ const loadMapTextIcon = () => new Promise(((resolve, reject) => {
   };
   script.onreadystatechange = script.onload;
 }));
+
 const loadMapInfoBox = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
@@ -123,6 +151,9 @@ const loadMapInfoBox = () => new Promise(((resolve, reject) => {
   script.onreadystatechange = script.onload;
 }));
 
+/**
+ * @method 异步加载百度地图画图插件
+ */
 const loadDrawScript = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
@@ -147,6 +178,9 @@ const loadDrawScript = () => new Promise(((resolve, reject) => {
   script.onreadystatechange = script.onload;
 }));
 
+/**
+ * @method 异步加载百度地图canvas图层插件
+ */
 const loadCanvasLayer = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
   script.type = 'text/javascript';
@@ -166,6 +200,10 @@ const loadCanvasLayer = () => new Promise(((resolve, reject) => {
   script.onreadystatechange = script.onload;
 }));
 
+/**
+ * @method get表单请求下载函数
+ * @param {string} url 下载地址
+ */
 function postDownload(url: string) {
   const Form = document.createElement('form');
   document.body.appendChild(Form);

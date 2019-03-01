@@ -1,7 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
-import {
-  Button, Slider, Select, Option, Tooltip,
-} from 'element-ui';
+import { Button, Slider, Select, Option, Tooltip } from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
@@ -14,14 +12,14 @@ import './index.less';
 
 @Component({
   components: {
-    'el-button': Button,
-    'el-slider': Slider,
-    'el-select': Select,
-    'el-option': Option,
-    'el-tooltip': Tooltip,
+  'el-button': Button,
+  'el-slider': Slider,
+  'el-select': Select,
+  'el-option': Option,
+  'el-tooltip': Tooltip,
   },
   name: 'Trajectory',
-})
+  })
 export default class Trajectory extends Vue {
   locChange: boolean = false;
 
@@ -284,8 +282,9 @@ export default class Trajectory extends Vue {
       this.exportBtn = !!(res[0]);
     });
   }
-
+  // 切换回当前页面的时候，重新获取数据，去掉前面的轨迹数据
   activated() {
+    // 判断是否新的id值传入
     if (this.$route.params.id !== this.outParams.vehicleId) {
       this.outParams.vehicleId = this.$route.params.id;
       const TableRecord: any = this.$refs.table;
@@ -314,17 +313,18 @@ export default class Trajectory extends Vue {
       this.SMap.removeOverlay(this.canvasBehavior);
     }
   }
-
+  // 轨迹边框层
   canvasLayer: any = null;
-
+  // 轨迹渐变层
   canvasLayerBack: any = null;
-
+  // 轨迹点层
   CanvasLayerPointer: any = null;
-
+  // 驾驶行为层
   canvasBehavior: any = null;
 
   pointCollection: any = [];
 
+  // utc时间转换为北京时间
   utc2now(time: string) {
     const date = new Date(time);
     const str = date.getTime() + (8 * 60 * 60 * 1000); // 转换成时间戳+8小时
@@ -334,10 +334,7 @@ export default class Trajectory extends Vue {
 
   /**
    * view内部，绘制轨迹线路
-   *
-   * @param {Array} data 轨迹数据 可选
-   * @param {number} starttime 时间区间起点 可选
-   * @param {number} endtime 时间区间终点 可选
+   * @param {Array} data 轨迹数据
    */
   trackView = (data: any) => {
     const self = this;
@@ -367,6 +364,7 @@ export default class Trajectory extends Vue {
       // 所有的点都在地图上的可视区域内
       this.SMap.setViewport(totalPoints, { margins: [20, 0, 0, 20] });
     }
+    // 渲染轨迹边框
     function updateBack() {
       // ctx：返回一个用于在画布上绘图的环境
       const ctx = self.canvasLayerBack.canvas.getContext('2d');
@@ -434,6 +432,7 @@ export default class Trajectory extends Vue {
       // 清空给定矩形内的canvas图像
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       if (totalPoints.length !== 0) {
+        // 坐标像素距离累加值，大于40就渲染一个箭头
         let pixelPart = 0;
         for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           // pointToPixel:可视区域坐标转经纬度坐标
@@ -531,6 +530,7 @@ export default class Trajectory extends Vue {
         ctx.fillStyle = '#fff';
         ctx.fillText(text, type === 'one' ? x - 5.5 : x - 4, y + 4);
       }
+      // 一个坐标有多个驾驶行为情况，鼠标指上圆点的时候，在上面展示多个驾驶行为图标
       function hoverMul(x: number, y: number, event: string[]) {
         let py = 0;
         event.forEach((item) => {
@@ -538,9 +538,11 @@ export default class Trajectory extends Vue {
           py += 30;
         });
       }
+      // 移除canvas圆点
       function removeMul(x: number, y: number, num: number) {
         ctx.clearRect(x - 10, y - 40, num * 30, 20);
       }
+      // canvas渲染图片
       function iconRender(x: number, y: number, url: string) {
         const img = new Image();
         img.onload = () => {
@@ -573,9 +575,12 @@ export default class Trajectory extends Vue {
             }
           }
         }
+        // 一个坐标多个驾驶行为情况
         if (mulPoint.length) {
+          // 添加鼠标事件
           self.canvasBehavior.canvas.addEventListener('mousemove', (e: MouseEvent) => {
             mulPoint.forEach((item) => {
+              // 判断是否鼠标位置是否在图标上
               if (Math.abs(e.pageX - item.x - 200) < 5 && Math.abs(e.pageY - item.y - 100) < 5) {
                 hoverMul(item.x, item.y, item.event);
               } else {
@@ -746,6 +751,7 @@ export default class Trajectory extends Vue {
   // 表格单选
   currentChange(val: any) {
     if (val) {
+      // 通过是否有结束时间判断当前轨迹是否结束
       if (!val.endTime) {
         this.isEnd = false;
       } else {
@@ -763,11 +769,15 @@ export default class Trajectory extends Vue {
       // 清除播放
       this.getMapContorl().clearPlay();
       this.clearPlay();
+      // 清除上一条轨迹
       this.getMapContorl().removeTrackPointOverlay('trackpoint_in');
+      // 清除轨迹点信息框
       this.getMapContorl().removeTrackInfoBox();
+      // 根据轨迹id，查询轨迹详情
       tripGPS({ id: val.tripId }).then((res) => {
         if (res.result.resultCode === '0') {
           let data = res.entity;
+          // 判断轨迹数据是否为空
           if (!data || !data.length) {
             this.getMapContorl().clearPlay();
             this.clearPlay();
@@ -776,6 +786,7 @@ export default class Trajectory extends Vue {
             this.$message.error('轨迹信息为空！');
             return false;
           }
+          // 重置驾驶行为数据
           this.behaivorData = [
             { num: 0, txt: '震动' },
             { num: 0, txt: '碰撞' },
@@ -784,12 +795,16 @@ export default class Trajectory extends Vue {
             { num: 0, txt: '急减速' },
             { num: 0, txt: '急转弯' },
           ];
+          // 循环转换轨迹坐标点
           data = data.filter((item: any, index: number) => {
+            // 过滤异常坐标点数据
             if (item.lat > 0 || item.lng > 0) {
               const point = coordTrasns.transToBaidu(item, 'bd09ll');
               item.lat = point.lat;
               item.lng = point.lng;
+              // 判断是否有驾驶行为数据
               if (item.events) {
+                // 循环统计驾驶行为数据
                 item.events.forEach((items: string) => {
                   if (items !== '0') {
                     this.behaivorData[parseInt(items, 10) - 1].num += 1;
@@ -832,6 +847,10 @@ export default class Trajectory extends Vue {
     return `${parseInt((val / 60).toString(), 10)}:${(val % 60) < 10 ? `0${(val % 60).toFixed(0)}` : (val % 60).toFixed(0)}`;
   }
 
+  /**
+   * @method 时间转为秒数
+   * @param {string} time 时间 格式为 10:00
+   */
   playTimeNumber(time: string) {
     const timeArr = time.split(':');
     let timeNumber = 0;
@@ -855,17 +874,24 @@ export default class Trajectory extends Vue {
   // 播放轨迹动画
   trackPlay() {
     const mapContorl = this.getMapContorl();
+    // 是否第一次播放轨迹，用于判断是否是暂停
     if (this.firstPlay) {
+      // 初始化播放车辆
       mapContorl.initMapPlay(this.getTrackData(), this.playTimeNumber(this.playTime));
       this.firstPlay = false;
     }
+    // 判断当前播放状态
     if (this.playStatus) {
+      // 暂停播放
       this.playStatus = false;
       clearInterval(this.playTimer);
       mapContorl.passPlay();
     } else {
+      // 开始播放轨迹
       this.playStatus = true;
+      // 车辆图标开始播放
       mapContorl.playContinue();
+      // 进度条播放
       this.playTimer = setInterval(() => {
         if (this.playOnTime === this.playTimeNumber(this.playTime)) {
           clearInterval(this.playTimer);

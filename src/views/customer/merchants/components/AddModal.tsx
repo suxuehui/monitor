@@ -41,9 +41,9 @@ export default class AddModal extends Vue {
     deviceType: [],
   };
 
-  shopFilteredList: any = [];
+  shopFilteredList: any = []; // 商户列表
 
-  typeList: any = [];
+  typeList: any = []; // 设备类型
 
   loading: boolean = false;
 
@@ -102,12 +102,15 @@ export default class AddModal extends Vue {
 
   typeRule = [
     {
-      validator: this.checkValue,
+      validator: this.checkTypeValue,
     },
   ]
 
   ruleStatus: boolean = true;
 
+  /**
+   * @method 商户验证规则
+   */
   checkShopValue(rule: any, value: string, callback: Function) {
     if (this.nameAndLev) {
       setTimeout(() => {
@@ -120,7 +123,10 @@ export default class AddModal extends Vue {
     }
   }
 
-  checkValue(rule: any, value: string, callback: Function) {
+  /**
+   * @method 商户验证规则
+   */
+  checkTypeValue(rule: any, value: string, callback: Function) {
     if (this.deviceType) {
       setTimeout(() => {
         callback();
@@ -175,12 +181,15 @@ export default class AddModal extends Vue {
   @Watch('data')
   onDataChange(data: any) {
     if (data.id > 0) {
+      // 编辑
       this.modelForm = JSON.parse(JSON.stringify(data));
+      // 编辑时设置默认密码为********
       this.modelForm.password = '********';
       this.ruleStatus = false;
       this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
       this.nameAndLev = `${this.data.orgName}`;
     } else {
+      // 新增
       this.resetData();
     }
   }

@@ -42,7 +42,7 @@ export const asyncRouterMap: routerItem[] = [
     name: '系统主页',
     component: getComponent('dashboard/index'),
     permission: '/home/report/alarmData',
-    meta: { key: 'Dashboard' },
+    meta: { key: 'Dashboard' }, // key值用于匹配缓存页面
   },
   {
     path: '/car',

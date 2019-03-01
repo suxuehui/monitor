@@ -126,9 +126,10 @@ export default class Merchants extends Vue {
     });
   }
 
-  // 新增、导出按钮展示
+  // 新增按钮展示
   addBtn: boolean = true;
 
+  // 导出按钮展示
   exportBtn: boolean = true;
 
   // 新增、编辑
@@ -144,8 +145,6 @@ export default class Merchants extends Vue {
     contactPhone: '',
     contactAddress: '',
   }
-
-  freezeData: any = {}
 
   // 是否激活:1，正常、激活，2,冻结
   statusDom(row: any) {
@@ -180,6 +179,7 @@ export default class Merchants extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
+      // 编辑
       this.modelForm = row;
       this.addVisible = true;
       this.addTitle = '编辑商户';

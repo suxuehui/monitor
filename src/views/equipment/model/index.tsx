@@ -123,7 +123,7 @@ export default class DeviceModel extends Vue {
     } else if (key === 'delete') {
       configDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
-          FromTable.reloadTable(key);
+          FromTable.reloadTable('delete');
           this.$message.success(res.result.resultMessage);
         } else {
           this.$message.error(res.result.resultMessage);
