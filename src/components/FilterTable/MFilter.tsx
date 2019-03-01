@@ -1,4 +1,6 @@
-import { Component, Prop, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Prop, Emit, Vue,
+} from 'vue-property-decorator';
 import {
   Row,
   Col,
@@ -23,23 +25,23 @@ import './MFilter.less';
 
 @Component({
   components: {
-  'el-input': Input,
-  'el-option': Option,
-  'el-select': Select,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-time-picker': TimePicker,
-  'el-date-picker': DatePicker,
-  'el-cascader': Cascader,
-  'el-row': Row,
-  'el-col': Col,
-  'el-button': Button,
-  'el-dialog': Dialog,
-  'el-checkbox-group': CheckboxGroup,
-  'el-checkbox': Checkbox,
-  'el-checkbox-button': CheckboxButton,
+    'el-input': Input,
+    'el-option': Option,
+    'el-select': Select,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-time-picker': TimePicker,
+    'el-date-picker': DatePicker,
+    'el-cascader': Cascader,
+    'el-row': Row,
+    'el-col': Col,
+    'el-button': Button,
+    'el-dialog': Dialog,
+    'el-checkbox-group': CheckboxGroup,
+    'el-checkbox': Checkbox,
+    'el-checkbox-button': CheckboxButton,
   },
-  })
+})
 export default class MFilter extends Vue {
   // 筛选表单生成参数
   @Prop()
@@ -179,6 +181,7 @@ export default class MFilter extends Vue {
   closeModal(): void {
     this.setModel = false;
   }
+
   /**
    * @method 开关高级搜索事件
    * @param {boolean} val
@@ -196,6 +199,7 @@ export default class MFilter extends Vue {
   addFun(): void {
     this.$emit('addFun');
   }
+
   /**
    * @method 下载事件
    * @todo 整合表格配置列数据
@@ -218,11 +222,12 @@ export default class MFilter extends Vue {
     obj.page = false;
     this.$emit('downloadFun', obj);
   }
+
   /**
    * @method 渲染表单组件函数
    * @param {object} item 表单配置项
-   * @param {number} index 当前序列号 
-   * @param {boolean} grade 是否为高级搜索表单 
+   * @param {number} index 当前序列号
+   * @param {boolean} grade 是否为高级搜索表单
    * @return JSXElement
    */
   formItem(item: FilterFormList, index: number, grade?: boolean) {
@@ -255,7 +260,7 @@ export default class MFilter extends Vue {
           options={item.options}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}
-          props={item.props}
+          props={{ props: item.props }}
           filterable={item.filterable}
           change-on-select
           on-active-item-change={item.itemChange}
@@ -265,7 +270,7 @@ export default class MFilter extends Vue {
       case 'levelcode':
         itemDom = <el-cascader style="width: 100%;"
           id={item.key}
-          props={item.props}
+          props={{ props: item.props }} // 以vue中jsx为准，
           change-on-select
           filterable={true}
           options={item.options}
@@ -398,6 +403,7 @@ export default class MFilter extends Vue {
       </div>
     );
   }
+
   // 表格设置函数
   setTable() {
     if (this.checkList.length > 0) {
@@ -408,6 +414,7 @@ export default class MFilter extends Vue {
       this.$message.error('表格不能为空，请重新选择');
     }
   }
+
   /**
    * @method 按钮渲染函数
    * @param {boolean} isNormal 是否是普通搜索的按钮
