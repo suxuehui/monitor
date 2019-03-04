@@ -58,14 +58,23 @@ export default class AddModal extends Vue {
 
   levelCodeRule = [
     { required: true, message: '请选择所属商户1', trigger: 'change' },
+    {
+      validator: this.checkLevelCodeRule, trigger: 'change',
+    },
   ]
 
   terminalTypeRule = [
     { required: true, message: '请选择设备类型1', trigger: 'change' },
+    {
+      validator: this.checkTerminalType, trigger: 'change',
+    },
   ]
 
   imeiRule = [
     { required: true, message: '请输入设备IMEI1', trigger: 'blur' },
+    {
+      validator: this.checkIMEI, trigger: 'change',
+    },
   ]
 
   // 选择所属商户
