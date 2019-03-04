@@ -56,12 +56,22 @@ export default class AddModal extends Vue {
     ],
   }
 
+  levelCodeRule = [
+    { required: true, message: '请选择所属商户1', trigger: 'change' },
+  ]
+
+  terminalTypeRule = [
+    { required: true, message: '请选择设备类型1', trigger: 'change' },
+  ]
+
+  imeiRule = [
+    { required: true, message: '请输入设备IMEI1', trigger: 'blur' },
+  ]
+
   // 选择所属商户
   checkLevelCodeRule(rule: any, value: string, callback: Function) {
-    console.log(222);
     setTimeout(() => {
       if (value) {
-        console.log(value);
         callback();
       } else {
         callback(new Error('所属商户不能为空，请重新选择'));
@@ -185,10 +195,10 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon ref="modelForm" rules={this.rules} label-width="80px" class="model">
+        <el-form model={this.modelForm} status-icon ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="所属商户" prop="levelCode">
+              <el-form-item label="所属商户" prop="levelCode" rules={this.levelCodeRule}>
                 <el-select
                   id="levelCode"
                   v-model={this.modelForm.levelCode}
@@ -205,7 +215,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="设备类型" prop="terminalType">
+              <el-form-item label="设备类型" prop="terminalType" rules={this.terminalTypeRule}>
                 <el-select
                   id="terminalType"
                   v-model={this.modelForm.terminalType}
@@ -222,7 +232,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="imei号" prop="imei">
+              <el-form-item label="imei号" prop="imei" rules={this.imeiRule}>
                 <el-input
                   id="imei"
                   v-model={this.modelForm.imei}
