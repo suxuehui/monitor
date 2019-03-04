@@ -58,8 +58,10 @@ export default class AddModal extends Vue {
 
   // 选择所属商户
   checkLevelCodeRule(rule: any, value: string, callback: Function) {
+    console.log(222);
     setTimeout(() => {
       if (value) {
+        console.log(value);
         callback();
       } else {
         callback(new Error('所属商户不能为空，请重新选择'));
