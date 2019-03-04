@@ -38,13 +38,55 @@ export default class AddModal extends Vue {
   rules = {
     levelCode: [
       { required: true, message: '请选择所属商户' },
+      {
+        validator: this.checkLevelCodeRule, trigger: 'change',
+      },
     ],
     terminalType: [
       { required: true, message: '请选择设备类型' },
+      {
+        validator: this.checkTerminalType, trigger: 'change',
+      },
     ],
     imei: [
       { required: true, message: '请输入设备IMEI', trigger: 'blur' },
+      {
+        validator: this.checkIMEI, trigger: 'blur',
+      },
     ],
+  }
+
+  // 选择所属商户
+  checkLevelCodeRule(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        callback();
+      } else {
+        callback(new Error('所属商户不能为空，请重新选择'));
+      }
+    }, 200);
+  }
+
+  // 选择设备类型
+  checkTerminalType(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        callback();
+      } else {
+        callback(new Error('设备类型不能为空，请重新选择'));
+      }
+    }, 200);
+  }
+
+  // 输入IMEI
+  checkIMEI(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        callback();
+      } else {
+        callback(new Error('IMEI不能为空，请重新输入'));
+      }
+    }, 200);
   }
 
   // 设备类型
