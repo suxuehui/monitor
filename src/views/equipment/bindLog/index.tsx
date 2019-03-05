@@ -2,7 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import {
   Card, Form, FormItem, Input, Row, Col, Tag, Tooltip, Button,
 } from 'element-ui';
-import { tableList, Opreat } from '@/interface';
+import { FilterFormList, tableList, Opreat } from '@/interface';
 import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
@@ -62,6 +62,17 @@ export default class BindLog extends Vue {
   // 新增、导出按钮展示
   acceptBtn: boolean = true;
 
+  activated() {
+    const FormTable: any = this.$refs.MTable;
+    const tableParams = {
+      page: true,
+      pageNum: 1,
+      pageSize: 5,
+      imei: this.$route.query.imei,
+    };
+    FormTable.getData(tableParams);
+  }
+
   created() {
     const getNowRoles: string[] = [
       // 操作
@@ -106,22 +117,22 @@ export default class BindLog extends Vue {
   checkPicTitle: string = '';
 
   opsPerson(row: any) {
-    const str= `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
+    const str = `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
     return row.opsOrgName && row.opsRealName && row.opsUsername
       ? <el-tooltip class="item" effect="dark" content={str} placement="top">
         <div>
           <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
           <p>{`(${row.opsUsername})`}</p>
         </div>
-      </el-tooltip>: '--';
+      </el-tooltip> : '--';
   }
 
   showInstallPic(row: any) {
     if (row.installUrl !== null) {
       const imgArr = row.installUrl.indexOf(',') > 0 ? row.installUrl.split(',') : [row.installUrl];
       return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
-          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
-        </div>);
+        <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
+      </div>);
     }
     return '暂无安装图片';
   }
@@ -146,8 +157,8 @@ export default class BindLog extends Vue {
     if (row.vinUrl !== null) {
       const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
       return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
-          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
-        </div>);
+        <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
+      </div>);
     }
     return '暂无车架图片';
   }
@@ -175,7 +186,6 @@ export default class BindLog extends Vue {
   }
 
   tableClick(key: string, row: any) {
-    const FromTable: any = this.$refs.table;
     if (key === 'checkLog') {
       this.checkLogVisible = true;
       this.checkLogId = row.id;

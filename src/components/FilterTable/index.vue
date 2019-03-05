@@ -42,17 +42,17 @@
 </template>
 
 <script lang="ts">
-import { Prop, Emit, Vue, Component } from 'vue-property-decorator';
-import { FilterFormList, tableList, Opreat } from '@/interface/index';
-import MFilter from './MFilter';
-import MTable from './MTable';
+import { Prop, Emit, Vue, Component } from "vue-property-decorator";
+import { FilterFormList, tableList, Opreat } from "@/interface/index";
+import MFilter from "./MFilter";
+import MTable from "./MTable";
 
 @Component({
   components: {
-  'm-filter': MFilter,
-  'm-table': MTable,
-  },
-  })
+    "m-filter": MFilter,
+    "m-table": MTable
+  }
+})
 export default class FilterTable extends Vue {
   // 筛选表单生成参数
   @Prop() private filterList!: FilterFormList[];
@@ -81,7 +81,7 @@ export default class FilterTable extends Vue {
   @Prop() private url!: string;
 
   // 请求数据类型
-  @Prop({ default: 'formData' })
+  @Prop({ default: "formData" })
   private dataType!: string;
 
   // 表格行ID
@@ -94,7 +94,7 @@ export default class FilterTable extends Vue {
   @Prop() private opreatWidth!: string;
 
   // 本地存储字段名
-  @Prop({ default: 'filterTable' }) private localName!: string;
+  @Prop({ default: "filterTable" }) private localName!: string;
 
   // 请求错误回调事件
   @Prop() private fetchError!: string;
@@ -109,7 +109,7 @@ export default class FilterTable extends Vue {
   @Prop() private fetchType!: string;
 
   // 头部对齐方式
-  @Prop({ default: 'center' }) private headerAlign!: string;
+  @Prop({ default: "center" }) private headerAlign!: string;
 
   // 表格行是否可点击
   @Prop({ default: false })
@@ -132,10 +132,11 @@ export default class FilterTable extends Vue {
     const saveList = window.localStorage.getItem(this.localName);
     // 判断是否有值
     if (saveList) {
-      const checkList = saveList.split(',');
+      const checkList = saveList.split(",");
       // 根据换成过滤表格配置
-      const filterList =
-      this.defalutTableList.filter((item, index) => checkList.indexOf(item.prop) > -1);
+      const filterList = this.defalutTableList.filter(
+        (item, index) => checkList.indexOf(item.prop) > -1
+      );
       // 保存改变后的tableList
       this.changeTableList = filterList;
     } else {
@@ -146,8 +147,8 @@ export default class FilterTable extends Vue {
   /**
    * @method 重新加载数据
    * @param {string} type delete 或者其他字符串，用于当前页只有一条数据，并点击了删除，要回退到上一页
-  */
-  reloadTable(type?:string) {
+   */
+  reloadTable(type?: string) {
     const table: any = this.$refs.MTable;
     // 延迟100ms加载数据
     setTimeout(() => {
@@ -156,14 +157,14 @@ export default class FilterTable extends Vue {
   }
   /**
    * @method 获取当前页数据
-  */
+   */
   getCurrentPageData() {
     const table: any = this.$refs.MTable;
     return table.returnData();
   }
   /**
    * @method 搜索回调事件
-  */
+   */
   @Emit()
   searchFun(params: any) {
     this.tableParams = params;
@@ -178,10 +179,10 @@ export default class FilterTable extends Vue {
 
   /**
    * @method 重置按钮点击回调事件
-  */
+   */
   @Emit()
   clearFun(callBack: Function) {
-    this.$emit('clearOutParams', callBack);
+    this.$emit("clearOutParams", callBack);
   }
 
   /**
@@ -189,12 +190,12 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   addBack() {
-    this.$emit('addBack');
+    this.$emit("addBack");
   }
 
   @Emit()
   downBack(data: any) {
-    this.$emit('downBack', data);
+    this.$emit("downBack", data);
   }
   /**
    * @method 点击高级搜索时-设置表格样式
@@ -209,7 +210,7 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   exportBack() {
-    this.$emit('exportBack');
+    this.$emit("exportBack");
   }
   /**
    * @method 表格列配置函数
@@ -217,7 +218,9 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   setTable(list: Array<string>) {
-    const filterList = this.defalutTableList.filter((item, index) => list.indexOf(item.prop) > -1);
+    const filterList = this.defalutTableList.filter(
+      (item, index) => list.indexOf(item.prop) > -1
+    );
     this.changeTableList = filterList;
   }
   /**
@@ -225,21 +228,21 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   tableClick(key: string, row: any) {
-    this.$emit('menuClick', key, row);
+    this.$emit("menuClick", key, row);
   }
   /**
    * @method select回调事件
    */
   @Emit()
   selectChange(val: any) {
-    this.$emit('selectChange', val);
+    this.$emit("selectChange", val);
   }
   /**
    * @method 点击行回调事件
    */
   @Emit()
   currentChange(val: any) {
-    this.$emit('currentChange', val);
+    this.$emit("currentChange", val);
   }
 }
 </script>
