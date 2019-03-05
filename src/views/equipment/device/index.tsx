@@ -15,6 +15,7 @@ import UploadModel from './components/UploadModel';
 import ChangelocModel from './components/ChangelocModel';
 import AThresholdModel from './components/AThresholdModel';
 import BsjThresholdModel from './components/BsjThresholdModel';
+import CheckLogModel from './components/CheckLogModel';
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -30,6 +31,7 @@ interface TerminalType { key: number, value: number, label: string, color: strin
     'changeloc-model': ChangelocModel,
     'aThreshold-model': AThresholdModel,
     'bsjThreshold-model': BsjThresholdModel,
+    'checkLog-model': CheckLogModel,
     'el-popover': Popover,
     'popconfirm-block': PopconfirmBlock,
   },
@@ -459,7 +461,14 @@ export default class Device extends Vue {
   // BSJ或WK
   bsjThresholdData: any = {};
 
-  bsjThresholdVisible: boolean = true;
+  bsjThresholdVisible: boolean = false;
+
+  // 查看日志
+  checkLogVisible: boolean = false;
+
+  checkLogData: any = {};
+  
+  checkLogTitle: string = '';
 
   modelForm: any = {
     imei: '',
@@ -514,13 +523,16 @@ export default class Device extends Vue {
       // 阈值
       case 'setThreshold':
         console.log(row);
-        this.bsjThresholdVisible = true;
-        this.bsjThresholdData = row;
+        // this.bsjThresholdVisible = true;
+        // this.bsjThresholdData = row;
         // this.aThresholdVisible = true;
         // this.aThresholdData = row;
         break;
       // 日志
       case 'logs':
+        this.checkLogData = row;
+        this.checkLogVisible = true;
+        this.checkLogTitle = `设备日志${row.imei}`
         break;
       default:
         break;
@@ -541,6 +553,7 @@ export default class Device extends Vue {
     this.changelocVisible = false; // 切换地址
     this.bsjThresholdVisible = false; // 阀值bsj wk
     this.aThresholdVisible = false; // 阀值2a1
+    this.checkLogVisible = false; // 日志
     this.loading = false;
   }
 
@@ -613,6 +626,12 @@ export default class Device extends Vue {
         <bsjThreshold-model
           data={this.bsjThresholdData}
           visible={this.bsjThresholdVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
+        <checkLog-model
+          data={this.checkLogData}
+          visible={this.checkLogVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />

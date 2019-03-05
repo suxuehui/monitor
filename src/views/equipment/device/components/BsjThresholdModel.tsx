@@ -2,7 +2,7 @@ import {
   Component, Prop, Vue,
 } from 'vue-property-decorator';
 import {
-  Dialog, Row, Col, Button, Form, FormItem, Input, InputNumber, Radio, RadioGroup,
+  Dialog, Row, Col, Button, Form, FormItem, Input, Radio, RadioGroup,
 } from 'element-ui';
 
 import './BsjThresholdModel.less';
@@ -16,7 +16,6 @@ import './BsjThresholdModel.less';
     'el-input': Input,
     'el-form-item': FormItem,
     'el-button': Button,
-    'el-input-number': InputNumber,
     'el-radio-group': RadioGroup,
     'el-radio': Radio,
   },
@@ -50,193 +49,165 @@ export default class BsjThreshold extends Vue {
     const obj: any = {
       imei: this.data.imei,
     };
-    console.log(this.data.imei);
+    console.log(111);
   }
 
   render() {
     return (
       <el-dialog
         width="760px"
-        title="阈值设置"
+        title="阈值设置bsj"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
         <el-form model={this.modelForm} status-icon ref="modelForm" label-width="90px" class="model">
           <el-form-item label="振动" prop="cfgName">
-            <div class="itemOne">
-              <el-input-number
+            <div class="bItemOne">
+              <el-input
                 id="cfgName"
-                class="itemOneInput"
+                class="bItemOneInput"
                 v-model={this.modelForm.cfgName}
                 placeholder="请输入配置名称"
-                controls-position="right"
-                min={0}
               />
-              <span class="itemOneTitle color909399">震动阀值</span>
+              <span class="itemTitle color909399">震动阀值</span>
               <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急加速" prop="productCode1">
-            <div class="itemOne">
-              <el-input-number
+            <div class="bItemOne">
+              <el-input
                 id="cfgName"
-                class="itemOneInput"
+                class="bItemOneInput"
                 v-model={this.modelForm.cfgName}
                 placeholder="请输入配置名称"
-                controls-position="right"
-                min={0}
               />
-              <span class="itemOneTitle color909399">加速阀值</span>
+              <span class="itemTitle color909399">加速阀值</span>
               <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急减速" prop="productCode2">
-            <div class="itemOne">
-              <el-input-number
+            <div class="bItemOne">
+              <el-input
                 id="cfgName"
-                class="itemOneInput"
+                class="bItemOneInput"
                 v-model={this.modelForm.cfgName}
                 placeholder="请输入配置名称"
-                controls-position="right"
-                min={0}
               />
-              <span class="itemOneTitle color909399">减速阀值</span>
+              <span class="itemTitle color909399">减速阀值</span>
               <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急转弯" prop="productCode3">
-            <div class="itemFour">
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+            <div class="bItemFour">
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">低速时速</span>
+                <span class="itemTitle color909399">低速时速</span>
               </el-col>
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">低速角度</span>
+                <span class="itemTitle color909399">低速角度</span>
               </el-col>
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">高速时速</span>
+                <span class="itemTitle color909399">高速时速</span>
               </el-col>
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">高速角度</span>
+                <span class="itemTitle color909399">高速角度</span>
               </el-col>
               <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="碰撞" prop="productCode3">
-            <div class="itemFour">
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+            <div class="bItemFour">
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">碰撞阀值</span>
+                <span class="itemTitle color909399">碰撞阀值</span>
               </el-col>
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">检测时长</span>
+                <span class="itemTitle color909399">检测时长</span>
               </el-col>
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">持续时长</span>
+                <span class="itemTitle color909399">持续时长</span>
               </el-col>
-              <el-col span={6} class="itemFourItem">
-                <el-input-number
+              <el-col span={6} class="bItemFourItem">
+                <el-input
                   id="cfgName"
-                  class="itemFourInput"
+                  class="bItemFourInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemFourTitle color909399">停车时长</span>
+                <span class="itemTitle color909399">停车时长</span>
               </el-col>
               <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="翻滚" prop="productCode3">
-            <div class="itemThree">
-              <el-col span={8} class="itemThreeItem">
-                <el-input-number
+            <div class="bItemThree">
+              <el-col span={8} class="bItemThreeItem">
+                <el-input
                   id="cfgName"
-                  class="itemThreeInput"
+                  class="bItemThreeInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemThreeTitle color909399">翻滚角度</span>
+                <span class="itemTitle color909399">翻滚角度</span>
               </el-col>
-              <el-col span={8} class="itemThreeItem">
-                <el-input-number
+              <el-col span={8} class="bItemThreeItem">
+                <el-input
                   id="cfgName"
-                  class="itemThreeInput"
+                  class="bItemThreeInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemThreeTitle color909399">翻滚变化</span>
+                <span class="itemTitle color909399">翻滚变化</span>
               </el-col>
-              <el-col span={8} class="itemThreeItem">
-                <el-input-number
+              <el-col span={8} class="bItemThreeItem">
+                <el-input
                   id="cfgName"
-                  class="itemThreeInput"
+                  class="bItemThreeInput"
                   v-model={this.modelForm.cfgName}
                   placeholder="请输入配置名称"
-                  controls-position="right"
-                  min={0}
                 />
-                <span class="itemThreeTitle color909399">停车时长</span>
+                <span class="itemTitle color909399">停车时长</span>
               </el-col>
               <el-button type="text" class="btn">默认值</el-button>
             </div>
@@ -249,6 +220,10 @@ export default class BsjThreshold extends Vue {
             <div class="noAll color909399">(只对当前设备生效)</div>
             <div class="All color909399">(对同类型的其它设备同时生效)</div>
           </el-form-item>
+          <div class="btn">
+            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
+            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+          </div>
         </el-form>
       </el-dialog>
     );
