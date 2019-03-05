@@ -1,22 +1,17 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Tag, Button, Popover } from 'element-ui';
 import qs from 'qs';
-
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import {
-  terminalType, getBluetooth, resetTime, terminalExport,
+  terminalType, resetTime, terminalExport,
 } from '@/api/equipment';
+import utils from '@/utils';
 import { orgTree } from '@/api/app';
-
 import PopconfirmBlock from '@/components/Popconfirm/index';
-import AddModal from './components/AddModal';
 import BindModal from './components/BindModal';
 import AcceptModal from './components/AcceptModal';
-
-import DownModel from './components/DownModel';
-import ClearModel from './components/ClearModel';
-import AuthModel from './components/AuthModel';
 import UnbindModel from './components/UnbindModel';
+import UploadModel from './components/UploadModel';
 
 import './index.less';
 
@@ -26,12 +21,9 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   components: {
     'el-tag': Tag,
     'el-button': Button,
-    'add-modal': AddModal,
     'bind-modal': BindModal,
     'accept-modal': AcceptModal,
-    'down-model': DownModel,
-    'clear-model': ClearModel,
-    'auth-model': AuthModel,
+    'upload-model': UploadModel,
     'unbind-model': UnbindModel,
     'el-popover': Popover,
     'popconfirm-block': PopconfirmBlock,
@@ -45,21 +37,27 @@ export default class Device extends Vue {
     {
       key: 'levelCode',
       type: 'levelcode',
-      label: '所属商户',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '商户门店（全部）',
       options: [],
     },
     {
-      key: 'terminalType',
-      type: 'select',
-      label: '设备类型',
-      placeholder: '请选择设备类型',
+      key: 'levelCode',
+      type: 'levelcode',
+      label: '设备型号',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '设备型号（全部）',
       options: [],
     },
     {
@@ -75,21 +73,27 @@ export default class Device extends Vue {
     {
       key: 'levelCode',
       type: 'levelcode',
-      label: '所属商户',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '请选择商户门店',
       options: [],
     },
     {
-      key: 'terminalType',
-      type: 'select',
-      label: '设备类型',
-      placeholder: '请选择设备类型',
+      key: 'levelCode',
+      type: 'levelcode',
+      label: '设备型号',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择设备型号',
       options: [],
     },
     {
@@ -110,7 +114,7 @@ export default class Device extends Vue {
       key: 'keyword',
       type: 'input',
       label: '模糊查询',
-      placeholder: 'imei、车牌、配置名称、产品编码',
+      placeholder: 'imei号、主机编码、ICCID、车牌号',
     },
   ];
 
@@ -121,7 +125,6 @@ export default class Device extends Vue {
     status: 0,
     online: -1,
     keyword: '',
-    // active: 1,
   };
 
   outParams: any = {};
@@ -138,7 +141,7 @@ export default class Device extends Vue {
       color: 'green',
       text: '绑定',
       msg: '是否要绑定？',
-      disabled: this.bindDisable,
+      // disabled: this.bindDisable,
       roles: true,
     },
     {
@@ -148,37 +151,35 @@ export default class Device extends Vue {
       text: '解绑',
       msg: '是否要解绑？',
       roles: true,
-      disabled: this.unBindDisable,
+      // disabled: this.unBindDisable,
     },
     {
       key: 'accept',
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      disabled: this.acceptDisable,
+      // disabled: this.acceptDisable,
       roles: true,
     },
     {
-      key: 'authCode',
+      key: 'changeLoc',
       rowKey: 'imei',
       color: 'blue',
-      text: '鉴权码',
+      text: '切换地址',
       roles: true,
     },
     {
-      key: 'downConfig',
+      key: 'threshold',
       rowKey: 'imei',
       color: 'blue',
-      text: '下发配置',
-      disabled: (row: any) => (row.online !== 1),
+      text: '阈值',
       roles: true,
     },
     {
-      key: 'clearConfig',
+      key: 'logs',
       rowKey: 'imei',
       color: 'blue',
-      text: '清除配置',
-      disabled: (row: any) => (row.online !== 1),
+      text: '日志',
       roles: true,
     },
   ];
@@ -207,185 +208,39 @@ export default class Device extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName' },
-    { label: '设备类型', prop: 'terminalTypeName', formatter: (row: any) => (row.terminalTypeName ? row.terminalTypeName : '--') },
+    { label: '商户门店', prop: 'orgName1' },
     { label: 'imei号', prop: 'imei' },
     { label: '主机编码', prop: 'barCode' },
-    { label: '配置名称', prop: 'cfgName' },
-    { label: '产品编码', prop: 'productCode' },
+    { label: 'ICCID', prop: 'iccid' },
+    { label: '设备型号', prop: 'iccid' },
+    { label: '网络类型', prop: 'iccid' },
     { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
+    { label: '上线地址', prop: 'plateNum', formatter: this.upLoc },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
 
-  // 设备状态 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
-  terminalStatus: TerminalType[] = [
-    {
-      key: 0, value: 0, label: '全部', color: '',
-    },
-    {
-      key: 1, value: 1, label: '待安绑', color: '',
-    },
-    {
-      key: 2, value: 2, label: '待验收', color: 'info',
-    },
-    {
-      key: 3, value: 3, label: '已合格', color: 'success',
-    },
-    {
-      key: 4, value: 4, label: '未合格', color: 'warning',
-    },
-    {
-      key: 5, value: 5, label: '已返厂', color: 'danger',
-    },
-  ]
+  /**
+   * @method 查看上线地址
+   * @param {obj} row 列数据
+   */
+  upLoc(row: any) {
+    return <el-button type="text" on-click={() => this.checkLoc(row)}>查看地址</el-button>;
+  }
 
-  // 网络状态 1-在线，0-离线，
-  onlineStatus: any = [
-    { key: -1, value: -1, label: '全部' },
-    { key: 1, value: 1, label: '在线' },
-    { key: 0, value: 0, label: '离线' },
-  ]
+  // 点击操作时的时间
+  clickTime: string = ''
 
-  // 新增
-  addVisible: boolean = false;
-
-  addTitle: string = '';
-
-  // 更新
-  updateData: any = {}
-
-  // 绑定
-  bindVisible: boolean = false;
-
-  bindTitle: string = '';
-
-  // 解绑
-  unbindVisible: boolean = false;
-
-  unbindData: any = {}
-
-  // 鉴权码
-  authVisible: boolean = false;
-
-  authData: any = {}
-
-  // 验收
-  acceptVisible: boolean = false;
-
-  acceptTitle: string = '';
-
-  acceptData: any = {}
-
-  // 下发配置
-  downVisible: boolean = false;
-
-  downTitle: string = '下发配置';
-
-  downData: any = {}
-
-  // 清除配置
-  clearVisible: boolean = false;
-
-  clearTitle: string = '';
-
-  clearData: any = {}
-
-  modelForm: any = {
-    imei: '',
-  };
-
-  // 设备类型
-  typeList: any = [];
-
-  // 门店列表
-  shopList: any = [];
-
-  loading: boolean = false;
-
-  // 新增、导出、重置、查看安绑记录按钮展示 更新鉴权码
-  addBtn: boolean = true;
-
-  exportBtn: boolean = true;
-
-  resetBtn: boolean = true;
-
-  opsBtn: boolean = true;
-
-  authBtn: boolean = true;
-
-  created() {
-    const getNowRoles: string[] = [
-      // 操作
-      '/device/terminal/save',
-      '/device/terminal/bind',
-      '/device/terminal/unbind/{imei}',
-      '/device/terminal/confirm',
-      '/device/terminal/getBluetoothAuthCode',
-      '/device/terminal/createBluetoothAuthCode',
-      '/device/terminal/deliveryCfg',
-      '/device/terminal/clearCfg',
-      '/device/terminal/reset/{id}',
-      '/terminal/ops/list',
-      '/device/terminal/exportExcel',
-    ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[1]); // 绑定
-      this.opreat[1].roles = !!(res[2]); // 解绑
-      this.opreat[2].roles = !!(res[3]); // 验收
-      this.opreat[3].roles = !!(res[4]); // 鉴权码
-      this.authBtn = !!(res[5]);
-      this.opreat[4].roles = !!(res[6]);
-      this.opreat[5].roles = !!(res[7]);
-      this.addBtn = !!(res[0]);
-      this.resetBtn = !!(res[8]);
-      this.opsBtn = !!(res[9]);
-      this.exportBtn = !!(res[10]);
-    });
-    // 门店
-    orgTree(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.unshift({
-          id: Math.random(),
-          levelCode: '',
-          orgName: '全部',
-        });
-        this.filterList[0].options = res.entity;
-        this.filterGrade[0].options = res.entity;
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-    // 设备类型
-    terminalType(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.map((item: any) => this.typeList.push({
-          key: Math.random(),
-          value: parseInt(item.enumValue, 10),
-          label: item.name,
-        }));
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-      // 设备类型(全部)
-      this.typeList.unshift({
-        key: Math.random(),
-        value: 0,
-        label: '设备类型(全部)',
-      });
-      this.filterList[1].options = this.typeList;
-      this.filterGrade[1].options = this.typeList;
-    });
-    // 设备状态
-    this.filterGrade[2].options = this.terminalStatus;
-    // 网络状态
-    this.filterGrade[3].options = this.onlineStatus;
+  checkLoc(data: object) {
+    this.clickTime = utils.getNowTime();
+    this.upLocVisible = true;
+    this.upLocData = data;
   }
 
   bindLog(row: any) {
-    return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看</el-button>;
+    return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看记录</el-button>;
   }
 
   endDay(row: any) {
@@ -407,10 +262,6 @@ export default class Device extends Vue {
           </popconfirm-block> : null
       }
     </div>;
-  }
-
-  closePop() {
-    this.loading = false;
   }
 
   onResetTime(data: any) {
@@ -470,77 +321,182 @@ export default class Device extends Vue {
     return type;
   }
 
-  terConfirm(data: any) {
-    const arr: TerminalType[] = [];
-    this.terminalStatus.forEach((item) => {
-      if (item.key === data) {
-        arr.push(item);
+  // 设备状态 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
+  terminalStatus: TerminalType[] = [
+    {
+      key: 0, value: 0, label: '全部', color: '',
+    },
+    {
+      key: 1, value: 1, label: '待安绑', color: '',
+    },
+    {
+      key: 2, value: 2, label: '待验收', color: 'info',
+    },
+    {
+      key: 3, value: 3, label: '已合格', color: 'success',
+    },
+    {
+      key: 4, value: 4, label: '未合格', color: 'warning',
+    },
+    {
+      key: 5, value: 5, label: '已返厂', color: 'danger',
+    },
+  ]
+
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/device/terminal/save',
+      '/device/terminal/bind',
+      '/device/terminal/unbind/{imei}',
+      '/device/terminal/confirm',
+      '/device/terminal/getBluetoothAuthCode',
+      '/device/terminal/createBluetoothAuthCode',
+      '/device/terminal/deliveryCfg',
+      '/device/terminal/clearCfg',
+      '/device/terminal/reset/{id}',
+      '/terminal/ops/list',
+      '/device/terminal/exportExcel',
+    ];
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[1]); // 绑定
+    //   this.opreat[1].roles = !!(res[2]); // 解绑
+    //   this.opreat[2].roles = !!(res[3]); // 验收
+    //   this.opreat[3].roles = !!(res[4]); // 鉴权码
+    //   this.authBtn = !!(res[5]);
+    //   this.opreat[4].roles = !!(res[6]);
+    //   this.opreat[5].roles = !!(res[7]);
+    //   this.addBtn = !!(res[0]);
+    //   this.resetBtn = !!(res[8]);
+    //   this.opsBtn = !!(res[9]);
+    //   this.exportBtn = !!(res[10]);
+    // });
+    // 门店
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '全部',
+        });
+        this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
       }
     });
-    return arr;
+    // 设备类型
+    terminalType(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.typeList.push({
+          key: Math.random(),
+          value: parseInt(item.enumValue, 10),
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+      // 设备类型(全部)
+      this.typeList.unshift({
+        key: Math.random(),
+        value: 0,
+        label: '设备类型(全部)',
+      });
+      this.filterList[1].options = this.typeList;
+      this.filterGrade[1].options = this.typeList;
+    });
+    // 设备状态
+    this.filterGrade[2].options = this.terminalStatus;
+    // 网络状态
+    this.filterGrade[3].options = this.onlineStatus;
   }
 
+  // 网络状态 1-在线，0-离线，
+  onlineStatus: any = [
+    { key: -1, value: -1, label: '全部' },
+    { key: 1, value: 1, label: '在线' },
+    { key: 0, value: 0, label: '离线' },
+  ]
+
+  // 绑定
+  bindVisible: boolean = false;
+
+  bindTitle: string = '';
+
+  // 解绑
+  unbindVisible: boolean = false;
+
+  unbindData: any = {}
+
+  // 验收
+  acceptVisible: boolean = false;
+
+  acceptTitle: string = '';
+
+  acceptData: any = {}
+
+  // 上线地址upLoc
+  upLocVisible: boolean = false;
+
+  upLocData: any = {}
+
+  modelForm: any = {
+    imei: '',
+  };
+
+  // 设备类型
+  typeList: any = [];
+
+  // 门店列表
+  shopList: any = [];
+
+  loading: boolean = false;
+
+  // 导出
+  exportBtn: boolean = true;
+
+  // 重置
+  resetBtn: boolean = true;
+
+  // 查看安绑记录
+  opsBtn: boolean = true;
+
+  closePop() {
+    this.loading = false;
+  }
 
   // 操作
   menuClick(key: string, row: any) {
     switch (key) {
-      // 绑定、解绑
+      // 绑定
       case 'bind':
         this.modelForm = row;
         this.bindVisible = true;
         this.bindTitle = '绑定车辆';
         break;
+      // 解绑
       case 'unbind':
         this.unbindVisible = true;
         this.unbindData = row;
         break;
+      // 验收
       case 'accept':
         this.acceptData = row;
         this.acceptTitle = '安装验收';
         this.acceptVisible = true;
         break;
-      case 'authCode':
-        this.authVisible = true;
-        this.getAuthCode(row);
+      // 切换地址
+      case 'changeLoc':
         break;
-      case 'downConfig':
-        this.downData = row;
-        this.downTitle = '下发配置';
-        this.downVisible = true;
+      // 阈值
+      case 'threshold':
         break;
-      case 'clearConfig':
-        this.clearData = row;
-        this.clearTitle = '清除配置';
-        this.clearVisible = true;
+      // 日志
+      case 'logs':
         break;
       default:
         break;
     }
-  }
-
-  getAuthCode(data: any) {
-    const obj: any = {
-      cfgName: 'bluetoothAuthCode',
-      id: data.id,
-      imei: data.imei,
-    };
-    getBluetooth(obj).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.authData = {
-          id: data.id,
-          imei: data.imei,
-          cfgVal: res.entity.length > 0 ? res.entity[0].cfgVal : '暂无蓝牙鉴权码',
-        };
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
-
-  addModel() {
-    this.addVisible = true;
-    this.modelForm = null;
-    this.addTitle = '添加设备';
   }
 
   downLoad(data: any) {
@@ -550,17 +506,10 @@ export default class Device extends Vue {
 
   // 关闭弹窗
   closeModal(): void {
-    this.addVisible = false;
-    this.bindVisible = false;
-    this.acceptVisible = false;
-    this.downVisible = false;
-    this.clearVisible = false;
-    this.authVisible = false;
-    this.unbindVisible = false;
-    const addBlock: any = this.$refs.addTable;
-    setTimeout(() => {
-      addBlock.resetData();
-    }, 200);
+    this.bindVisible = false; // 绑定
+    this.unbindVisible = false; // 解绑
+    this.acceptVisible = false; // 验收
+    this.upLocVisible = false; // 线上地址
     this.loading = false;
   }
 
@@ -579,10 +528,9 @@ export default class Device extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={this.addBtn}
+          add-btn={false}
           data-type={'JSON'}
           localName={'device'}
-          on-addBack={this.addModel}
           on-downBack={this.downLoad}
           opreat={this.opreat}
           opreatWidth={'150px'}
@@ -592,13 +540,6 @@ export default class Device extends Vue {
           export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
-        <add-modal
-          ref="addTable"
-          title={this.addTitle}
-          visible={this.addVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        ></add-modal>
         <bind-modal
           data={this.modelForm}
           title={this.bindTitle}
@@ -613,34 +554,19 @@ export default class Device extends Vue {
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></accept-modal>
-        <auth-model
-          updateAble={this.authBtn}
-          data={this.authData}
-          visible={this.authVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        ></auth-model>
         <unbind-model
           data={this.unbindData}
           visible={this.unbindVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></unbind-model>
-        <down-model
-          data={this.downData}
-          title={this.downTitle}
-          visible={this.downVisible}
-          on-refresh={this.refresh}
+        <upload-model
+          time={this.clickTime}
+          data={this.upLocData}
+          visible={this.upLocVisible}
           on-close={this.closeModal}
-        ></down-model>
-        <clear-model
-          data={this.clearData}
-          title={this.clearTitle}
-          visible={this.clearVisible}
           on-refresh={this.refresh}
-          on-close={this.closeModal}
-        >
-        </clear-model>
+        ></upload-model>
       </div>
     );
   }

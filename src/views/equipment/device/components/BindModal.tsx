@@ -35,7 +35,6 @@ export default class BindModal extends Vue {
   @Prop() private data: any;
 
   modelForm: any = {
-    carInfo: [],
     url: '',
     vin: '',
     plateNum: '',
@@ -52,29 +51,7 @@ export default class BindModal extends Vue {
 
   uploadUrl: string = '';
 
-  brandList: any = [];
-
-  props: any = {
-    value: 'value',
-    children: 'name',
-  }
-
   typeList: any = []; // 设备类型
-
-  shopList: any = []; // 门店列表
-
-  // 品牌、车系、车型
-  brandId: number = 1;
-
-  seriesId: number = 1;
-
-  modelId: number = 1;
-
-  brandName: string = '';
-
-  seriesName: string = '';
-
-  modelName: string = '';
 
   showUpBtn: boolean = true; // 上传按钮展示
 
@@ -82,9 +59,6 @@ export default class BindModal extends Vue {
   modelList: any = []
 
   rules = {
-    carInfo: [
-      { required: true, message: '请选择品牌、车系、车型' },
-    ],
     url: [
       { required: true, message: '请上传图片' },
     ],
@@ -92,7 +66,7 @@ export default class BindModal extends Vue {
       { required: true, message: '请输入车架号', trigger: 'blur' },
     ],
     plateNum: [
-      { required: true, message: '请输入车牌号', trigger: 'blur' },
+      { required: false, message: '请输入车牌号', trigger: 'blur' },
       {
         validator: this.checkPlateNum, trigger: 'blur',
       },
@@ -113,26 +87,12 @@ export default class BindModal extends Vue {
           callback(new Error('车牌号输入不合法，请重新输入'));
         }
       } else {
-        callback(new Error('车牌号不能为空，请输入'));
+        callback();
       }
     }, 500);
   }
 
   created() {
-    brandAll(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.map((item: any, index: number) => {
-          this.brandList.push({
-            label: item.name,
-            name: [],
-            value: item.id,
-          });
-          return true;
-        });
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
     this.headers = {
       token: window.localStorage.getItem('token'),
     };
@@ -141,107 +101,12 @@ export default class BindModal extends Vue {
 
   @Watch('data')
   onDataChange() {
-    // this.resetData();
     this.showUpBtn = true;
-  }
-
-  handleItemChange(val: any) {
-    const obj: any = {
-      brandId: val[0],
-    };
-    if (val.length === 1) {
-      this.getSeries(obj, val[0]);
-    } else if (val.length === 2) {
-      const obj1: any = {
-        brandId: val[0],
-        seriesId: val[1],
-      };
-      this.getModel(obj1, val);
-    }
-  }
-
-  // 品牌查车系
-  getSeries(obj: any, val: number) {
-    seriesAll(obj).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.brandList.forEach((item: any, index: number) => {
-          this.brandList[index].name = [];
-          if (val === item.value) {
-            this.brandName = item.label;
-            setTimeout(() => {
-              if (res.entity !== null && res.entity.length > 0) {
-                res.entity.forEach((items: any) => {
-                  this.brandList[index].name.push({
-                    label: items.name,
-                    value: items.id,
-                    name: [],
-                  });
-                });
-              } else {
-                this.brandList[index].name.push({
-                  label: '暂无车系可供选择',
-                  value: Math.random(),
-                  disabled: true,
-                });
-              }
-            }, 100);
-          }
-        });
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
-
-  // 车系查车型
-  getModel(data: any, val: any) {
-    modelAll(data).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.brandList.map((item: any, index: number) => {
-          item.name.map((items: any, key: number) => {
-            if (val[1] === items.value) {
-              this.seriesName = items.label;
-              if (res.entity !== null && res.entity.length > 0) {
-                res.entity.forEach((it: any) => {
-                  this.brandList[index].name[key].name.push({
-                    label: it.name,
-                    value: it.id,
-                  });
-                });
-              } else {
-                this.brandList[index].name[key].name.push({
-                  label: '暂无车型可供选择',
-                  value: Math.random(),
-                  disabled: true,
-                });
-                return false;
-              }
-            }
-            return true;
-          });
-          return true;
-        });
-        this.modelList = res.entity;
-      }
-    });
-  }
-
-  handleChangeModel(val: any) {
-    this.brandId = parseInt(val[0], 10);
-    this.seriesId = parseInt(val[1], 10);
-    this.modelId = parseInt(val[2], 10);
-    this.modelList.map((item: any) => {
-      if (item.id === this.modelId) {
-        this.modelName = item.name;
-      }
-      return true;
-    });
   }
 
   // 重置数据
   resetData() {
     this.modelForm = {
-      carInfo: [],
       url: '',
       vin: '',
       plateNum: '',
@@ -282,13 +147,9 @@ export default class BindModal extends Vue {
     this.loading = true;
     const From: any = this.$refs.modelForm;
     const upModel: any = this.$refs.uploadModel;
-    this.modelForm.seriesName = `${this.brandName}/${this.seriesName}/${this.modelName}`;
-    this.modelForm.seriesId = `${this.brandId}/${this.seriesId}/${this.modelId}`;
     const obj: any = {
       imei: this.data.imei,
       plateNum: this.modelForm.plateNum,
-      seriesId: this.modelForm.seriesId,
-      seriesName: this.modelForm.seriesName,
       url: this.modelForm.url,
       vin: this.modelForm.vin,
     };
@@ -330,20 +191,6 @@ export default class BindModal extends Vue {
         >
           <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
             <el-row>
-              <el-col span={24}>
-                <el-form-item label="车辆车型" prop="carInfo">
-                  <el-cascader
-                    id="carInfo"
-                    v-model={this.modelForm.carInfo}
-                    style="width:100%"
-                    placeholder="请选择品牌车系车型"
-                    options={this.brandList}
-                    on-active-item-change={this.handleItemChange}
-                    on-change={this.handleChangeModel}
-                    props={this.props}
-                  ></el-cascader>
-                </el-form-item>
-              </el-col>
               <el-col span={24}>
                 <el-form-item label="车架号" prop="vin">
                   <el-input

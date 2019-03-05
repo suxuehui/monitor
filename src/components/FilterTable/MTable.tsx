@@ -1,5 +1,9 @@
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-import { Table, TableColumn, Pagination, Dropdown, DropdownItem, DropdownMenu, Tooltip } from 'element-ui';
+import {
+  Component, Prop, Vue, Emit,
+} from 'vue-property-decorator';
+import {
+  Table, TableColumn, Pagination, Dropdown, DropdownItem, DropdownMenu, Tooltip,
+} from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import request from '@/utils/request';
 import Popconfirm from '@/components/Popconfirm';
@@ -8,24 +12,27 @@ import './MTable.less';
 
 @Component({
   components: {
-  'el-table': Table,
-  'el-table-column': TableColumn,
-  'pop-confirm': Popconfirm,
-  'el-pagination': Pagination,
-  'el-tooltip': Tooltip,
-  'm-spin': Spin,
-  'el-dropdown': Dropdown,
-  'el-dropdown-item': DropdownItem,
-  'el-dropdown-menu': DropdownMenu,
+    'el-table': Table,
+    'el-table-column': TableColumn,
+    'pop-confirm': Popconfirm,
+    'el-pagination': Pagination,
+    'el-tooltip': Tooltip,
+    'm-spin': Spin,
+    'el-dropdown': Dropdown,
+    'el-dropdown-item': DropdownItem,
+    'el-dropdown-menu': DropdownMenu,
   },
-  })
+})
 export default class MTable extends Vue {
   // 表格列配置参数
   @Prop() private tableList!: tableList[];
+
   // 请求地址
   @Prop() private url!: string;
+
   // 请求方式
   @Prop() private dataType!: string;
+
   // 返回数据格式
   @Prop({
     default: () => ({
@@ -190,6 +197,7 @@ export default class MTable extends Vue {
   currentChange(val: any) {
     this.$emit('currentChange', val);
   }
+
   /**
    * @method 操作栏渲染函数
    * @param {Array} operaList 操作栏配置参数
@@ -250,6 +258,7 @@ export default class MTable extends Vue {
       </div>
     );
   }
+
   /**
    * @method 操作栏渲染函数
    * @param {object} row 当前行数据
@@ -331,11 +340,13 @@ export default class MTable extends Vue {
     this.pageParams.pageSize = val;
     this.getData();
   }
+
   // 页数切换回调事件
   handleCurrentChange(val: number) {
     this.pageParams.pageNum = val;
     this.getData();
   }
+
   // 操作栏点击回调事件
   menuClick(e: any, key: string, row: any) {
     if (e) {

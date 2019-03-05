@@ -47,7 +47,7 @@ export default class AcceptModal extends Vue {
     { required: true, validator: this.checkRule, trigger: 'blur' },
   ]
 
-  // 验证备注
+  // 验证理由
   checkRule(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
@@ -55,10 +55,10 @@ export default class AcceptModal extends Vue {
         if (!exp.test(value)) {
           callback();
         } else {
-          callback(new Error('备注不能为空！'));
+          callback(new Error('理由不能为空！'));
         }
       } else {
-        callback(new Error('备注不能为空！'));
+        callback(new Error('理由不能为空！'));
       }
     }, 500);
   }
@@ -139,14 +139,14 @@ export default class AcceptModal extends Vue {
             this.modelForm.terminalStatus === '4'
               ? <el-col span={24}>
                 <el-form-item
-                  label="备注"
+                  label="理由"
                   prop="remark"
                   rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
                   <el-input
                     id="remark"
                     v-model={this.modelForm.remark}
                     type="textarea"
-                    placeholder="请填写不合格备注"
+                    placeholder="请填写不合格理由"
                   ></el-input>
                 </el-form-item>
               </el-col> : null
