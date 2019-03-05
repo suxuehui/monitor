@@ -1,6 +1,10 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip } from 'element-ui';
-import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
+import {
+  Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip,
+} from 'element-ui';
+import {
+  tableList, Opreat, FilterFormList, MapCarData,
+} from '@/interface';
 import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
 import { exportExcel } from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
@@ -19,20 +23,20 @@ const carIcon = require('@/assets/car.png');
 const pointIcon = require('@/assets/point.png');
 @Component({
   components: {
-  'el-input': Input,
-  'el-button': Button,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-tag': Tag,
-  'el-autocomplete': Autocomplete,
-  'el-dialog': Dialog,
-  'el-tooltip': Tooltip,
-  'el-cascader': Cascader,
-  'edit-model': EditModel,
-  'control-model': ControlModel,
+    'el-input': Input,
+    'el-button': Button,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-tag': Tag,
+    'el-autocomplete': Autocomplete,
+    'el-dialog': Dialog,
+    'el-tooltip': Tooltip,
+    'el-cascader': Cascader,
+    'edit-model': EditModel,
+    'control-model': ControlModel,
   },
   name: 'Monitor',
-  })
+})
 export default class Monitor extends Vue {
   // 过滤表单数据
   filterParams: object = {
@@ -43,6 +47,7 @@ export default class Monitor extends Vue {
     online: '',
     noMoveTime: '',
   };
+
   // 表格ajax请求返回数据格式
   backParams: object = {
     code: 'result.resultCode',
@@ -51,6 +56,7 @@ export default class Monitor extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
+
   // 表格ajax请求外部参数
   outParams: any = {
     brandId: '',
@@ -194,6 +200,7 @@ export default class Monitor extends Vue {
       placeholder: '车牌/车架/imei号',
     },
   ];
+
   // 表格列配置数组
   tableList: tableList[] = [
     {
@@ -288,6 +295,7 @@ export default class Monitor extends Vue {
     });
     return str;
   }
+
   // 无位置变化时间格式化
   changeMinutes(row: any) {
     const str: string = this.timeChange(row);
@@ -311,10 +319,12 @@ export default class Monitor extends Vue {
     }
     return str;
   }
+
   // 表格数据源添加单位
   changeStatus(data: any, unit: string) {
     return data > 0 ? data + unit : '--';
   }
+
   // 表格操作栏配置数组
   opreat: Opreat[] = [
     {
@@ -417,6 +427,7 @@ export default class Monitor extends Vue {
     { label: '左后车窗:', prop: 'leftRearWindow' },
     { label: '右后车窗:', prop: 'rightRearWindow' },
   ];
+
   // 百度地图控制组件
   geolocationControl: any = null;
 
@@ -425,6 +436,7 @@ export default class Monitor extends Vue {
 
   // 地图查询半径
   radius: number = 5000;
+
   // 地图车辆数据
   mapCarData: MapCarData[] = [];
 
@@ -517,6 +529,7 @@ export default class Monitor extends Vue {
       modelId: '',
     };
   }
+
   /**
    * @method 根据半径和地图中心点查询车辆
    * @param {string} id 车辆id
@@ -596,9 +609,10 @@ export default class Monitor extends Vue {
       new this.BMap.Point(point.lng, point.lat),
     );
   }
+
   /**
    * @method 车辆信息框内容
-   * @param {object} content 车辆数据 
+   * @param {object} content 车辆数据
    */
   msgContent(content: any) {
     return `<div class="makerMsg">
@@ -615,10 +629,11 @@ export default class Monitor extends Vue {
       </ul>
     </div>`;
   }
+
   /**
    * @method 方向数据格式化
    * @param {number} item 方向数据源
-   * @return {string} direction 
+   * @return {string} direction
    */
   getDirection(item: number) {
     const itm = Number(item);
@@ -803,10 +818,10 @@ export default class Monitor extends Vue {
   hideTable(): void {
     this.locChange = true;
   }
-  
+
   /**
    * @method 表格操作栏回调事件
-   * @param {string} key 事件类型 
+   * @param {string} key 事件类型
    * @param {object} row 当前行数据
    */
   menuClick(key: string, row: any): void {
@@ -879,9 +894,9 @@ export default class Monitor extends Vue {
 
   /**
    * @method 渲染车辆状态函数
-   * @param {any} value 状态值 
+   * @param {any} value 状态值
    * @param {object} data 其他数据
-   * @param {string} unit 单位 
+   * @param {string} unit 单位
    * @return 返回格式化后的数据
    */
   renderStatus(value: boolean | string | number, data: any, unit?: any) {
@@ -1128,7 +1143,7 @@ export default class Monitor extends Vue {
 
   /**
    * @method 车辆车型数据格式化
-   * @param {object} data 车辆数据 
+   * @param {object} data 车辆数据
    */
   infoBox(data: any) {
     const bName = data.brandName !== null ? `${data.brandName}-` : '';

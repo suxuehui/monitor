@@ -1,5 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Button, Slider, Select, Option, Tooltip } from 'element-ui';
+import {
+  Button, Slider, Select, Option, Tooltip,
+} from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import qs from 'qs';
 import { exportExcel } from '@/api/export';
@@ -12,14 +14,14 @@ import './index.less';
 
 @Component({
   components: {
-  'el-button': Button,
-  'el-slider': Slider,
-  'el-select': Select,
-  'el-option': Option,
-  'el-tooltip': Tooltip,
+    'el-button': Button,
+    'el-slider': Slider,
+    'el-select': Select,
+    'el-option': Option,
+    'el-tooltip': Tooltip,
   },
   name: 'Trajectory',
-  })
+})
 export default class Trajectory extends Vue {
   locChange: boolean = false;
 
@@ -282,6 +284,7 @@ export default class Trajectory extends Vue {
       this.exportBtn = !!(res[0]);
     });
   }
+
   // 切换回当前页面的时候，重新获取数据，去掉前面的轨迹数据
   activated() {
     // 判断是否新的id值传入
@@ -313,12 +316,16 @@ export default class Trajectory extends Vue {
       this.SMap.removeOverlay(this.canvasBehavior);
     }
   }
+
   // 轨迹边框层
   canvasLayer: any = null;
+
   // 轨迹渐变层
   canvasLayerBack: any = null;
+
   // 轨迹点层
   CanvasLayerPointer: any = null;
+
   // 驾驶行为层
   canvasBehavior: any = null;
 

@@ -128,7 +128,6 @@ export default class Dashboard extends Vue {
   createdDrivingData(time: any, str?: string) {
     getDrivingData(time).then((res) => {
       if (res.result.resultCode === '0') {
-        this.$message.success('查询成功');
         const {
           drivingCount, mileageCount, drivingTimeCount, oilCount,
           avgOilCons, speedUpCount, speedDownCount, turnCount,

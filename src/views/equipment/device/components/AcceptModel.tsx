@@ -5,7 +5,7 @@ import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup,
 } from 'element-ui';
 import { terminalCheck } from '@/api/equipment';
-import './AcceptModal.less';
+import './AcceptModel.less';
 
 @Component({
   components: {

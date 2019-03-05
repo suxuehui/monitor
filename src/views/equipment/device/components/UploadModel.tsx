@@ -15,11 +15,13 @@ import {
     'el-button': Button,
   },
 })
-export default class AuthModel extends Vue {
+export default class UploadModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
 
   @Prop() private data: any;
+
+  @Prop() private time: any;
 
   loading: boolean = false;
 
@@ -30,15 +32,21 @@ export default class AuthModel extends Vue {
 
   @Watch('time')
   onTimeChange(data:any) {
-    console.log(data);
+    console.log(this.data);
+    this.modelForm = {
+      mainAddress: this.data.imei,
+      secondAddress: this.data.orgName,
+    };
   }
 
   closeModal() {
     this.$emit('close');
-    this.modelForm = {
-      mainAddress: '',
-      secondAddress: '',
-    };
+    setTimeout(() => {
+      this.modelForm = {
+        mainAddress: '',
+        secondAddress: '',
+      };
+    }, 200);
   }
 
   render() {

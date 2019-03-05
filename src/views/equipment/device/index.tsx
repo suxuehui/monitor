@@ -8,11 +8,13 @@ import {
 import utils from '@/utils';
 import { orgTree } from '@/api/app';
 import PopconfirmBlock from '@/components/Popconfirm/index';
-import BindModal from './components/BindModal';
-import AcceptModal from './components/AcceptModal';
+import BindModel from './components/BindModel';
+import AcceptModel from './components/AcceptModel';
 import UnbindModel from './components/UnbindModel';
 import UploadModel from './components/UploadModel';
-
+import ChangelocModel from './components/ChangelocModel';
+import AThresholdModel from './components/AThresholdModel';
+import BsjThresholdModel from './components/BsjThresholdModel';
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
@@ -21,10 +23,13 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   components: {
     'el-tag': Tag,
     'el-button': Button,
-    'bind-modal': BindModal,
-    'accept-modal': AcceptModal,
+    'bind-model': BindModel,
+    'accept-model': AcceptModel,
     'upload-model': UploadModel,
     'unbind-model': UnbindModel,
+    'changeloc-model': ChangelocModel,
+    'aThreshold-model': AThresholdModel,
+    'bsjThreshold-model': BsjThresholdModel,
     'el-popover': Popover,
     'popconfirm-block': PopconfirmBlock,
   },
@@ -169,7 +174,7 @@ export default class Device extends Vue {
       roles: true,
     },
     {
-      key: 'threshold',
+      key: 'setThreshold',
       rowKey: 'imei',
       color: 'blue',
       text: '阈值',
@@ -426,19 +431,35 @@ export default class Device extends Vue {
   // 解绑
   unbindVisible: boolean = false;
 
-  unbindData: any = {}
+  unbindData: any = {};
 
   // 验收
   acceptVisible: boolean = false;
 
   acceptTitle: string = '';
 
-  acceptData: any = {}
+  acceptData: any = {};
 
   // 上线地址upLoc
   upLocVisible: boolean = false;
 
-  upLocData: any = {}
+  upLocData: any = {};
+
+  // 切换地址
+  changelocVisible: boolean = false;
+
+  changelocData: any = {};
+
+  // 阀值设置
+  // 2a1
+  aThresholdData: any = {};
+
+  aThresholdVisible: boolean = false;
+
+  // BSJ或WK
+  bsjThresholdData: any = {};
+
+  bsjThresholdVisible: boolean = true;
 
   modelForm: any = {
     imei: '',
@@ -487,9 +508,16 @@ export default class Device extends Vue {
         break;
       // 切换地址
       case 'changeLoc':
+        this.changelocVisible = true;
+        this.changelocData = row;
         break;
       // 阈值
-      case 'threshold':
+      case 'setThreshold':
+        console.log(row);
+        this.bsjThresholdVisible = true;
+        this.bsjThresholdData = row;
+        // this.aThresholdVisible = true;
+        // this.aThresholdData = row;
         break;
       // 日志
       case 'logs':
@@ -510,6 +538,9 @@ export default class Device extends Vue {
     this.unbindVisible = false; // 解绑
     this.acceptVisible = false; // 验收
     this.upLocVisible = false; // 线上地址
+    this.changelocVisible = false; // 切换地址
+    this.bsjThresholdVisible = false; // 阀值bsj wk
+    this.aThresholdVisible = false; // 阀值2a1
     this.loading = false;
   }
 
@@ -540,33 +571,51 @@ export default class Device extends Vue {
           export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
-        <bind-modal
+        <bind-model
           data={this.modelForm}
           title={this.bindTitle}
           visible={this.bindVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
-        ></bind-modal>
-        <accept-modal
+        />
+        <accept-model
           data={this.acceptData}
           title={this.acceptTitle}
           visible={this.acceptVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
-        ></accept-modal>
+        />
         <unbind-model
           data={this.unbindData}
           visible={this.unbindVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
-        ></unbind-model>
+        />
         <upload-model
           time={this.clickTime}
           data={this.upLocData}
           visible={this.upLocVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
-        ></upload-model>
+        />
+        <changeloc-model
+          data={this.changelocData}
+          visible={this.changelocVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
+        <aThreshold-model
+          data={this.aThresholdData}
+          visible={this.aThresholdVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
+        <bsjThreshold-model
+          data={this.bsjThresholdData}
+          visible={this.bsjThresholdVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
       </div>
     );
   }

@@ -7,7 +7,7 @@ import {
 import { brandAll, seriesAll, modelAll } from '@/api/model';
 import { terminalBind } from '@/api/equipment';
 import UploadBlock from '@/components/Upload/index.vue';
-import './BindModal.less';
+import './BindModel.less';
 
 @Component({
   components: {
