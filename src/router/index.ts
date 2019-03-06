@@ -133,6 +133,25 @@ export const asyncRouterMap: routerItem[] = [
     ],
   },
   {
+    path: '/config',
+    icon: 'server',
+    name: '配置管理',
+    component: getComponent('config/index'),
+    permission: [
+      '/device/terminal/list',
+    ],
+    meta: { key: 'Config' },
+    children: [
+      {
+        path: 'document',
+        name: '配置文件',
+        component: getComponent('config/document/index'),
+        permission: '/device/terminal/list',
+        meta: { key: 'Document' },
+      },
+    ],
+  },
+  {
     path: '/equipment',
     icon: 'server',
     name: '设备管理',
@@ -159,12 +178,19 @@ export const asyncRouterMap: routerItem[] = [
         hidden: true,
       },
       {
-        path: 'model',
+        path: 'config',
         name: '设备配置',
-        component: getComponent('equipment/model/index'),
+        component: getComponent('equipment/config/index'),
         permission: '/vehicle/config/list',
-        meta: { key: 'DeviceModel' },
+        meta: { key: 'ConfigModel' },
       },
+      // {
+      //   path: 'model',
+      //   name: '型号管理',
+      //   component: getComponent('equipment/model/index'),
+      //   permission: '/vehicle/config/list',
+      //   meta: { key: 'ModelManage' },
+      // },
     ],
   },
   {

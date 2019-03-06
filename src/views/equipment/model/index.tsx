@@ -4,92 +4,40 @@ import qs from 'qs';
 import { Tag } from 'element-ui';
 import { exportExcel } from '@/api/export';
 
-import DownConfigModel from './components/DownConfigModel';
-import ClearConfigModel from './components/ClearConfigModel';
-import BtAuthModel from './components/BtAuthModel';
-import BtNameModel from './components/BtNameModel';
-import CheckConfigModel from './components/CheckConfigModel';
-import utils from '@/utils';
 @Component({
   components: {
     'el-tag': Tag,
-    'downconfig-model': DownConfigModel,
-    'clearconfig-model': ClearConfigModel,
-    'btauth-model': BtAuthModel,
-    'btname-model': BtNameModel,
-    'checkconfig-model': CheckConfigModel,
   },
-  name: 'DeviceModel',
+  name: 'ModelManage',
 })
-export default class DeviceModel extends Vue {
+export default class ModelManage extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'levelCode',
-      type: 'levelcode',
-      label: '商户门店',
-      filterable: true,
-      props: {
-        value: 'levelCode',
-        children: 'children',
-        label: 'orgName',
-      },
-      placeholder: '商户门店（全部）',
+      key: 'online',
+      type: 'select',
+      label: '设备类型',
+      placeholder: '请选择设备类型',
       options: [],
     },
     {
       key: 'online',
       type: 'select',
-      label: '网络状态',
-      placeholder: '请选择网络状态',
-      options: [],
-    },
-    {
-      key: 'online',
-      type: 'select',
-      label: '设备型号',
-      placeholder: '请选择设备型号',
-      options: [],
-    },
-  ];
-
-  // 高级筛选
-  filterGrade: FilterFormList[] = [
-    {
-      key: 'levelCode',
-      type: 'levelcode',
-      label: '商户门店',
-      filterable: true,
-      props: {
-        value: 'levelCode',
-        children: 'children',
-        label: 'orgName',
-      },
-      placeholder: '商户门店（全部）',
-      options: [],
-    },
-    {
-      key: 'online',
-      type: 'select',
-      label: '网络状态',
-      placeholder: '请选择网络状态',
-      options: [],
-    },
-    {
-      key: 'online',
-      type: 'select',
-      label: '设备型号',
-      placeholder: '请选择设备型号',
+      label: '能力配置',
+      placeholder: '请选择能力配置',
       options: [],
     },
     {
       key: 'keyWord',
       type: 'input',
-      label: '其他参数',
-      placeholder: 'imei号、主机编码、车牌号、配置名称、产品编码',
+      label: '型号名称',
+      placeholder: '请输入型号名称',
     },
   ];
+
+  // 高级筛选
+  filterGrade: FilterFormList[] = [];
 
   // 筛选参数
   filterParams: any = {};
@@ -101,54 +49,36 @@ export default class DeviceModel extends Vue {
 
   opreat: Opreat[] = [
     {
-      key: 'downConfig',
-      rowKey: 'id',
-      color: 'blue',
-      text: '下发配置',
-      roles: true,
-    },
-    {
       key: 'clearConfig',
       rowKey: 'id',
       color: 'blue',
-      text: '清除配置',
+      text: '编辑',
       roles: true,
     },
     {
       key: 'checkConfig',
       rowKey: 'id',
-      color: 'blue',
-      text: '查询配置',
+      color: 'red',
+      text: '删除',
       roles: true,
     },
     {
-      key: 'btAuth',
+      key: 'downConfig',
       rowKey: 'id',
-      color: 'blue',
-      text: '蓝牙鉴权',
-      roles: true,
-    },
-    {
-      key: 'btName',
-      rowKey: 'id',
-      color: 'blue',
-      text: '蓝牙名称',
+      color: 'green',
+      text: '配置能力',
       roles: true,
     },
   ];
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '商户门店', prop: 'cfgName' },
-    { label: 'imei号', prop: 'productCode' },
-    { label: '主机编码', prop: 'remark' },
-    { label: '设备型号', prop: 'reboot' },
-    { label: '软件版本', prop: 'reboot' },
-    { label: '配置名称', prop: 'reboot' },
-    { label: '产品编码', prop: 'reboot' },
-    { label: '当前车辆', prop: 'reboot' },
-    { label: '操作记录', prop: 'reboot' },
-    { label: '网络状态', prop: 'reboot' },
+    { label: '型号名称', prop: 'cfgName' },
+    { label: '设备类型', prop: 'productCode' },
+    { label: '网络类型', prop: 'remark' },
+    { label: '规则描述', prop: 'reboot' },
+    { label: '能力配置', prop: 'reboot' },
+    { label: '设备数量', prop: 'reboot' },
   ];
 
   // 权限设置
@@ -172,92 +102,29 @@ export default class DeviceModel extends Vue {
   // 导出按钮展示
   exportBtn: boolean = true;
 
+  // 新增按钮展示
+  addBtn: boolean = true;
+
   rowData: any = {};
 
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
-    if (key === 'downConfig') { // 下发配置
-      this.downconfigVisibale = true;
-      this.downconfigData = row;
-      this.checkconfigData = row;
-    } else if (key === 'clearConfig') { // 清除配置
-      this.clearconfigVisible = true;
-      this.clearconfigData = row;
-    } else if (key === 'checkConfig') { // 查询配置
-      console.log(3);
-    } else if (key === 'btAuth') { // 蓝牙鉴权
-      this.btAuthVisible = true;
-      this.btAuthData = row;
-    } else if (key === 'btName') { // 蓝牙名称
-      this.btNameVisible = true;
-      this.btNameData = row;
-      this.clickTime = utils.getNowTime();
-    }
+
   }
-
-  // 下发配置
-  downconfigVisibale: boolean = false;
-
-  downconfigData: any = {};
-
-  // 清除配置
-  clearconfigVisible: boolean = false;
-
-  clearconfigData: any = {};
-
-  // 蓝牙鉴权
-  btAuthVisible: boolean = false;
-
-  btAuthData: any = {};
-
-  // 蓝牙名称
-  btNameVisible: boolean = false;
-
-  btNameData: any = {};
-
-  // 配置参数校验
-  checkconfigVisible: boolean = false;
-
-  checkconfigData: any = {}
 
   // 点击时间
   clickTime: string = '';
 
   // 关闭弹窗
   closeModal(): void {
-    this.downconfigVisibale = false; // 下发配置
-    this.clearconfigVisible = false; // 清除配置
-    this.btAuthVisible = false; // 蓝牙鉴权
-    this.btNameVisible = false; // 蓝牙名称
-  }
 
-  // 打开配置参数校验
-  openCheckModel() {
-    this.checkconfigVisible = true;
-  }
-
-  // 关闭配置参数校验
-  closeCheckModel() {
-    this.checkconfigVisible = false;
   }
 
   // 关闭弹窗时刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
-    this.closeModal();
-  }
-
-  countDownNum: number = 30;
-
-  startCountDown() {
-    const timer = setInterval(() => {
-      this.countDownNum -= 1;
-      if (this.countDownNum === 1) {
-        clearInterval(timer);
-      }
-    }, 1000);
   }
 
   downLoad(data: any) {
@@ -273,7 +140,7 @@ export default class DeviceModel extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={false}
+          add-btn={this.addBtn}
           opreatWidth={'180px'}
           localName={'model'}
           opreat={this.opreat}
@@ -283,39 +150,6 @@ export default class DeviceModel extends Vue {
           export-btn={this.exportBtn}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
-        />
-        <downconfig-model
-          data={this.downconfigData}
-          visible={this.downconfigVisibale}
-          checkVisible={this.checkconfigVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        />
-        <clearconfig-model
-          data={this.clearconfigData}
-          visible={this.clearconfigVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        />
-        <btauth-model
-          data={this.btAuthData}
-          visible={this.btAuthVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        />
-        <btname-model
-          time={this.clickTime}
-          data={this.btNameData}
-          visible={this.btNameVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        />
-        <checkconfig-model
-          num={this.countDownNum}
-          data={this.checkconfigData}
-          visible={this.checkconfigVisible}
-          on-close={this.closeCheckModel}
-          on-refresh={this.refresh}
         />
       </div>
     );
