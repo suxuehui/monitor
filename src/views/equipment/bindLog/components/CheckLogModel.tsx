@@ -20,6 +20,8 @@ export default class CheckLog extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private time: any;
+
   tableParams: any = {}
 
   url: string = '/terminal/accept/list';
@@ -45,21 +47,17 @@ export default class CheckLog extends Vue {
       </el-tooltip> : '--';
   }
 
-  @Watch('data')
-  onDataChange(data: number) {
+  @Watch('time')
+  onDataChange() {
     this.tableParams = {
-      opsRecordId: data,
+      opsRecordId: this.data,
       page: true,
       pageNum: 1,
       pageSize: 10,
     };
-    const Table: any = this.$refs.MTable;
-    if (Table) {
-      if (data > 0) {
-        setTimeout(() => {
-          Table.reload();
-        }, 300);
-      }
+    const mtable: any = this.$refs.MTable;
+    if (mtable) {
+      mtable.getData(this.tableParams);
     }
   }
 
@@ -67,9 +65,7 @@ export default class CheckLog extends Vue {
     this.$emit('close');
   }
 
-  tableClick() {
-
-  }
+  tableClick() { }
 
   render() {
     return (

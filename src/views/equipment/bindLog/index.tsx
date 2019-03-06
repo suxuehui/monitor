@@ -8,6 +8,7 @@ import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
 import CheckPicModel from '@/views/equipment/bindLog/components/CheckPicModel';
 import './index.less';
+import utils from '@/utils';
 
 @Component({
   components: {
@@ -68,6 +69,7 @@ export default class BindLog extends Vue {
       imei: this.$route.query.imei,
     };
     FormTable.getData(tableParams);
+    this.getTerminalInfo(this.$route.query.id);
   }
 
   // 新增、导出按钮展示
@@ -90,18 +92,23 @@ export default class BindLog extends Vue {
     };
     this.defaultPageSize = 5;
     if (this.$route.query.id) {
-      terminalInfo(this.$route.query.id).then((res) => {
-        if (res.result.resultCode === '0') {
-          this.modelForm = {
-            orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
-            plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
-            vin: res.entity.vin !== null ? res.entity.vin : '--',
-          };
-        } else {
-          this.$message.error(res.result.resultMessage);
-        }
-      });
+      this.getTerminalInfo(this.$route.query.id);
     }
+  }
+
+  // 车辆信息
+  getTerminalInfo(data: any) {
+    terminalInfo(data).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.modelForm = {
+          orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
+          plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
+          vin: res.entity.vin !== null ? res.entity.vin : '--',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 验收记录
@@ -185,11 +192,13 @@ export default class BindLog extends Vue {
     }, 200);
   }
 
+  clickTime: string = ''
+
   tableClick(key: string, row: any) {
-    const FromTable: any = this.$refs.table;
     if (key === 'checkLog') {
       this.checkLogVisible = true;
       this.checkLogId = row.id;
+      this.clickTime = utils.getNowTime();
     }
   }
 
@@ -252,6 +261,7 @@ export default class BindLog extends Vue {
           </div>
         </el-card>
         <checkLog-model
+          time={this.clickTime}
           ref="checkLogModel"
           data={this.checkLogId}
           visible={this.checkLogVisible}

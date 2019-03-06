@@ -21,8 +21,6 @@ export default class UploadModel extends Vue {
 
   @Prop() private data: any;
 
-  @Prop() private time: any;
-
   loading: boolean = false;
 
   modelForm: any = {
