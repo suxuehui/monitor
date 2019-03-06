@@ -59,6 +59,17 @@ export default class BindLog extends Vue {
     { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },
   ];
 
+  activated() {
+    const FormTable: any = this.$refs.MTable;
+    const tableParams = {
+      page: true,
+      pageNum: 1,
+      pageSize: 5,
+      imei: this.$route.query.imei,
+    };
+    FormTable.getData(tableParams);
+  }
+
   // 新增、导出按钮展示
   acceptBtn: boolean = true;
 
@@ -106,22 +117,22 @@ export default class BindLog extends Vue {
   checkPicTitle: string = '';
 
   opsPerson(row: any) {
-    const str= `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
+    const str = `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
     return row.opsOrgName && row.opsRealName && row.opsUsername
       ? <el-tooltip class="item" effect="dark" content={str} placement="top">
         <div>
           <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
           <p>{`(${row.opsUsername})`}</p>
         </div>
-      </el-tooltip>: '--';
+      </el-tooltip> : '--';
   }
 
   showInstallPic(row: any) {
     if (row.installUrl !== null) {
       const imgArr = row.installUrl.indexOf(',') > 0 ? row.installUrl.split(',') : [row.installUrl];
       return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
-          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
-        </div>);
+        <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
+      </div>);
     }
     return '暂无安装图片';
   }
@@ -146,8 +157,8 @@ export default class BindLog extends Vue {
     if (row.vinUrl !== null) {
       const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
       return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
-          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
-        </div>);
+        <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
+      </div>);
     }
     return '暂无车架图片';
   }
@@ -186,7 +197,7 @@ export default class BindLog extends Vue {
     return (
       <div class="container">
         <el-card class="box-card">
-          <el-form model={this.modelForm} ref="modelForm" label-width="100px" class="model">
+          <el-form model={this.modelForm} ref="modelForm" label-width="100px" class="bindModel">
             <div class="header">
               <span class="title">当前安绑车辆</span>
             </div>

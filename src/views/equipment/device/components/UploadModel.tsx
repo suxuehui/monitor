@@ -32,7 +32,6 @@ export default class UploadModel extends Vue {
 
   @Watch('time')
   onTimeChange(data:any) {
-    console.log(this.data);
     this.modelForm = {
       mainAddress: this.data.imei,
       secondAddress: this.data.orgName,
@@ -58,9 +57,9 @@ export default class UploadModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} label-width="80px" class="model">
+        <el-form model={this.modelForm} label-width="80px" class="uploadModel">
           <el-row>
-            <el-col span={24}>
+            <el-col>
               <el-form-item label="主地址" prop="mainAddress">
                 <el-input
                   id="mainAddress"
@@ -69,7 +68,7 @@ export default class UploadModel extends Vue {
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col span={24}>
+            <el-col>
               <el-form-item label="副地址" prop="secondAddress">
                 <el-input
                   id="secondAddress"

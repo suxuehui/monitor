@@ -467,7 +467,7 @@ export default class Device extends Vue {
   checkLogVisible: boolean = false;
 
   checkLogData: any = {};
-  
+
   checkLogTitle: string = '';
 
   modelForm: any = {
@@ -532,7 +532,8 @@ export default class Device extends Vue {
       case 'logs':
         this.checkLogData = row;
         this.checkLogVisible = true;
-        this.checkLogTitle = `设备日志${row.imei}`
+        this.checkLogTitle = `设备日志(${row.imei})`;
+        this.clickTime = utils.getNowTime();
         break;
       default:
         break;
@@ -630,6 +631,8 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         />
         <checkLog-model
+          time={this.clickTime}
+          title={this.checkLogTitle}
           data={this.checkLogData}
           visible={this.checkLogVisible}
           on-close={this.closeModal}

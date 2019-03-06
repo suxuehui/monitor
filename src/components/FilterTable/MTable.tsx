@@ -133,13 +133,13 @@ export default class MTable extends Vue {
   }
 
   // 获取表格数据
-  getData() {
+  getData(data?: any) {
     this.loading = true;
     request({
       url: this.url,
       method: this.fetchType,
       fetchType: this.dataType,
-      data: Object.assign(this.tableParams, this.pageParams, this.outParams),
+      data: data || Object.assign(this.tableParams, this.pageParams, this.outParams),
     }).then((res) => {
       this.loading = false;
       const code = this.getValue(this.BackParams.code, res);
@@ -232,8 +232,8 @@ export default class MTable extends Vue {
               if (!item.formatter) {
                 item.formatter = (row: any) => (row[item.prop] !== null && row[item.prop] !== ''
                   ? <el-tooltip effect="dark" content={row[item.prop] !== null ? `${row[item.prop]}` : '--'} placement="top">
-                      <p class="text-over">{row[item.prop] !== null ? `${row[item.prop]}` : '--'}</p>
-                    </el-tooltip> : '--');
+                    <p class="text-over">{row[item.prop] !== null ? `${row[item.prop]}` : '--'}</p>
+                  </el-tooltip> : '--');
               }
               // 对数据源进行处理的
               return <el-table-column

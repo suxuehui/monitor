@@ -4,7 +4,6 @@ import {
 import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Upload, Cascader,
 } from 'element-ui';
-import { brandAll, seriesAll, modelAll } from '@/api/model';
 import { terminalBind } from '@/api/equipment';
 import UploadBlock from '@/components/Upload/index.vue';
 import './BindModel.less';
@@ -73,8 +72,6 @@ export default class BindModal extends Vue {
     ],
   }
 
-  logoUrl: any = [];
-
   // 验证车牌号
   @Emit()
   checkPlateNum(rule: any, value: string, callback: Function) {
@@ -103,6 +100,8 @@ export default class BindModal extends Vue {
   onDataChange() {
     this.showUpBtn = true;
   }
+
+  logoUrl: any = [];
 
   // 重置数据
   resetData() {
@@ -189,7 +188,7 @@ export default class BindModal extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
+          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="bindModel">
             <el-row>
               <el-col span={24}>
                 <el-form-item label="车架号" prop="vin">
@@ -228,12 +227,10 @@ export default class BindModal extends Vue {
               </el-col>
             </el-row>
           </el-form>
-          <el-row>
-            <el-col offset={7} span={12}>
+          <div class="bindBtn">
               <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
               <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-            </el-col>
-          </el-row>
+          </div>
         </el-dialog>
       </div >
     );

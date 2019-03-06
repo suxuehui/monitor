@@ -61,7 +61,7 @@ export default class BsjThreshold extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon ref="modelForm" label-width="90px" class="model">
+        <el-form model={this.modelForm} status-icon ref="modelForm" label-width="90px" class="bsjModel">
           <el-form-item label="振动" prop="cfgName">
             <div class="bItemOne">
               <el-input
@@ -220,7 +220,7 @@ export default class BsjThreshold extends Vue {
             <div class="noAll color909399">(只对当前设备生效)</div>
             <div class="All color909399">(对同类型的其它设备同时生效)</div>
           </el-form-item>
-          <div class="btn">
+          <div class="bsjBtn">
             <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
             <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
           </div>

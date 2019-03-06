@@ -50,7 +50,7 @@ export default class ChangelocModel extends Vue {
         <p class="top">确定切换设备地址到</p>
         <p class="content">{this.data.imei}</p>
         <p class="alert">(请谨慎操作，切换后设备将改变上线地址)</p>
-        <div class="btn">
+        <div class="changelocBtn">
           <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
           <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
         </div>
