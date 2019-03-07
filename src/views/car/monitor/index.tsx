@@ -1,11 +1,11 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import {
   Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip,
 } from 'element-ui';
 import {
   tableList, Opreat, FilterFormList, MapCarData,
 } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
+import { vehicleInfo, vehicleRadiusQuery } from '@/api/monitor';
 import { exportExcel } from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { terminalType } from '@/api/equipment';
@@ -15,6 +15,10 @@ import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import EditModel from './components/EditModel';
 import ControlModel from './components/ControlModel';
+import BindModel from './components/BindModel';
+import UnbindModel from './components/UnbindModel';
+import AddDeviceModel from './components/AddDeviceModel';
+import DeleteModel from './components/DeleteModel';
 import './index.less';
 
 // 车子图片
@@ -34,6 +38,10 @@ const pointIcon = require('@/assets/point.png');
     'el-cascader': Cascader,
     'edit-model': EditModel,
     'control-model': ControlModel,
+    'bind-model': BindModel,
+    'unbind-model': UnbindModel,
+    'addDevice-model': AddDeviceModel,
+    'delete-model': DeleteModel,
   },
   name: 'Monitor',
 })
@@ -69,142 +77,100 @@ export default class Monitor extends Vue {
     {
       key: 'levelCode',
       type: 'levelcode',
-      label: '所属门店',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择门店',
+      placeholder: '请选择商户门店',
       options: [],
-    },
-    {
-      key: 'brandModelArr',
-      type: 'cascader',
-      label: '品牌车型',
-      placeholder: '品牌车型',
-      options: [],
-      filterable: true,
-      props: {
-        value: 'id',
-        children: 'children',
-        label: 'name',
-      },
-      change: this.selectBrandModel,
     },
     {
       key: 'energyType',
       type: 'select',
-      label: '能源类型',
-      placeholder: '能源类型',
-      options: [
-        {
-          value: '',
-          label: '能源类型（全部）',
-        },
-        {
-          value: '1',
-          label: '燃油',
-        },
-        {
-          value: '2',
-          label: '电动',
-        },
-        {
-          value: '3',
-          label: '混动',
-        },
-      ],
-    },
-    {
-      key: 'online',
-      type: 'select',
-      label: '车辆状态',
-      placeholder: '车辆状态',
-      options: [
-        {
-          value: '',
-          label: '车辆状态（全部）',
-        },
-        {
-          value: 'true',
-          label: '在线',
-        },
-        {
-          value: 'false',
-          label: '离线',
-        },
-      ],
+      label: '网络状态',
+      placeholder: '请选择网络状态',
+      options: [],
     },
     {
       key: 'noMoveTime',
       type: 'select',
       label: '无位置变化',
       placeholder: '无位置变化',
-      options: [
-        {
-          value: '',
-          label: '无位置变化（全部）',
-        },
-        {
-          value: `${12 * 60}`,
-          label: '12时以上',
-        },
-        {
-          value: `${24 * 60}`,
-          label: '1天以上',
-        },
-        {
-          value: `${48 * 60}`,
-          label: '2天以上',
-        },
-        {
-          value: `${72 * 60}`,
-          label: '3天以上',
-        },
-        {
-          value: `${96 * 60}`,
-          label: '4天以上',
-        },
-        {
-          value: `${120 * 60}`,
-          label: '5天以上',
-        },
-        {
-          value: `${144 * 60}`,
-          label: '6天以上',
-        },
-        {
-          value: `${168 * 60}`,
-          label: '7天以上',
-        },
-        {
-          value: `${192 * 60}`,
-          label: '8天以上',
-        },
-        {
-          value: `${216 * 60}`,
-          label: '9天以上',
-        },
-        {
-          value: `${240 * 60}`,
-          label: '10天以上',
-        },
-      ],
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '围栏内外',
+      placeholder: '请选择围栏内外',
+      options: [],
+    },
+  ];
+
+  filterGrade: FilterFormList[] = [
+    {
+      key: 'levelCode',
+      type: 'levelcode',
+      label: '商户门店',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择商户门店',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '网络状态',
+      placeholder: '请选择网络状态',
+      options: [],
+    },
+    {
+      key: 'noMoveTime',
+      type: 'select',
+      label: '无位置变化',
+      placeholder: '无位置变化',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '围栏内外',
+      placeholder: '请选择围栏内外',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '车辆来源',
+      placeholder: '请选择车辆来源',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '绑定状态',
+      placeholder: '请选择绑定状态',
+      options: [],
     },
     {
       key: 'keyword',
       type: 'input',
-      label: '车牌/车架/imei号',
-      placeholder: '车牌/车架/imei号',
+      label: '车牌/车架',
+      placeholder: '车牌/车架',
     },
   ];
 
   // 表格列配置数组
   tableList: tableList[] = [
     {
-      label: '所属商户',
+      label: '商户门店',
       prop: 'orgName',
     },
     {
@@ -217,22 +183,17 @@ export default class Monitor extends Vue {
       prop: 'vin',
     },
     {
-      label: 'imei号',
+      label: '车辆来源',
       prop: 'otuImei',
     },
     {
-      label: '设备类型',
+      label: '绑定状态',
       prop: 'clientType',
       formatter: this.clientTypeCheck,
     },
     {
-      label: '品牌车系',
+      label: '设备数量',
       prop: 'bsmName',
-    },
-    {
-      label: '能源类型',
-      prop: 'energyType',
-      formatter: this.formatEnergy,
     },
     {
       label: '剩余油量',
@@ -270,7 +231,13 @@ export default class Monitor extends Vue {
       formatter: (row: any) => this.changeStatus(row.voltage, 'V'),
     },
     {
-      label: '无位置变化',
+      label: '位置变化',
+      prop: 'minutesString',
+      sortable: true,
+      sortBy: 'minutesString',
+    },
+    {
+      label: '围栏内外',
       prop: 'minutesString',
       sortable: true,
       sortBy: 'minutesString',
@@ -328,6 +295,27 @@ export default class Monitor extends Vue {
   // 表格操作栏配置数组
   opreat: Opreat[] = [
     {
+      key: 'bind',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '绑定',
+      roles: true,
+    },
+    {
+      key: 'unbind',
+      rowKey: 'vin',
+      color: 'red',
+      text: '解绑',
+      roles: true,
+    },
+    {
+      key: 'addDevice',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '添加设备',
+      roles: true,
+    },
+    {
       key: 'edit',
       rowKey: 'vin',
       color: 'blue',
@@ -335,25 +323,10 @@ export default class Monitor extends Vue {
       roles: true,
     },
     {
-      key: 'trip',
-      rowKey: 'vin',
-      color: 'green',
-      text: '轨迹',
-      roles: true,
-    },
-    {
       key: 'delete',
       rowKey: 'vin',
       color: 'red',
       text: '删除',
-      msg: '确定删除？',
-      roles: true,
-    },
-    {
-      key: 'tracking',
-      rowKey: 'vin',
-      color: 'blue',
-      text: '追踪',
       roles: true,
     },
   ];
@@ -723,13 +696,6 @@ export default class Monitor extends Vue {
     return <el-tag size="small" type="danger">离线</el-tag>;
   }
 
-  // 获取车系/车型
-  selectBrandModel(value: string[]) {
-    this.outParams.brandId = value[0] ? value[0] : '';
-    this.outParams.seriesId = value[1] ? value[1] : '';
-    this.outParams.modelId = value[2] ? value[2] : '';
-  }
-
   // 格式化能源类型
   formatEnergy(row: any) {
     let type;
@@ -826,6 +792,22 @@ export default class Monitor extends Vue {
    */
   menuClick(key: string, row: any): void {
     switch (key) {
+      // 绑定
+      case 'bind':
+        console.log(1);
+        this.bindVisible = true;
+        this.bindData = row;
+        break;
+      // 解绑
+      case 'unbind':
+        console.log(2);
+        break;
+      // 新增设备
+      case 'addDevice':
+        this.addVisible = true;
+        this.addData = row;
+        console.log(3);
+        break;
       // 编辑
       case 'edit':
         this.editVisible = true;
@@ -838,32 +820,94 @@ export default class Monitor extends Vue {
         break;
       // 删除
       case 'delete':
-        vehicleDelete({
-          id: row.id,
-        }).then((res) => {
-          if (res.result.resultCode === '0') {
-            this.$message.success(res.result.resultMessage);
-            this.reloadTable('delete');
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-        break;
-      case 'trip':
-        this.$router.push({ name: '车辆轨迹', params: { id: row.id } });
-        break;
-      case 'tracking':
-        this.$router.push({ name: '车辆追踪', params: { id: row.id } });
+        this.deleteVisible = true;
+        this.deleteData = row;
         break;
       default:
         break;
     }
   }
 
-  // 新增、导出按钮展示
+  // 编辑开关
+  editVisible: boolean = false;
+
+  editData: any = {};
+
+  // 设备控制
+  controlData: any = {}
+
+  controlVisible: boolean = false;
+
+  // 绑定设备
+  bindVisible: boolean = false;
+
+  bindData: any = {};
+
+  // 新增
+  addVisible: boolean = false;
+
+  addData: any = {}
+
+  // 删除
+  deleteVisible:boolean = false;
+
+  deleteData: any = {}
+
+  // 导出按钮展示
   exportBtn: boolean = true;
 
   controlBtn: boolean = true;
+
+  locTimeOptions:any = [
+    {
+      value: '',
+      label: '无位置变化（全部）',
+    },
+    {
+      value: `${12 * 60}`,
+      label: '12时以上',
+    },
+    {
+      value: `${24 * 60}`,
+      label: '1天以上',
+    },
+    {
+      value: `${48 * 60}`,
+      label: '2天以上',
+    },
+    {
+      value: `${72 * 60}`,
+      label: '3天以上',
+    },
+    {
+      value: `${96 * 60}`,
+      label: '4天以上',
+    },
+    {
+      value: `${120 * 60}`,
+      label: '5天以上',
+    },
+    {
+      value: `${144 * 60}`,
+      label: '6天以上',
+    },
+    {
+      value: `${168 * 60}`,
+      label: '7天以上',
+    },
+    {
+      value: `${192 * 60}`,
+      label: '8天以上',
+    },
+    {
+      value: `${216 * 60}`,
+      label: '9天以上',
+    },
+    {
+      value: `${240 * 60}`,
+      label: '10天以上',
+    },
+  ]
 
   // 权限设置
   created() {
@@ -877,14 +921,16 @@ export default class Monitor extends Vue {
       '/vehicle/tracke/findTerminalList',
       '/vehicle/tracke/findRecordList',
     ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]);
-      this.opreat[1].roles = !!(res[1]);
-      this.opreat[2].roles = !!(res[2]);
-      this.opreat[3].roles = !!(res[5] || res[6]);
-      this.controlBtn = !!(res[3]);
-      this.exportBtn = !!(res[4]);
-    });
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[0]);
+    //   this.opreat[1].roles = !!(res[1]);
+    //   this.opreat[2].roles = !!(res[2]);
+    //   this.opreat[3].roles = !!(res[5] || res[6]);
+    //   this.controlBtn = !!(res[3]);
+    //   this.exportBtn = !!(res[4]);
+    // });
+    this.filterList[2].options = this.locTimeOptions;
+    this.filterGrade[2].options = this.locTimeOptions;
   }
 
   reloadTable(key: string) {
@@ -1065,15 +1111,6 @@ export default class Monitor extends Vue {
     this.SMap.addOverlay(marker); // 创建标注
   }
 
-  // 编辑开关
-  editVisible: boolean = false;
-
-  editData: any = {};
-
-  // 设备控制
-  controlData: any = {}
-
-  controlVisible: boolean = false;
 
   // 关闭编辑
   closeEdit() {
@@ -1085,9 +1122,12 @@ export default class Monitor extends Vue {
 
   // 关闭弹窗
   closeModal(): void {
-    this.editVisible = false;
-    this.controlVisible = false;
+    this.editVisible = false; // 编辑
+    this.controlVisible = false; // 控制
     const editBlock: any = this.$refs.editTable;
+    this.bindVisible = false; // 绑定
+    this.addVisible = false; // 新增设备
+    this.deleteVisible = false; // 删除
     setTimeout(() => {
       editBlock.resetData();
     }, 200);
@@ -1230,7 +1270,7 @@ export default class Monitor extends Vue {
             ref="mapTable"
             class="mapTable1"
             filter-list={this.filterList}
-            filter-grade={[]}
+            filter-grade={this.filterGrade}
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
@@ -1257,15 +1297,32 @@ export default class Monitor extends Vue {
           visible={this.editVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
-        ></edit-model>
+        />
         <control-model
           ref="controlTable"
           data={this.controlData}
           visible={this.controlVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
-        >
-        </control-model>
+        />
+        <bind-model
+          data={this.bindData}
+          visible={this.bindVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        />
+        <addDevice-model
+          data={this.addData}
+          visible={this.addVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        />
+        <delete-model
+          data={this.deleteData}
+          visible={this.deleteVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        />
       </div>
     );
   }
