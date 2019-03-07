@@ -51,6 +51,44 @@ export default class AddModal extends Vue {
 
   selectLoading: boolean = true;
 
+  created() {
+    this.modelForm = JSON.parse(JSON.stringify(this.data));
+    // 设备类型
+    terminalType(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((item: any) => this.typeList.push({
+          key: Math.random(),
+          value: item.enumValue,
+          label: item.name,
+        }));
+        // 设备类型(全部)
+        this.typeList.unshift({
+          key: Math.random(),
+          value: '1026',
+          label: '全部',
+        });
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  @Watch('data')
+  onDataChange(data: any) {
+    if (data.id > 0) {
+      // 编辑
+      this.modelForm = JSON.parse(JSON.stringify(data));
+      // 编辑时设置默认密码为********
+      this.modelForm.password = '********';
+      this.ruleStatus = false;
+      this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
+      this.nameAndLev = `${this.data.orgName}`;
+    } else {
+      // 新增
+      this.resetData();
+    }
+  }
+
   rules = {
     contactUser: [
       { required: true, message: '请输入联系人', trigger: 'blur' },
@@ -72,6 +110,31 @@ export default class AddModal extends Vue {
     },
   ];
 
+  manageUserRule = [
+    { required: true, message: '请输入登录账号', trigger: 'blur' },
+    {
+      validator: this.checkUsername, trigger: 'blur',
+    },
+  ]
+
+  oldLevelCodeRule = [
+    {
+      validator: this.checkShopValue,
+    },
+  ]
+
+  typeRule = [
+    {
+      validator: this.checkTypeValue,
+    },
+  ]
+
+  remarkRule = [
+    { required: true, validator: this.checkPointRule, trigger: 'blur' },
+  ]
+
+  ruleStatus: boolean = true;
+
   @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
     setTimeout(() => {
@@ -92,26 +155,6 @@ export default class AddModal extends Vue {
     return reg.test(str);
   }
 
-  manageUserRule = [
-    { required: true, message: '请输入登录账号', trigger: 'blur' },
-    {
-      validator: this.checkUsername, trigger: 'blur',
-    },
-  ]
-
-  oldLevelCodeRule = [
-    {
-      validator: this.checkShopValue,
-    },
-  ]
-
-  typeRule = [
-    {
-      validator: this.checkTypeValue,
-    },
-  ]
-
-  ruleStatus: boolean = true;
 
   /**
    * @method 商户验证规则
@@ -161,9 +204,6 @@ export default class AddModal extends Vue {
     }, 500);
   }
 
-  remarkRule = [
-    { required: true, validator: this.checkPointRule, trigger: 'blur' },
-  ]
 
   // 验证地址
   checkPointRule(rule: any, value: string, callback: Function) {
@@ -179,44 +219,6 @@ export default class AddModal extends Vue {
         callback(new Error('地址不能为空！'));
       }
     }, 500);
-  }
-
-  created() {
-    this.modelForm = JSON.parse(JSON.stringify(this.data));
-    // 设备类型
-    terminalType(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.forEach((item: any) => this.typeList.push({
-          key: Math.random(),
-          value: item.enumValue,
-          label: item.name,
-        }));
-        // 设备类型(全部)
-        this.typeList.unshift({
-          key: Math.random(),
-          value: '1026',
-          label: '全部',
-        });
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
-
-  @Watch('data')
-  onDataChange(data: any) {
-    if (data.id > 0) {
-      // 编辑
-      this.modelForm = JSON.parse(JSON.stringify(data));
-      // 编辑时设置默认密码为********
-      this.modelForm.password = '********';
-      this.ruleStatus = false;
-      this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
-      this.nameAndLev = `${this.data.orgName}`;
-    } else {
-      // 新增
-      this.resetData();
-    }
   }
 
   typeEdit(str: string) {
@@ -239,6 +241,7 @@ export default class AddModal extends Vue {
       contactPhone: '',
       contactAddress: '',
     };
+    this.reBootStatus ='1';
     this.nameAndLev = '';
     this.deviceType = [];
   }
@@ -365,7 +368,6 @@ export default class AddModal extends Vue {
 
   rebootChange(data: any) {
     this.reBootStatus = data;
-    console.log(this.reBootStatus);
   }
 
   deviceType: any = [];
@@ -498,8 +500,8 @@ export default class AddModal extends Vue {
                   <el-form-item
                     label="地址"
                     prop="contactUser"
-                    rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
-                  <el-input
+                    rules={this.modelForm.terminalStatus === '2' ? this.remarkRule : null}>
+                    <el-input
                       id="contactUser"
                       v-model={this.modelForm.contactUser}
                       placeholder="请输入地址"

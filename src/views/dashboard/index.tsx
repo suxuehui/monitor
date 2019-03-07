@@ -568,6 +568,20 @@ export default class Dashboard extends Vue {
             </ul>
           </div>
         </div>
+        <ul class="fenceCar">
+          <li class="fenceItem">
+            <span>无围栏</span>
+            <span>1000辆</span>
+          </li>
+          <li class="fenceItem">
+            <span>围栏外</span>
+            <span>1000辆</span>
+          </li>
+          <li class="fenceItem">
+            <span>围栏内</span>
+            <span>1000辆</span>
+          </li>
+        </ul>
         <div class="alarmArea">
           <div class="title">
             告警消息统计

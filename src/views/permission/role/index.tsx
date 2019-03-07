@@ -88,6 +88,7 @@ export default class Role extends Vue {
       sortBy: 'countUser',
       formatter: (row: any) => (row.countUser ? row.countUser : '--'),
     },
+    { label: '添加人', prop: 'remark' },
     {
       label: '添加时间',
       prop: 'crtTime',
