@@ -1,5 +1,5 @@
 import {
-  Component, Prop, Vue, Watch
+  Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
   Dialog, Row, Col, Button,
@@ -52,15 +52,16 @@ export default class CheckConfigModel extends Vue {
           <img src={donePic} />
           <p style={{ marginTop: '8px' }}>配置参数下载成功</p>
         </div>
-      )
-    } else if (this.step === 1) {
+      );
+    } if (this.step === 1) {
       return (
         <div>
           <img src={loadingPic} />
           <p style={{ marginTop: '8px' }}>请稍等，正在校验配置...</p>
         </div>
-      )
+      );
     }
+    return true;
   }
 
   handleCheck() {

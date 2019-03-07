@@ -2,7 +2,7 @@ import {
   Component, Prop, Vue, Watch, Emit,
 } from 'vue-property-decorator';
 import {
-  Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option,
+  Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option, Radio, RadioGroup,
 } from 'element-ui';
 import { customerAdd, customerUpdate } from '@/api/customer';
 import { terminalType } from '@/api/equipment';
@@ -20,6 +20,8 @@ import './AddModal.less';
     'el-button': Button,
     'el-select': Select,
     'el-option': Option,
+    'el-radio': Radio,
+    'el-radio-group': RadioGroup,
   },
 })
 export default class AddModal extends Vue {
@@ -58,6 +60,9 @@ export default class AddModal extends Vue {
     ],
     contactAddress: [
       { required: true, message: '请输入联系地址', trigger: 'blur' },
+    ],
+    rebootRule: [
+      { required: true, message: '请选择时候切换' },
     ],
   }
 
@@ -152,6 +157,26 @@ export default class AddModal extends Vue {
         });
       } else {
         callback(new Error('登录账号不能为空'));
+      }
+    }, 500);
+  }
+
+  remarkRule = [
+    { required: true, validator: this.checkPointRule, trigger: 'blur' },
+  ]
+
+  // 验证地址
+  checkPointRule(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        const exp: any = /^\s+$/;
+        if (!exp.test(value)) {
+          callback();
+        } else {
+          callback(new Error('地址不能为空！'));
+        }
+      } else {
+        callback(new Error('地址不能为空！'));
       }
     }, 500);
   }
@@ -336,6 +361,13 @@ export default class AddModal extends Vue {
     this.nameAndLev = val;
   }
 
+  reBootStatus: string = '1';
+
+  rebootChange(data: any) {
+    this.reBootStatus = data;
+    console.log(this.reBootStatus);
+  }
+
   deviceType: any = [];
 
   typeChecked(val: any) {
@@ -366,8 +398,37 @@ export default class AddModal extends Vue {
       >
         <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row >
-            <el-col span={24} class="shopName">
-              <el-form-item label="商户名称" prop="oldLevelCode" rules={!this.ruleStatus ? null : this.oldLevelCodeRule}>
+            <el-col span={12}>
+              <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
+                <el-input
+                  id="manageUser"
+                  v-model={this.modelForm.manageUser}
+                  disabled={this.title !== '新增商户'}
+                  placeholder="请输入登录账号"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col span={12}>
+              <el-form-item label="登录密码" prop="password" rules={this.passwordRule}>
+                <el-input
+                  id="password"
+                  v-model={this.modelForm.password}
+                  type="password"
+                  placeholder="请输入登录密码"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col>
+              <el-form-item label="商户名称" prop="contactUser">
+                <el-input
+                  id="contactUser"
+                  v-model={this.modelForm.contactUser}
+                  placeholder="请输入商户名称"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col class="shopName">
+              <el-form-item label="关联门店" prop="oldLevelCode" rules={!this.ruleStatus ? null : this.oldLevelCodeRule}>
                 <el-select
                   id="oldLevelCode"
                   v-model={this.nameAndLev}
@@ -395,7 +456,7 @@ export default class AddModal extends Vue {
                 }
               </el-form-item>
             </el-col>
-            <el-col span={24} class="typeName">
+            <el-col class="typeName">
               <el-form-item label="设备同步" prop="deviceType" rules={this.typeRule}>
                 <el-select
                   id="deviceType"
@@ -419,53 +480,33 @@ export default class AddModal extends Vue {
                 <span class="star2">*</span>
               </el-form-item>
             </el-col>
-            <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
-                <el-input
-                  id="manageUser"
-                  v-model={this.modelForm.manageUser}
-                  disabled={this.title !== '新增商户'}
-                  placeholder="请输入登录账号"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col span={12}>
-              <el-form-item label="登录密码" prop="password" rules={this.passwordRule}>
-                <el-input
-                  id="password"
-                  v-model={this.modelForm.password}
-                  type="password"
-                  placeholder="请输入登录密码"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col span={12}>
-              <el-form-item label="联系人" prop="contactUser">
-                <el-input
-                  id="contactUser"
-                  v-model={this.modelForm.contactUser}
-                  placeholder="请输入联系人"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col span={12}>
-              <el-form-item label="联系电话" prop="contactPhone">
-                <el-input
-                  id="contactPhone"
-                  v-model={this.modelForm.contactPhone}
-                  placeholder="请输入联系电话"
-                ></el-input>
-              </el-form-item>
-            </el-col>
             <el-col span={24}>
-              <el-form-item label="联系地址" prop="contactAddress">
-                <el-input
-                  id="contactAddress"
-                  v-model={this.modelForm.contactAddress}
-                  placeholder="请输入联系地址"
-                ></el-input>
+              <el-form-item label="切换地址" prop="reboot" class="isStart">
+                <div class="radioGroup">
+                  <el-radio-group v-model={this.reBootStatus} on-change={this.rebootChange}>
+                    <el-radio id="availableY" label="1">不切换</el-radio>
+                    <el-radio id="availableN" label="2">切换</el-radio>
+                  </el-radio-group>
+                </div>
+                <span class="star2">*</span>
+                <p class="reStart">( 验收合格的设备是否支持服务器地址切换功能 )</p>
               </el-form-item>
             </el-col>
+            {
+              Number(this.reBootStatus) === 2
+                ? <el-col>
+                  <el-form-item
+                    label="地址"
+                    prop="contactUser"
+                    rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
+                  <el-input
+                      id="contactUser"
+                      v-model={this.modelForm.contactUser}
+                      placeholder="请输入地址"
+                    ></el-input>
+                  </el-form-item>
+                </el-col> : null
+            }
           </el-row>
         </el-form>
         <el-row>

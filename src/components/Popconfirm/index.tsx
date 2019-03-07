@@ -48,10 +48,12 @@ export default class Popconfirm extends Vue {
     this.loading = true;
     e.stopPropagation();
     setTimeout(() => {
-      this.$emit('confirm');
       this.loading = false;
       this.visible = false;
-    }, 1500);
+    }, 400);
+    setTimeout(() => {
+      this.$emit('confirm');
+    }, 500);
   }
 
   @Emit()
@@ -68,7 +70,7 @@ export default class Popconfirm extends Vue {
       str = '删除';
     } else if (name === 'unbind') {
       str = '解绑';
-    } else if (name === 'freeze') {
+    } else if (name === 'lock') {
       str = '冻结';
     } else if (name === 'forbid') {
       str = '禁用';

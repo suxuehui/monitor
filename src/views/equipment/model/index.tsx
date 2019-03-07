@@ -110,7 +110,6 @@ export default class ModelManage extends Vue {
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
-
   }
 
   // 点击时间

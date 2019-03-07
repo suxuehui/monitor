@@ -37,10 +37,17 @@ export default class Merchants extends Vue {
       options: [],
     },
     {
+      key: 'activeStatus',
+      type: 'select',
+      label: '切换地址',
+      placeholder: '请选择地址',
+      options: [],
+    },
+    {
       key: 'keyword',
       type: 'input',
       label: '角色名称',
-      placeholder: '商户名称或登录账号',
+      placeholder: '商户名称、关联门店名称、登录账号',
     },
   ];
 
@@ -58,32 +65,13 @@ export default class Merchants extends Vue {
   // 请求地址
   url: string = '/customer/org/list';
 
-  // 地址
-  opreat: Opreat[] = [
-    {
-      key: 'edit',
-      rowKey: 'manageUser',
-      color: 'blue',
-      text: '编辑',
-      roles: true,
-    },
-    {
-      key: 'freeze',
-      rowKey: 'manageUser',
-      color: (row: any) => (row.activeStatus === 2 ? 'green' : 'red'),
-      text: (row: any) => (row.activeStatus === 2 ? '解冻' : '冻结'),
-      msg: (row: any) => (row.activeStatus === 2 ? '是否要解冻？' : '是否要冻结？'),
-      roles: true,
-    },
-  ];
-
   // 表格参数
   tableList: tableList[] = [
     { label: '商户名称', prop: 'orgName' },
+    { label: '关联门店', prop: 'orgName' },
+    { label: '同步设备', prop: 'orgName' },
     { label: '登录账号', prop: 'manageUser' },
-    { label: '联系人', prop: 'contactUser' },
-    { label: '联系电话', prop: 'contactPhone' },
-    { label: '联系地址', prop: 'contactAddress' },
+    { label: '切换地址', prop: 'manageUser' },
     {
       label: '车辆数',
       prop: 'carNum',
@@ -107,6 +95,33 @@ export default class Merchants extends Vue {
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
 
+  // 地址
+  opreat: Opreat[] = [
+    {
+      key: 'edit',
+      rowKey: 'manageUser',
+      color: 'blue',
+      text: '编辑',
+      roles: true,
+    },
+    {
+      key: 'lock',
+      rowKey: 'manageUser',
+      color: 'red',
+      text: '冻结',
+      disabled: (row: any) => (row.activeStatus === 2),
+      roles: true,
+    },
+    {
+      key: 'unlock',
+      rowKey: 'manageUser',
+      color: 'green',
+      text: '解冻',
+      disabled: (row: any) => (row.activeStatus !== 2),
+      roles: true,
+    },
+  ];
+
   // 权限设置
   created() {
     const getNowRoles: string[] = [
@@ -118,12 +133,12 @@ export default class Merchants extends Vue {
       '/customer/org/unlock/{orgId}',
       '/customer/org/exportExcel',
     ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[1] && res[2]);
-      this.opreat[1].roles = !!(res[3] && res[4]);
-      this.addBtn = !!(res[0]);
-      this.exportBtn = !!(res[5]);
-    });
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[1] && res[2]);
+    //   this.opreat[1].roles = !!(res[3] && res[4]);
+    //   this.addBtn = !!(res[0]);
+    //   this.exportBtn = !!(res[5]);
+    // });
   }
 
   // 新增按钮展示
@@ -170,11 +185,6 @@ export default class Merchants extends Vue {
   // 冻结、解冻
   freezeVisible: boolean = false;
 
-  // 权限设置
-  setVisible: boolean = false;
-
-  setTitle: string = '';
-
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
@@ -190,28 +200,26 @@ export default class Merchants extends Vue {
           this.$message.error(res.result.resultMessage);
         }
       });
-    } else if (key === 'freeze') {
-      if (row.activeStatus === 2) {
-        // 解冻
-        customerUnlock(row.id).then((res) => {
-          if (res.result.resultCode === '0') {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      } else {
-        // 冻结
-        customerLock(row.id).then((res) => {
-          if (res.result.resultCode === '0') {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      }
+    } else if (key === 'lock') {
+      // 冻结
+      customerLock(row.id).then((res) => {
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
+    } else if (key === 'unlock') {
+      // 解冻
+      customerUnlock(row.id).then((res) => {
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
 
@@ -224,7 +232,6 @@ export default class Merchants extends Vue {
   closeModal(): void {
     this.addVisible = false;
     this.freezeVisible = false;
-    this.setVisible = false;
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();
@@ -254,6 +261,7 @@ export default class Merchants extends Vue {
           add-btn={this.addBtn}
           on-addBack={this.addModel}
           opreat={this.opreat}
+          opreatWidth={'150px'}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

@@ -1,5 +1,5 @@
 import {
-  Component, Prop, Vue, Watch
+  Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
   Dialog, Row, Col, Button,
@@ -41,20 +41,20 @@ export default class SearchConfigModel extends Vue {
   }
 
   showContent() {
-    // 配置参数下发成功
-    if (this.step === 0) {
-      return (
-        <div>
-          <p style={{ marginTop: '8px' }}>配置参数下载成功</p>
-        </div>
-      )
-    } else if (this.step === 1) {
-      return (
-        <div>
-          <p style={{ marginTop: '8px' }}>请稍等，正在校验配置...</p>
-        </div>
-      )
-    }
+    // // 配置参数下发成功
+    // if (this.step === 0) {
+    //   return (
+    //     <div>
+    //       <p style={{ marginTop: '8px' }}>配置参数下载成功</p>
+    //     </div>
+    //   );
+    // } if (this.step === 1) {
+    //   return (
+    //     <div>
+    //       <p style={{ marginTop: '8px' }}>请稍等，正在校验配置...</p>
+    //     </div>
+    //   );
+    // }
   }
 
   render() {
