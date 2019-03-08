@@ -19,7 +19,6 @@ import BindModel from './components/BindModel';
 import AddDeviceModel from './components/AddDeviceModel';
 import MenuClickModel from './components/MenuClickModel';
 import './index.less';
-import utils from '@/utils';
 
 // 车子图片
 const carIcon = require('@/assets/car.png');
@@ -1193,7 +1192,7 @@ export default class Monitor extends Vue {
     };
     this.controlVisible = true;
     this.controlTitle = this.setControlTitle(num);
-    this.clickTime = utils.getNowTime();
+    this.clickTime = config.getNowTime();
   }
 
   // 车辆控制弹框标题
