@@ -5,7 +5,7 @@ import {
   Dialog, Row, Col, Button,
 } from 'element-ui';
 import { vehicleDelete } from '@/api/monitor';
-import './DeleteModel.less';
+import './MenuClickModel.less';
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -19,6 +19,8 @@ export default class DeleteModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
 
   @Prop() private data: any;
+
+  @Prop({ default: '' }) private menuStr !: string;
 
   loading: boolean = false;
 
@@ -53,7 +55,7 @@ export default class DeleteModel extends Vue {
         close-on-click-modal={false}
       >
         <div class="box">
-          <p>确定<span class="info">  删除  </span>该车辆？</p>
+          <p>确定执行<span class="info">  {this.menuStr}  </span>操作?</p>
         </div>
         <div class="unbindBtn">
           <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>

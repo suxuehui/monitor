@@ -1,5 +1,5 @@
 @import '../../../styles/var.less';
-.monitor-wrap {
+.fzk-monitor-wrap {
   height: 100%;
   width: 100%;
   position: relative;
@@ -8,6 +8,7 @@
   #map {
     height: e('calc(100vh - 98px)');
   }
+  // 右上角搜索部分
   .loc-search-box {
     position: absolute;
     top: 20px;
@@ -24,12 +25,13 @@
       padding: 9px 10px;
     }
   }
+  // 详情框
   .car-detail-box {
     position: absolute;
     z-index: 3000;
     left: 10px;
-    width: 400px;
-    border: 1px solid @primary-color;
+    width: 370px;
+    border: 1px solid #409EFF;
     border-radius: 5px;
     background-color: #fff;
     transition: all .5s ease-in-out;
@@ -46,19 +48,20 @@
         max-height: e('calc(100vh - 300px)');
       }
     }
+    // 车辆信息部分
     .car-info {
       padding: 8px;
       color: #fff;
-      height: 95px;
-      background-color: @primary-color;
+      background-color: #409EFF;
       .top {
         margin-bottom: 10px;
         .plateNumber {
           font-size: 16px;
           font-weight: 500;
         }
-        .modelName {
+        .onlineStatus {
           font-size: 12px;
+          margin-left: 10px;
         }
       }
       .center {
@@ -68,58 +71,136 @@
         justify-content: space-between;
       }
       .bottom {
-        padding: 5px 0;
-        display: flex;
-        justify-content: space-between;
-        span {
-          width: 50%;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+        padding: 10px 0 0 20px;
+        .loc {
+          position: relative;
+          .icon {
+            position: absolute;
+            top: 3px;
+            left: -15px;
+            font-size: 14px;
+          }
+        }
+        .time {
+          margin-top: 4px;
+          display: flex;
+          justify-content: space-between;
+          position: relative;
+          .icon {
+            position: absolute;
+            top: 2px;
+            left: -15px;
+            font-size: 14px;
+          }
+          .status {
+            margin-top: -1px;
+            color: #FFBF00;
+          }
+        }
+        .fenceStatus {
+          color: #ffffff;
         }
       }
     }
+    // 车辆控制
     .car-control {
-      padding: 4px 20px;
-      border-bottom: 1px solid @primary-color;
-      height: 40px;
-      i {
-        font-size: 16px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      list-style: none;
+      border-bottom: 1px solid #409EFF;
+      .controlItem {
+        width: 20%;
+        padding: 2px;
+        line-height: 30px;
+        text-align: center;
+        display: inline-block;
+        border-right: 1px solid #409EFF;
+        position: relative;
+        .trangle {
+          height: 0;
+          width: 0;
+          border-right: 7px solid transparent;
+          border-bottom: 7px solid #409EFF;
+          border-left: 7px solid transparent;
+          position: absolute;
+          bottom: 0;
+          left: 33px;
+        }
+        .itemTit {
+          cursor : pointer;
+          font-weight: 600;
+          color: #409EFF;
+        }
+      }
+      .controlItem:last-child{
+        border: none;
       }
     }
-    .car-address {
-      padding: 10px 20px;
-      border-bottom: 1px solid @primary-color;
-      .loc {
-        position: relative;
-        .icon {
-          position: absolute;
-          top: 3px;
-          left: -15px;
-          font-size: 14px;
+    // 设备信息
+    .deviceInfo {
+      position: absolute;
+      top: 150px;
+      left: 0;
+      border-bottom: 1px solid #409EFF;
+      width: 100%;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      background: #fff;
+      padding: 12px 25px;
+      .deviceItem {
+        .deviceTit{
+          margin: 6px 0px 6px;
         }
-      }
-      .time {
-        margin-top: 4px;
-        display: flex;
-        justify-content: space-between;
-        position: relative;
-        .icon {
-          position: absolute;
-          top: 2px;
-          left: -15px;
-          font-size: 14px;
-        }
-        .status {
-          margin-top: -1px;
+        .deviceList {
+          list-style: none;
+          .deviceLi {
+            display: flex;
+            text-align: center;
+            .deviceModel {
+              width: 50%;
+              margin-bottom: 5px;
+            }
+            .deviceIMEI {
+              width: 50%;
+            }
+            .w700 {
+              font-weight: 700;
+            }
+          }
         }
       }
     }
+    // 控制按钮
+    .controlList {
+      position: absolute;
+      top: 150px;
+      left: 0;
+      width: 100%;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      border-bottom: 1px solid #409EFF;
+      list-style: none;
+      padding: 10px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      background-color: #ffffff;
+      .controlItem {
+        display: inline-block;
+        font-size: 13px;
+        width: 20%;
+        text-align: center;
+        margin: 5px 8px;
+        cursor: pointer;
+        padding: 2px 0;
+      }
+    }
+    // 车辆详情
     .car-detail {
       padding: 10px;
       word-spacing: 2px;
       max-height: e('calc(100vh - 340px)');
-      // max-height: e('calc(100vh - 710px)');
       overflow: auto;
       transition: all .5s ease-in-out;
       .line {

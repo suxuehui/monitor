@@ -16,10 +16,10 @@ import CoordTrasns from '@/utils/coordTrasns';
 import EditModel from './components/EditModel';
 import ControlModel from './components/ControlModel';
 import BindModel from './components/BindModel';
-import UnbindModel from './components/UnbindModel';
 import AddDeviceModel from './components/AddDeviceModel';
-import DeleteModel from './components/DeleteModel';
+import MenuClickModel from './components/MenuClickModel';
 import './index.less';
+import utils from '@/utils';
 
 // 车子图片
 const carIcon = require('@/assets/car.png');
@@ -39,9 +39,8 @@ const pointIcon = require('@/assets/point.png');
     'edit-model': EditModel,
     'control-model': ControlModel,
     'bind-model': BindModel,
-    'unbind-model': UnbindModel,
     'addDevice-model': AddDeviceModel,
-    'delete-model': DeleteModel,
+    'menuclick-model': MenuClickModel,
   },
   name: 'Monitor',
 })
@@ -372,6 +371,7 @@ export default class Monitor extends Vue {
   // 底部表格开关
   locChange: boolean = false;
 
+  // 车辆详情
   carDetailArr: any = [
     { label: '卫星星数:', prop: 'star', unit: '颗' },
     { label: '网络质量:', prop: 'gsm', unit: '' },
@@ -794,19 +794,19 @@ export default class Monitor extends Vue {
     switch (key) {
       // 绑定
       case 'bind':
-        console.log(1);
         this.bindVisible = true;
         this.bindData = row;
         break;
       // 解绑
       case 'unbind':
-        console.log(2);
+        this.menuClickVisible = true;
+        this.menuClickData = row;
+        this.menuClickStr = '解绑';
         break;
       // 新增设备
       case 'addDevice':
         this.addVisible = true;
         this.addData = row;
-        console.log(3);
         break;
       // 编辑
       case 'edit':
@@ -820,8 +820,9 @@ export default class Monitor extends Vue {
         break;
       // 删除
       case 'delete':
-        this.deleteVisible = true;
-        this.deleteData = row;
+        this.menuClickVisible = true;
+        this.menuClickData = row;
+        this.menuClickStr = '删除';
         break;
       default:
         break;
@@ -838,6 +839,10 @@ export default class Monitor extends Vue {
 
   controlVisible: boolean = false;
 
+  controlTitle: string = '';
+
+  clickTime: string = '';
+
   // 绑定设备
   bindVisible: boolean = false;
 
@@ -848,17 +853,19 @@ export default class Monitor extends Vue {
 
   addData: any = {}
 
-  // 删除
-  deleteVisible:boolean = false;
+  // 删除 解绑
+  menuClickVisible: boolean = false;
 
-  deleteData: any = {}
+  menuClickData: any = {}
+
+  menuClickStr: string = '';
 
   // 导出按钮展示
   exportBtn: boolean = true;
 
   controlBtn: boolean = true;
 
-  locTimeOptions:any = [
+  locTimeOptions: any = [
     {
       value: '',
       label: '无位置变化（全部）',
@@ -1127,7 +1134,7 @@ export default class Monitor extends Vue {
     const editBlock: any = this.$refs.editTable;
     this.bindVisible = false; // 绑定
     this.addVisible = false; // 新增设备
-    this.deleteVisible = false; // 删除
+    this.menuClickVisible = false; // 删除
     setTimeout(() => {
       editBlock.resetData();
     }, 200);
@@ -1140,121 +1147,207 @@ export default class Monitor extends Vue {
     this.closeModal();
   }
 
-  // 车辆控制
-  controlCar(type: string, index: number): void {
-    let str: string = '';
-    switch (type) {
-      case 'CMD_START':
-        str = '点火';
-        break;
-      case 'CMD_STOP':
-        str = '熄火';
-        break;
-      case 'CMD_SET_DEFENCE':
-        str = '设防';
-        break;
-      case 'CMD_CANCEl_DEFENCE':
-        str = '撤防';
-        break;
-      case 'CMD_LOCK':
-        str = '上锁';
-        break;
-      case 'CMD_UNLOCK':
-        str = '解锁';
-        break;
-      case 'CMD_CALL':
-        str = '寻车';
-        break;
-      default:
-        break;
-    }
-    this.controlData = {
-      cmd: type,
-      imei: this.carDetail.otuImei,
-      operateStr: str,
-    };
-    this.controlVisible = true;
-  }
-
   downLoad(data: any) {
     const data1 = qs.stringify(data);
     exportExcel(data1, '车辆列表', '/vehicle/monitor/exportExcel');
   }
 
-  /**
-   * @method 车辆车型数据格式化
-   * @param {object} data 车辆数据
-   */
-  infoBox(data: any) {
-    const bName = data.brandName !== null ? `${data.brandName}-` : '';
-    const sName = data.seriesName !== null ? `${data.seriesName}-` : '';
-    const mName = data.modelName !== null ? data.modelName : '';
-    return `${bName}${sName}${mName}`;
+  showDeviceTran: boolean = false; // 展示设备数量
+
+  showControlTran: boolean = false; // 展示控制操作
+
+  // 展示三角形
+  showTran(data: string) {
+    if (data === '设备') {
+      this.showDeviceTran = !this.showDeviceTran;
+      this.showControlTran = false;
+    }
+    if (data === '控制') {
+      this.showDeviceTran = false;
+      this.showControlTran = !this.showControlTran;
+    }
+  }
+
+  // 远程控制选项
+  remoteControlArr = [
+    { label: '降窗', num: '01', command: '01' },
+    { label: '升窗', num: '02', command: '02' },
+    { label: '解锁', num: '03', command: 'CMD_UNLOCK' },
+    { label: '上锁', num: '04', command: 'CMD_LOCK' },
+    { label: '夺权', num: '05', command: '05' },
+    { label: '授权', num: '06', command: '06' },
+    { label: '断油', num: '07', command: '07' },
+    { label: '通油', num: '08', command: '08' },
+    { label: '熄火', num: '09', command: 'CMD_STOP' },
+    { label: '启动', num: '10', command: 'CMD_START' },
+    { label: '寻车', num: '11', command: 'CMD_CALL' },
+  ]
+
+  // 车辆控制
+  carControl(label: string, command: string, num: string) {
+    this.controlData = {
+      cmd: command,
+      imei: this.carDetail.otuImei,
+      operateStr: label,
+      num,
+    };
+    this.controlVisible = true;
+    this.controlTitle = this.setControlTitle(num);
+    this.clickTime = utils.getNowTime();
+  }
+
+  // 车辆控制弹框标题
+  setControlTitle(num: string) {
+    let title = '';
+    switch (num) {
+      case '05':
+        title = '夺权选择';
+        break;
+      case '06':
+        title = '授权选择';
+        break;
+      case '07':
+        title = '断油选择';
+        break;
+      default:
+        title = '操作确认';
+        break;
+    }
+    return title;
   }
 
   render() {
     const { carDetail } = this;
     return (
-      <div class="monitor-wrap">
+      <div class="fzk-monitor-wrap">
         <div id="map"></div>
+        {/* 右上角搜索 */}
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
           </el-autocomplete>
           <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refreshLoad}></el-button>
         </div>
+        {/* 详情头部 */}
         <div class={['car-detail-box', this.detailShow ? 'detail-active' : '', this.locChange ? '' : 'big']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
           <div class="car-info">
             <div class="top">
               <span class="plateNumber">{carDetail.plateNum}</span>
-              <span class="modelName">（{this.infoBox(carDetail)}）</span>
+              <span class="onlineStatus">[{carDetail.online ? '在线' : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>}]</span>
             </div>
             <div class="center">
               <span class="brandName">{carDetail.orgName}</span>
-              <span class="net">{carDetail.online ? '在线' : '离线'}</span>
+
             </div>
             <div class="bottom">
-              <span>车架号：{carDetail.vin}</span>
-              <span>imei号：{carDetail.otuImei}</span>
+              <div class="loc">
+                <i class="iconfont-location icon"></i>
+                <span>{carDetail.address}</span>
+              </div>
+              <div class="time">
+                <i class="iconfont-time-circle icon"></i>
+                <span>
+                  {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
+                </span>
+                <span class="status">
+                  ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
+                </span>
+                <span class="fenceStatus">
+                  [<span style={{ color: 'red' }}>围栏内</span>]
+                </span>
+              </div>
             </div>
           </div>
-          {
-            this.controlBtn
-              ? <div class="car-control">
-                <el-button id="CMD_START" type="text" size="mini" icon="iconfont-powerOn" on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
-                <el-button id="CMD_STOP" type="text" size="mini" icon="iconfont-powerOff" on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
-                <el-button id="CMD_SET_DEFENCE" type="text" size="mini" icon="iconfont-fenceOn" on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
-                <el-button id="CMD_CANCEl_DEFENCE" type="text" size="mini" icon="iconfont-fenceOff" on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
-                <el-button id="CMD_LOCK" type="text" icon="iconfont-lock" size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
-                <el-button id="CMD_UNLOCK" type="text" icon="iconfont-unlock" size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
-                <el-button id="CMD_CALL" type="text" icon="iconfont-wifi" size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
-              </div> : null
-          }
-          <div class="car-address">
-            <div class="loc">
-              <i class="iconfont-location icon"></i>
-              <span>{carDetail.address}</span>
+          {/* 控制区域 */}
+          <ul class="car-control">
+            <li class="controlItem">
+              <span class="itemTit" on-click={() => this.showTran('设备')}>设备信息</span>
+              {
+                this.showDeviceTran ? <span class="trangle deviceTran"></span> : null
+              }
+            </li>
+            <li class="controlItem">
+              <span class="itemTit">无线追踪</span>
+            </li>
+            <li class="controlItem">
+              <span class="itemTit">驾驶行为</span>
+            </li>
+            <li class="controlItem">
+              <span class="itemTit">历史轨迹</span>
+            </li>
+            <li class="controlItem">
+              <span class="itemTit" on-click={() => this.showTran('控制')}>远程控制</span>
+              {
+                this.showControlTran ? <span class="trangle controlTran"></span> : null
+              }
+            </li>
+          </ul>
+          {/* 车上所安装设备信息 */}
+          <transition name="el-fade-in-linear">
+            <div v-show={this.showDeviceTran}>
+              <div class="deviceInfo">
+                <div class="deviceItem">
+                  <div class="deviceTit">有线设备：1个</div>
+                  <ul class="deviceList">
+                    <li class="deviceLi">
+                      <span class="deviceModel w700">型号</span>
+                      <span class="deviceIMEI w700">imei号</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037641274</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="deviceItem">
+                  <div class="deviceTit">无线设备：3个</div>
+                  <ul class="deviceList">
+                    <li class="deviceLi">
+                      <span class="deviceModel w700">型号</span>
+                      <span class="deviceIMEI w700">imei号</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037642224</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037641222</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037641122</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div class="time">
-              <i class="iconfont-time-circle icon"></i>
-              <span>
-                {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
-              </span>
-              <span class="status">
-                ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
-              </span>
+          </transition>
+          {/* 远程控制选项 */}
+          <transition name="el-fade-in-linear">
+            <div v-show={this.showControlTran}>
+              <ul class="controlList">
+                {
+                  this.remoteControlArr.map((item: any, index: number) => (
+                    <li class="controlItem" on-click={() => this.carControl(item.label, item.command, item.num)}>{item.label}</li>
+                  ))
+                }
+              </ul>
             </div>
-          </div>
-          <div class="car-detail clearfix">
+          </transition>
+          {/* 车辆状态 */}
+          {/* <div class="car-detail clearfix">
             <ul class="line">
               {
                 this.carDetailArr.map((item: any) => <li class="item">
                   <span class="label">{item.label}</span>
-                  <span class="val">{this.renderStatus(carDetail[item.prop], carDetail, item.unit)}</span>
+                  <span class="val">
+                    {this.renderStatus(carDetail[item.prop], carDetail, item.unit)}
+                  </span>
                 </li>)
               }
             </ul>
-          </div>
+          </div> */}
         </div>
         <div class={['car-table1', !this.locChange ? 'table-active' : '']}>
           <div class='loc-change-box1'>
@@ -1300,6 +1393,8 @@ export default class Monitor extends Vue {
         />
         <control-model
           ref="controlTable"
+          time={this.clickTime}
+          title={this.controlTitle}
           data={this.controlData}
           visible={this.controlVisible}
           on-close={this.closeModal}
@@ -1317,9 +1412,10 @@ export default class Monitor extends Vue {
           on-close={this.closeModal}
           on-refresh={this.reFresh}
         />
-        <delete-model
-          data={this.deleteData}
-          visible={this.deleteVisible}
+        <menuclick-model
+          menuStr={this.menuClickStr}
+          data={this.menuClickData}
+          visible={this.menuClickVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
         />
