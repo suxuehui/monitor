@@ -31,14 +31,14 @@ export default class Alarm extends Vue {
     {
       key: 'levelcode',
       type: 'levelcode',
-      label: '所属商户',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '请选择商户门店',
       options: [],
     },
     {
@@ -46,13 +46,6 @@ export default class Alarm extends Vue {
       type: 'select',
       label: '告警类型',
       placeholder: '请选择告警类型',
-      options: [],
-    },
-    {
-      key: 'status',
-      type: 'select',
-      label: '状态',
-      placeholder: '请选择状态',
       options: [],
     },
     {
@@ -150,11 +143,18 @@ export default class Alarm extends Vue {
       disabled: (row: any) => (row.status === false),
       roles: true,
     },
+    {
+      key: 'checkLoc',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '告警地点',
+      roles: true,
+    },
   ];
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName' },
+    { label: '门店商户', prop: 'orgName' },
     { label: '车牌号', prop: 'plateNum' },
     { label: '车架号', prop: 'vin' },
     { label: '告警类型', prop: 'alarmTypeName' },
@@ -165,7 +165,6 @@ export default class Alarm extends Vue {
       sortBy: 'formatMsgTime',
     },
     { label: '告警内容', prop: 'content' },
-    { label: '地点', prop: 'address', formatter: this.checkLoc },
     { label: '状态', prop: 'status', formatter: this.statusDom },
   ];
 
@@ -200,28 +199,9 @@ export default class Alarm extends Vue {
     this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
-  checkLoc(row: any) {
-    return <i class="iconfont iconfont-location" on-click={() => { this.checkMapLoc(row); }} ></i>;
-  }
-
   statusDom(row: any) {
     const type = row.status ? 'success' : 'danger';
     return <el-tag size="medium" type={type}>{row.status ? '已处理' : '未处理'}</el-tag>;
-  }
-
-  checkMapLoc(row: any) {
-    if (row.lat > 0) {
-      const point: any = CoordTrasns.transToBaidu(
-        {
-          lat: row.lat,
-          lng: row.lng,
-        },
-        row.coordinateSystem,
-      );
-      this.$router.push({ name: '告警地点', query: { lng: point.lng, lat: point.lat } });
-    } else {
-      this.$message.error('告警地点位置信息缺失');
-    }
   }
 
   activeTypes: ActiveType[] = [
@@ -243,11 +223,11 @@ export default class Alarm extends Vue {
       '/message/alarm/getSolution',
       '/message/alarm/exportExcel',
     ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]);
-      this.opreat[1].roles = !!(res[1]);
-      this.exportBtn = !!(res[2]);
-    });
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[0]);
+    //   this.opreat[1].roles = !!(res[1]);
+    //   this.exportBtn = !!(res[2]);
+    // });
     // 门店搜索
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -309,7 +289,10 @@ export default class Alarm extends Vue {
 
   // 操作
   menuClick(key: string, row: any) {
-    if (row.status === true) {
+    if (key === 'handle') {
+      this.modelForm = row;
+      this.handleVisible = true;
+    } else if (key === 'check') {
       getSolution({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
           this.checkData = res.entity;
@@ -318,9 +301,23 @@ export default class Alarm extends Vue {
           this.$message.error(res.result.resultMessage);
         }
       });
+    } else if (key === 'checkLoc') {
+      this.checkMapLoc(row);
+    }
+  }
+
+  checkMapLoc(row: any) {
+    if (row.lat > 0) {
+      const point: any = CoordTrasns.transToBaidu(
+        {
+          lat: row.lat,
+          lng: row.lng,
+        },
+        row.coordinateSystem,
+      );
+      this.$router.push({ name: '告警地点', query: { lng: point.lng, lat: point.lat } });
     } else {
-      this.modelForm = row;
-      this.handleVisible = true;
+      this.$message.error('告警地点位置信息缺失');
     }
   }
 

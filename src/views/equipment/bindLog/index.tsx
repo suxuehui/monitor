@@ -8,6 +8,7 @@ import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
 import CheckPicModel from '@/views/equipment/bindLog/components/CheckPicModel';
 import './index.less';
+import utils from '@/utils';
 
 @Component({
   components: {
@@ -59,6 +60,18 @@ export default class BindLog extends Vue {
     { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },
   ];
 
+  activated() {
+    const FormTable: any = this.$refs.MTable;
+    const tableParams = {
+      page: true,
+      pageNum: 1,
+      pageSize: 5,
+      imei: this.$route.query.imei,
+    };
+    FormTable.getData(tableParams);
+    this.getTerminalInfo(this.$route.query.id);
+  }
+
   // 新增、导出按钮展示
   acceptBtn: boolean = true;
 
@@ -90,18 +103,23 @@ export default class BindLog extends Vue {
     };
     this.defaultPageSize = 5;
     if (this.$route.query.id) {
-      terminalInfo(this.$route.query.id).then((res) => {
-        if (res.result.resultCode === '0') {
-          this.modelForm = {
-            orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
-            plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
-            vin: res.entity.vin !== null ? res.entity.vin : '--',
-          };
-        } else {
-          this.$message.error(res.result.resultMessage);
-        }
-      });
+      this.getTerminalInfo(this.$route.query.id);
     }
+  }
+
+  // 车辆信息
+  getTerminalInfo(data: any) {
+    terminalInfo(data).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.modelForm = {
+          orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
+          plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
+          vin: res.entity.vin !== null ? res.entity.vin : '--',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 验收记录
@@ -185,10 +203,13 @@ export default class BindLog extends Vue {
     }, 200);
   }
 
+  clickTime: string = ''
+
   tableClick(key: string, row: any) {
     if (key === 'checkLog') {
       this.checkLogVisible = true;
       this.checkLogId = row.id;
+      this.clickTime = utils.getNowTime();
     }
   }
 
@@ -196,7 +217,7 @@ export default class BindLog extends Vue {
     return (
       <div class="container">
         <el-card class="box-card">
-          <el-form model={this.modelForm} ref="modelForm" label-width="100px" class="model">
+          <el-form model={this.modelForm} ref="modelForm" label-width="100px" class="bindModel">
             <div class="header">
               <span class="title">当前安绑车辆</span>
             </div>
@@ -251,6 +272,7 @@ export default class BindLog extends Vue {
           </div>
         </el-card>
         <checkLog-model
+          time={this.clickTime}
           ref="checkLogModel"
           data={this.checkLogId}
           visible={this.checkLogVisible}

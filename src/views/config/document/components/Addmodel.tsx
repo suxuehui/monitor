@@ -227,15 +227,15 @@ export default class AddModal extends Vue {
   render() {
     return (
       <el-dialog
-        width="560px"
+        width="730px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="90px" class="model">
+        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="90px" class="addConfigModel">
           <el-row>
-            <el-col span={24}>
+            <el-col span={12}>
               <el-form-item label="配置名称" prop="cfgName">
                 <el-input
                   id="cfgName"
@@ -244,7 +244,7 @@ export default class AddModal extends Vue {
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col span={24}>
+            <el-col span={12}>
               <el-form-item label="产品编码" prop="productCode">
                 <el-input
                   id="productCode"
@@ -307,12 +307,10 @@ export default class AddModal extends Vue {
             </el-col>
           </el-row>
         </el-form>
-        <el-row>
-          <el-col offset={7} span={12}>
-            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-          </el-col>
-        </el-row>
+        <div style={{ textAlign: 'center' }}>
+          <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
+          <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+        </div>
       </el-dialog>
     );
   }

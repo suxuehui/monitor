@@ -95,6 +95,7 @@ export default class MapContorl {
     this.addTrackCarOverlay(firstPoint, 'playCar');
     this.myCarOverlay.div.style.transition = `left ${this.oneTime / 1000}s linear, top ${this.oneTime / 1000}s linear`;
   }
+
   /**
    * @method 播放定时器
    */
@@ -408,6 +409,7 @@ export default class MapContorl {
     direction = '未知';
     return direction;
   }
+
   // 展示轨迹点信息窗口
   showTrackInfoBox(data: any) {
     this.removeTrackPointOverlay('trackpoint_in');

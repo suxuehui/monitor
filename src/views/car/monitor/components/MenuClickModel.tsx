@@ -4,8 +4,8 @@ import {
 import {
   Dialog, Row, Col, Button,
 } from 'element-ui';
-import { terminalUnbind } from '@/api/equipment';
-import './UnbindModel.less';
+import { vehicleDelete } from '@/api/monitor';
+import './MenuClickModel.less';
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -14,11 +14,13 @@ import './UnbindModel.less';
     'el-button': Button,
   },
 })
-export default class UnbindModel extends Vue {
+export default class DeleteModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
 
   @Prop() private data: any;
+
+  @Prop({ default: '' }) private menuStr !: string;
 
   loading: boolean = false;
 
@@ -34,33 +36,26 @@ export default class UnbindModel extends Vue {
     const obj: any = {
       imei: this.data.imei,
     };
-    terminalUnbind(obj).then((res) => {
-      if (res.result.resultCode === '0') {
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.success(res.result.resultMessage);
-          this.$emit('refresh');
-        }, 1500);
-      } else {
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.error(res.result.resultMessage);
-        }, 1500);
-      }
-    });
+    // vehicleDelete(obj).then((res) => {
+    //   if (res.result.resultCode === '0') {
+    //     this.$message.success(res.result.resultMessage);
+    //   } else {
+    //     this.$message.error(res.result.resultMessage);
+    //   }
+    // });
   }
 
   render() {
     return (
       <el-dialog
         width="540px"
-        title="解绑车辆"
+        title="操作确认"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
         <div class="box">
-          <p>确定<span class="info">  解绑  </span>该车辆？</p>
+          <p>确定执行<span class="info">  {this.menuStr}  </span>操作?</p>
         </div>
         <div class="unbindBtn">
           <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>

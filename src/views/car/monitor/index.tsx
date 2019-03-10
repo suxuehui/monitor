@@ -1,7 +1,11 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip } from 'element-ui';
-import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery, vehicleDelete } from '@/api/monitor';
+import { Component, Vue } from 'vue-property-decorator';
+import {
+  Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip,
+} from 'element-ui';
+import {
+  tableList, Opreat, FilterFormList, MapCarData,
+} from '@/interface';
+import { vehicleInfo, vehicleRadiusQuery } from '@/api/monitor';
 import { exportExcel } from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { terminalType } from '@/api/equipment';
@@ -11,6 +15,9 @@ import config from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import EditModel from './components/EditModel';
 import ControlModel from './components/ControlModel';
+import BindModel from './components/BindModel';
+import AddDeviceModel from './components/AddDeviceModel';
+import MenuClickModel from './components/MenuClickModel';
 import './index.less';
 
 // 车子图片
@@ -19,20 +26,23 @@ const carIcon = require('@/assets/car.png');
 const pointIcon = require('@/assets/point.png');
 @Component({
   components: {
-  'el-input': Input,
-  'el-button': Button,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-tag': Tag,
-  'el-autocomplete': Autocomplete,
-  'el-dialog': Dialog,
-  'el-tooltip': Tooltip,
-  'el-cascader': Cascader,
-  'edit-model': EditModel,
-  'control-model': ControlModel,
+    'el-input': Input,
+    'el-button': Button,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-tag': Tag,
+    'el-autocomplete': Autocomplete,
+    'el-dialog': Dialog,
+    'el-tooltip': Tooltip,
+    'el-cascader': Cascader,
+    'edit-model': EditModel,
+    'control-model': ControlModel,
+    'bind-model': BindModel,
+    'addDevice-model': AddDeviceModel,
+    'menuclick-model': MenuClickModel,
   },
   name: 'Monitor',
-  })
+})
 export default class Monitor extends Vue {
   // 过滤表单数据
   filterParams: object = {
@@ -43,6 +53,7 @@ export default class Monitor extends Vue {
     online: '',
     noMoveTime: '',
   };
+
   // 表格ajax请求返回数据格式
   backParams: object = {
     code: 'result.resultCode',
@@ -51,6 +62,7 @@ export default class Monitor extends Vue {
     data: 'entity.data',
     total: 'entity.count',
   };
+
   // 表格ajax请求外部参数
   outParams: any = {
     brandId: '',
@@ -63,141 +75,100 @@ export default class Monitor extends Vue {
     {
       key: 'levelCode',
       type: 'levelcode',
-      label: '所属门店',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择门店',
+      placeholder: '请选择商户门店',
       options: [],
-    },
-    {
-      key: 'brandModelArr',
-      type: 'cascader',
-      label: '品牌车型',
-      placeholder: '品牌车型',
-      options: [],
-      filterable: true,
-      props: {
-        value: 'id',
-        children: 'children',
-        label: 'name',
-      },
-      change: this.selectBrandModel,
     },
     {
       key: 'energyType',
       type: 'select',
-      label: '能源类型',
-      placeholder: '能源类型',
-      options: [
-        {
-          value: '',
-          label: '能源类型（全部）',
-        },
-        {
-          value: '1',
-          label: '燃油',
-        },
-        {
-          value: '2',
-          label: '电动',
-        },
-        {
-          value: '3',
-          label: '混动',
-        },
-      ],
-    },
-    {
-      key: 'online',
-      type: 'select',
-      label: '车辆状态',
-      placeholder: '车辆状态',
-      options: [
-        {
-          value: '',
-          label: '车辆状态（全部）',
-        },
-        {
-          value: 'true',
-          label: '在线',
-        },
-        {
-          value: 'false',
-          label: '离线',
-        },
-      ],
+      label: '网络状态',
+      placeholder: '请选择网络状态',
+      options: [],
     },
     {
       key: 'noMoveTime',
       type: 'select',
       label: '无位置变化',
       placeholder: '无位置变化',
-      options: [
-        {
-          value: '',
-          label: '无位置变化（全部）',
-        },
-        {
-          value: `${12 * 60}`,
-          label: '12时以上',
-        },
-        {
-          value: `${24 * 60}`,
-          label: '1天以上',
-        },
-        {
-          value: `${48 * 60}`,
-          label: '2天以上',
-        },
-        {
-          value: `${72 * 60}`,
-          label: '3天以上',
-        },
-        {
-          value: `${96 * 60}`,
-          label: '4天以上',
-        },
-        {
-          value: `${120 * 60}`,
-          label: '5天以上',
-        },
-        {
-          value: `${144 * 60}`,
-          label: '6天以上',
-        },
-        {
-          value: `${168 * 60}`,
-          label: '7天以上',
-        },
-        {
-          value: `${192 * 60}`,
-          label: '8天以上',
-        },
-        {
-          value: `${216 * 60}`,
-          label: '9天以上',
-        },
-        {
-          value: `${240 * 60}`,
-          label: '10天以上',
-        },
-      ],
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '围栏内外',
+      placeholder: '请选择围栏内外',
+      options: [],
+    },
+  ];
+
+  filterGrade: FilterFormList[] = [
+    {
+      key: 'levelCode',
+      type: 'levelcode',
+      label: '商户门店',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择商户门店',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '网络状态',
+      placeholder: '请选择网络状态',
+      options: [],
+    },
+    {
+      key: 'noMoveTime',
+      type: 'select',
+      label: '无位置变化',
+      placeholder: '无位置变化',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '围栏内外',
+      placeholder: '请选择围栏内外',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '车辆来源',
+      placeholder: '请选择车辆来源',
+      options: [],
+    },
+    {
+      key: 'energyType',
+      type: 'select',
+      label: '绑定状态',
+      placeholder: '请选择绑定状态',
+      options: [],
     },
     {
       key: 'keyword',
       type: 'input',
-      label: '车牌/车架/imei号',
-      placeholder: '车牌/车架/imei号',
+      label: '车牌/车架',
+      placeholder: '车牌/车架',
     },
   ];
+
   // 表格列配置数组
   tableList: tableList[] = [
     {
-      label: '所属商户',
+      label: '商户门店',
       prop: 'orgName',
     },
     {
@@ -210,22 +181,17 @@ export default class Monitor extends Vue {
       prop: 'vin',
     },
     {
-      label: 'imei号',
+      label: '车辆来源',
       prop: 'otuImei',
     },
     {
-      label: '设备类型',
+      label: '绑定状态',
       prop: 'clientType',
       formatter: this.clientTypeCheck,
     },
     {
-      label: '品牌车系',
+      label: '设备数量',
       prop: 'bsmName',
-    },
-    {
-      label: '能源类型',
-      prop: 'energyType',
-      formatter: this.formatEnergy,
     },
     {
       label: '剩余油量',
@@ -263,7 +229,13 @@ export default class Monitor extends Vue {
       formatter: (row: any) => this.changeStatus(row.voltage, 'V'),
     },
     {
-      label: '无位置变化',
+      label: '位置变化',
+      prop: 'minutesString',
+      sortable: true,
+      sortBy: 'minutesString',
+    },
+    {
+      label: '围栏内外',
       prop: 'minutesString',
       sortable: true,
       sortBy: 'minutesString',
@@ -288,6 +260,7 @@ export default class Monitor extends Vue {
     });
     return str;
   }
+
   // 无位置变化时间格式化
   changeMinutes(row: any) {
     const str: string = this.timeChange(row);
@@ -311,12 +284,35 @@ export default class Monitor extends Vue {
     }
     return str;
   }
+
   // 表格数据源添加单位
   changeStatus(data: any, unit: string) {
     return data > 0 ? data + unit : '--';
   }
+
   // 表格操作栏配置数组
   opreat: Opreat[] = [
+    {
+      key: 'bind',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '绑定',
+      roles: true,
+    },
+    {
+      key: 'unbind',
+      rowKey: 'vin',
+      color: 'red',
+      text: '解绑',
+      roles: true,
+    },
+    {
+      key: 'addDevice',
+      rowKey: 'vin',
+      color: 'blue',
+      text: '添加设备',
+      roles: true,
+    },
     {
       key: 'edit',
       rowKey: 'vin',
@@ -325,25 +321,10 @@ export default class Monitor extends Vue {
       roles: true,
     },
     {
-      key: 'trip',
-      rowKey: 'vin',
-      color: 'green',
-      text: '轨迹',
-      roles: true,
-    },
-    {
       key: 'delete',
       rowKey: 'vin',
       color: 'red',
       text: '删除',
-      msg: '确定删除？',
-      roles: true,
-    },
-    {
-      key: 'tracking',
-      rowKey: 'vin',
-      color: 'blue',
-      text: '追踪',
       roles: true,
     },
   ];
@@ -389,6 +370,7 @@ export default class Monitor extends Vue {
   // 底部表格开关
   locChange: boolean = false;
 
+  // 车辆详情
   carDetailArr: any = [
     { label: '卫星星数:', prop: 'star', unit: '颗' },
     { label: '网络质量:', prop: 'gsm', unit: '' },
@@ -417,6 +399,7 @@ export default class Monitor extends Vue {
     { label: '左后车窗:', prop: 'leftRearWindow' },
     { label: '右后车窗:', prop: 'rightRearWindow' },
   ];
+
   // 百度地图控制组件
   geolocationControl: any = null;
 
@@ -425,6 +408,7 @@ export default class Monitor extends Vue {
 
   // 地图查询半径
   radius: number = 5000;
+
   // 地图车辆数据
   mapCarData: MapCarData[] = [];
 
@@ -517,6 +501,7 @@ export default class Monitor extends Vue {
       modelId: '',
     };
   }
+
   /**
    * @method 根据半径和地图中心点查询车辆
    * @param {string} id 车辆id
@@ -596,9 +581,10 @@ export default class Monitor extends Vue {
       new this.BMap.Point(point.lng, point.lat),
     );
   }
+
   /**
    * @method 车辆信息框内容
-   * @param {object} content 车辆数据 
+   * @param {object} content 车辆数据
    */
   msgContent(content: any) {
     return `<div class="makerMsg">
@@ -615,10 +601,11 @@ export default class Monitor extends Vue {
       </ul>
     </div>`;
   }
+
   /**
    * @method 方向数据格式化
    * @param {number} item 方向数据源
-   * @return {string} direction 
+   * @return {string} direction
    */
   getDirection(item: number) {
     const itm = Number(item);
@@ -706,13 +693,6 @@ export default class Monitor extends Vue {
       return <el-tag size="small" type="info">未知</el-tag>;
     }
     return <el-tag size="small" type="danger">离线</el-tag>;
-  }
-
-  // 获取车系/车型
-  selectBrandModel(value: string[]) {
-    this.outParams.brandId = value[0] ? value[0] : '';
-    this.outParams.seriesId = value[1] ? value[1] : '';
-    this.outParams.modelId = value[2] ? value[2] : '';
   }
 
   // 格式化能源类型
@@ -803,14 +783,30 @@ export default class Monitor extends Vue {
   hideTable(): void {
     this.locChange = true;
   }
-  
+
   /**
    * @method 表格操作栏回调事件
-   * @param {string} key 事件类型 
+   * @param {string} key 事件类型
    * @param {object} row 当前行数据
    */
   menuClick(key: string, row: any): void {
     switch (key) {
+      // 绑定
+      case 'bind':
+        this.bindVisible = true;
+        this.bindData = row;
+        break;
+      // 解绑
+      case 'unbind':
+        this.menuClickVisible = true;
+        this.menuClickData = row;
+        this.menuClickStr = '解绑';
+        break;
+      // 新增设备
+      case 'addDevice':
+        this.addVisible = true;
+        this.addData = row;
+        break;
       // 编辑
       case 'edit':
         this.editVisible = true;
@@ -823,32 +819,101 @@ export default class Monitor extends Vue {
         break;
       // 删除
       case 'delete':
-        vehicleDelete({
-          id: row.id,
-        }).then((res) => {
-          if (res.result.resultCode === '0') {
-            this.$message.success(res.result.resultMessage);
-            this.reloadTable('delete');
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-        break;
-      case 'trip':
-        this.$router.push({ name: '车辆轨迹', params: { id: row.id } });
-        break;
-      case 'tracking':
-        this.$router.push({ name: '车辆追踪', params: { id: row.id } });
+        this.menuClickVisible = true;
+        this.menuClickData = row;
+        this.menuClickStr = '删除';
         break;
       default:
         break;
     }
   }
 
-  // 新增、导出按钮展示
+  // 编辑开关
+  editVisible: boolean = false;
+
+  editData: any = {};
+
+  // 设备控制
+  controlData: any = {}
+
+  controlVisible: boolean = false;
+
+  controlTitle: string = '';
+
+  clickTime: string = '';
+
+  // 绑定设备
+  bindVisible: boolean = false;
+
+  bindData: any = {};
+
+  // 新增
+  addVisible: boolean = false;
+
+  addData: any = {}
+
+  // 删除 解绑
+  menuClickVisible: boolean = false;
+
+  menuClickData: any = {}
+
+  menuClickStr: string = '';
+
+  // 导出按钮展示
   exportBtn: boolean = true;
 
   controlBtn: boolean = true;
+
+  locTimeOptions: any = [
+    {
+      value: '',
+      label: '无位置变化（全部）',
+    },
+    {
+      value: `${12 * 60}`,
+      label: '12时以上',
+    },
+    {
+      value: `${24 * 60}`,
+      label: '1天以上',
+    },
+    {
+      value: `${48 * 60}`,
+      label: '2天以上',
+    },
+    {
+      value: `${72 * 60}`,
+      label: '3天以上',
+    },
+    {
+      value: `${96 * 60}`,
+      label: '4天以上',
+    },
+    {
+      value: `${120 * 60}`,
+      label: '5天以上',
+    },
+    {
+      value: `${144 * 60}`,
+      label: '6天以上',
+    },
+    {
+      value: `${168 * 60}`,
+      label: '7天以上',
+    },
+    {
+      value: `${192 * 60}`,
+      label: '8天以上',
+    },
+    {
+      value: `${216 * 60}`,
+      label: '9天以上',
+    },
+    {
+      value: `${240 * 60}`,
+      label: '10天以上',
+    },
+  ]
 
   // 权限设置
   created() {
@@ -862,14 +927,16 @@ export default class Monitor extends Vue {
       '/vehicle/tracke/findTerminalList',
       '/vehicle/tracke/findRecordList',
     ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]);
-      this.opreat[1].roles = !!(res[1]);
-      this.opreat[2].roles = !!(res[2]);
-      this.opreat[3].roles = !!(res[5] || res[6]);
-      this.controlBtn = !!(res[3]);
-      this.exportBtn = !!(res[4]);
-    });
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[0]);
+    //   this.opreat[1].roles = !!(res[1]);
+    //   this.opreat[2].roles = !!(res[2]);
+    //   this.opreat[3].roles = !!(res[5] || res[6]);
+    //   this.controlBtn = !!(res[3]);
+    //   this.exportBtn = !!(res[4]);
+    // });
+    this.filterList[2].options = this.locTimeOptions;
+    this.filterGrade[2].options = this.locTimeOptions;
   }
 
   reloadTable(key: string) {
@@ -879,9 +946,9 @@ export default class Monitor extends Vue {
 
   /**
    * @method 渲染车辆状态函数
-   * @param {any} value 状态值 
+   * @param {any} value 状态值
    * @param {object} data 其他数据
-   * @param {string} unit 单位 
+   * @param {string} unit 单位
    * @return 返回格式化后的数据
    */
   renderStatus(value: boolean | string | number, data: any, unit?: any) {
@@ -1050,15 +1117,6 @@ export default class Monitor extends Vue {
     this.SMap.addOverlay(marker); // 创建标注
   }
 
-  // 编辑开关
-  editVisible: boolean = false;
-
-  editData: any = {};
-
-  // 设备控制
-  controlData: any = {}
-
-  controlVisible: boolean = false;
 
   // 关闭编辑
   closeEdit() {
@@ -1070,9 +1128,12 @@ export default class Monitor extends Vue {
 
   // 关闭弹窗
   closeModal(): void {
-    this.editVisible = false;
-    this.controlVisible = false;
+    this.editVisible = false; // 编辑
+    this.controlVisible = false; // 控制
     const editBlock: any = this.$refs.editTable;
+    this.bindVisible = false; // 绑定
+    this.addVisible = false; // 新增设备
+    this.menuClickVisible = false; // 删除
     setTimeout(() => {
       editBlock.resetData();
     }, 200);
@@ -1085,121 +1146,207 @@ export default class Monitor extends Vue {
     this.closeModal();
   }
 
-  // 车辆控制
-  controlCar(type: string, index: number): void {
-    let str: string = '';
-    switch (type) {
-      case 'CMD_START':
-        str = '点火';
-        break;
-      case 'CMD_STOP':
-        str = '熄火';
-        break;
-      case 'CMD_SET_DEFENCE':
-        str = '设防';
-        break;
-      case 'CMD_CANCEl_DEFENCE':
-        str = '撤防';
-        break;
-      case 'CMD_LOCK':
-        str = '上锁';
-        break;
-      case 'CMD_UNLOCK':
-        str = '解锁';
-        break;
-      case 'CMD_CALL':
-        str = '寻车';
-        break;
-      default:
-        break;
-    }
-    this.controlData = {
-      cmd: type,
-      imei: this.carDetail.otuImei,
-      operateStr: str,
-    };
-    this.controlVisible = true;
-  }
-
   downLoad(data: any) {
     const data1 = qs.stringify(data);
     exportExcel(data1, '车辆列表', '/vehicle/monitor/exportExcel');
   }
 
-  /**
-   * @method 车辆车型数据格式化
-   * @param {object} data 车辆数据 
-   */
-  infoBox(data: any) {
-    const bName = data.brandName !== null ? `${data.brandName}-` : '';
-    const sName = data.seriesName !== null ? `${data.seriesName}-` : '';
-    const mName = data.modelName !== null ? data.modelName : '';
-    return `${bName}${sName}${mName}`;
+  showDeviceTran: boolean = false; // 展示设备数量
+
+  showControlTran: boolean = false; // 展示控制操作
+
+  // 展示三角形
+  showTran(data: string) {
+    if (data === '设备') {
+      this.showDeviceTran = !this.showDeviceTran;
+      this.showControlTran = false;
+    }
+    if (data === '控制') {
+      this.showDeviceTran = false;
+      this.showControlTran = !this.showControlTran;
+    }
+  }
+
+  // 远程控制选项
+  remoteControlArr = [
+    { label: '降窗', num: '01', command: '01' },
+    { label: '升窗', num: '02', command: '02' },
+    { label: '解锁', num: '03', command: 'CMD_UNLOCK' },
+    { label: '上锁', num: '04', command: 'CMD_LOCK' },
+    { label: '夺权', num: '05', command: '05' },
+    { label: '授权', num: '06', command: '06' },
+    { label: '断油', num: '07', command: '07' },
+    { label: '通油', num: '08', command: '08' },
+    { label: '熄火', num: '09', command: 'CMD_STOP' },
+    { label: '启动', num: '10', command: 'CMD_START' },
+    { label: '寻车', num: '11', command: 'CMD_CALL' },
+  ]
+
+  // 车辆控制
+  carControl(label: string, command: string, num: string) {
+    this.controlData = {
+      cmd: command,
+      imei: this.carDetail.otuImei,
+      operateStr: label,
+      num,
+    };
+    this.controlVisible = true;
+    this.controlTitle = this.setControlTitle(num);
+    this.clickTime = config.getNowTime();
+  }
+
+  // 车辆控制弹框标题
+  setControlTitle(num: string) {
+    let title = '';
+    switch (num) {
+      case '05':
+        title = '夺权选择';
+        break;
+      case '06':
+        title = '授权选择';
+        break;
+      case '07':
+        title = '断油选择';
+        break;
+      default:
+        title = '操作确认';
+        break;
+    }
+    return title;
   }
 
   render() {
     const { carDetail } = this;
     return (
-      <div class="monitor-wrap">
+      <div class="fzk-monitor-wrap">
         <div id="map"></div>
+        {/* 右上角搜索 */}
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
           </el-autocomplete>
           <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refreshLoad}></el-button>
         </div>
+        {/* 详情头部 */}
         <div class={['car-detail-box', this.detailShow ? 'detail-active' : '', this.locChange ? '' : 'big']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
           <div class="car-info">
             <div class="top">
               <span class="plateNumber">{carDetail.plateNum}</span>
-              <span class="modelName">（{this.infoBox(carDetail)}）</span>
+              <span class="onlineStatus">[{carDetail.online ? '在线' : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>}]</span>
             </div>
             <div class="center">
               <span class="brandName">{carDetail.orgName}</span>
-              <span class="net">{carDetail.online ? '在线' : '离线'}</span>
+
             </div>
             <div class="bottom">
-              <span>车架号：{carDetail.vin}</span>
-              <span>imei号：{carDetail.otuImei}</span>
+              <div class="loc">
+                <i class="iconfont-location icon"></i>
+                <span>{carDetail.address}</span>
+              </div>
+              <div class="time">
+                <i class="iconfont-time-circle icon"></i>
+                <span>
+                  {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
+                </span>
+                <span class="status">
+                  ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
+                </span>
+                <span class="fenceStatus">
+                  [<span style={{ color: 'red' }}>围栏内</span>]
+                </span>
+              </div>
             </div>
           </div>
-          {
-            this.controlBtn
-              ? <div class="car-control">
-                <el-button id="CMD_START" type="text" size="mini" icon="iconfont-powerOn" on-click={(e: any) => this.controlCar('CMD_START', 0)}>点火</el-button>
-                <el-button id="CMD_STOP" type="text" size="mini" icon="iconfont-powerOff" on-click={(e: any) => this.controlCar('CMD_STOP', 1)}>熄火</el-button>
-                <el-button id="CMD_SET_DEFENCE" type="text" size="mini" icon="iconfont-fenceOn" on-click={(e: any) => this.controlCar('CMD_SET_DEFENCE', 2)}>设防</el-button>
-                <el-button id="CMD_CANCEl_DEFENCE" type="text" size="mini" icon="iconfont-fenceOff" on-click={(e: any) => this.controlCar('CMD_CANCEl_DEFENCE', 3)}>撤防</el-button>
-                <el-button id="CMD_LOCK" type="text" icon="iconfont-lock" size="mini" on-click={(e: any) => this.controlCar('CMD_LOCK', 4)}>上锁</el-button>
-                <el-button id="CMD_UNLOCK" type="text" icon="iconfont-unlock" size="mini" on-click={(e: any) => this.controlCar('CMD_UNLOCK', 5)}>解锁</el-button>
-                <el-button id="CMD_CALL" type="text" icon="iconfont-wifi" size="mini" on-click={(e: any) => this.controlCar('CMD_CALL', 6)}>寻车</el-button>
-              </div> : null
-          }
-          <div class="car-address">
-            <div class="loc">
-              <i class="iconfont-location icon"></i>
-              <span>{carDetail.address}</span>
+          {/* 控制区域 */}
+          <ul class="car-control">
+            <li class="controlItem">
+              <span class="itemTit" on-click={() => this.showTran('设备')}>设备信息</span>
+              {
+                this.showDeviceTran ? <span class="trangle deviceTran"></span> : null
+              }
+            </li>
+            <li class="controlItem">
+              <span class="itemTit">无线追踪</span>
+            </li>
+            <li class="controlItem">
+              <span class="itemTit">驾驶行为</span>
+            </li>
+            <li class="controlItem">
+              <span class="itemTit">历史轨迹</span>
+            </li>
+            <li class="controlItem">
+              <span class="itemTit" on-click={() => this.showTran('控制')}>远程控制</span>
+              {
+                this.showControlTran ? <span class="trangle controlTran"></span> : null
+              }
+            </li>
+          </ul>
+          {/* 车上所安装设备信息 */}
+          <transition name="el-fade-in-linear">
+            <div v-show={this.showDeviceTran}>
+              <div class="deviceInfo">
+                <div class="deviceItem">
+                  <div class="deviceTit">有线设备：1个</div>
+                  <ul class="deviceList">
+                    <li class="deviceLi">
+                      <span class="deviceModel w700">型号</span>
+                      <span class="deviceIMEI w700">imei号</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037641274</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="deviceItem">
+                  <div class="deviceTit">无线设备：3个</div>
+                  <ul class="deviceList">
+                    <li class="deviceLi">
+                      <span class="deviceModel w700">型号</span>
+                      <span class="deviceIMEI w700">imei号</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037642224</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037641222</span>
+                    </li>
+                    <li class="deviceLi">
+                      <span class="deviceModel">OTU-OL50</span>
+                      <span class="deviceIMEI">866646037641122</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div class="time">
-              <i class="iconfont-time-circle icon"></i>
-              <span>
-                {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
-              </span>
-              <span class="status">
-                ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
-              </span>
+          </transition>
+          {/* 远程控制选项 */}
+          <transition name="el-fade-in-linear">
+            <div v-show={this.showControlTran}>
+              <ul class="controlList">
+                {
+                  this.remoteControlArr.map((item: any, index: number) => (
+                    <li class="controlItem" on-click={() => this.carControl(item.label, item.command, item.num)}>{item.label}</li>
+                  ))
+                }
+              </ul>
             </div>
-          </div>
-          <div class="car-detail clearfix">
+          </transition>
+          {/* 车辆状态 */}
+          {/* <div class="car-detail clearfix">
             <ul class="line">
               {
                 this.carDetailArr.map((item: any) => <li class="item">
                   <span class="label">{item.label}</span>
-                  <span class="val">{this.renderStatus(carDetail[item.prop], carDetail, item.unit)}</span>
+                  <span class="val">
+                    {this.renderStatus(carDetail[item.prop], carDetail, item.unit)}
+                  </span>
                 </li>)
               }
             </ul>
-          </div>
+          </div> */}
         </div>
         <div class={['car-table1', !this.locChange ? 'table-active' : '']}>
           <div class='loc-change-box1'>
@@ -1215,7 +1362,7 @@ export default class Monitor extends Vue {
             ref="mapTable"
             class="mapTable1"
             filter-list={this.filterList}
-            filter-grade={[]}
+            filter-grade={this.filterGrade}
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
@@ -1242,15 +1389,35 @@ export default class Monitor extends Vue {
           visible={this.editVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
-        ></edit-model>
+        />
         <control-model
           ref="controlTable"
+          time={this.clickTime}
+          title={this.controlTitle}
           data={this.controlData}
           visible={this.controlVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
-        >
-        </control-model>
+        />
+        <bind-model
+          data={this.bindData}
+          visible={this.bindVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        />
+        <addDevice-model
+          data={this.addData}
+          visible={this.addVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        />
+        <menuclick-model
+          menuStr={this.menuClickStr}
+          data={this.menuClickData}
+          visible={this.menuClickVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        />
       </div>
     );
   }

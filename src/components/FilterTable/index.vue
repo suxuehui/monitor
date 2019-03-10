@@ -42,16 +42,18 @@
 </template>
 
 <script lang="ts">
-import { Prop, Emit, Vue, Component } from "vue-property-decorator";
-import { FilterFormList, tableList, Opreat } from "@/interface/index";
-import MFilter from "./MFilter";
-import MTable from "./MTable";
+import {
+  Prop, Emit, Vue, Component,
+} from 'vue-property-decorator';
+import { FilterFormList, tableList, Opreat } from '@/interface/index';
+import MFilter from './MFilter';
+import MTable from './MTable';
 
 @Component({
   components: {
-    "m-filter": MFilter,
-    "m-table": MTable
-  }
+    'm-filter': MFilter,
+    'm-table': MTable,
+  },
 })
 export default class FilterTable extends Vue {
   // 筛选表单生成参数
@@ -135,7 +137,7 @@ export default class FilterTable extends Vue {
       const checkList = saveList.split(",");
       // 根据换成过滤表格配置
       const filterList = this.defalutTableList.filter(
-        (item, index) => checkList.indexOf(item.prop) > -1
+        (item, index) => checkList.indexOf(item.prop) > -1,
       );
       // 保存改变后的tableList
       this.changeTableList = filterList;
@@ -144,6 +146,7 @@ export default class FilterTable extends Vue {
       this.changeTableList = this.tableList.filter(item => true);
     }
   }
+
   /**
    * @method 重新加载数据
    * @param {string} type delete 或者其他字符串，用于当前页只有一条数据，并点击了删除，要回退到上一页
@@ -155,6 +158,7 @@ export default class FilterTable extends Vue {
       table.reload(type);
     }, 50);
   }
+
   /**
    * @method 获取当前页数据
    */
@@ -162,6 +166,7 @@ export default class FilterTable extends Vue {
     const table: any = this.$refs.MTable;
     return table.returnData();
   }
+
   /**
    * @method 搜索回调事件
    */
@@ -197,6 +202,7 @@ export default class FilterTable extends Vue {
   downBack(data: any) {
     this.$emit("downBack", data);
   }
+
   /**
    * @method 点击高级搜索时-设置表格样式
    */
@@ -205,6 +211,7 @@ export default class FilterTable extends Vue {
     const table: any = this.$refs.MTable;
     table.$el.style.marginTop = `${params - 48}px`;
   }
+
   /**
    * @method 导出回调事件
    */
@@ -212,6 +219,7 @@ export default class FilterTable extends Vue {
   exportBack() {
     this.$emit("exportBack");
   }
+
   /**
    * @method 表格列配置函数
    * @param {array} list 列id数组
@@ -223,6 +231,7 @@ export default class FilterTable extends Vue {
     );
     this.changeTableList = filterList;
   }
+
   /**
    * @method 操作栏回调事件
    */
@@ -230,6 +239,7 @@ export default class FilterTable extends Vue {
   tableClick(key: string, row: any) {
     this.$emit("menuClick", key, row);
   }
+
   /**
    * @method select回调事件
    */
@@ -237,6 +247,7 @@ export default class FilterTable extends Vue {
   selectChange(val: any) {
     this.$emit("selectChange", val);
   }
+
   /**
    * @method 点击行回调事件
    */

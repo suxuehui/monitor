@@ -1,22 +1,20 @@
 import {
-  Component, Prop, Vue, Watch, Emit,
+  Component, Prop, Vue,
 } from 'vue-property-decorator';
 import {
-  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup,
+  Dialog, Row, Col, Form, FormItem, Input, Button, Radio, RadioGroup,
 } from 'element-ui';
 import { terminalCheck } from '@/api/equipment';
-import './AcceptModal.less';
+import './AcceptModel.less';
 
 @Component({
   components: {
     'el-dialog': Dialog,
-    'el-tag': Tag,
     'el-row': Row,
     'el-col': Col,
     'el-form': Form,
     'el-form-item': FormItem,
     'el-input': Input,
-    'el-select': Select,
     'el-button': Button,
     'el-radio': Radio,
     'el-radio-group': RadioGroup,
@@ -47,7 +45,7 @@ export default class AcceptModal extends Vue {
     { required: true, validator: this.checkRule, trigger: 'blur' },
   ]
 
-  // 验证备注
+  // 验证理由
   checkRule(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
@@ -55,10 +53,10 @@ export default class AcceptModal extends Vue {
         if (!exp.test(value)) {
           callback();
         } else {
-          callback(new Error('备注不能为空！'));
+          callback(new Error('理由不能为空！'));
         }
       } else {
-        callback(new Error('备注不能为空！'));
+        callback(new Error('理由不能为空！'));
       }
     }, 500);
   }
@@ -118,48 +116,46 @@ export default class AcceptModal extends Vue {
 
   render() {
     return (
-    <el-dialog
-      width="540px"
-      title={this.title}
-      visible={this.visible}
-      before-close={this.closeModal}
-      close-on-click-modal={false}
-    >
-      <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
-        <el-row>
-          <el-col span={24}>
-            <el-form-item label="是否合格" prop="terminalStatus" class="radioGroup">
-              <el-radio-group v-model={this.modelForm.terminalStatus} >
-                <el-radio id="availableY" label="3">合格</el-radio>
-                <el-radio id="availableN" label="4">不合格</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          {
-            this.modelForm.terminalStatus === '4'
-              ? <el-col span={24}>
-                <el-form-item
-                  label="备注"
-                  prop="remark"
-                  rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
-                  <el-input
-                    id="remark"
-                    v-model={this.modelForm.remark}
-                    type="textarea"
-                    placeholder="请填写不合格备注"
-                  ></el-input>
-                </el-form-item>
-              </el-col> : null
-          }
-        </el-row>
-      </el-form>
-      <el-row>
-        <el-col offset={7} span={12}>
+      <el-dialog
+        width="540px"
+        title={this.title}
+        visible={this.visible}
+        before-close={this.closeModal}
+        close-on-click-modal={false}
+      >
+        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="acceptModel">
+          <el-row>
+            <el-col span={24}>
+              <el-form-item label="是否合格" prop="terminalStatus" class="radioGroup">
+                <el-radio-group v-model={this.modelForm.terminalStatus} >
+                  <el-radio id="availableY" label="3">合格</el-radio>
+                  <el-radio id="availableN" label="4">不合格</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            {
+              this.modelForm.terminalStatus === '4'
+                ? <el-col span={24}>
+                  <el-form-item
+                    label="理由"
+                    prop="remark"
+                    rules={this.modelForm.terminalStatus === '4' ? this.remarkRule : null}>
+                    <el-input
+                      id="remark"
+                      v-model={this.modelForm.remark}
+                      type="textarea"
+                      placeholder="请填写不合格理由"
+                    ></el-input>
+                  </el-form-item>
+                </el-col> : null
+            }
+          </el-row>
+        </el-form>
+        <div class="acceptBtn">
           <el-button size="small" id="submit" type="primary" loading={this.loading} on-click={this.onSubmit}>确认</el-button>
           <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-        </el-col>
-      </el-row>
-    </el-dialog>
+        </div>
+      </el-dialog>
     );
   }
 }

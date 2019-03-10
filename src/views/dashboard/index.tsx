@@ -128,7 +128,6 @@ export default class Dashboard extends Vue {
   createdDrivingData(time: any, str?: string) {
     getDrivingData(time).then((res) => {
       if (res.result.resultCode === '0') {
-        this.$message.success('查询成功');
         const {
           drivingCount, mileageCount, drivingTimeCount, oilCount,
           avgOilCons, speedUpCount, speedDownCount, turnCount,
@@ -569,6 +568,20 @@ export default class Dashboard extends Vue {
             </ul>
           </div>
         </div>
+        <ul class="fenceCar">
+          <li class="fenceItem">
+            <span>无围栏</span>
+            <span>1000辆</span>
+          </li>
+          <li class="fenceItem">
+            <span>围栏外</span>
+            <span>1000辆</span>
+          </li>
+          <li class="fenceItem">
+            <span>围栏内</span>
+            <span>1000辆</span>
+          </li>
+        </ul>
         <div class="alarmArea">
           <div class="title">
             告警消息统计

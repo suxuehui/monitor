@@ -89,7 +89,7 @@ const loadMap = () => new Promise(((resolve, reject) => {
 
 /**
  * @method 异步加载百度地图插件
- * @todo 用来解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能 
+ * @todo 用来解决加载大量点要素到地图上产生覆盖现象的问题，并提高性能
  */
 const loadMapLib = () => new Promise(((resolve, reject) => {
   const script: any = document.createElement('script');
@@ -213,6 +213,15 @@ function postDownload(url: string) {
   Form.submit();
 }
 
+
+/**
+ * @method 获取当前时间
+ */
+function getNowTime() {
+  const time = new Date().getTime();
+  return `${time}`;
+}
+
 export default {
   param2Obj,
   levelcodeToArray,
@@ -224,4 +233,5 @@ export default {
   loadCanvasLayer,
   loadMapInfoBox,
   loadDrawScript,
+  getNowTime,
 };
