@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-
 // 设备绑定
 export async function terminalBind(params: any) {
   return request({
@@ -137,5 +136,16 @@ export async function terminalInfo(params: any) {
     url: `/device/terminal/info/${params}`,
     method: 'get',
     data: params,
+  });
+}
+
+// 导出
+export async function terminalExport(params: any, fileName:string) {
+  return request({
+    url: `/device/terminal/exportExcel?${params}`,
+    method: 'get',
+    fetchType: 'JSON',
+    responseType: 'blob',
+    fileName: `${fileName}`,
   });
 }

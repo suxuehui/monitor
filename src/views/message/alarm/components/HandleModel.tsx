@@ -1,26 +1,32 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
+import {
+  Component, Prop, Vue,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button,
+} from 'element-ui';
 import { handleAlarm } from '@/api/message';
 import './HandleModel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+  },
+})
 export default class HandleModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   modelForm: any = {
     solution: '',
   };
+
   loading: boolean = false;
 
   rules = {
@@ -41,7 +47,9 @@ export default class HandleModel extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.resetData();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {
@@ -64,7 +72,9 @@ export default class HandleModel extends Vue {
           if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
+              this.$store.dispatch('getAlarm');
               this.$message.success(res.result.resultMessage);
+              this.resetData();
               this.$emit('refresh');
             }, 1500);
           } else {

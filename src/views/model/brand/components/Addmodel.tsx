@@ -1,26 +1,32 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button, Upload,
+} from 'element-ui';
 import { brandAdd, brandEdit } from '@/api/model';
 import UploadBlock from '@/components/Upload/index.vue';
 
 import './Addmodel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-upload': Upload,
-  'upload-Model': UploadBlock,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-upload': Upload,
+    'upload-Model': UploadBlock,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -28,13 +34,18 @@ export default class AddModal extends Vue {
     description: '',
     logo: '',
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
+
   headers: any = '';
+
   uploadUrl: string = '';
+
   fileName: string = '';
 
   rules = {
@@ -50,7 +61,9 @@ export default class AddModal extends Vue {
   }
 
   logoUrl: any = [];
+
   showUpBtn: boolean = true;
+
   @Watch('data')
   onDataChange() {
     if (this.data.id > 0) {
@@ -73,7 +86,7 @@ export default class AddModal extends Vue {
     this.headers = {
       token: window.localStorage.getItem('token'),
     };
-    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/zuul/verify/file/upload' : '/rootApi/zuul/verify/file/upload';
+    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/zuul/verify/file/upload' : '/rootApi/zuul/verify/file/upload';
     this.fileName = `${new Date().getTime()}`;
   }
 
@@ -92,7 +105,8 @@ export default class AddModal extends Vue {
     const upModel: any = this.$refs.uploadModel;
     setTimeout(() => {
       upModel.$children[0].clearFiles();
-    }, 200);
+    }, 400);
+    this.loading = false;
   }
 
   removeBack(file: any, fileList: any) {

@@ -1,38 +1,55 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Card, Form, FormItem, Input, Row, Col, Tag, Tooltip } from 'element-ui';
-import { tableList, Opreat } from '@/interface';
+import {
+  Card, Form, FormItem, Input, Row, Col, Tag, Tooltip, Button,
+} from 'element-ui';
+import { FilterFormList, tableList, Opreat } from '@/interface';
 import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
 import CheckPicModel from '@/views/equipment/bindLog/components/CheckPicModel';
 import './index.less';
+import utils from '@/utils';
 
-const noPic = require('@/assets/noPic.png');
 @Component({
   components: {
-  'el-card': Card,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-row': Row,
-  'el-col': Col,
-  "m-table": MTable,
-  'checkLog-model': CheckLogModel,
-  'checkPic-model': CheckPicModel,
-  'el-tag': Tag,
-  'el-tooltip': Tooltip,
-  }
-  })
+    'el-card': Card,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-row': Row,
+    'el-col': Col,
+    'm-table': MTable,
+    'el-button': Button,
+    'checkLog-model': CheckLogModel,
+    'checkPic-model': CheckPicModel,
+    'el-tag': Tag,
+    'el-tooltip': Tooltip,
+  },
+  name: 'BindLog',
+})
 export default class BindLog extends Vue {
   modelForm: any = {}
+
   tableParams: any = {
     page: true,
     pageNum: 1,
     pageSize: 5,
   }
+
   defaultPageSize: any = null;
+
   url: string = '/terminal/ops/list';
-  opreat: Opreat[] = [];
+
+  opreat: Opreat[] = [
+    {
+      key: 'checkLog',
+      rowKey: 'id',
+      color: 'blue',
+      text: '验收记录',
+      roles: true,
+    },
+  ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
@@ -41,58 +58,88 @@ export default class BindLog extends Vue {
     { label: '操作时间', prop: 'crtTime' },
     { label: '安装图片', prop: 'installUrl', formatter: this.showInstallPic },
     { label: '车架图片', prop: 'vinUrl', formatter: this.showVinPic },
-    { label: '操作', prop: 'hostVer', formatter: this.checkLog },
   ];
+
+  activated() {
+    const FormTable: any = this.$refs.MTable;
+    const tableParams = {
+      page: true,
+      pageNum: 1,
+      pageSize: 5,
+      imei: this.$route.query.imei,
+    };
+    FormTable.getData(tableParams);
+    this.getTerminalInfo(this.$route.query.id);
+  }
+
+  // 新增、导出按钮展示
+  acceptBtn: boolean = true;
+
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/terminal/accept/list',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]);
+    });
     // id、imei
     this.tableParams = {
       page: true,
       pageNum: 1,
       pageSize: 5,
-      terminalId: this.$route.query.id,
+      imei: this.$route.query.imei,
     };
     this.defaultPageSize = 5;
     if (this.$route.query.id) {
-      terminalInfo(this.$route.query.id).then((res) => {
-        if (res.result.resultCode === '0') {
-          this.modelForm = {
-            orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
-            plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
-            vin: res.entity.vin !== null ? res.entity.vin : '--',
-          };
-        } else {
-          this.$message.error(res.result.resultMessage);
-        }
-      });
+      this.getTerminalInfo(this.$route.query.id);
     }
+  }
+
+  // 车辆信息
+  getTerminalInfo(data: any) {
+    terminalInfo(data).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.modelForm = {
+          orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
+          plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
+          vin: res.entity.vin !== null ? res.entity.vin : '--',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 验收记录
   checkLogVisible: boolean = false;
+
   checkLogId: any = {};
+
   // 查看图片
   checkPicVisible: boolean = false;
+
   checkPicUrl: string = '';
+
   checkPicTitle: string = '';
 
   opsPerson(row: any) {
-    const str= `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
-    return row.opsOrgName && row.opsRealName && row.opsUsername ?
-      <el-tooltip class="item" effect="dark" content={str} placement="top">
+    const str = `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
+    return row.opsOrgName && row.opsRealName && row.opsUsername
+      ? <el-tooltip class="item" effect="dark" content={str} placement="top">
         <div>
           <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
           <p>{`(${row.opsUsername})`}</p>
         </div>
-      </el-tooltip>: '--';
+      </el-tooltip> : '--';
   }
 
   showInstallPic(row: any) {
     if (row.installUrl !== null) {
       const imgArr = row.installUrl.indexOf(',') > 0 ? row.installUrl.split(',') : [row.installUrl];
-      return imgArr.map((item: any, index: number) =>
-        <div on-click={() => this.clickInstall(item, index)} class="pic">
-          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
-        </div>);
+      return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
+        <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
+      </div>);
     }
     return '暂无安装图片';
   }
@@ -116,16 +163,11 @@ export default class BindLog extends Vue {
   showVinPic(row: any) {
     if (row.vinUrl !== null) {
       const imgArr = row.vinUrl.indexOf(',') > 0 ? row.vinUrl.split(',') : [row.vinUrl];
-      return imgArr.map((item: any, index: number) =>
-        <div on-click={() => this.clickInstall(item, index)} class="pic">
-          <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
-        </div>);
+      return imgArr.map((item: any, index: number) => <div on-click={() => this.clickInstall(item, index)} class="pic">
+        <img alt="安装图片" style="maxHeight:30px;marginRight:5px" src={item} />
+      </div>);
     }
     return '暂无车架图片';
-  }
-
-  checkLog(row: any) {
-    return <a class="check-link" on-click={() => this.checkLogChange(row)}>验收记录</a>;
   }
 
   clickInstall(url: string, key: number) {
@@ -150,13 +192,21 @@ export default class BindLog extends Vue {
     }, 200);
   }
 
-  tableClick() { }
+  clickTime: string = ''
+
+  tableClick(key: string, row: any) {
+    if (key === 'checkLog') {
+      this.checkLogVisible = true;
+      this.checkLogId = row.id;
+      this.clickTime = utils.getNowTime();
+    }
+  }
 
   render(h: any) {
     return (
       <div class="container">
         <el-card class="box-card">
-          <el-form model={this.modelForm} ref="modelForm" label-width="100px" class="model">
+          <el-form model={this.modelForm} ref="modelForm" label-width="100px" class="bindModel">
             <div class="header">
               <span class="title">当前安绑车辆</span>
             </div>
@@ -211,6 +261,7 @@ export default class BindLog extends Vue {
           </div>
         </el-card>
         <checkLog-model
+          time={this.clickTime}
           ref="checkLogModel"
           data={this.checkLogId}
           visible={this.checkLogVisible}

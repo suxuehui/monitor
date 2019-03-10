@@ -1,34 +1,41 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option,
+} from 'element-ui';
 import { userUpdate, userAdd, userCheck } from '@/api/permission';
 
 interface RoleType { key: number, value: string, label: string }
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tag': Tag,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-select': Select,
-  'el-button': Button,
-  'el-option': Option
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tag': Tag,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-select': Select,
+    'el-button': Button,
+    'el-option': Option,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   @Prop() private roleAddList: any;
-  @Prop() private roleIds: any;
 
   created() {
     this.modelForm = JSON.parse(JSON.stringify(this.data));
   }
+
   modelForm: any = {
     realName: '',
     userName: '',
@@ -39,42 +46,51 @@ export default class AddModal extends Vue {
   };
 
   isInstaller: boolean = false;
+
   isPhoneNumber: boolean = false;
+
   phoneNumber: string = '';
 
   loading: boolean = false;
+
   rules = {
     realName: [
       { required: true, message: '请输入成员姓名', trigger: 'blur' },
-    ],
-    // userName: [
-    //   { validator: this.checkUsername, trigger: 'blur' },
-    // ],
-    // roleIdList: [
-    //   { required: true, message: '请选择角色类型' },
-    // ],
-    password: [
-      { required: true, message: '请输入登录密码', trigger: 'blur' },
     ],
     remark: [
       { required: false },
     ],
   }
+
+  passwordRule = [
+    { validator: this.checkPassword, trigger: 'blur' },
+  ];
+
   userNameRule = [
     { required: true, message: '请输入登录账号' },
     { validator: this.checkUsername, trigger: 'blur' },
   ];
 
   roleIdRule = [
-    { required: true, message: '请选择角色类型' },
-    // { validator: this.checkRole, trigger: 'change' },
+    { required: true, message: '请选择角色类型', trigger: 'change' },
   ];
+
+  checkPassword(rule: any, value: string, callback: Function) {
+    if (this.modelForm.password) {
+      if (this.isChineseChar(this.modelForm.password)) {
+        callback(new Error('登录密码格式有误，请重新输入'));
+      } else {
+        callback();
+      }
+    } else {
+      callback(new Error('登录密码不能为空'));
+    }
+  }
 
   // 检测角色
   checkRole(rule: any, value: string, callback: Function) {
     if (value) {
-      console.log('---');
-      console.log(this.roleLen);
+      callback();
     } else {
       callback(new Error('成员角色不能为空'));
     }
@@ -88,17 +104,17 @@ export default class AddModal extends Vue {
           this.phoneNumber = value;
           if (res.result.resultCode === '0') {
             if (this.isInstaller) {
-              const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+              const exp: any = /^1[0-9]{10}$/;
               if (exp.test(value)) {
                 callback();
               } else {
-                callback(new Error('安装员登录账号必须为手机号'));
+                callback(new Error('安装员登录账号必须为手机号!!!'));
               }
             } else {
               callback();
             }
           } else {
-            callback(new Error('登录账号已存在，不能为空'));
+            callback(new Error('登录账号已存在'));
           }
         });
       } else {
@@ -117,11 +133,11 @@ export default class AddModal extends Vue {
       this.isAdmin = this.data.IdList.toString() === '1';
       this.phoneNumber = this.data.userName;
       this.roleLen = this.data.IdList.length;
-      console.log(`一开始角色长度:${this.roleLen}`);
     } else {
       this.resetData();
     }
   }
+
   isAdmin: boolean = false;
 
   // 编辑时角色数组长度
@@ -129,6 +145,7 @@ export default class AddModal extends Vue {
 
   // 角色删除时调用
   removeTag(val: any) {
+    console.log(val);
   }
 
   selectChange(val: any) {
@@ -142,12 +159,12 @@ export default class AddModal extends Vue {
     });
     if (this.isInstaller) {
       if (this.phoneNumber) {
-        const exp: any = /^[1][3,4,5,7,8][0-9]{9}$/;
+        const exp: any = /^1[0-9]{10}$/;
         if (exp.test(this.phoneNumber)) {
           this.isPhoneNumber = true;
         } else {
           this.isPhoneNumber = false;
-          this.$message.error('安装员登录账号必须为手机号,请重新输入');
+          this.$message.error('安装员登录账号必须为手机号!!!');
         }
       }
     }
@@ -171,7 +188,13 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       From.clearValidate();
       From.resetFields();
-    }, 200);
+    }, 400);
+    this.loading = false;
+  }
+
+  isChineseChar(str: any) {
+    const reg = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
+    return reg.test(str);
   }
 
   onSubmit() {
@@ -271,8 +294,8 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             {
-              this.isAdmin ?
-                <el-col span={12}>
+              this.isAdmin
+                ? <el-col span={12}>
                   <el-form-item label="角色类型" prop="roleIdList1">
                     <el-input
                       id="roleIdList1"
@@ -281,8 +304,8 @@ export default class AddModal extends Vue {
                       placeholder="请输入角色类型"
                     ></el-input>
                   </el-form-item>
-                </el-col> :
-                <el-col span={12}>
+                </el-col>
+                : <el-col span={12}>
                   <el-form-item label="角色类型" prop="roleIdList" rules={this.visible ? this.roleIdRule : null}>
                     <el-select
                       id="roleIdList"
@@ -315,7 +338,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录密码" prop="password">
+              <el-form-item label="登录密码" prop="password" rules={this.passwordRule}>
                 <el-input
                   id="password"
                   v-model={this.modelForm.password}
@@ -325,13 +348,13 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="备注" prop="remark">
+              <el-form-item label="成员描述" prop="remark">
                 <el-input
                   id="remark"
                   v-model={this.modelForm.remark}
                   type="textarea"
                   rows="2"
-                  placeholder="请输入备注"
+                  placeholder="请输入成员描述"
                 ></el-input>
               </el-form-item>
             </el-col>

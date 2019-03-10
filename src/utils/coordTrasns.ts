@@ -1,8 +1,10 @@
 /**
+ * @method 火星坐标系转百度坐标系
+ * @return 返回火星坐标系的坐标
  * 'bd09ll' 百度坐标系
- * 'gcj02ll' 火星坐标系
+ * 'GCJ02' 火星坐标系
  */
-type CoordSys = 'bd09ll' | 'gcj02ll';
+type CoordSys = 'bd09ll' | 'GCJ02';
 export default class coordTrasns {
   static gcj2bd(lat: number, lon: number) {
     // 世界大地坐标转为百度坐标
@@ -18,8 +20,9 @@ export default class coordTrasns {
     result.lat = bdLat;
     return result;
   }
+
   static transToBaidu(piont: { lat: number, lng: number }, coordSys: CoordSys) {
-    if (coordSys === 'gcj02ll') {
+    if (coordSys === 'GCJ02') {
       return this.gcj2bd(piont.lat, piont.lng);
     }
     return piont;

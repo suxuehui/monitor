@@ -18,4 +18,3 @@ export async function menuSelect(params: any) {
     data: params,
   });
 }
-

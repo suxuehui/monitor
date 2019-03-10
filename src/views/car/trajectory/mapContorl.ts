@@ -2,23 +2,30 @@ import { gpsToAddress } from '@/api/app';
 import { Message } from 'element-ui';
 
 export default class MapContorl {
-  SMap: any = null; // map对象
+  SMap: any = null;
+
+  // map对象
   constructor(props: any) {
     this.SMap = props.SMap;
     this.initTrackPointOverlay();
     this.initTrackCarOverlay();
   }
+
   trackPointOverlay: any = null;
+
   point: any = null;
+
   type: string = '';
+
   trackCarOverlay: any = null;
+
   /**
    * 初始化轨迹车辆覆盖物
    *
    */
   initTrackCarOverlay() {
     const self = this;
-    this.trackCarOverlay = function trackCarOverlay(point : any, type : string) {
+    this.trackCarOverlay = function trackCarOverlay(point: any, type: string) {
       this.point = point;
       // this.type = 'trackpoint';
       this.type = type;
@@ -47,10 +54,11 @@ export default class MapContorl {
       this.div.style.top = `${pixel.y - 8}px`;
     };
   }
+
   myCarOverlay: any = null;
+
   /**
-   * 添加车辆覆盖物
-   *
+   * @method 添加车辆覆盖物
    * @param {Object} point 点
    * @param {string} type 点类型
    */
@@ -58,43 +66,70 @@ export default class MapContorl {
     this.myCarOverlay = new this.trackCarOverlay(point, type);
     this.SMap.addOverlay(this.myCarOverlay);
   }
+
   // 轨迹数据
   trackData: any = null;
+
   // 播放一个坐标点的时长
   oneTime: number = 0;
+
   // 动画setinterval值
   playTimers: any = null;
+
   // 当前轨迹点
   playNumber: number = 0;
-  // 初始化播放轨迹
+
+  /**
+   * @method 初始化播放轨迹
+   * @param {Array} data 轨迹数据
+   * @param {number} playSeconds 播放秒数
+   * */
   initMapPlay(data: any, playSeconds: number) {
+    // 缓存轨迹数据
     this.trackData = data;
+    // 初始化定时器时间
     this.oneTime = (playSeconds * 1000) / this.trackData.length;
+    // 初始化车辆图标
     const firstPoint = new window.BMap.Point(data[0].lng, data[0].lat);
     this.removeTrackCarOverlay('playCar');
     this.addTrackCarOverlay(firstPoint, 'playCar');
     this.myCarOverlay.div.style.transition = `left ${this.oneTime / 1000}s linear, top ${this.oneTime / 1000}s linear`;
   }
+
+  /**
+   * @method 播放定时器
+   */
   playInterVal() {
     return setInterval(() => {
+      // 判断是否为最后一个坐标点
       if (this.playNumber === this.trackData.length - 1) {
-        console.log(this.playTimers);
         window.clearInterval(this.playTimers);
         this.playNumber = 0;
       }
+      // 创建坐标点对象
       const Point = new window.BMap.Point(
         this.trackData[this.playNumber].lng,
         this.trackData[this.playNumber].lat,
       );
+      // 坐标点 -> 像素点坐标
       const pixel = this.SMap.pointToOverlayPixel(Point);
       this.myCarOverlay.div.style.left = `${pixel.x - 14}px`;
       this.myCarOverlay.div.style.top = `${pixel.y - 14}px`;
+      // 方向的特殊处理
       this.rotateAnimate(this.myCarOverlay.div, this.trackData[this.playNumber].direction);
+      // 坐标点像前加1
       this.playNumber += 1;
-    }, this.oneTime.toFixed(6));
+    }, parseFloat(this.oneTime.toFixed(6)));
   }
+
+  /**
+   * @method 避免 从 10度到350度这种，会顺时针旋转，正常是逆时针旋转
+   * @param dom
+   * @param direction
+   */
   rotateAnimate(dom: any, direction: number) {
     const patt = /\d+/g;
+    // 获取当前元素的方向值
     let startVal: any = patt.exec(dom.style.transform);
     startVal = parseInt(startVal ? startVal[0] : '0', 10);
     // 是否反方向旋转
@@ -104,41 +139,45 @@ export default class MapContorl {
     }
     dom.style.transform = `rotate(${isThe ? -direction : direction}deg)`;
   }
+
   // 继续播放动画
   playContinue() {
     this.playTimers = this.playInterVal();
   }
+
   // 播放时长设置
   playSetTime(val: number) {
     if (this.trackData) {
       this.oneTime = (val * 1000) / this.trackData.length;
-      this.passPlay();
       this.playNumber = 0;
-      this.playContinue();
+      this.passPlay();
     }
   }
+
   // 暂停播放
   passPlay() {
     window.clearInterval(this.playTimers);
   }
+
   // 跳跃播放
   jumpPlay(val: number) {
     const JumpNumber = parseInt(((val * 1000) / this.oneTime).toString(), 10);
     this.playNumber = JumpNumber;
   }
+
   // 清除播放
   clearPlay() {
     this.removeTrackCarOverlay('playCar');
     this.passPlay();
     this.playNumber = 0;
   }
+
   /**
-   * 初始化轨迹点信息覆盖物
-   *
+   * @method 初始化轨迹点信息覆盖物
    */
   initTrackPointOverlay() {
     const self = this;
-    this.trackPointOverlay = function trackPointOverlay(point : any, type : string) {
+    this.trackPointOverlay = function trackPointOverlay(point: any, type: string) {
       this.point = point;
       // this.type = 'trackpoint';
       this.type = type;
@@ -167,6 +206,7 @@ export default class MapContorl {
       this.div.style.top = `${pixel.y - 8}px`;
     };
   }
+
   /**
    * 添加轨迹点信息覆盖物
    *
@@ -177,6 +217,7 @@ export default class MapContorl {
     const myCompOverlay = new this.trackPointOverlay(data.point, type);
     this.SMap.addOverlay(myCompOverlay);
   }
+
   /**
    * 设置设备监控的marker
    *
@@ -232,10 +273,14 @@ export default class MapContorl {
     if (!data.interval) {
       this.SMap.panTo(point);
     }
-    console.log(this.entityMarker.getIcon());
   }
-  trackInfoBox: any = null; // 窗口对象
-  entityMarker: any = null; // 标记
+
+  trackInfoBox: any = null;
+
+  // 窗口对象
+  entityMarker: any = null;
+
+  // 标记
   /**
    * 初始化车辆信息详情和轨迹点详情infobox
    *
@@ -280,6 +325,7 @@ export default class MapContorl {
     });
     this.trackInfoBox.open(data.point);
   }
+
   /**
   * 删除轨迹点信息覆盖物
   *
@@ -298,6 +344,7 @@ export default class MapContorl {
       this.SMap.removeOverlay(trackPointOverlays[j]);
     }
   }
+
   /**
   * 删除轨迹车辆覆盖物
   *
@@ -316,6 +363,7 @@ export default class MapContorl {
       this.SMap.removeOverlay(trackPointOverlays[j]);
     }
   }
+
   /**
    * 删除设备监控的marker,
    *
@@ -324,6 +372,7 @@ export default class MapContorl {
     this.SMap.removeOverlay(this.entityMarker);
     this.entityMarker = null;
   }
+
   /**
    * 删除infobox
    *
@@ -335,6 +384,33 @@ export default class MapContorl {
   /**
    * 展示轨迹点详情
   */
+
+  haoverMap = ['', '震动', '碰撞', '翻滚', '急加速', '急减速', '急转弯'];
+
+  getDirection(itm: number) {
+    let direction = '';
+    if (itm > 337.5 || itm <= 22.5) {
+      direction = '北方';
+    } else if (itm > 22.5 && itm <= 67.5) {
+      direction = '东北方';
+    } else if (itm > 67.5 && itm <= 112.5) {
+      direction = '东方';
+    } else if (itm > 112.5 && itm <= 157.5) {
+      direction = '东南方';
+    } else if (itm > 157.5 && itm <= 202.5) {
+      direction = '南方';
+    } else if (itm > 202.5 && itm <= 247.5) {
+      direction = '西南方';
+    } else if (itm > 247.5 && itm <= 292.5) {
+      direction = '西方';
+    } else if (itm > 292.5 && itm <= 337.5) {
+      direction = '西北方';
+    }
+    direction = '未知';
+    return direction;
+  }
+
+  // 展示轨迹点信息窗口
   showTrackInfoBox(data: any) {
     this.removeTrackPointOverlay('trackpoint_in');
     this.removeTrackInfoBox();
@@ -343,11 +419,17 @@ export default class MapContorl {
       if (response.status === 0) {
         const address = response.result.formatted_address + response.result.sematic_description;
         const infor = [
-          ['定位', data.lnglat],
-          ['地址', address],
-          ['速度', `${data.speed}km/h`],
-          ['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')],
+          ['速度方向', `${data.speed >= 0 ? `${data.speed}km/h` : '未知'}（${this.getDirection(data.direction)}）`],
         ];
+        if (data.event && data.event[0] !== '0') {
+          const haovrData: string[] = [];
+          data.event.forEach((item: string) => {
+            haovrData.push(this.haoverMap[parseInt(item, 10)]);
+          });
+          infor.push(['驾驶行为', haovrData.join('-')]);
+        }
+        infor.push(['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')]);
+        infor.push(['定位地址', `${address}(${data.lnglat})`]);
         this.setTrackInfoBox({
           plateNum: data.plateNum,
           infor,

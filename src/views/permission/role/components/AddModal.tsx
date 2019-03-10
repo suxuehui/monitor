@@ -1,26 +1,34 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button,
+} from 'element-ui';
 import { roleAdd, roleUpdate } from '@/api/permission';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   modelForm: any = {
     roleName: '',
     remark: '',
   };
+
   loading: boolean = false;
 
   rules = {
@@ -55,6 +63,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       From.resetFields();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {

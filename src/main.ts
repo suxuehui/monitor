@@ -9,6 +9,9 @@ import store from '@/store';
 import config from '@/utils/config';
 // import '@/mock';
 
+import Raven from 'raven-js';
+import RavenVue from 'raven-js/plugins/vue';
+
 import './styles/global.less';
 
 const options = {
@@ -16,6 +19,14 @@ const options = {
   show: true,
   height: '3px',
 };
+if (process.env.NODE_ENV === 'production') {
+  Raven.config('https://95130553210b494592fdb8be63b291be@frontend-monitor.mysirui.com//2')
+    .addPlugin(RavenVue, Vue)
+    .install();
+  Vue.config.errorHandler = (err, vm, info) => {
+    Raven.captureException(err);
+  };
+}
 
 Vue.prototype.$ELEMENT = { size: 'small', zIndex: 3000 };
 
@@ -39,14 +50,15 @@ router.beforeEach((to, from, next) => {
         });
       });
     }).catch((err) => {
-      console.log(err);
       if (config.noLoginList.indexOf(to.path) < 0) {
         next({ name: '登录', replace: true });
       }
       next();
     });
+    return false;
   }
   next();
+  return true;
 });
 
 

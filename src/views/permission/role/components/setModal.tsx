@@ -1,26 +1,36 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Dialog, Input, Button, Form, Tree } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Dialog, Input, Button, Form, Tree,
+} from 'element-ui';
 import { roleSaveRoleMenu, roleInfo } from '@/api/permission';
 import { menuSelect } from '@/api/menu';
 import './setModal.less';
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tree': Tree,
-  'el-input': Input,
-  'el-button': Button,
-  'el-form': Form,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tree': Tree,
+    'el-input': Input,
+    'el-button': Button,
+    'el-form': Form,
+  },
+})
 export default class SetModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
+  @Prop() private time: any;
+
   modelForm: any = {};
 
   menuList: any = []
+
   checkList: number[] = [] // 权限选中项
 
   loading: boolean = false;
@@ -35,14 +45,15 @@ export default class SetModal extends Vue {
     });
   }
 
-  @Watch('data')
+
+  @Watch('time')
   onDataChange(data: any) {
     const trees: any = this.$refs.tree;
     if (trees) {
       trees.setCheckedKeys([]);
     }
     this.checkList = [];
-    roleInfo({ roleId: data.roleId }).then((res) => {
+    roleInfo({ roleId: this.data.roleId }).then((res) => {
       const { result: { resultCode, resultMessage }, entity } = res;
       if (resultCode === '0') {
         if (entity.menuIds) {
@@ -84,6 +95,7 @@ export default class SetModal extends Vue {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
     From.resetFields();
+    this.loading = false;
   }
 
   onSubmit() {
@@ -119,7 +131,7 @@ export default class SetModal extends Vue {
   render() {
     return (
       <el-dialog
-        width="1000px"
+        width="700px"
         class="setModal"
         top="10px"
         title={this.title}

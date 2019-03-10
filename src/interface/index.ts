@@ -101,7 +101,7 @@ export interface Directives {
   value: any,
   modifiers: object,
 }
-type CoordinateSystem = 'bd09ll' | 'gcj02ll';
+type CoordinateSystem = 'bd09ll' | 'GCJ02';
 export interface MapCarData {
   id: string,
   direction: number,

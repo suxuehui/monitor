@@ -2,7 +2,9 @@ import Vue from 'vue';
 import Router, { RouterOptions } from 'vue-router';
 import { routerItem } from '@/interface';
 
-const getComponent = require(`./import_${process.env.NODE_ENV}`);
+let getComponent = require(`./import_${process.env.NODE_ENV}`);
+
+getComponent = getComponent.default;
 
 export const constantRouterMap: routerItem[] & RouterOptions['routes'] = [
   {
@@ -40,7 +42,7 @@ export const asyncRouterMap: routerItem[] = [
     name: '系统主页',
     component: getComponent('dashboard/index'),
     permission: '/home/report/alarmData',
-    meta: { key: 'Dashboard' },
+    meta: { key: 'Dashboard' }, // key值用于匹配缓存页面
   },
   {
     path: '/car',
@@ -51,6 +53,7 @@ export const asyncRouterMap: routerItem[] = [
       '/vehicle/monitor/list',
       '/vehicle/fence/list',
     ],
+    meta: { key: 'Car' },
     children: [
       {
         path: 'monitor',
@@ -87,7 +90,8 @@ export const asyncRouterMap: routerItem[] = [
         path: 'track/:id',
         name: '车辆追踪',
         component: getComponent('car/track/index'),
-        permission: '/device/vehicle/list',
+        // permission: '/device/vehicle/list',
+        permission: true,
         meta: { key: 'Track' },
         hidden: true,
       },
@@ -103,6 +107,7 @@ export const asyncRouterMap: routerItem[] = [
       '/vehicle/series/list',
       '/vehicle/model/list',
     ],
+    meta: { key: 'Model' },
     children: [
       {
         path: 'brand',
@@ -128,6 +133,25 @@ export const asyncRouterMap: routerItem[] = [
     ],
   },
   {
+    path: '/config',
+    icon: 'server',
+    name: '配置管理',
+    component: getComponent('config/index'),
+    permission: [
+      '/device/terminal/list',
+    ],
+    meta: { key: 'Config' },
+    children: [
+      {
+        path: 'document',
+        name: '配置文件',
+        component: getComponent('config/document/index'),
+        permission: '/device/terminal/list',
+        meta: { key: 'Document' },
+      },
+    ],
+  },
+  {
     path: '/equipment',
     icon: 'server',
     name: '设备管理',
@@ -136,6 +160,7 @@ export const asyncRouterMap: routerItem[] = [
       '/device/terminal/list',
       '/vehicle/config/list',
     ],
+    meta: { key: 'Equipment' },
     children: [
       {
         path: 'device',
@@ -153,12 +178,19 @@ export const asyncRouterMap: routerItem[] = [
         hidden: true,
       },
       {
-        path: 'model',
-        name: '配置管理',
-        component: getComponent('equipment/model/index'),
+        path: 'config',
+        name: '设备配置',
+        component: getComponent('equipment/config/index'),
         permission: '/vehicle/config/list',
-        meta: { key: 'Model' },
+        meta: { key: 'ConfigModel' },
       },
+      // {
+      //   path: 'model',
+      //   name: '型号管理',
+      //   component: getComponent('equipment/model/index'),
+      //   permission: '/vehicle/config/list',
+      //   meta: { key: 'ModelManage' },
+      // },
     ],
   },
   {
@@ -169,6 +201,7 @@ export const asyncRouterMap: routerItem[] = [
     permission: [
       '/customer/org/list',
     ],
+    meta: { key: 'Customer' },
     children: [
       {
         path: 'merchants',
@@ -188,6 +221,7 @@ export const asyncRouterMap: routerItem[] = [
       '/message/notice/list',
       '/message/alarm/list',
     ],
+    meta: { key: 'Message' },
     children: [
       {
         path: 'notice',
@@ -221,6 +255,7 @@ export const asyncRouterMap: routerItem[] = [
     permission: [
       '/statistics/driving/list',
     ],
+    meta: { key: 'Data' },
     children: [
       {
         path: 'driving',
@@ -240,6 +275,7 @@ export const asyncRouterMap: routerItem[] = [
       '/sys/user/list',
       '/sys/user/list',
     ],
+    meta: { key: 'Permission' },
     children: [
       {
         path: 'members',
@@ -265,6 +301,7 @@ export const asyncRouterMap: routerItem[] = [
     permission: [
       '/system/cfg/list',
     ],
+    meta: { key: 'System' },
     children: [
       {
         path: 'setting',

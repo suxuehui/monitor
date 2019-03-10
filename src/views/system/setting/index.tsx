@@ -1,5 +1,7 @@
 import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Card, Input, Row, Form, Col, Checkbox, Button, FormItem } from 'element-ui';
+import {
+  Card, Input, Row, Form, Col, Checkbox, Button, FormItem,
+} from 'element-ui';
 import { getAlarmSetting, getAlarmModelList, saveAlarmModelList } from '@/api/system';
 import './index.less';
 
@@ -9,25 +11,39 @@ interface Params {
 
 @Component({
   components: {
-  'el-card': Card,
-  'el-input': Input,
-  'el-row': Row,
-  'el-col': Col,
-  'el-checkbox': Checkbox,
-  'el-button': Button,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  }
-  })
+    'el-card': Card,
+    'el-input': Input,
+    'el-row': Row,
+    'el-col': Col,
+    'el-checkbox': Checkbox,
+    'el-button': Button,
+    'el-form': Form,
+    'el-form-item': FormItem,
+  },
+  name: 'Setting',
+})
 export default class Setting extends Vue {
   alarmModelList: any = [];
+
   alarmValueList: any = [];
 
   loading: boolean = false;
 
+  // 编辑按钮
+  saveBtn: boolean = true;
+
+  // 权限设置
   created() {
     this.initData();
+    const getNowRoles: string[] = [
+      // 操作
+      '/system/cfg/save',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.saveBtn = !!(res[0]);
+    });
   }
+
   initData() {
     getAlarmModelList(null).then((res: any) => {
       if (res.result.resultCode === '0') {
@@ -71,9 +87,12 @@ export default class Setting extends Vue {
           {
             result[index] && (index !== content.length - 1) ? <el-input
               size='mini'
+              step="0.1"
               type="number"
               value={this.alarmValueList[ind][val.substring(1, val.length - 1)]}
-              on-change={(e: any) => this.inputChange(e, ind, val.substring(1, val.length - 1))}
+              on-change={
+                (e: any) => this.inputChange(e, ind, val.substring(1, val.length - 1), str)
+              }
               class="alarm-input"></el-input> : null
           }
         </span>
@@ -81,12 +100,40 @@ export default class Setting extends Vue {
     });
   }
 
-  inputChange(e: any, ind: number, key: string) {
-    this.alarmValueList[ind][key] = parseInt(e, 10);
+  btnDisable: boolean = false;
+
+  inputChange(e: any, ind: number, key: string, str: string) {
+    // 是否是电压
+    if (str.indexOf('电压') > -1) {
+      if (key === 'fieldThreshold') {
+        if (parseFloat(e) < 0) {
+          this.btnDisable = true;
+          this.$message.error('输入错误，请重新输入！');
+        } else {
+          this.btnDisable = false;
+          this.alarmValueList[ind][key] = parseFloat(e);
+        }
+      } else if (parseInt(e, 10) < 0) {
+        this.btnDisable = true;
+        this.$message.error('输入错误，请重新输入！');
+      } else {
+        this.btnDisable = false;
+        this.alarmValueList[ind][key] = parseInt(e, 10);
+      }
+    } else if (parseInt(e, 10) < 0) {
+      this.btnDisable = true;
+      this.$message.error('输入错误，请重新输入！');
+    } else if (Number(e) < 0) {
+      this.btnDisable = true;
+      this.$message.error('输入错误，请重新输入！');
+    } else {
+      this.btnDisable = false;
+      this.alarmValueList[ind][key] = parseInt(e, 10);
+    }
   }
 
-  checkBoxChange(e:any, data: any, indx:number) {
-    this.alarmValueList.forEach((item:any) => {
+  checkBoxChange(e: any, data: any, indx: number) {
+    this.alarmValueList.forEach((item: any) => {
       if (item.alarmCfgModelId === data.id) {
         item.enable = e;
       }
@@ -100,16 +147,19 @@ export default class Setting extends Vue {
 
   onSubmit() {
     this.loading = true;
-    const obj: any = [];
+    const alarmConfigDTOS: any = [];
+    const obj: any = {};
     this.alarmValueList.forEach((item: any) => {
-      obj.push({
+      alarmConfigDTOS.push({
         alarmCfgModelId: item.alarmCfgModelId,
         enable: item.enable,
         fieldThreshold: item.fieldThreshold,
         fqcy: item.fqcy,
+        field: item.field,
         maxFqcy: item.maxFqcy,
       });
     });
+    obj.alarmConfigDTOS = alarmConfigDTOS;
     saveAlarmModelList(obj).then((res) => {
       if (res.result.resultCode === '0') {
         setTimeout(() => {
@@ -130,14 +180,15 @@ export default class Setting extends Vue {
     const { alarmModelList, alarmValueList } = this;
     return (
       <div class="container">
-        <el-card class="box-card">
+        <el-card class="box-card" style="height:680px" shadow="never">
           <div class="header">
             <span class="title">告警设置</span>
           </div>
           {
             alarmModelList.length && alarmValueList.length ? alarmModelList.map((item: any, index: number) => <div class="item">
               <el-checkbox
-                on-change={(e:any) => this.checkBoxChange(e, item, index)}
+                id={item.field}
+                on-change={(e: any) => this.checkBoxChange(e, item, index)}
                 checked={this.findValue(item.id, 'enable')}
               ></el-checkbox> <span class="itemTitle">{item.alarmTypeName}:</span>
               {
@@ -150,9 +201,12 @@ export default class Setting extends Vue {
               }
             </div>) : null
           }
-          <div class="bottom-btn">
-            <el-button on-click={this.onSubmit} loading={this.loading} type="primary">保存</el-button>
-          </div>
+          {
+            this.saveBtn
+              ? <div class="bottom-btn">
+                <el-button id="button" on-click={this.onSubmit} disabled={this.btnDisable} loading={this.loading} type="primary">保存</el-button>
+              </div> : null
+          }
         </el-card>
       </div>
     );

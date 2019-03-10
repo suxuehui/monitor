@@ -1,14 +1,19 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { modelInfo, modelDelete, brandAll, seriesAll } from '@/api/model';
+import qs from 'qs';
+import { exportExcel } from '@/api/export';
+import {
+  modelInfo, modelDelete, brandAll, seriesAll,
+} from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-model': AddModel,
-  }
-  })
+    'el-tag': Tag,
+    'add-model': AddModel,
+  },
+  name: 'CarModel',
+})
 export default class CarModel extends Vue {
   // data
   // 普通筛选
@@ -29,44 +34,50 @@ export default class CarModel extends Vue {
       placeholder: '请输入车型名称',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     brandGroup: [],
     keyword: '',
   };
+
   outParams: any = {
     brandId: '',
     seriesId: '',
   };
+
   // 请求地址
   url: string = '/vehicle/model/list';
 
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'id',
+      rowKey: 'name',
       color: 'blue',
       text: '编辑',
       roles: true,
     },
     {
       key: 'delete',
-      rowKey: 'id',
+      rowKey: 'name',
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
+      disabled: (row: any) => (row.vehicleNum),
       roles: true,
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '品牌名称', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
     { label: '车系名称', prop: 'seriesName', formatter: (row: any) => (row.seriesName ? row.seriesName : '--') },
     { label: '车型名称', prop: 'name' },
     { label: '能源类型', prop: 'energyType', formatter: (row: any) => (row.energyType ? row.energyType : '--') },
-    { label: '油箱容量', prop: 'fuelTankCap', formatter: (row: any) => (row.fuelTankCap ? `${row.fuelTankCap}L` : '--') },
+    { label: '油箱容量', prop: 'fuelTankCap', formatter: this.checkFuelTank },
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },
   ];
 
@@ -75,13 +86,48 @@ export default class CarModel extends Vue {
     children: 'name',
   }
 
+  checkFuelTank(row: any) {
+    let str: any = '';
+    if (row.energyType === '电动') {
+      str = '--';
+    } else {
+      str = `${row.fuelTankCap}L`;
+    }
+    return str;
+  }
+
+  // 权限设置
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/vehicle/model/add',
+      '/vehicle/model/info',
+      '/vehicle/model/edit',
+      '/vehicle/model/delete',
+      '/vehicle/model/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1] && res[2]);
+      this.opreat[1].roles = !!(res[3]);
+      this.addBtn = !!(res[0]);
+      this.exportBtn = !!(res[4]);
+    });
+  }
+
+  // 新增、导出按钮展示
+  addBtn: boolean = true;
+
+  exportBtn: boolean = true
+
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
 
   rowData: any = {};
 
   brandList: any = [];
+
   brandAddList: any = [];
 
   mounted() {
@@ -97,7 +143,7 @@ export default class CarModel extends Vue {
         });
         this.filterList[0].props = this.props;
         this.filterList[0].options = this.brandList;
-        this.brandAddList = this.brandList.filter((item:any) => item);
+        this.brandAddList = this.brandList.filter((item: any) => item);
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -153,7 +199,7 @@ export default class CarModel extends Vue {
     } else if (key === 'delete') {
       modelDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
-          FromTable.reloadTable();
+          FromTable.reloadTable(key);
           this.$message.success(res.result.resultMessage);
         } else {
           this.$message.error(res.result.resultMessage);
@@ -161,6 +207,7 @@ export default class CarModel extends Vue {
       });
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增车型';
@@ -179,11 +226,17 @@ export default class CarModel extends Vue {
       addBlock.resetData();
     }, 200);
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     this.closeModal();
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
+  }
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '车型列表', '/vehicle/model/exportExcel');
   }
 
   render(h: any) {
@@ -194,7 +247,7 @@ export default class CarModel extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.addBtn}
           opreatWidth={'180px'}
           on-addBack={this.addModel}
           opreat={this.opreat}
@@ -203,7 +256,8 @@ export default class CarModel extends Vue {
           url={this.url}
           dataType={'JSON'}
           localName={'carmodel'}
-          export-btn={true}
+          export-btn={this.exportBtn}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
           on-clearOutParams={this.clear}
         />

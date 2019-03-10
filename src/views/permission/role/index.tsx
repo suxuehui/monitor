@@ -1,18 +1,21 @@
 import { Component, Vue } from 'vue-property-decorator';
+import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { roleUpdateStatus } from '@/api/permission';
+import { exportExcel } from '@/api/export';
+import { roleUpdateStatus, roleInfo } from '@/api/permission';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
 
 interface ActiveType { key: any, value: any, label: string }
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'set-modal': SetModal,
-  }
-  })
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'set-modal': SetModal,
+  },
+  name: 'Role',
+})
 export default class Role extends Vue {
   // data
   // 普通筛选
@@ -31,44 +34,49 @@ export default class Role extends Vue {
       placeholder: '请输入角色名称',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     active: 0,
     roleName: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/sys/role/list';
 
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'userName',
+      rowKey: 'roleName',
       color: 'blue',
       text: '编辑',
       roles: true,
       disabled: (row: any) => (row.roleType !== 2),
     },
     {
-      key: 'freeze',
-      rowKey: 'userName',
+      key: 'forbid',
+      rowKey: 'roleName',
       color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
       text: (row: any) => (row.activeStatus === 1 ? '禁用' : '启用'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要禁用？' : '是否要启用？'),
       roles: true,
-      // disabled: (row: any) => (row.roleType !== 2),
+      disabled: (row: any) => (row.roleType !== 2),
     },
     {
       key: 'setAuth',
-      rowKey: 'userName',
+      rowKey: 'roleName',
       color: 'blue',
       text: '设置权限',
       roles: true,
       disabled: (row: any) => (row.roleType !== 2),
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '角色名称', prop: 'roleName' },
@@ -80,6 +88,7 @@ export default class Role extends Vue {
       sortBy: 'countUser',
       formatter: (row: any) => (row.countUser ? row.countUser : '--'),
     },
+    { label: '添加人', prop: 'remark' },
     {
       label: '添加时间',
       prop: 'crtTime',
@@ -107,16 +116,22 @@ export default class Role extends Vue {
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   // 权限设置
   setVisible: boolean = false;
+
   setTitle: string = '';
 
   modelForm: any = {
     roleName: '',
     remark: '',
   };
+
   setAuthData: any = {}
+
+  setTime: string = ''
 
   // 操作
   menuClick(key: string, row: any) {
@@ -129,7 +144,7 @@ export default class Role extends Vue {
         roleName: row.roleName,
         remark: row.remark,
       };
-    } else if (key === 'freeze') {
+    } else if (key === 'forbid') {
       roleUpdateStatus({ roleId: row.roleId }).then((res) => {
         if (res.result.resultCode === '0') {
           FromTable.reloadTable();
@@ -141,14 +156,17 @@ export default class Role extends Vue {
     } else if (key === 'setAuth') {
       this.setVisible = true;
       this.setAuthData = row;
+      this.setTime = `${new Date().getTime()}`;
       this.setTitle = `权限设置-${row.roleName}`;
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.modelForm = null;
     this.addTitle = '新增角色';
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -164,6 +182,11 @@ export default class Role extends Vue {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
     this.closeModal();
+  }
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '角色列表', '/sys/role/exportExcel');
   }
 
   render(h: any) {
@@ -183,6 +206,7 @@ export default class Role extends Vue {
           url={this.url}
           localName={'role'}
           export-btn={true}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />
         <add-modal
@@ -197,6 +221,7 @@ export default class Role extends Vue {
           title={this.setTitle}
           visible={this.setVisible}
           data={this.setAuthData}
+          time={this.setTime}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></set-modal>

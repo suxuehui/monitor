@@ -8,55 +8,61 @@
   #map {
     height: e('calc(100vh - 98px)');
   }
-  .loc-change-box {
-    position: absolute;
-    bottom: 10px;
-    right: 20px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    transition: all .5s ease-in-out;
-    .btn {
-      margin-left: 0px;
-      margin-bottom: 10px;
-    }
-    .less {
-      margin-bottom: 10px;
-    }
-  }
-  .tab-table {
+  .tab-table-track {
     width: 100%;
     position: absolute;
-    bottom: -410px;
-    transition: all .5s ease-in-out;
     background-color: #fff;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-  .car-table {
-    width: 100%;
-    position: absolute;
-    bottom: -410px;
-    transition: all .5s ease-in-out;
-    background-color: #fff;
-    overflow-x: hidden;
-    overflow-y: auto;
-    .pagination{
-      text-align: center;
-      padding-top: 5px;
+    .loc-change-box-track {
+      position: absolute;
+      top: -135px;
+      right: 15px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      .btn {
+        margin-left: 0px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      .less {
+        margin-bottom: 10px;
+      }
     }
-    .filter-table {
-      height: auto;
-      min-height: auto;
-      th .cell {
-        text-align: left;
+  }
+  @media only screen and (max-width: 1265px) {
+    .tab-table-track {
+      .el-table--small td {
+        padding: 2px 0;
       }
     }
   }
   .loc-active {
-    bottom: 410px;
+    top: 10px;
   }
   .table-active {
     bottom: 0;
+  }
+}
+.BMap_bubble_content {
+  text-align: center;
+  margin-top: 5px;
+}
+.makerMsgTrack {
+  background-color: #fff;
+  border-radius: 6px;
+  position: relative;
+  .msg {
+    list-style: none;
+    li {
+      text-align: left;
+      .icon {
+        margin-right: 5px;
+        position: relative;
+        top: 2px;
+      }
+      .txt {
+        color: #666;
+      }
+    }
   }
 }

@@ -1,7 +1,11 @@
 import { Component, Vue } from 'vue-property-decorator';
+import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { roleSelect, userLock, userUnlock, userInfo, getUserInfo } from '@/api/permission';
+import { exportExcel } from '@/api/export';
+import {
+  roleSelect, userLock, userUnlock, userInfo,
+} from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
 import './index.less';
@@ -11,12 +15,13 @@ interface ActiveType { key: any, value: any, label: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'add-modal': AddModal,
-  'el-tooltip': Tooltip,
-  }
-  })
-export default class Member extends Vue {
+    'el-tag': Tag,
+    'add-modal': AddModal,
+    'el-tooltip': Tooltip,
+  },
+  name: 'Members',
+})
+export default class Members extends Vue {
   // data
   // 普通筛选
   filterList: FilterFormList[] = [
@@ -41,15 +46,19 @@ export default class Member extends Vue {
       placeholder: '成员姓名或登录账号',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [];
+
   // 筛选参数
   filterParams: any = {
     roleId: '',
     active: '',
     keyword: '',
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/sys/user/list';
 
@@ -69,7 +78,7 @@ export default class Member extends Vue {
           item.label = item.roleName;
         });
         this.roleTypeList = res.entity;
-        this.roleTypeAddList = res.entity.filter((item:any) => item);
+        this.roleTypeAddList = res.entity.filter((item: any) => item);
         // 所有品牌
         this.roleTypeList.unshift({
           key: Math.random(),
@@ -84,19 +93,21 @@ export default class Member extends Vue {
   }
 
   roleTypeList: RoleType[] = []
+
   roleTypeAddList: RoleType[] = []
 
   opreat: Opreat[] = [
     {
       key: 'edit',
-      rowKey: 'roleId',
+      rowKey: 'userName',
       color: 'blue',
       text: '编辑',
       roles: true,
+      disabled: (row: any) => (row.userName === 'admin'),
     },
     {
       key: 'freeze',
-      rowKey: 'roleId',
+      rowKey: 'userName',
       color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
       text: (row: any) => (row.activeStatus === 1 ? '冻结' : '解冻'),
       msg: (row: any) => (row.activeStatus === 1 ? '是否要冻结？' : '是否要解冻？'),
@@ -104,23 +115,25 @@ export default class Member extends Vue {
       disabled: (row: any) => (row.userName === 'admin'),
     },
   ];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '成员姓名', prop: 'realName' },
     { label: '登录账号', prop: 'userName' },
     { label: '角色类型', prop: 'roleNames', formatter: this.roleChange },
-    { label: '备注', prop: 'remark' },
+    { label: '成员描述', prop: 'remark' },
+    { label: '添加人', prop: 'remark' },
     {
       label: '添加时间',
       prop: 'crtTime',
       sortable: true,
-      sortBy: 'crtTime',
+      sortBy: ['crtTime'],
     },
     {
       label: '最后登录',
       prop: 'lastLoginTime',
       sortable: true,
-      sortBy: 'lastLoginTime',
+      sortBy: ['lastLoginTime'],
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
@@ -147,7 +160,9 @@ export default class Member extends Vue {
 
   // 新增、编辑
   addVisible: boolean = false;
+
   addTitle: string = '';
+
   addRoleList: any = [];
 
   modelForm: any = {};
@@ -191,11 +206,13 @@ export default class Member extends Vue {
       }
     }
   }
+
   addModel() {
     this.addVisible = true;
     this.modelForm = {};
     this.addTitle = '新增成员';
   }
+
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
@@ -205,12 +222,19 @@ export default class Member extends Vue {
       addBlock.resetData();
     }, 200);
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
     this.closeModal();
   }
+
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '成员列表', '/sys/user/exportExcel');
+  }
+
   render(h: any) {
     return (
       <div class="member-wrap">
@@ -227,6 +251,7 @@ export default class Member extends Vue {
           url={this.url}
           localName={'remembers'}
           export-btn={true}
+          on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />
         <add-modal

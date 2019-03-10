@@ -1,4 +1,6 @@
-import { Component, Prop, Emit, Vue, Watch, Provide } from 'vue-property-decorator';
+import {
+  Component, Prop, Emit, Vue, Watch, Provide,
+} from 'vue-property-decorator';
 import { Tabs, TabPane } from 'element-ui';
 import config from '@/utils/config';
 import { menuItem } from '@/interface';
@@ -9,30 +11,40 @@ import './AppMain.less';
 
 @Component({
   components: {
-  'el-tabs': Tabs,
-  'el-tab-pane': TabPane,
-  }
-  })
+    'el-tabs': Tabs,
+    'el-tab-pane': TabPane,
+  },
+})
 export default class AppMain extends Vue {
   @Prop() private menuData!: menuItem[];
+
   // data
   onTabs: any = '1';
 
+  /**
+   * @method 监听路由变化，调用新增tab方法
+  * */
   @Watch('$route', { immediate: true, deep: true })
   routeChange(to: any, from: any) {
     this.$store.dispatch('AddTabPane', to.path);
   }
 
+  /**
+   * @method 移除tab函数
+  * */
   @Emit()
   removeTab(index: string) {
-    // console.log(this);
     this.$store.dispatch('RemoveTab', index);
   }
+
+  /**
+   * @method tab-change事件，匹配路由数据，触发TabChange事件
+  * */
   @Emit()
   tabChange(index: any) {
+    // 循环tab路由数据，匹配当前点击tab的name值，跳转路由，触发TabChange事件
     this.tabList.forEach((item: any, indexs: number) => {
       if (item.name === index.name) {
-        console.log(item);
         this.$router.push({ name: item.name, params: { id: item.params }, query: item.query });
         this.$store.dispatch('TabChange', index.name);
       }
@@ -46,7 +58,8 @@ export default class AppMain extends Vue {
       sidebar: { opened }, tabList, tabActiveKey, keepList, isMobile,
     } = this.$store.state.app;
     this.onTabs = tabActiveKey; // 激活状态保存
-    this.tabList = tabList;
+    this.tabList = tabList; // 保存tabList数据到本组件
+    // 判断是否是独立页面，不渲染头部和菜单
     if (config.openPages.indexOf(this.$route.path) > -1) {
       return (
         <div class="app-one">
@@ -69,7 +82,7 @@ export default class AppMain extends Vue {
             }
           </el-tabs>
           <div class="page-wrap">
-            <keep-alive max={10} include={keepList}>
+            <keep-alive max={20} include={keepList}>
               <router-view/>
             </keep-alive>
           </div>

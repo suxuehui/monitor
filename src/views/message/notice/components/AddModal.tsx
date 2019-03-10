@@ -1,29 +1,32 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Button } from 'element-ui';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button,
+} from 'element-ui';
 import { noticeAdd } from '@/api/message';
 import './AddModal.less';
 
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+  },
+})
 
 
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
-  @Prop() private data: any;
 
   // 编辑器
   editor: any = null;
+
   noticeTitle: any = '';
+
   loading: boolean = false;
 
   // 重置数据
@@ -39,6 +42,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       this.resetData();
     }, 200);
+    this.loading = false;
   }
 
   onSubmit() {
@@ -52,12 +56,13 @@ export default class AddModal extends Vue {
     const content2 = content1.replace(/&nbsp;/g, ''); // 删除&nbsp;
     const content3 = content2.replace(/^\s+|\s+$/g, ''); // 删除空格
     if (this.noticeTitle) {
-      if (content3 > 0) {
+      if (content3.length > 0) {
         noticeAdd(obj).then((res) => {
           if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;
               this.resetData();
+              this.$store.dispatch('getNotice');
               this.$message.success(res.result.resultMessage);
               this.$emit('refresh');
             }, 1500);
@@ -120,6 +125,7 @@ export default class AddModal extends Vue {
             <el-col span={24}>
               <el-form-item prop="noticeTitle">
                 <el-input
+                  id="title"
                   v-model={this.noticeTitle}
                   placeholder="请输入标题"
                 ></el-input>
@@ -133,8 +139,8 @@ export default class AddModal extends Vue {
           </el-row>
         </el-form>
         <div class="btnGroup">
-          <el-button size="small" type="primary" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
-          <el-button size="small" on-click={this.closeModal}>取消</el-button>
+          <el-button id="submit" size="small" type="primary" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
+          <el-button id="close" size="small" on-click={this.closeModal}>取消</el-button>
         </div>
       </el-dialog>
     );

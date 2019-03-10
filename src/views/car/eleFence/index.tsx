@@ -1,8 +1,15 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { tableList, Opreat, FilterFormList, MapCarData } from '@/interface';
-import { Input, Button, Tag, Pagination, Autocomplete, Tooltip } from 'element-ui';
-import { enableFence, disableFence, deleteFence, getFenceDetail, getFenceCars } from '@/api/fence';
-import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
+import { Component, Vue } from 'vue-property-decorator';
+import {
+  tableList, Opreat, FilterFormList,
+} from '@/interface';
+import {
+  Input, Button, Tag, Pagination, Autocomplete, Tooltip,
+} from 'element-ui';
+import qs from 'qs';
+import { getFenceCars } from '@/api/fence';
+import { exportExcel } from '@/api/export';
+
+import { queryAddress, orgTree } from '@/api/app';
 import { getProvince, getCity, getDistrict } from '@/api/province';
 import config from '@/utils';
 import './index.less';
@@ -11,24 +18,37 @@ import '../../../styles/var.less';
 interface AlarmType { key: any, value: any, label: string }
 
 // 坐标图片
-const carIcon = require('@/assets/point.png');
+const pointIcon = require('@/assets/point.png');
 @Component({
   components: {
-  'el-input': Input,
-  'el-button': Button,
-  'el-tag': Tag,
-  'el-pagination': Pagination,
-  'el-autocomplete': Autocomplete,
-  'el-tooltip': Tooltip,
-  }
-  })
+    'el-input': Input,
+    'el-button': Button,
+    'el-tag': Tag,
+    'el-pagination': Pagination,
+    'el-autocomplete': Autocomplete,
+    'el-tooltip': Tooltip,
+  },
+  name: 'EleFence',
+})
 export default class EleFence extends Vue {
-  BMap: any = null; // 百度地图对象
-  SMap: any = null; // 当前地图对象实例
-  BMapLib: any = null; // 百度地图lib对象
+  // 百度地图对象
+  BMap: any = null;
+
+  // 当前地图对象实例
+  SMap: any = null;
+
+  // 百度地图lib对象
+  BMapLib: any = null;
+
+  // 搜索地点
   address: string = '';
-  detailShow: boolean = false; // 围栏详情展示
+
+  // 围栏详情展示
+  detailShow: boolean = false;
+
+  // 表格显示隐藏
   locChange: boolean = false;
+
   constructor(props: any) {
     super(props);
     config.loadMap().then((BMap: any) => {
@@ -48,25 +68,16 @@ export default class EleFence extends Vue {
       });
       this.SMap.centerAndZoom(new BMap.Point(106.560421, 29.563694), 15);
       this.SMap.enableScrollWheelZoom(true);
-
-      // 创建坐标点
-      // const pt = new this.BMap.Point(106.560421, 29.563694);
-      // const myIcon = new this.BMap.Icon(carIcon, new BMap.Size(32, 32));
-      // const point = new this.BMap.Marker(pt, { icon: myIcon });
-      // this.SMap.addOverlay(point);
-      // point.enableDragging(); // 点可拖拽
-
-      // // 拖动标点
-      // point.addEventListener('dragend', () => {
-      //   const position = point.getPosition();
-      //   this.SMap.panTo(new BMap.Point(position.lng, position.lat));
-      // });
     });
   }
-  tableUrl: string = '/vehicle/fence/list'; // 表格请求地址
+
+  tableUrl: string = '/vehicle/fence/list';
+
+  // 表格请求地址
   outParams: any = {
     area: '',
   }
+
   // 表格参数
   filterList: FilterFormList[] = [
     {
@@ -89,6 +100,7 @@ export default class EleFence extends Vue {
       placeholder: '请选择所在地区',
       options: [],
       props: {},
+      filterable: true,
       change: this.areaLoad,
     },
     {
@@ -112,6 +124,7 @@ export default class EleFence extends Vue {
       placeholder: '围栏名称或围栏地址',
     },
   ];
+
   tableList: tableList[] = [
     {
       label: '所属商户',
@@ -123,7 +136,7 @@ export default class EleFence extends Vue {
     },
     {
       label: '所在地区',
-      prop: 'area',
+      prop: 'areaText',
     },
     {
       label: '围栏地址',
@@ -136,14 +149,7 @@ export default class EleFence extends Vue {
     },
     {
       label: '监控时段',
-      prop: 'beginTime',
-      formatter(row: any) {
-        return `每天${row.beginTime}~${row.endTime}`;
-      },
-    },
-    {
-      label: '备注',
-      prop: 'remark',
+      prop: 'momitorTime',
     },
     {
       label: '状态',
@@ -151,7 +157,9 @@ export default class EleFence extends Vue {
       formatter: this.formatStatus,
     },
   ];
+
   opreat: Opreat[] = [];
+
   filterParams: object = {
     areaValue: '',
     levelCode: '',
@@ -159,6 +167,7 @@ export default class EleFence extends Vue {
     available: '',
     keyword: '',
   };
+
   backParams: object = {
     code: 'result.resultCode',
     codeOK: '0',
@@ -167,7 +176,10 @@ export default class EleFence extends Vue {
     total: 'entity.count',
   };
 
-  // 格式化监控类型
+  /**
+   * @method 格式化监控类型
+   * @param {Array} row 单行数据
+  */
   formatAlarmType(row: any) {
     let type;
     switch (row.alarmType) {
@@ -177,15 +189,17 @@ export default class EleFence extends Vue {
       case '2':
         type = <el-tag size="small" type="success">驶出监控</el-tag>;
         break;
-      case '3':
-        type = <el-tag size="small" type="info">驶入驶出监控</el-tag>;
-        break;
       default:
+        type = <el-tag size="small" type="info">未知类型</el-tag>;
         break;
     }
     return type;
   }
-  // 格式化状态
+
+  /**
+   * @method 格式化状态
+   * @param {Array} row 单行数据
+  */
   formatStatus(row: any) {
     let type;
     switch (row.available === 1) {
@@ -206,14 +220,15 @@ export default class EleFence extends Vue {
     { key: '', value: '', label: '监控类型(全部)' },
     { key: 1, value: 1, label: '驶入监控' },
     { key: 2, value: 2, label: '驶出监控' },
-    { key: 3, value: 3, label: '驶入驶出监控' },
   ]
 
-  carList: any = []
+  carList: any = []; // 车辆列表
 
   // 页数
   total: number = 1;
+
   pageSize: number = 5;
+
   pageCount: number = 5;
 
   // 监控状态  全部、未启用、已启用
@@ -222,9 +237,11 @@ export default class EleFence extends Vue {
     { key: 2, value: 2, label: '未启用' },
     { key: 1, value: 1, label: '已启用' },
   ]
-  geolocationControl: any = null; // 定位
+
+  // 定位
   mapCenter: { lat: number, lng: number } = { lat: 29.563694, lng: 106.560421 };
 
+  // 围栏样式
   styleOptions = {
     fillColor: 'blue', // 填充颜色。当参数为空时，圆形将没有填充效果。
     strokeColor: 'red',
@@ -235,25 +252,36 @@ export default class EleFence extends Vue {
 
   // 到当前定位
   nowMk: any = '';
+
+  // 当前位置
   nowPosition: any = {};
 
-  tableDom: any = null;
-  tableHeight: number = 0
-
-  // 省
+  // 省列表
   provinceList: any = [];
-  // 省市区三级联动
+
+  /**
+   * @method 省市区三级联动
+   * @param {Array} val 省市区数据
+  */
   areaLoad(val: any) {
-    this.outParams.area = val[val.length - 1];
-    if (val.length === 1) {
+    if (val.length === 0) {
+      this.outParams.area = '';
+    } else if (val.length === 1) {
       this.getCitys(val[0]);
+      this.outParams.area = val[val.length - 1].substring(0, 2);
     } else if (val.length === 2) {
+      this.outParams.area = val[val.length - 1].substring(0, 4);
       this.getDistricts(val[1]);
+    } else if (val.length === 3) {
+      this.outParams.area = val[val.length - 1];
     }
   }
 
-  // 根据省级编码获取地级市
-  getCitys(data: number) {
+  /**
+   * @method 根据省级编码获取地级市
+   * @param {Number} data 省级编码
+  */
+  getCitys(data: any) {
     getCity({ regionalismCode: data }).then((res) => {
       if (res.result.resultCode === '0') {
         this.provinceList.forEach((item: any, index: number) => {
@@ -264,7 +292,7 @@ export default class EleFence extends Vue {
                 this.provinceList[index].children.push({
                   label: items.name,
                   children: [],
-                  value: items.regionalismcode,
+                  value: `${items.regionalismcode}`,
                 });
               });
             }, 200);
@@ -275,27 +303,23 @@ export default class EleFence extends Vue {
       }
     });
   }
-  // 根据市级编码获取市辖区
+
+  /**
+   * @method 根据市级编码获取市辖区
+   * @param {Number} data 市级编码
+  */
   getDistricts(data: number) {
     getDistrict({ regionalismCode: data }).then((res) => {
       if (res.result.resultCode === '0') {
         this.provinceList.forEach((item: any, index: number) => {
           item.children.forEach((items: any, inx: number) => {
             this.provinceList[index].children[inx].children = [];
-            if (res.entity !== null) {
-              if (`${data}` === items.value) {
-                res.entity.forEach((it: any, key: number) => {
-                  this.provinceList[index].children[inx].children.push({
-                    label: it.name,
-                    value: it.regionalismcode,
-                  });
+            if (`${data}` === items.value) {
+              res.entity.forEach((it: any, key: number) => {
+                this.provinceList[index].children[inx].children.push({
+                  label: it.name,
+                  value: it.regionalismcode,
                 });
-              }
-            } else {
-              this.provinceList[index].children[inx].children.push({
-                label: '到底了~',
-                value: Math.random(),
-                disabled: true,
               });
             }
           });
@@ -312,7 +336,9 @@ export default class EleFence extends Vue {
   }
 
   created() {
-    // 门店
+    /**
+     * @method 查询门店列表
+    */
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.unshift({
@@ -325,7 +351,9 @@ export default class EleFence extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    // 省市区
+    /**
+     * @method 省市区
+    */
     getProvince(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.forEach((item: any, index: number) => {
@@ -343,36 +371,71 @@ export default class EleFence extends Vue {
     });
     this.filterList[2].options = this.alarmTypes;
     this.filterList[3].options = this.statusOptions;
+    // 权限设置
+    const getNowRoles: string[] = [
+      '/vehicle/fence/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.exportBtn = !!(res[0]);
+    });
   }
 
-  mounted() {
-    this.tableDom = this.$refs.tableList;
-  }
+  // 导出按钮
+  exportBtn: boolean = true;
 
   // 围栏详情
   fenceDetail: any = {}
 
+  clear() {
+    this.outParams = {
+      area: '',
+    };
+  }
+
   // 地图搜索
   search(): void {
-    console.log(this.address);
   }
 
+  // 刷新table
   refresh(): void {
+    const MapTable: any = this.$refs.mapTable;
+    MapTable.reloadTable();
+    setTimeout(() => {
+      // 恢复选中状态
+      const pageData: any = JSON.parse(JSON.stringify(MapTable.getCurrentPageData()));
+      pageData.forEach((item: any) => {
+        if (item.id === this.currentFenceId) {
+          this.currentChange(item);
+        }
+      });
+    }, 200);
   }
 
+  // 清除覆盖物
+  clearOverlays = () => {
+    this.SMap.clearOverlays();
+  }
+
+  // 取消展示详情
   cancel(): any {
     this.detailShow = false;
     this.fenceDetail = {};
   }
-  // 表格显示隐藏
+
+  // 表格显示
   showTable(): any {
-    this.locChange = true;
-    this.tableHeight = this.tableDom.offsetHeight;
-  }
-  hideTable(): any {
     this.locChange = false;
   }
 
+  // 表格隐藏
+  hideTable(): any {
+    this.locChange = true;
+  }
+
+  /**
+   * @method 告警类型确认
+   * @param {Number} data 告警类型编码
+  */
   alarmTypeSet(data: string) {
     let type;
     switch (data) {
@@ -391,64 +454,31 @@ export default class EleFence extends Vue {
     return type;
   }
 
-  menuClick(key: string, row: any) {
-    const FromTable: any = this.$refs.table;
-    if (key === 'edit') {
-      this.$router.push({ name: '围栏详情', params: { eleFenceId: row.id } });
-    } else if (key === 'use') {
-      if (row.isactive) {
-        // 禁用
-        disableFence({ eleFenceId: row.id }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      } else {
-        // 启用
-        enableFence({ eleFenceId: row.id }).then((res) => {
-          if (res.result.resultCode) {
-            FromTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      }
-    } else if (key === 'delete') {
-      // 删除
-      deleteFence({ eleFenceId: row.id }).then((res) => {
-        if (res.result.resultCode) {
-          FromTable.reloadTable();
-          this.$message.success(res.result.resultMessage);
-        } else {
-          this.$message.error(res.result.resultMessage);
-        }
-      });
-    }
-  }
+  menuClick(key: string, row: any) { }
 
   // 查询监控车辆列表
   getCarList(id: string) {
     const obj = {
       fenceId: id,
-      pageSize: 10,
+      pageSize: 87,
       pageNum: 1,
       page: true,
     };
     getFenceCars(obj).then((res) => {
       if (res.result.resultCode === '0') {
+        this.carList = [];
         this.carList = res.entity.data;
-        console.log(this.carList);
-        this.total = res.entity.count;
+        this.pageSize = parseInt(res.entity.count, 10);
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
   }
-  // 展开并且显示详情
+
+  /**
+   * @method 展开并且显示详情
+   * @param {Object} data 详情
+  */
   showDetailBox(data: any) {
     this.detailShow = true;
     this.fenceDetail = {
@@ -463,47 +493,66 @@ export default class EleFence extends Vue {
     this.getCarList(data.id);
   }
 
-  currentChange = (val: any) => {
-    this.showDetailBox(val);
-    this.mapCenter = {
-      lat: val.lat,
-      lng: val.lng,
-    };
-    // 点击设点
-    const pt = new this.BMap.Point(val.lng, val.lat);
-    const myIcon = new this.BMap.Icon(carIcon, new this.BMap.Size(32, 32));
-    const point = new this.BMap.Marker(pt, { icon: myIcon });
-    // 清除之前所涉标点
-    this.SMap.clearOverlays();
-    // 新建点
-    this.SMap.addOverlay(point);
-    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
-    // 新建圆圈、多边形、矩形
-    this.remark(val);
-    const opts = {
-      width: 200, // 信息窗口宽度
-      // offset: { height: -10, width: -10 },
-      title: '围栏名称：', // 信息窗口标题
-    };
-    const infoWindow = new this.BMap.InfoWindow(val.name, opts);
-    this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    point.addEventListener('click', () => {
-      this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    });
+  currentFenceId: number = 0;
+
+  setCurrentFenceId(id: number) {
+    this.currentFenceId = id;
   }
 
-  remark(data: any) {
-    if (data.fenceType === '1') {
-      console.log('圆形');
-      this.circleInMap(data.lng, data.lat, data.radius);
-    } else if (data.fenceType === '0') {
-      console.log('多边形');
-      this.polygonInMap(data);
-    } else if (data.fenceType === '2') {
-      this.rectInMap(data);
-      console.log('矩形');
+  /**
+   * @method 点击行数据显示
+   * @param {Object} val 单行数据
+  */
+  currentChange = (val: any) => {
+    if (val) {
+      this.setCurrentFenceId(val.id);
+      this.showDetailBox(val);
+      this.mapCenter = {
+        lat: val.lat,
+        lng: val.lng,
+      };
+      // 点击设点
+      const pt = new this.BMap.Point(val.lng, val.lat);
+      const myIcon = new this.BMap.Icon(pointIcon, new this.BMap.Size(32, 32));
+      const point = new this.BMap.Marker(pt, { icon: myIcon });
+      // 清除之前所涉标点
+      this.SMap.clearOverlays();
+      // 新建点
+      this.SMap.addOverlay(point);
+      this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+      // 新建圆圈、多边形
+      this.remark(val);
+      const opts = {
+        width: 200, // 信息窗口宽度
+        // offset: { height: -10, width: -10 },
+        title: '围栏名称：', // 信息窗口标题
+      };
+      const infoWindow = new this.BMap.InfoWindow(val.name, opts);
+      this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+      point.addEventListener('click', () => {
+        this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+      });
     }
   }
+
+  /**
+   * @method 新建圆圈、多边形
+   * @param {Object} data 画图所需数据
+  */
+  remark(data: any) {
+    if (data.fenceType === '1') {
+      this.circleInMap(data.lng, data.lat, data.radius);
+    } else if (data.fenceType === '2') {
+      this.polygonInMap(data);
+    }
+  }
+
+  /**
+   * @method 新建圆圈
+   * @param {Number} lng 经度
+   * @param {Number} lat 纬度
+   * @param {Number} radius 半径
+  */
   circleInMap = (lng: number, lat: number, radius: number) => {
     const point: any = new this.BMap.Point(lng, lat);
     const circle: any = new this.BMap.Circle(point, radius, this.styleOptions);
@@ -512,27 +561,24 @@ export default class EleFence extends Vue {
     this.SMap.addOverlay(marker);
     this.SMap.addOverlay(circle);
   }
+
+  /**
+   * @method 新建多边形
+   * @param {Object} data 多边形坐标点集合
+  */
   polygonInMap = (data: any) => {
     const polyPointArr: any = [];
-    data.latLngArray.forEach((itm: any) => {
+    JSON.parse(data.latLngArray).forEach((itm: any) => {
       const point = new this.BMap.Point(itm.lng, itm.lat);
       polyPointArr.push(point);
     });
     const ret = new this.BMap.Polygon(polyPointArr, this.styleOptions); // 创建多边形
+    const point: any = new this.BMap.Point(data.lng, data.lat);
+    const marker = new this.BMap.Marker(point);
     this.SMap.clearOverlays();
+    this.SMap.addOverlay(marker);
     this.SMap.addOverlay(ret);
   }
-  rectInMap = (data: any) => {
-    const polyPointArr: any = [];
-    data.latLngArray.forEach((itm: any) => {
-      const point = new this.BMap.Point(itm.lng, itm.lat);
-      polyPointArr.push(point);
-    });
-    const ret = new this.BMap.Polygon(polyPointArr, this.styleOptions); // 创建矩形
-    this.SMap.clearOverlays();
-    this.SMap.addOverlay(ret);
-  }
-
 
   // 定位至当前位置
   getNowPosition = () => {
@@ -565,7 +611,11 @@ export default class EleFence extends Vue {
     this.SMap.setZoom(newZoom);
   }
 
-  // 地址搜索
+  /**
+   * @method 地址搜索
+   * @param {String} val 地点值
+   * @param {any} cb
+  */
   searchAddress(val: string, cb: any) {
     queryAddress(val).then((res) => {
       if (res.status === 0) {
@@ -581,37 +631,48 @@ export default class EleFence extends Vue {
       }
     });
   }
-  // 选择地址，跳转到相应位置，并查询周围车辆
+
+  /**
+   * @method 选择地址，跳转到相应位置，并查询周围车辆
+   * @param {String} val 地点名称
+  */
   setAddress = (val: any) => {
     this.mapCenter = {
       lat: val.lat,
       lng: val.lng,
     };
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+    // 添加坐标
+    const PT = new this.BMap.Point(val.lng, val.lat);
+    const marker = new this.BMap.Marker(
+      PT,
+      {
+        icon: new this.BMap.Icon(pointIcon, new this.BMap.Size(28, 40)),
+      },
+    );
+    this.SMap.clearOverlays();
+    this.SMap.addOverlay(marker); // 创建标注
+  }
+
+  /**
+   * @method 下载表单
+   * @param {Array} data 列表表头
+  */
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    exportExcel(data1, '围栏列表', '/vehicle/fence/exportExcel');
   }
 
   render() {
     return (
       <div class="monitor-wrap">
         <div id="map"></div>
-        {/* 搜索 */}
         <div class="loc-search-box">
           <el-autocomplete size="small" placeholder="搜索地点" prefix-icon="el-icon-location" v-model={this.address} fetch-suggestions={this.searchAddress} on-select={this.setAddress}>
           </el-autocomplete>
-          <el-button class="restore" size="small" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
+          <el-button id="reload" class="restore" size="small" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
         </div>
-        {/* 右下角控制台 */}
-        <div ref="btnControl" id="btnControl" style={{ bottom: this.locChange ? `${this.tableHeight}px` : '0' }} class={['loc-change-box', this.locChange ? 'loc-active' : '']}>
-          <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
-          <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
-          <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
-          {!this.locChange ?
-            <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button> :
-            <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
-          }
-        </div>
-        {/* 详情 */}
-        <div class={['car-detail-box', this.detailShow ? 'detail-active' : '']} >
+        <div class={['car-detail-box1', this.detailShow ? 'detail-active' : '']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
           <div class="car-info">
             <div class="top">
@@ -635,38 +696,53 @@ export default class EleFence extends Vue {
           <div class="car-detail">
             <ul class="line">
               {
-                this.carList.length > 0 ?
-                  this.carList.forEach((item: any) => <li class="item">
-                    <span class="label">{item.id}</span>
-                  </li>) : null
+                this.carList
+                  ? this.carList.map((item: any) => <li class="item">
+                    <span class="label">{item.platenum}</span>
+                  </li>)
+                  : '暂无监控车辆'
               }
             </ul>
-            <el-pagination
-              class="pageSet"
-              small
-              background
-              page-size={this.pageSize}
-              pager-count={this.pageCount}
-              layout="prev, pager, next"
-              total={this.total}
-            >
-            </el-pagination>
+            {
+              this.carList
+                ? <el-pagination
+                  class="pageSet"
+                  small
+                  background
+                  page-size={this.pageSize}
+                  // pager-count={this.pageCount}
+                  layout="prev, pager, next"
+                  total={this.total}
+                >
+                </el-pagination> : ''
+            }
           </div>
         </div>
-        <div ref="tableList" id="TableList" class={['car-table', this.locChange ? 'table-active' : '']}>
+        <div ref="tableList" id="TableList" class={['car-table2', !this.locChange ? 'table-active' : '']}>
+          <div ref="btnControl" id="btnControl" class="loc-change-box2">
+            <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
+            <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
+            <el-button class="less btn" size="mini" icon="el-icon-minus" on-click={this.reduceZoom}></el-button>
+            {!this.locChange
+              ? <el-button class="down btn" size="mini" type="primary" icon="el-icon-arrow-down" on-click={this.hideTable}></el-button>
+              : <el-button class="up btn" size="mini" type="primary" icon="el-icon-arrow-up" on-click={this.showTable}></el-button>
+            }
+          </div>
           <filter-table
-            ref="table"
+            ref="mapTable"
             class="map-table"
             filter-list={this.filterList}
             filter-grade={[]}
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
-            export-btn={true}
+            export-btn={this.exportBtn}
+            on-downBack={this.downLoad}
             defaultPageSize={5}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
-            // on-menuClick={this.menuClick}
+            on-clearOutParams={this.clear}
+            header-align={'center'}
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'eleFence'}

@@ -1,24 +1,30 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option } from 'element-ui';
+import {
+  Component, Prop, Vue,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Button,
+} from 'element-ui';
 import { terminalUnbind } from '@/api/equipment';
 import './UnbindModel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-button': Button,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-button': Button,
+  },
+})
 export default class UnbindModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop() private data: any;
 
   loading: boolean = false;
 
   closeModal() {
     this.$emit('close');
+    this.loading = false;
   }
 
   newCfgVal: string = ''
@@ -56,12 +62,10 @@ export default class UnbindModel extends Vue {
         <div class="box">
           <p>确定<span class="info">  解绑  </span>该车辆？</p>
         </div>
-        <el-row>
-          <el-col offset={6} span={12}>
-            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-          </el-col>
-        </el-row>
+        <div class="unbindBtn">
+          <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
+          <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+        </div>
       </el-dialog>
     );
   }

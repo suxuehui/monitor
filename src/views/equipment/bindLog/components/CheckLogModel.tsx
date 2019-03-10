@@ -1,22 +1,33 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Dialog } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import { Dialog, Tooltip } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import MTable from '@/components/FilterTable/MTable';
 import './CheckLogModel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  "m-table": MTable
-  }
-  })
+    'el-dialog': Dialog,
+    'm-table': MTable,
+    'el-tooltip': Tooltip,
+  },
+})
 export default class CheckLog extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
+  @Prop() private time: any;
+
   tableParams: any = {}
+
   url: string = '/terminal/accept/list';
+
   opreat: Opreat[] = [];
+
   // 表格参数
   tableList: tableList[] = [
     { label: '验收员', prop: 'orgName', formatter: this.acceptPerson },
@@ -27,28 +38,26 @@ export default class CheckLog extends Vue {
   ];
 
   acceptPerson(row: any) {
-    return row.acceptOrgName && row.acceptRealName && row.acceptUsername ?
-      <div>
-        <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
-        <p>{`(${row.acceptUsername})`}</p>
-      </div> : '--';
+    return row.acceptOrgName && row.acceptRealName && row.acceptUsername
+      ? <el-tooltip class="item" effect="dark" content={`${row.acceptOrgName}+${row.acceptRealName}+${row.acceptUsername}`} placement="top">
+        <div>
+          <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
+          <p>{`(${row.acceptUsername})`}</p>
+        </div>
+      </el-tooltip> : '--';
   }
 
-  @Watch('data')
-  onDataChange(data: number) {
+  @Watch('time')
+  onDataChange() {
     this.tableParams = {
-      opsRecordId: data,
+      opsRecordId: this.data,
       page: true,
       pageNum: 1,
       pageSize: 10,
     };
-    const Table: any = this.$refs.MTable;
-    if (Table) {
-      if (data > 0) {
-        setTimeout(() => {
-          Table.reload();
-        }, 300);
-      }
+    const mtable: any = this.$refs.MTable;
+    if (mtable) {
+      mtable.getData(this.tableParams);
     }
   }
 
@@ -56,9 +65,8 @@ export default class CheckLog extends Vue {
     this.$emit('close');
   }
 
-  tableClick() {
+  tableClick() { }
 
-  }
   render() {
     return (
       <div>

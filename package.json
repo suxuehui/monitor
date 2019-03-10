@@ -1,26 +1,27 @@
 {
-  "name": "vue-car-admin",
+  "name": "fzk-moinior",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.116",
-    "@types/mockjs": "^1.0.1",
-    "@types/qs": "^6.5.1",
     "axios": "^0.18.0",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
+    "babel-plugin-component": "^1.1.1",
     "babel-plugin-import": "^1.8.0",
-    "element-ui": "^2.4.6",
+    "babel-plugin-jsx-v-model": "^2.0.3",
+    "element-ui": "^2.5.4",
     "jsonp": "^0.2.1",
     "lodash": "^4.17.10",
     "mockjs": "^1.0.1-beta3",
     "path-to-regexp": "^2.2.1",
     "q": "^1.5.1",
     "qs": "^6.5.2",
+    "raven-js": "^3.27.0",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
@@ -29,45 +30,24 @@
   },
   "devDependencies": {
     "@types/jsonp": "^0.2.0",
+    "@types/lodash": "^4.14.116",
+    "@types/mockjs": "^1.0.1",
     "@types/path-to-regexp": "^1.7.0",
-    "@vue/cli-plugin-babel": "^3.0.0",
-    "@vue/cli-plugin-eslint": "^3.0.0",
-    "@vue/cli-plugin-typescript": "^3.0.0",
-    "@vue/cli-service": "^3.0.0",
-    "@vue/eslint-config-airbnb": "^3.0.0",
-    "@vue/eslint-config-typescript": "^3.0.0",
-    "babel-plugin-component": "^1.1.1",
-    "babel-plugin-jsx-v-model": "^2.0.3",
-    "babel-plugin-syntax-jsx": "^6.18.0",
+    "@types/qs": "^6.5.1",
+    "@vue/cli-plugin-babel": "^3.2.0",
+    "@vue/cli-plugin-e2e-cypress": "^3.2.0",
+    "@vue/cli-plugin-eslint": "^3.2.0",
+    "@vue/cli-plugin-typescript": "^3.2.0",
+    "@vue/cli-service": "^3.2.0",
+    "@vue/eslint-config-airbnb": "^4.0.0",
+    "@vue/eslint-config-typescript": "^3.2.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0-0",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
     "typescript": "^3.0.0",
     "vue-jsx-hot-loader": "^1.4.0",
     "vue-template-compiler": "^2.5.17"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/airbnb",
-      "@vue/typescript"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "typescript-eslint-parser"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+  }
 }

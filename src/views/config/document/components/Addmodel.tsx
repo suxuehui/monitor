@@ -1,28 +1,34 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch,
+} from 'vue-property-decorator';
+import {
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup,
+} from 'element-ui';
 import { configAdd, configUpdate } from '@/api/config';
 
 import './Addmodel.less';
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-tag': Tag,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-select': Select,
-  'el-button': Button,
-  'el-option': Option,
-  'el-radio': Radio,
-  'el-radio-group': RadioGroup,
-  }
-  })
+    'el-dialog': Dialog,
+    'el-tag': Tag,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-select': Select,
+    'el-button': Button,
+    'el-option': Option,
+    'el-radio': Radio,
+    'el-radio-group': RadioGroup,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
 
   modelForm: any = {
@@ -33,15 +39,13 @@ export default class AddModal extends Vue {
     remark: '',
     productCode: '',
   };
+
   loading: boolean = false;
 
   rules = {
     cfgName: [
       { required: true, message: '请输入配置名称', trigger: 'blur' },
     ],
-    // cfgParam: [
-    //   { required: true, message: '请输入配置参数', trigger: 'blur' },
-    // ],
     reboot: [
       { required: false, message: '请确认是否重启' },
     ],
@@ -50,8 +54,12 @@ export default class AddModal extends Vue {
     ],
     productCode: [
       { required: true, message: '请输入产品编码', trigger: 'blur' },
+      {
+        min: 0, max: 20, message: '长度在20个字符以内', trigger: 'blur',
+      },
     ],
   }
+
   cfgParamRule = [
     { required: true, message: '请输入配置参数', trigger: 'blur' },
     {
@@ -137,7 +145,9 @@ export default class AddModal extends Vue {
       this.modelForm.cfgParamAdd = [];
       this.reBootStatus = '1';
     }, 200);
+    this.loading = false;
   }
+
   reBootStatus: string = '1';
 
   rebootChange(data: any) {
@@ -217,15 +227,15 @@ export default class AddModal extends Vue {
   render() {
     return (
       <el-dialog
-        width="560px"
+        width="730px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="90px" class="model">
+        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="90px" class="addConfigModel">
           <el-row>
-            <el-col span={24}>
+            <el-col span={12}>
               <el-form-item label="配置名称" prop="cfgName">
                 <el-input
                   id="cfgName"
@@ -234,7 +244,7 @@ export default class AddModal extends Vue {
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col span={24}>
+            <el-col span={12}>
               <el-form-item label="产品编码" prop="productCode">
                 <el-input
                   id="productCode"
@@ -297,12 +307,10 @@ export default class AddModal extends Vue {
             </el-col>
           </el-row>
         </el-form>
-        <el-row>
-          <el-col offset={7} span={12}>
-            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-          </el-col>
-        </el-row>
+        <div style={{ textAlign: 'center' }}>
+          <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
+          <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+        </div>
       </el-dialog>
     );
   }

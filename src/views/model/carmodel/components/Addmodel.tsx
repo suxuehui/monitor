@@ -1,29 +1,36 @@
-import { Component, Prop, Vue, Watch, Emit } from 'vue-property-decorator';
-import { Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option, Cascader } from 'element-ui';
+import {
+  Component, Prop, Vue, Watch, Emit,
+} from 'vue-property-decorator';
+import {
+  Dialog, Row, Col, Form, FormItem, Input, Button, Upload, Select, Option, Cascader,
+} from 'element-ui';
 import { modelAdd, modelEdit, seriesAll } from '@/api/model';
 import './Addmodel.less';
 
 interface ActiveType { key: number, value: number, label: string }
 @Component({
   components: {
-  'el-dialog': Dialog,
-  'el-row': Row,
-  'el-col': Col,
-  'el-form': Form,
-  'el-form-item': FormItem,
-  'el-input': Input,
-  'el-button': Button,
-  'el-upload': Upload,
-  'el-select': Select,
-  'el-option': Option,
-  'el-cascader': Cascader
-  }
-  })
+    'el-dialog': Dialog,
+    'el-row': Row,
+    'el-col': Col,
+    'el-form': Form,
+    'el-form-item': FormItem,
+    'el-input': Input,
+    'el-button': Button,
+    'el-upload': Upload,
+    'el-select': Select,
+    'el-option': Option,
+    'el-cascader': Cascader,
+  },
+})
 export default class AddModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
+
   @Prop({ default: '' }) private title!: string;
+
   @Prop() private data: any;
+
   @Prop() private brandAddList: any; // 品牌列表
 
   modelForm: any = {
@@ -32,10 +39,12 @@ export default class AddModal extends Vue {
     fuelTankCap: '',
     brandSeries: [],
   };
+
   loading: boolean = false;
 
   // 图片上传
   dialogImageUrl: string = '';
+
   dialogVisible: boolean = false;
 
 
@@ -50,6 +59,7 @@ export default class AddModal extends Vue {
       { required: true, message: '请输入车型名称', trigger: 'blur' },
     ],
   }
+
   fuelTankCapRule = [
     { required: true, message: '请输入油箱容量' },
     {
@@ -69,6 +79,7 @@ export default class AddModal extends Vue {
   ]
 
   selectStatus: boolean = false;
+
   oilInput: boolean = true;
 
   // 验证油箱容量
@@ -76,11 +87,10 @@ export default class AddModal extends Vue {
   checkTank(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        const exp: any = /^[1-9]\d*$/;
-        if (exp.test(value)) {
-          callback();
+        if (parseInt(value, 10) > 200) {
+          callback(new Error('请输入正确的油箱容量'));
         } else {
-          callback(new Error('油箱容量只能为数字，请重新输入'));
+          callback();
         }
       } else {
         callback(new Error('油箱容量不能为空'));
@@ -94,6 +104,7 @@ export default class AddModal extends Vue {
     };
     this.getSeries(obj, val[0]);
   }
+
   getSeries(obj: any, val: number) {
     seriesAll(obj).then((res) => {
       if (res.result.resultCode === '0') {
@@ -133,7 +144,7 @@ export default class AddModal extends Vue {
       this.modelForm = {
         name: data.name,
         energyType: data.energyType,
-        fuelTankCap: data.fuelTankCap,
+        fuelTankCap: parseInt(data.fuelTankCap, 10),
         brandSeries: [data.brandId, data.seriesId],
       };
       this.oilInput = data.energyType !== 2;
@@ -284,11 +295,12 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             {
-              this.oilInput ?
-                <el-col span={24}>
+              this.oilInput
+                ? <el-col span={24}>
                   <el-form-item label="油箱容量" prop="fuelTankCap" rules={!this.oilInput ? null : this.fuelTankCapRule}>
                     <el-input
                       id="fuelTankCap"
+                      type="number"
                       v-model={this.modelForm.fuelTankCap}
                       placeholder="请输入油箱容量"
                     >

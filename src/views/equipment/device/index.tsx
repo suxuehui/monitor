@@ -1,35 +1,42 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Tag, Button, Popover } from 'element-ui';
+import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { terminalType, getBluetooth, resetTime } from '@/api/equipment';
+import {
+  terminalType, resetTime, terminalExport,
+} from '@/api/equipment';
+import utils from '@/utils';
 import { orgTree } from '@/api/app';
-import AddModal from '@/views/equipment/device/components/AddModal';
-import BindModal from '@/views/equipment/device/components/BindModal';
-import AcceptModal from '@/views/equipment/device/components/AcceptModal';
 import PopconfirmBlock from '@/components/Popconfirm/index';
-import DownModel from './components/DownModel';
-import ClearModel from './components/ClearModel';
-import AuthModel from './components/AuthModel';
+import BindModel from './components/BindModel';
+import AcceptModel from './components/AcceptModel';
 import UnbindModel from './components/UnbindModel';
+import UploadModel from './components/UploadModel';
+import ChangelocModel from './components/ChangelocModel';
+import AThresholdModel from './components/AThresholdModel';
+import BsjThresholdModel from './components/BsjThresholdModel';
+import CheckLogModel from './components/CheckLogModel';
 import './index.less';
 
 interface TerminalType { key: number, value: number, label: string, color: string }
 
 @Component({
   components: {
-  'el-tag': Tag,
-  'el-button': Button,
-  'add-modal': AddModal,
-  'bind-modal': BindModal,
-  'accept-modal': AcceptModal,
-  'down-model': DownModel,
-  'clear-model': ClearModel,
-  'auth-model': AuthModel,
-  'unbind-model': UnbindModel,
-  'el-popover': Popover,
-  'popconfirm-block': PopconfirmBlock,
-  }
-  })
+    'el-tag': Tag,
+    'el-button': Button,
+    'bind-model': BindModel,
+    'accept-model': AcceptModel,
+    'upload-model': UploadModel,
+    'unbind-model': UnbindModel,
+    'changeloc-model': ChangelocModel,
+    'aThreshold-model': AThresholdModel,
+    'bsjThreshold-model': BsjThresholdModel,
+    'checkLog-model': CheckLogModel,
+    'el-popover': Popover,
+    'popconfirm-block': PopconfirmBlock,
+  },
+  name: 'Device',
+})
 export default class Device extends Vue {
   // data
   // 普通筛选
@@ -37,21 +44,27 @@ export default class Device extends Vue {
     {
       key: 'levelCode',
       type: 'levelcode',
-      label: '所属商户',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '商户门店（全部）',
       options: [],
     },
     {
-      key: 'terminalType',
-      type: 'select',
-      label: '设备类型',
-      placeholder: '请选择设备类型',
+      key: 'levelCode',
+      type: 'levelcode',
+      label: '设备型号',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '设备型号（全部）',
       options: [],
     },
     {
@@ -61,26 +74,33 @@ export default class Device extends Vue {
       placeholder: 'imei、车牌、配置名称、产品编码',
     },
   ];
+
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
       key: 'levelCode',
       type: 'levelcode',
-      label: '所属商户',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '请选择商户门店',
       options: [],
     },
     {
-      key: 'terminalType',
-      type: 'select',
-      label: '设备类型',
-      placeholder: '请选择设备类型',
+      key: 'levelCode',
+      type: 'levelcode',
+      label: '设备型号',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择设备型号',
       options: [],
     },
     {
@@ -101,9 +121,10 @@ export default class Device extends Vue {
       key: 'keyword',
       type: 'input',
       label: '模糊查询',
-      placeholder: 'imei、车牌、配置名称、产品编码',
+      placeholder: 'imei号、主机编码、ICCID、车牌号',
     },
   ];
+
   // 筛选参数
   filterParams: any = {
     levelCode: '',
@@ -111,92 +132,201 @@ export default class Device extends Vue {
     status: 0,
     online: -1,
     keyword: '',
-    // active: 1,
   };
+
   outParams: any = {};
+
   // 请求地址
   url: string = '/device/terminal/list';
+
   // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   // 网络状态online 1-在线，0-离线
   opreat: Opreat[] = [
     {
       key: 'bind',
       rowKey: 'imei',
-      color: (row: any) => (row.status === 1 ? 'green' : 'red'),
-      text: (row: any) => (row.status === 1 ? '绑定' : '解绑'),
-      msg: (row: any) => (row.status === 1 ? '是否要绑定？' : '是否要解绑？'),
-      // disabled: (row: any) => (!(row.status === 1 && row.online === 1)),
-      disabled: this.bindDisable,
+      color: 'green',
+      text: '绑定',
+      msg: '是否要绑定？',
+      // disabled: this.bindDisable,
       roles: true,
+    },
+    {
+      key: 'unbind',
+      rowKey: 'imei',
+      color: 'red',
+      text: '解绑',
+      msg: '是否要解绑？',
+      roles: true,
+      // disabled: this.unBindDisable,
     },
     {
       key: 'accept',
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      // disabled: (row: any) =>
-      //   (row.status === 1 || row.status === 3 || row.status === 5 || row.online === 2),
-      disabled: this.acceptDisable,
+      // disabled: this.acceptDisable,
       roles: true,
     },
     {
-      key: 'authCode',
+      key: 'changeLoc',
       rowKey: 'imei',
       color: 'blue',
-      text: '鉴权码',
+      text: '切换地址',
       roles: true,
     },
     {
-      key: 'downConfig',
+      key: 'setThreshold',
       rowKey: 'imei',
       color: 'blue',
-      text: '下发配置',
-      disabled: (row: any) => (row.online !== 1),
+      text: '阈值',
       roles: true,
     },
     {
-      key: 'clearConfig',
+      key: 'logs',
       rowKey: 'imei',
       color: 'blue',
-      text: '清除配置',
-      disabled: (row: any) => (row.online !== 1),
+      text: '日志',
       roles: true,
     },
   ];
-  acceptDisable(row:any) {
-    // 是否在线
-    if (row.online === 1) {
-      if (row.status === 1 || row.status === 3 || row.status === 5) {
-        return true;
-      }
+
+  acceptDisable(row: any) {
+    if (row.status === 1 || row.status === 3 || row.status === 5) {
+      return true;
+    }
+    return false;
+  }
+
+  bindDisable(row: any) {
+    // 待安绑
+    if (row.status === 1) {
       return false;
     }
     return true;
   }
 
-  bindDisable(row:any) {
-    // 是否在线
-    if (row.online === 1) {
+  unBindDisable(row: any) {
+    if (row.status === 2 || row.status === 3 || row.status === 4) {
       return false;
     }
-    if (row.status === 1) {
-      return true;
-    }
-    return false;
+    return true;
   }
+
   // 表格参数
   tableList: tableList[] = [
-    { label: '所属商户', prop: 'orgName' },
-    { label: '设备类型', prop: 'terminalTypeName', formatter: (row: any) => (row.terminalTypeName ? row.terminalTypeName : '--') },
+    { label: '商户门店', prop: 'orgName1' },
     { label: 'imei号', prop: 'imei' },
-    { label: '配置名称', prop: 'cfgName' },
-    { label: '产品编码', prop: 'productCode' },
+    { label: '主机编码', prop: 'barCode' },
+    { label: 'ICCID', prop: 'iccid' },
+    { label: '设备型号', prop: 'iccid' },
+    { label: '网络类型', prop: 'iccid' },
     { label: '当前车辆', prop: 'plateNum' },
-    { label: '安绑记录', prop: 'plateNum', formatter: this.bindLog },
+    { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
+    { label: '上线地址', prop: 'plateNum', formatter: this.upLoc },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
+
+  /**
+   * @method 查看上线地址
+   * @param {obj} row 列数据
+   */
+  upLoc(row: any) {
+    return <el-button type="text" on-click={() => this.checkLoc(row)}>查看地址</el-button>;
+  }
+
+  // 点击操作时的时间
+  clickTime: string = ''
+
+  checkLoc(data: object) {
+    this.clickTime = utils.getNowTime();
+    this.upLocVisible = true;
+    this.upLocData = data;
+  }
+
+  bindLog(row: any) {
+    return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看记录</el-button>;
+  }
+
+  endDay(row: any) {
+    return <div>
+      <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
+      {
+        this.resetBtn
+          ? <popconfirm-block
+            ref={`popBlock${row.id}`}
+            title="确定要对此设备进行续期1年？"
+            width="225"
+            keyName='续期'
+            disabled={row.status !== 3}
+            loading={this.loading}
+            on-confirm={() => this.onResetTime(row)}
+            on-cancel={this.closePop}
+          >
+            <el-button style="marginLeft:10px" disabled={row.status !== 3} type="text" size="small" >续期</el-button>
+          </popconfirm-block> : null
+      }
+    </div>;
+  }
+
+  onResetTime(data: any) {
+    const popModel: any = this.$refs[`popBlock${data.id}`];
+    const formTable: any = this.$refs.table;
+    this.loading = true;
+    resetTime(data.id).then((res) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          popModel.closeModel();
+          setTimeout(() => {
+            formTable.reloadTable();
+            this.$message.success(res.result.resultMessage);
+          }, 200);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage ? res.result.resultMessage : '未知错误');
+        }, 1500);
+      }
+    });
+  }
+
+  checkLog(row: any) {
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
+  }
+
+  onlineSelect(row: any) {
+    const type = row.online === 1 ? 'success' : 'danger';
+    return <el-tag size="medium" type={type}>{row.online ? '在线' : '离线'}</el-tag>;
+  }
+
+  terSelect(row: any) {
+    let type;
+    // 1-待安绑，2-待验收，3-已合格，4-未合格,5-已返厂 ,
+    switch (row.status) {
+      case 1:
+        type = <el-tag size="medium" type="blue" >待安绑</el-tag>;
+        break;
+      case 2:
+        type = <el-tag size="medium" type="info" >待验收</el-tag>;
+        break;
+      case 3:
+        type = <el-tag size="medium" type="success" >已合格</el-tag>;
+        break;
+      case 4:
+        type = <el-tag size="medium" type="warning" >未合格</el-tag>;
+        break;
+      case 5:
+        type = <el-tag size="medium" type="danger" >已返厂</el-tag>;
+        break;
+      default:
+        type = <el-tag size="medium" type="info" >未知</el-tag>;
+    }
+    return type;
+  }
 
   // 设备状态 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   terminalStatus: TerminalType[] = [
@@ -219,56 +349,35 @@ export default class Device extends Vue {
       key: 5, value: 5, label: '已返厂', color: 'danger',
     },
   ]
-  // 网络状态 1-在线，0-离线 ,
-  onlineStatus: any = [
-    { key: -1, value: -1, label: '全部' },
-    { key: 1, value: 1, label: '在线' },
-    { key: 0, value: 0, label: '离线' },
-  ]
-
-  // 新增
-  addVisible: boolean = false;
-  addTitle: string = '';
-  updateData: any = {}
-
-  // 绑定
-  bindVisible: boolean = false;
-  bindTitle: string = '';
-  // 解绑
-  unbindVisible: boolean = false;
-  unbindData: any = {}
-
-  // 鉴权码
-  authVisible: boolean = false;
-  authData: any = {}
-
-  // 验收
-  acceptVisible: boolean = false;
-  acceptTitle: string = '';
-  acceptData: any = {}
-
-  // 下发配置
-  downVisible: boolean = false;
-  downTitle: string = '下发配置';
-  downData: any = {}
-
-  // 清除配置
-  clearVisible: boolean = false;
-  clearTitle: string = '';
-  clearData: any = {}
-
-  modelForm: any = {
-    imei: '',
-  };
-
-  // 设备类型
-  typeList: any = [];
-  // 门店列表
-  shopList: any = [];
-
-  loading: boolean = false;
 
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/device/terminal/save',
+      '/device/terminal/bind',
+      '/device/terminal/unbind/{imei}',
+      '/device/terminal/confirm',
+      '/device/terminal/getBluetoothAuthCode',
+      '/device/terminal/createBluetoothAuthCode',
+      '/device/terminal/deliveryCfg',
+      '/device/terminal/clearCfg',
+      '/device/terminal/reset/{id}',
+      '/terminal/ops/list',
+      '/device/terminal/exportExcel',
+    ];
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[1]); // 绑定
+    //   this.opreat[1].roles = !!(res[2]); // 解绑
+    //   this.opreat[2].roles = !!(res[3]); // 验收
+    //   this.opreat[3].roles = !!(res[4]); // 鉴权码
+    //   this.authBtn = !!(res[5]);
+    //   this.opreat[4].roles = !!(res[6]);
+    //   this.opreat[5].roles = !!(res[7]);
+    //   this.addBtn = !!(res[0]);
+    //   this.resetBtn = !!(res[8]);
+    //   this.opsBtn = !!(res[9]);
+    //   this.exportBtn = !!(res[10]);
+    // });
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -309,173 +418,146 @@ export default class Device extends Vue {
     this.filterGrade[3].options = this.onlineStatus;
   }
 
-  bindLog(row: any) {
-    return <a class="check-link" on-click={() => this.checkLog(row)}>查看</a>;
-  }
+  // 网络状态 1-在线，0-离线，
+  onlineStatus: any = [
+    { key: -1, value: -1, label: '全部' },
+    { key: 1, value: 1, label: '在线' },
+    { key: 0, value: 0, label: '离线' },
+  ]
 
-  endDay(row: any) {
-    return <div>
-      <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
-      <popconfirm-block
-        ref={`popBlock${row.id}`}
-        title="确定要重置此设备到期日期吗？"
-        width="225"
-        loading={this.loading}
-        on-confirm={() => this.onResetTime(row)}
-        on-cancel={this.closePop}
-      >
-        <el-button style="marginLeft:10px" type="text" size="small" >重置</el-button>
-      </popconfirm-block>
-    </div>;
-  }
+  // 绑定
+  bindVisible: boolean = false;
+
+  bindTitle: string = '';
+
+  // 解绑
+  unbindVisible: boolean = false;
+
+  unbindData: any = {};
+
+  // 验收
+  acceptVisible: boolean = false;
+
+  acceptTitle: string = '';
+
+  acceptData: any = {};
+
+  // 上线地址upLoc
+  upLocVisible: boolean = false;
+
+  upLocData: any = {};
+
+  // 切换地址
+  changelocVisible: boolean = false;
+
+  changelocData: any = {};
+
+  // 阀值设置
+  // 2a1
+  aThresholdData: any = {};
+
+  aThresholdVisible: boolean = false;
+
+  // BSJ或WK
+  bsjThresholdData: any = {};
+
+  bsjThresholdVisible: boolean = false;
+
+  // 查看日志
+  checkLogVisible: boolean = false;
+
+  checkLogData: any = {};
+
+  checkLogTitle: string = '';
+
+  modelForm: any = {
+    imei: '',
+  };
+
+  // 设备类型
+  typeList: any = [];
+
+  // 门店列表
+  shopList: any = [];
+
+  loading: boolean = false;
+
+  // 导出
+  exportBtn: boolean = true;
+
+  // 重置
+  resetBtn: boolean = true;
+
+  // 查看安绑记录
+  opsBtn: boolean = true;
+
   closePop() {
     this.loading = false;
   }
-  onResetTime(data: any) {
-    const popModel: any = this.$refs[`popBlock${data.id}`];
-    const formTable: any = this.$refs.table;
-    this.loading = true;
-    resetTime(data.id).then((res) => {
-      if (res.result.resultCode === '0') {
-        setTimeout(() => {
-          this.loading = false;
-          popModel.closeModel();
-          setTimeout(() => {
-            formTable.reloadTable();
-            this.$message.success(res.result.resultMessage);
-          }, 200);
-        }, 1500);
-      } else {
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.error(res.result.resultMessage ? res.result.resultMessage : '未知错误');
-        }, 1500);
-      }
-    });
-  }
-
-  checkLog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
-  }
-
-  onlineSelect(row: any) {
-    const type = row.online === 1 ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.online ? '在线' : '离线'}</el-tag>;
-  }
-  terSelect(row: any) {
-    let type;
-    // 1-待安绑，2-待验收，3-未合格，4-已合格,5-已返厂 ,
-    switch (row.status) {
-      case 1:
-        type = <el-tag size="medium" type="blue" style="marginRight:5px">待安绑</el-tag>;
-        break;
-      case 2:
-        type = <el-tag size="medium" type="info" style="marginRight:5px">待验收</el-tag>;
-        break;
-      case 3:
-        type = <el-tag size="medium" type="success" style="marginRight:5px">已合格</el-tag>;
-        break;
-      case 4:
-        type = <el-tag size="medium" type="warning" style="marginRight:5px">未合格</el-tag>;
-        break;
-      case 5:
-        type = <el-tag size="medium" type="danger" style="marginRight:5px">已返厂</el-tag>;
-        break;
-      default:
-        type = <el-tag size="medium" type="info" style="marginRight:5px">未知</el-tag>;
-    }
-    return type;
-  }
-
-  terConfirm(data: any) {
-    const arr: TerminalType[] = [];
-    this.terminalStatus.forEach((item) => {
-      if (item.key === data) {
-        arr.push(item);
-      }
-    });
-    return arr;
-  }
-
 
   // 操作
   menuClick(key: string, row: any) {
-    const formTable: any = this.$refs.table;
     switch (key) {
-      // 绑定、解绑
+      // 绑定
       case 'bind':
-        if (row.status === 1) {
-          this.modelForm = row;
-          this.bindVisible = true;
-          this.bindTitle = '绑定车辆';
-        } else {
-          this.unbindVisible = true;
-          this.unbindData = row;
-        }
+        this.modelForm = row;
+        this.bindVisible = true;
+        this.bindTitle = '绑定车辆';
         break;
+      // 解绑
+      case 'unbind':
+        this.unbindVisible = true;
+        this.unbindData = row;
+        break;
+      // 验收
       case 'accept':
         this.acceptData = row;
         this.acceptTitle = '安装验收';
         this.acceptVisible = true;
         break;
-      case 'authCode':
-        this.authVisible = true;
-        this.getAuthCode(row);
+      // 切换地址
+      case 'changeLoc':
+        this.changelocVisible = true;
+        this.changelocData = row;
         break;
-      case 'downConfig':
-        this.downData = row;
-        this.downTitle = '下发配置';
-        this.downVisible = true;
+      // 阈值
+      case 'setThreshold':
+        console.log(row);
+        // this.bsjThresholdVisible = true;
+        // this.bsjThresholdData = row;
+        // this.aThresholdVisible = true;
+        // this.aThresholdData = row;
         break;
-      case 'clearConfig':
-        this.clearData = row;
-        this.clearTitle = '清除配置';
-        this.clearVisible = true;
+      // 日志
+      case 'logs':
+        this.checkLogData = row;
+        this.checkLogVisible = true;
+        this.checkLogTitle = `设备日志(${row.imei})`;
+        this.clickTime = utils.getNowTime();
         break;
       default:
-        console.log(1);
+        break;
     }
   }
 
-  getAuthCode(data: any) {
-    const obj: any = {
-      cfgName: 'bluetoothAuthCode',
-      id: data.id,
-      imei: data.imei,
-    };
-    getBluetooth(obj).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.authData = {
-          id: data.id,
-          imei: data.imei,
-          cfgVal: res.entity.length > 0 ? res.entity[0].cfgVal : '暂无蓝牙鉴权码',
-        };
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
-
-  addModel() {
-    this.addVisible = true;
-    this.modelForm = null;
-    this.addTitle = '添加设备';
+  downLoad(data: any) {
+    const data1 = qs.stringify(data);
+    terminalExport(data1, '设备管理列表');
   }
 
   // 关闭弹窗
   closeModal(): void {
-    this.addVisible = false;
-    this.bindVisible = false;
-    this.acceptVisible = false;
-    this.downVisible = false;
-    this.clearVisible = false;
-    this.authVisible = false;
-    this.unbindVisible = false;
-    const addBlock: any = this.$refs.addTable;
-    setTimeout(() => {
-      addBlock.resetData();
-    }, 200);
+    this.bindVisible = false; // 绑定
+    this.unbindVisible = false; // 解绑
+    this.acceptVisible = false; // 验收
+    this.upLocVisible = false; // 线上地址
+    this.changelocVisible = false; // 切换地址
+    this.bsjThresholdVisible = false; // 阀值bsj wk
+    this.aThresholdVisible = false; // 阀值2a1
+    this.checkLogVisible = false; // 日志
+    this.loading = false;
   }
+
   // 关闭弹窗时刷新
   refresh(): void {
     const FromTable: any = this.$refs.table;
@@ -491,66 +573,71 @@ export default class Device extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={false}
           data-type={'JSON'}
           localName={'device'}
-          on-addBack={this.addModel}
+          on-downBack={this.downLoad}
           opreat={this.opreat}
           opreatWidth={'150px'}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={true}
+          export-btn={this.exportBtn}
           on-menuClick={this.menuClick}
         />
-        <add-modal
-          ref="addTable"
-          title={this.addTitle}
-          visible={this.addVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        ></add-modal>
-        <bind-modal
+        <bind-model
           data={this.modelForm}
           title={this.bindTitle}
           visible={this.bindVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
-        ></bind-modal>
-        <accept-modal
+        />
+        <accept-model
           data={this.acceptData}
           title={this.acceptTitle}
           visible={this.acceptVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
-        ></accept-modal>
-        <auth-model
-          data={this.authData}
-          visible={this.authVisible}
-          on-close={this.closeModal}
-          on-refresh={this.refresh}
-        ></auth-model>
+        />
         <unbind-model
           data={this.unbindData}
           visible={this.unbindVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
-        ></unbind-model>
-        <down-model
-          data={this.downData}
-          title={this.downTitle}
-          visible={this.downVisible}
-          on-refresh={this.refresh}
+        />
+        <upload-model
+          time={this.clickTime}
+          data={this.upLocData}
+          visible={this.upLocVisible}
           on-close={this.closeModal}
-        ></down-model>
-        <clear-model
-          data={this.clearData}
-          title={this.clearTitle}
-          visible={this.clearVisible}
           on-refresh={this.refresh}
+        />
+        <changeloc-model
+          data={this.changelocData}
+          visible={this.changelocVisible}
           on-close={this.closeModal}
-        >
-        </clear-model>
+          on-refresh={this.refresh}
+        />
+        <aThreshold-model
+          data={this.aThresholdData}
+          visible={this.aThresholdVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
+        <bsjThreshold-model
+          data={this.bsjThresholdData}
+          visible={this.bsjThresholdVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
+        <checkLog-model
+          time={this.clickTime}
+          title={this.checkLogTitle}
+          data={this.checkLogData}
+          visible={this.checkLogVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
       </div>
     );
   }
