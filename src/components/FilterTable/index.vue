@@ -83,7 +83,7 @@ export default class FilterTable extends Vue {
   @Prop() private url!: string;
 
   // 请求数据类型
-  @Prop({ default: "formData" })
+  @Prop({ default: 'formData' })
   private dataType!: string;
 
   // 表格行ID
@@ -96,7 +96,7 @@ export default class FilterTable extends Vue {
   @Prop() private opreatWidth!: string;
 
   // 本地存储字段名
-  @Prop({ default: "filterTable" }) private localName!: string;
+  @Prop({ default: 'filterTable' }) private localName!: string;
 
   // 请求错误回调事件
   @Prop() private fetchError!: string;
@@ -111,7 +111,7 @@ export default class FilterTable extends Vue {
   @Prop() private fetchType!: string;
 
   // 头部对齐方式
-  @Prop({ default: "center" }) private headerAlign!: string;
+  @Prop({ default: 'center' }) private headerAlign!: string;
 
   // 表格行是否可点击
   @Prop({ default: false })
@@ -134,7 +134,7 @@ export default class FilterTable extends Vue {
     const saveList = window.localStorage.getItem(this.localName);
     // 判断是否有值
     if (saveList) {
-      const checkList = saveList.split(",");
+      const checkList = saveList.split(',');
       // 根据换成过滤表格配置
       const filterList = this.defalutTableList.filter(
         (item, index) => checkList.indexOf(item.prop) > -1,
@@ -187,7 +187,7 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   clearFun(callBack: Function) {
-    this.$emit("clearOutParams", callBack);
+    this.$emit('clearOutParams', callBack);
   }
 
   /**
@@ -195,12 +195,12 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   addBack() {
-    this.$emit("addBack");
+    this.$emit('addBack');
   }
 
   @Emit()
   downBack(data: any) {
-    this.$emit("downBack", data);
+    this.$emit('downBack', data);
   }
 
   /**
@@ -217,7 +217,7 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   exportBack() {
-    this.$emit("exportBack");
+    this.$emit('exportBack');
   }
 
   /**
@@ -227,7 +227,7 @@ export default class FilterTable extends Vue {
   @Emit()
   setTable(list: Array<string>) {
     const filterList = this.defalutTableList.filter(
-      (item, index) => list.indexOf(item.prop) > -1
+      (item, index) => list.indexOf(item.prop) > -1,
     );
     this.changeTableList = filterList;
   }
@@ -237,7 +237,7 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   tableClick(key: string, row: any) {
-    this.$emit("menuClick", key, row);
+    this.$emit('menuClick', key, row);
   }
 
   /**
@@ -245,7 +245,7 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   selectChange(val: any) {
-    this.$emit("selectChange", val);
+    this.$emit('selectChange', val);
   }
 
   /**
@@ -253,7 +253,7 @@ export default class FilterTable extends Vue {
    */
   @Emit()
   currentChange(val: any) {
-    this.$emit("currentChange", val);
+    this.$emit('currentChange', val);
   }
 }
 </script>

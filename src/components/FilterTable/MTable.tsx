@@ -95,10 +95,10 @@ export default class MTable extends Vue {
     pageNum: number,
     page: boolean,
   } = {
-      pageSize: this.defaultPageSize,
-      pageNum: 1,
-      page: true,
-    };
+    pageSize: this.defaultPageSize,
+    pageNum: 1,
+    page: true,
+  };
 
   // 加载状态
   loading: boolean = false;
@@ -139,7 +139,7 @@ export default class MTable extends Vue {
       url: this.url,
       method: this.fetchType,
       fetchType: this.dataType,
-      data: data ? data : Object.assign(this.tableParams, this.pageParams, this.outParams),
+      data: data || Object.assign(this.tableParams, this.pageParams, this.outParams),
     }).then((res) => {
       this.loading = false;
       const code = this.getValue(this.BackParams.code, res);

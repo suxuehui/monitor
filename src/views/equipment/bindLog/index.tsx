@@ -75,17 +75,6 @@ export default class BindLog extends Vue {
   // 新增、导出按钮展示
   acceptBtn: boolean = true;
 
-  activated() {
-    const FormTable: any = this.$refs.MTable;
-    const tableParams = {
-      page: true,
-      pageNum: 1,
-      pageSize: 5,
-      imei: this.$route.query.imei,
-    };
-    FormTable.getData(tableParams);
-  }
-
   created() {
     const getNowRoles: string[] = [
       // 操作
