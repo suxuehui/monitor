@@ -252,7 +252,7 @@ export default class Merchants extends Vue {
 
   render(h: any) {
     return (
-      <div class="member-wrap">
+      <div class="customer-member-wrap">
         <filter-table
           ref="table"
           filter-list={this.filterList}

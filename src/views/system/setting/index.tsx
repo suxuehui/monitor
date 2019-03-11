@@ -1,13 +1,9 @@
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import {
   Card, Input, Row, Form, Col, Checkbox, Button, FormItem,
 } from 'element-ui';
 import { getAlarmSetting, getAlarmModelList, saveAlarmModelList } from '@/api/system';
 import './index.less';
-
-interface Params {
-  [key: string]: any
-}
 
 @Component({
   components: {
@@ -179,7 +175,7 @@ export default class Setting extends Vue {
   render(h: any) {
     const { alarmModelList, alarmValueList } = this;
     return (
-      <div class="container">
+      <div class="fzk-sys-container">
         <el-card class="box-card" style="height:680px" shadow="never">
           <div class="header">
             <span class="title">告警设置</span>

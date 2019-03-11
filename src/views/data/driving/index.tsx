@@ -132,6 +132,15 @@ export default class Driving extends Vue {
       },
     },
     {
+      label: '超速',
+      prop: 'lightShakeCount',
+      sortable: true,
+      sortBy: 'lightShakeCount',
+      formatter(row: any) {
+        return `${row.lightShakeCount} 次`;
+      },
+    },
+    {
       label: '震动',
       prop: 'lightShakeCount',
       sortable: true,
@@ -234,7 +243,7 @@ export default class Driving extends Vue {
 
   render(h: any) {
     return (
-      <div class="member-wrap">
+      <div class="fzk-driving-wrap">
         <filter-table
           filter-list={this.filterList}
           filter-grade={this.filterGrade}

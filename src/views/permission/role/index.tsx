@@ -3,7 +3,7 @@ import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import { exportExcel } from '@/api/export';
-import { roleUpdateStatus, roleInfo } from '@/api/permission';
+import { roleUpdateStatus } from '@/api/permission';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
 
@@ -191,7 +191,7 @@ export default class Role extends Vue {
 
   render(h: any) {
     return (
-      <div class="member-wrap">
+      <div>
         <filter-table
           ref="table"
           filter-list={this.filterList}

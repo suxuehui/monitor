@@ -2,7 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import {
   Card, Form, FormItem, Input, Row, Col, Tag, Tooltip, Button,
 } from 'element-ui';
-import { FilterFormList, tableList, Opreat } from '@/interface';
+import { tableList, Opreat } from '@/interface';
 import { terminalInfo } from '@/api/equipment';
 import MTable from '@/components/FilterTable/MTable';
 import CheckLogModel from '@/views/equipment/bindLog/components/CheckLogModel';
@@ -204,7 +204,7 @@ export default class BindLog extends Vue {
 
   render(h: any) {
     return (
-      <div class="container">
+      <div class="fzkBindLogContainer">
         <el-card class="box-card">
           <el-form model={this.modelForm} ref="modelForm" label-width="100px" class="bindModel">
             <div class="header">

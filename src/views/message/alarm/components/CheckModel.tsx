@@ -30,7 +30,7 @@ export default class CheckModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <div class="container">
+        <div class="fzkAlarmContainer">
           {this.data}
         </div>
       </el-dialog>

@@ -125,7 +125,7 @@ export default class AlarmMap extends Vue {
 
   render() {
     return (
-      <div class="monitor-wrap">
+      <div class="fzk-alarm-map-wrap">
         <div ref="btnControl" id="btnControl" class="loc-change-box">
           <el-button class="loc btn" size="mini" icon="iconfont-trace" on-click={this.getNowPosition}></el-button>
           <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>

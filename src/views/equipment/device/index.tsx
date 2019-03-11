@@ -24,6 +24,7 @@ interface TerminalType { key: number, value: number, label: string, color: strin
   components: {
     'el-tag': Tag,
     'el-button': Button,
+    'el-popover': Popover,
     'bind-model': BindModel,
     'accept-model': AcceptModel,
     'upload-model': UploadModel,
@@ -32,7 +33,6 @@ interface TerminalType { key: number, value: number, label: string, color: strin
     'aThreshold-model': AThresholdModel,
     'bsjThreshold-model': BsjThresholdModel,
     'checkLog-model': CheckLogModel,
-    'el-popover': Popover,
     'popconfirm-block': PopconfirmBlock,
   },
   name: 'Device',
@@ -525,8 +525,8 @@ export default class Device extends Vue {
         console.log(row);
         // this.bsjThresholdVisible = true;
         // this.bsjThresholdData = row;
-        // this.aThresholdVisible = true;
-        // this.aThresholdData = row;
+        this.aThresholdVisible = true;
+        this.aThresholdData = row;
         break;
       // 日志
       case 'logs':
@@ -567,7 +567,7 @@ export default class Device extends Vue {
 
   render(h: any) {
     return (
-      <div class="member-wrap">
+      <div class="fzk-device-wrap">
         <filter-table
           ref="table"
           filter-list={this.filterList}

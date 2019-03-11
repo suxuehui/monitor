@@ -21,6 +21,8 @@ export default class UploadModel extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private time: any;
+
   loading: boolean = false;
 
   modelForm: any = {
@@ -55,7 +57,7 @@ export default class UploadModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} label-width="80px" class="uploadModel">
+        <el-form model={this.modelForm} label-width="80px" class="fzkUploadModel">
           <el-row>
             <el-col>
               <el-form-item label="主地址" prop="mainAddress">

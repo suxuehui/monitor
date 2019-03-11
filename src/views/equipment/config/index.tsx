@@ -276,7 +276,7 @@ export default class ConfigModel extends Vue {
 
   render(h: any) {
     return (
-      <div class="model-wrap">
+      <div class="fzk-config-wrap">
         <filter-table
           ref="table"
           filter-list={this.filterList}

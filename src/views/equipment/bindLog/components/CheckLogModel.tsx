@@ -4,7 +4,6 @@ import {
 import { Dialog, Tooltip } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import MTable from '@/components/FilterTable/MTable';
-import './CheckLogModel.less';
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -77,7 +76,7 @@ export default class CheckLog extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <div class="table">
+          <div style={{ textAlign: 'center' }}>
             <m-table
               ref="MTable"
               class="mTable"

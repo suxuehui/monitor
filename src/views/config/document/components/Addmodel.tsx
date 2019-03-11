@@ -233,7 +233,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="90px" class="addConfigModel">
+        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="90px" class="fzkAddConfigModel">
           <el-row>
             <el-col span={12}>
               <el-form-item label="配置名称" prop="cfgName">

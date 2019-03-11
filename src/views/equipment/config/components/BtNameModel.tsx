@@ -87,7 +87,7 @@ export default class BtNameModel extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="bindModel">
+          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="fzkBtNameModel">
             <el-form-item label="蓝牙名称" prop="vin">
               <el-input
                 id="vin"

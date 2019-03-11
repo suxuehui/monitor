@@ -139,7 +139,7 @@ export default class SetModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} ref="modelForm" label-width="80px" class="model">
+        <el-form model={this.modelForm} ref="modelForm" label-width="80px" class="fzkSetModel">
           <div class="container" >
             {this.setList(this.menuList)}
           </div>

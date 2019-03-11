@@ -471,7 +471,7 @@ export default class Dashboard extends Vue {
 
   render(h: any) {
     return (
-      <div class="container">
+      <div class="fzkContainer">
         <div class="monitorArea">
           <div class="mask"></div>
           <div class="monitorCenter">

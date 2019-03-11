@@ -20,7 +20,7 @@ import UploadBlock from '@/components/Upload/index.vue';
     'upload-Model': UploadBlock,
   },
 })
-export default class AddModal extends Vue {
+export default class ChangePawModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
 

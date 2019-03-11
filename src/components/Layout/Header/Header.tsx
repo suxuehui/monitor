@@ -8,6 +8,7 @@ import { routerItem } from '@/interface';
 import utils from '@/utils';
 import MenuList from '@/components/Layout/Sidebar/MenuList';
 import ChangePswModal from './ChangePawModal';
+import ExitModel from './ExitModel';
 import './Header.less';
 
 interface breadItem {
@@ -26,6 +27,7 @@ interface breadItem {
     'el-popover': Popover,
     'menu-list': MenuList,
     'changePsw-modal': ChangePswModal,
+    'exit-modal': ExitModel,
   },
 })
 export default class Header extends Vue {
@@ -111,6 +113,8 @@ export default class Header extends Vue {
 
   pswVisible: boolean = false;
 
+  exitVisible: boolean = false;
+
   /**
    * @method 下拉菜单回调事件
    * @param {string} type 下拉菜单回调参数
@@ -127,8 +131,7 @@ export default class Header extends Vue {
         break;
       case '3':
         // 退出登录
-        localStorage.removeItem('token');
-        window.location.reload();
+        this.exitVisible = true;
         break;
       default:
         break;
@@ -138,6 +141,7 @@ export default class Header extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.pswVisible = false;
+    this.exitVisible = false;
   }
 
   checkInfo() {
@@ -181,8 +185,8 @@ export default class Header extends Vue {
               {
                 this.showNotice
                   ? <el-badge value={this.$store.getters.noticeCount === 0 ? '' : this.$store.getters.noticeCount} max={9} class="item">
-                  <i class="iconfont-email"></i>
-                </el-badge>
+                    <i class="iconfont-email"></i>
+                  </el-badge>
                   : <i class="iconfont-email"></i>
               }
             </li>
@@ -217,8 +221,11 @@ export default class Header extends Vue {
           title="修改密码"
           visible={this.pswVisible}
           on-close={this.closeModal}
-        >
-        </changePsw-modal>
+        />
+        <exit-modal
+          visible={this.exitVisible}
+          on-close={this.closeModal}
+        />
       </div>
     );
   }

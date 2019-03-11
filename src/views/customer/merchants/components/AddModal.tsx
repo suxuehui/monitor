@@ -398,7 +398,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
+        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="merchants-model">
           <el-row >
             <el-col span={12}>
               <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>

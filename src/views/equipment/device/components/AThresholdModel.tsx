@@ -62,7 +62,7 @@ export default class BsjThreshold extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon ref="modelForm" label-width="90px" class="model">
+        <el-form model={this.modelForm} status-icon ref="modelForm" label-width="90px" class="fzkAModel">
           <el-form-item label="里程" prop="cfgName">
             <div class="aItemOne">
               <el-input

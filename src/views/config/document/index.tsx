@@ -160,7 +160,7 @@ export default class DeviceModel extends Vue {
 
   render(h: any) {
     return (
-      <div class="member-wrap">
+      <div class="fzk-config-wrap">
         <filter-table
           ref="table"
           filter-list={this.filterList}

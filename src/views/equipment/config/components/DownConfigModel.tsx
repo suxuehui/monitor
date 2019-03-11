@@ -75,7 +75,7 @@ export default class DownConfigModel extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="bindModel">
+          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="fzkDownConfigModel">
             <el-form-item label="产品编码" prop="vin">
               <el-input
                 id="vin"

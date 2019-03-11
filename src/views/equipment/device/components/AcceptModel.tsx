@@ -123,7 +123,7 @@ export default class AcceptModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="acceptModel">
+        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="fzkAcceptModel">
           <el-row>
             <el-col span={24}>
               <el-form-item label="是否合格" prop="terminalStatus" class="radioGroup">

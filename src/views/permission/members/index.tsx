@@ -8,7 +8,6 @@ import {
 } from '@/api/permission';
 
 import AddModal from '@/views/permission/members/components/AddModal';
-import './index.less';
 
 interface RoleType { key: number, value: string, label: string }
 interface ActiveType { key: any, value: any, label: string }

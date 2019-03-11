@@ -120,7 +120,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form ref="modelForm" class="model">
+        <el-form ref="modelForm" class="fzkAddNoticeModel">
           <el-row>
             <el-col span={24}>
               <el-form-item prop="noticeTitle">

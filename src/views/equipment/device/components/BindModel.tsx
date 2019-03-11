@@ -188,7 +188,7 @@ export default class BindModal extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="bindModel">
+          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="fzkBindModel">
             <el-row>
               <el-col span={24}>
                 <el-form-item label="车架号" prop="vin">

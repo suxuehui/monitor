@@ -282,7 +282,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon ref="modelForm" rules={this.rules} label-width="80px" class="model">
+        <el-form model={this.modelForm} status-icon ref="modelForm" rules={this.rules} label-width="80px" class="fzkAddMember">
           <el-row>
             <el-col span={12}>
               <el-form-item label="成员姓名" prop="realName">

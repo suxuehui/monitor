@@ -131,7 +131,7 @@ export default class CheckLogModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <div class="timePick">
+        <div class="fzkTimePick">
           <el-date-picker
             id="datePicker"
             v-model={this.defaultTime}
