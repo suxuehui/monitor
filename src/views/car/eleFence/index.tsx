@@ -83,14 +83,14 @@ export default class EleFence extends Vue {
     {
       key: 'levelCode',
       type: 'levelcode',
-      label: '所属门店',
+      label: '商户门店',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属门店',
+      placeholder: '请选择商户门店',
       options: [],
     },
     {
@@ -127,7 +127,7 @@ export default class EleFence extends Vue {
 
   tableList: tableList[] = [
     {
-      label: '所属商户',
+      label: '商户门店',
       prop: 'shopName',
     },
     {

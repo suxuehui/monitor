@@ -66,9 +66,16 @@ export const asyncRouterMap: routerItem[] = [
         path: 'trajectory/:id',
         name: '车辆轨迹',
         component: getComponent('car/trajectory/index'),
-        // permission: '/device/trip/list',
         permission: true,
         meta: { key: 'Trajectory' },
+        hidden: true,
+      },
+      {
+        path: 'drivingBehavior/:id',
+        name: '驾驶行为',
+        component: getComponent('car/drivingBehavior/index'),
+        permission: true,
+        meta: { key: 'DrivingBehavior' },
         hidden: true,
       },
       {

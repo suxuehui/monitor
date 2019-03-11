@@ -998,7 +998,7 @@ export default class Monitor extends Vue {
       return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
     } if (unit === 'defenceStatus') {
       if (data.defenceStatus !== null) {
-        return data.defenceStatus ? '设防' : '撤防';
+        return data.defenceStatus ? '设备设防、原车设防' : '设备设防、原车设防';
       }
       return '未知';
     } if (unit === 'authorizedStatus') {
@@ -1067,6 +1067,7 @@ export default class Monitor extends Vue {
         // 查询此车辆详细数据
         this.getCarDetail(val.id);
       } else {
+        this.detailShow = false;
         this.$message.error('车辆暂无定位，使用默认位置！');
         this.currentCarId = val.id;
         this.mapCenter = {
@@ -1215,6 +1216,24 @@ export default class Monitor extends Vue {
     return title;
   }
 
+  // 无线追踪
+  lineLessTrack() {
+    const id = `${this.currentCarId}`;
+    this.$router.push({ name: '车辆追踪', params: { id } });
+  }
+
+  // 历史轨迹
+  tripHis() {
+    const id = `${this.currentCarId}`;
+    this.$router.push({ name: '车辆轨迹', params: { id } });
+  }
+
+  // 驾驶行为
+  behaviorList() {
+    const id = `${this.currentCarId}`;
+    this.$router.push({ name: '驾驶行为', params: { id } });
+  }
+
   render() {
     const { carDetail } = this;
     return (
@@ -1235,8 +1254,7 @@ export default class Monitor extends Vue {
               <span class="onlineStatus">[{carDetail.online ? '在线' : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>}]</span>
             </div>
             <div class="center">
-              <span class="brandName">{carDetail.orgName}</span>
-
+              <span class="brandName">{carDetail.orgName? carDetail.orgName :'--'}</span>
             </div>
             <div class="bottom">
               <div class="loc">
@@ -1266,13 +1284,13 @@ export default class Monitor extends Vue {
               }
             </li>
             <li class="controlItem">
-              <span class="itemTit">无线追踪</span>
+              <span class="itemTit" on-click={this.lineLessTrack}>无线追踪</span>
             </li>
             <li class="controlItem">
-              <span class="itemTit">驾驶行为</span>
+              <span class="itemTit" on-click={this.behaviorList}>驾驶行为</span>
             </li>
             <li class="controlItem">
-              <span class="itemTit">历史轨迹</span>
+              <span class="itemTit" on-click={this.tripHis}>历史轨迹</span>
             </li>
             <li class="controlItem">
               <span class="itemTit" on-click={() => this.showTran('控制')}>远程控制</span>
@@ -1335,7 +1353,7 @@ export default class Monitor extends Vue {
             </div>
           </transition>
           {/* 车辆状态 */}
-          {/* <div class="car-detail clearfix">
+          <div class="car-detail clearfix">
             <ul class="line">
               {
                 this.carDetailArr.map((item: any) => <li class="item">
@@ -1346,7 +1364,7 @@ export default class Monitor extends Vue {
                 </li>)
               }
             </ul>
-          </div> */}
+          </div>
         </div>
         <div class={['car-table1', !this.locChange ? 'table-active' : '']}>
           <div class='loc-change-box1'>
