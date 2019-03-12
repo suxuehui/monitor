@@ -2,7 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import qs from 'qs';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import {
   modelInfo, modelDelete, brandAll, seriesAll,
 } from '@/api/model';

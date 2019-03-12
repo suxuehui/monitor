@@ -4,7 +4,7 @@ import {
 } from 'element-ui';
 import { FilterFormList, tableList } from '@/interface';
 import qs from 'qs';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import { tripGPS } from '@/api/trajectory';
 import coordTrasns from '@/utils/coordTrasns';
 import config from '@/utils';

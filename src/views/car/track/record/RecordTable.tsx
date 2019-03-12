@@ -4,7 +4,7 @@ import {
   Button, Tabs, TabPane, Tooltip,
 } from 'element-ui';
 import qs from 'qs';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 
 import './RecordTable.less';
 @Component({

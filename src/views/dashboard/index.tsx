@@ -316,8 +316,9 @@ export default class Dashboard extends Vue {
   createColumnarChart(str?: string) {
     // 柱状图
     this.columnarChart.source(this.columData);
-    this.columnarChart.scale(this.columData.name, {
+    this.columnarChart.scale('num', {
       tickInterval: 10,
+      alias: '次数',
     });
     this.columnarChart
       .interval()

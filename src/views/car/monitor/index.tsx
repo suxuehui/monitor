@@ -6,7 +6,7 @@ import {
   tableList, Opreat, FilterFormList, MapCarData,
 } from '@/interface';
 import { vehicleInfo, vehicleRadiusQuery } from '@/api/monitor';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { terminalType } from '@/api/equipment';
 import qs from 'qs';

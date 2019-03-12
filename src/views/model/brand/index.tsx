@@ -3,7 +3,7 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import AddModel from './components/Addmodel';
 
 @Component({

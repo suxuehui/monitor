@@ -2,7 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import { roleUpdateStatus } from '@/api/permission';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';

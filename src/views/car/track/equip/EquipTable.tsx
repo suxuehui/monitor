@@ -4,7 +4,7 @@ import {
   Button, Tabs, TabPane, Tag, Tooltip,
 } from 'element-ui';
 import qs from 'qs';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import DeployModel from './components/deployModel';
 import ReverseModel from './components/reverseModel';
 import './EquipTable.less';

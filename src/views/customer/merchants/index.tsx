@@ -4,7 +4,7 @@ import qs from 'qs';
 import {
   Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col,
 } from 'element-ui';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';
 

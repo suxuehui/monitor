@@ -3,7 +3,7 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
 import { configDelete, configInfo } from '@/api/config';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import AddModel from './components/Addmodel';
 
 @Component({

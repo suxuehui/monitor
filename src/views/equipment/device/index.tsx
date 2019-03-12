@@ -215,7 +215,7 @@ export default class Device extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '商户门店', prop: 'orgName1' },
+    { label: '商户门店', prop: 'orgName' },
     { label: 'imei号', prop: 'imei' },
     { label: '主机编码', prop: 'barCode' },
     { label: 'ICCID', prop: 'iccid' },

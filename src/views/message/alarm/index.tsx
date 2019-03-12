@@ -5,7 +5,7 @@ import {
 import qs from 'qs';
 import { Tag } from 'element-ui';
 
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import { orgTree, getDict } from '@/api/app';
 import { getSolution } from '@/api/message';
 import CoordTrasns from '@/utils/coordTrasns';

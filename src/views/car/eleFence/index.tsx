@@ -7,7 +7,7 @@ import {
 } from 'element-ui';
 import qs from 'qs';
 import { getFenceCars } from '@/api/fence';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 
 import { queryAddress, orgTree } from '@/api/app';
 import { getProvince, getCity, getDistrict } from '@/api/province';

@@ -2,7 +2,7 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import { orgTree } from '@/api/app';
 import './index.less';
 

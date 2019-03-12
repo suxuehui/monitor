@@ -2,7 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
-import { exportExcel } from '@/api/export';
+import exportExcel from '@/api/export';
 import {
   roleSelect, userLock, userUnlock, userInfo,
 } from '@/api/permission';
