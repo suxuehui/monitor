@@ -126,18 +126,12 @@ export default class Device extends Vue {
   ];
 
   // 筛选参数
-  filterParams: any = {
-    levelCode: '',
-    terminalType: 0,
-    status: 0,
-    online: -1,
-    keyword: '',
-  };
+  filterParams: any = {};
 
   outParams: any = {};
 
   // 请求地址
-  url: string = '/device/terminal/list';
+  url: string = '/vehicle/config/list';
 
   // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   // 网络状态online 1-在线，0-离线

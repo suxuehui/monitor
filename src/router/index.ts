@@ -160,7 +160,7 @@ export const asyncRouterMap: routerItem[] = [
   },
   {
     path: '/equipment',
-    icon: 'server',
+    icon: 'equipment',
     name: '设备管理',
     component: getComponent('equipment/index'),
     permission: [
