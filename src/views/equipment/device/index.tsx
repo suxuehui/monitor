@@ -3,8 +3,9 @@ import { Tag, Button, Popover } from 'element-ui';
 import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import {
-  terminalType, resetTime, terminalExport,
+  terminalType, resetTime, getOnLineAddress,
 } from '@/api/equipment';
+import exportExcel from '@/api/export';
 import utils from '@/utils';
 import { orgTree } from '@/api/app';
 import PopconfirmBlock from '@/components/Popconfirm/index';
@@ -209,12 +210,12 @@ export default class Device extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '商户门店', prop: 'orgName' },
+    { label: '商户门店', prop: 'merchantStores' },
     { label: 'imei号', prop: 'imei' },
     { label: '主机编码', prop: 'barCode' },
-    { label: 'ICCID', prop: 'iccid' },
-    { label: '设备型号', prop: 'iccid' },
-    { label: '网络类型', prop: 'iccid' },
+    { label: 'ICCID', prop: 'iccId' },
+    { label: '设备型号', prop: 'terminalModel' },
+    { label: '网络类型', prop: 'wireless' },
     { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
@@ -234,16 +235,27 @@ export default class Device extends Vue {
   // 点击操作时的时间
   clickTime: string = ''
 
-  checkLoc(data: object) {
+  // 查看上线地址
+  checkLoc(data: any) {
     this.clickTime = utils.getNowTime();
     this.upLocVisible = true;
     this.upLocData = data;
+    console.log(data);
+    // getOnLineAddress(data.id).then((res) => {
+    //   if (res.result.resultCode === '0') {
+    //     console.log(res)
+    //   } else {
+    //     this.$message.error(res.result.resultMessage);
+    //   }
+    // })
   }
 
+  // 查看安绑记录
   bindLog(row: any) {
     return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看记录</el-button>;
   }
 
+  // 设备到期时间
   endDay(row: any) {
     return <div>
       <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
@@ -517,10 +529,14 @@ export default class Device extends Vue {
       // 阈值
       case 'setThreshold':
         console.log(row);
-        // this.bsjThresholdVisible = true;
-        // this.bsjThresholdData = row;
-        this.aThresholdVisible = true;
-        this.aThresholdData = row;
+        if (row.reportLabel2a1) {
+          // 上报2a1
+          this.aThresholdVisible = true;
+          this.aThresholdData = row;
+        } else {
+          this.bsjThresholdVisible = true;
+          this.bsjThresholdData = row;
+        }
         break;
       // 日志
       case 'logs':
@@ -534,9 +550,14 @@ export default class Device extends Vue {
     }
   }
 
+  // downLoad(data: any) {
+  //   const data1 = qs.stringify(data);
+  //   terminalExport(data1, '设备管理列表');
+  // }
+
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    terminalExport(data1, '设备管理列表');
+    exportExcel(data1, '设备管理列表', '/device/terminal/exportExcel');
   }
 
   // 关闭弹窗

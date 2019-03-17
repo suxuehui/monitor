@@ -76,6 +76,8 @@ export default class Popconfirm extends Vue {
       str = '禁用';
     } else if (name === '续期') {
       str = '续期';
+    } else if (name === 'freeze') {
+      str = '冻结';
     }
     return str;
   }

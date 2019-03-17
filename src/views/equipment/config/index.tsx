@@ -1,7 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
-import { Tag } from 'element-ui';
+import { Tag, Button } from 'element-ui';
 import exportExcel from '@/api/export';
 
 import DownConfigModel from './components/DownConfigModel';
@@ -14,6 +14,7 @@ import utils from '@/utils';
 @Component({
   components: {
     'el-tag': Tag,
+    'el-button': Button,
     'downconfig-model': DownConfigModel,
     'clearconfig-model': ClearConfigModel,
     'btauth-model': BtAuthModel,
@@ -100,6 +101,7 @@ export default class ConfigModel extends Vue {
 
   // 请求地址
   url: string = '/vehicle/config/list';
+  // url: string = '/device/terminal/configurationLis';
 
   opreat: Opreat[] = [
     {
@@ -149,9 +151,32 @@ export default class ConfigModel extends Vue {
     { label: '配置名称', prop: 'reboot' },
     { label: '产品编码', prop: 'reboot' },
     { label: '当前车辆', prop: 'reboot' },
-    { label: '操作记录', prop: 'reboot' },
+    { label: '操作记录', prop: 'reboot', formatter: this.upLoc },
     { label: '网络状态', prop: 'reboot' },
   ];
+
+  /**
+   * @method 查看上线地址
+   * @param {obj} row 列数据
+   */
+  upLoc(row: any) {
+    return <el-button type="text" on-click={() => this.checkLoc(row)}>查看</el-button>;
+  }
+
+  // 查看上线地址
+  checkLoc(data: any) {
+    this.clickTime = utils.getNowTime();
+    // this.upLocVisible = true;
+    // this.upLocData = data;
+    console.log(data);
+    // getOnLineAddress(data.id).then((res) => {
+    //   if (res.result.resultCode === '0') {
+    //     console.log(res)
+    //   } else {
+    //     this.$message.error(res.result.resultMessage);
+    //   }
+    // })
+  }
 
   // 权限设置
   created() {
@@ -173,6 +198,9 @@ export default class ConfigModel extends Vue {
 
   // 导出按钮展示
   exportBtn: boolean = true;
+
+  // 鉴权码
+  authBtn: boolean = true;
 
   rowData: any = {};
 
@@ -307,6 +335,7 @@ export default class ConfigModel extends Vue {
           on-refresh={this.refresh}
         />
         <btauth-model
+          updateAble={this.authBtn}
           data={this.btAuthData}
           visible={this.btAuthVisible}
           on-close={this.closeModal}

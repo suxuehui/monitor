@@ -188,7 +188,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       From.clearValidate();
       From.resetFields();
-    }, 400);
+    }, 600);
     this.loading = false;
   }
 
@@ -276,7 +276,7 @@ export default class AddModal extends Vue {
   render() {
     return (
       <el-dialog
-        width="630px"
+        width="700px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}

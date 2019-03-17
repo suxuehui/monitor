@@ -36,13 +36,13 @@ export default class SetModal extends Vue {
   loading: boolean = false;
 
   created() {
-    menuSelect(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.menuList = res.entity;
-      } else {
-        this.$message.error(res.result.resultMessage || '未知错误');
-      }
-    });
+    // menuSelect(null).then((res) => {
+    //   if (res.result.resultCode === '0') {
+    //     this.menuList = res.entity;
+    //   } else {
+    //     this.$message.error(res.result.resultMessage || '未知错误');
+    //   }
+    // });
   }
 
 

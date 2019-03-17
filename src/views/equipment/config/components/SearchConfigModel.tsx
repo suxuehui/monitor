@@ -67,9 +67,7 @@ export default class SearchConfigModel extends Vue {
         close-on-click-modal={false}
       >
         <div class="content">
-          {
-            this.showContent()
-          }
+          111
         </div>
       </el-dialog>
     );

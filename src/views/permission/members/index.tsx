@@ -107,11 +107,18 @@ export default class Members extends Vue {
     {
       key: 'freeze',
       rowKey: 'userName',
-      color: (row: any) => (row.activeStatus === 1 ? 'red' : 'green'),
-      text: (row: any) => (row.activeStatus === 1 ? '冻结' : '解冻'),
-      msg: (row: any) => (row.activeStatus === 1 ? '是否要冻结？' : '是否要解冻？'),
+      color: 'red',
+      text: '冻结',
       roles: true,
-      disabled: (row: any) => (row.userName === 'admin'),
+      disabled: (row: any) => (row.userName === 'admin' || row.activeStatus !== 1),
+    },
+    {
+      key: 'unfreeze',
+      rowKey: 'userName',
+      color: 'green',
+      text: '解冻',
+      roles: true,
+      disabled: (row: any) => (row.userName === 'admin' || row.activeStatus === 1),
     },
   ];
 
@@ -121,7 +128,7 @@ export default class Members extends Vue {
     { label: '登录账号', prop: 'userName' },
     { label: '角色类型', prop: 'roleNames', formatter: this.roleChange },
     { label: '成员描述', prop: 'remark' },
-    { label: '添加人', prop: 'remark' },
+    { label: '添加人', prop: 'crtName' },
     {
       label: '添加时间',
       prop: 'crtTime',
@@ -181,28 +188,25 @@ export default class Members extends Vue {
         }
       });
     } else if (key === 'freeze') {
-      // activeStatus 1 正常 2 冻结
-      if (row.activeStatus === 1) {
-        // 冻结
-        userLock([row.id]).then((res) => {
-          if (res.result.resultCode === '0') {
-            this.$message.success(res.result.resultMessage);
-            FromTable.reloadTable();
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      } else {
-        // 解冻
-        userUnlock([row.id]).then((res) => {
-          if (res.result.resultCode === '0') {
-            this.$message.success(res.result.resultMessage);
-            FromTable.reloadTable();
-          } else {
-            this.$message.error(res.result.resultMessage);
-          }
-        });
-      }
+      // 冻结
+      userLock([row.id]).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.$message.success(res.result.resultMessage);
+          FromTable.reloadTable();
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
+    } else if (key === 'unfreeze') {
+      // 解冻
+      userUnlock([row.id]).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.$message.success(res.result.resultMessage);
+          FromTable.reloadTable();
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
 
@@ -244,6 +248,7 @@ export default class Members extends Vue {
           filter-params={this.filterParams}
           add-btn={true}
           on-addBack={this.addModel}
+          opreatWidth={'150px'}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}

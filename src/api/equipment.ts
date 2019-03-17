@@ -149,3 +149,38 @@ export async function terminalExport(params: any, fileName:string) {
     fileName: `${fileName}`,
   });
 }
+
+// 根据设备id获取设备上线地址
+export async function getOnLineAddress(params: any) {
+  return request({
+    url: `/device/terminal/urlOnLine/${params}`,
+    method: 'get',
+    data: params,
+  });
+}
+
+// 修改蓝牙名称
+export async function updateBtName(params: any) {
+  return request({
+    url: '/device/terminal/updateBtName',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 查询配置
+export async function queryConfiguration(params: any) {
+  return request({
+    url: `/device/terminal/queryConfiguration/${params}`,
+    method: 'post',
+    data: params,
+  });
+}
+
+// 获取二级联动下拉框数据 商户名-门店名
+export async function shopAnd4S(params: any) {
+  return request({
+    url: '/device/terminalModel/secondaryLinkageDropdownBox',
+    method: 'get',
+  });
+}
