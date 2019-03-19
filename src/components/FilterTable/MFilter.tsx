@@ -153,6 +153,7 @@ export default class MFilter extends Vue {
         this.$emit('search', this.params);
       });
     } else {
+      this.$emit('clearOut');
       // 其他情况，直接用默认初始值
       this.params = JSON.parse(JSON.stringify(this.initParams));
       this.$store.dispatch('getNotice');

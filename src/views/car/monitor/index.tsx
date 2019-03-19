@@ -18,6 +18,7 @@ import ControlModel from './components/ControlModel';
 import BindModel from './components/BindModel';
 import AddDeviceModel from './components/AddDeviceModel';
 import MenuClickModel from './components/MenuClickModel';
+import UnBindModel from './components/UnBindModel';
 import './index.less';
 
 // 车子图片
@@ -40,6 +41,7 @@ const pointIcon = require('@/assets/point.png');
     'bind-model': BindModel,
     'addDevice-model': AddDeviceModel,
     'menuclick-model': MenuClickModel,
+    'unbind-model': UnBindModel,
   },
   name: 'Monitor',
 })
@@ -638,6 +640,7 @@ export default class Monitor extends Vue {
    */
   getCarDetail(id: string) {
     let carDetail: any = {};
+    this.detailShow = true;
     vehicleInfo({ id }).then((res) => {
       if (res.result.resultCode === '0') {
         // 如果车辆坐标为空-位置为未知
@@ -654,7 +657,6 @@ export default class Monitor extends Vue {
                 ...res.entity,
               };
               this.carDetail = carDetail;
-              this.detailShow = true;
             }
           });
           // 判断当前是否展示的其他车辆
@@ -667,7 +669,6 @@ export default class Monitor extends Vue {
             ...res.entity,
           };
           this.carDetail = carDetail;
-          this.detailShow = true;
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');
@@ -798,8 +799,8 @@ export default class Monitor extends Vue {
         break;
       // 解绑
       case 'unbind':
-        this.menuClickVisible = true;
-        this.menuClickData = row;
+        this.unbindVisible = true;
+        this.unbindData = row;
         this.menuClickStr = '解绑';
         break;
       // 新增设备
@@ -847,12 +848,17 @@ export default class Monitor extends Vue {
 
   bindData: any = {};
 
+  // 解绑设备
+  unbindVisible: boolean = false;
+
+  unbindData: any = {};
+
   // 新增
   addVisible: boolean = false;
 
   addData: any = {}
 
-  // 删除 解绑
+  // 删除
   menuClickVisible: boolean = false;
 
   menuClickData: any = {}
@@ -973,6 +979,13 @@ export default class Monitor extends Vue {
       }
       return '未知';
     }
+    // 卫星星数
+    if (unit === '颗') {
+      if (value && value >= 0) {
+        return `${value}${unit}`;
+      }
+      return '未知';
+    }
     // 累计里程、续航里程
     if (unit === 'km') {
       if (value && value >= 0) {
@@ -998,7 +1011,7 @@ export default class Monitor extends Vue {
       return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
     } if (unit === 'defenceStatus') {
       if (data.defenceStatus !== null) {
-        return data.defenceStatus ? '设备设防、原车设防' : '设备设防、原车设防';
+        return data.defenceStatus ? '设备、原车' : '设备、原车';
       }
       return '未知';
     } if (unit === 'authorizedStatus') {
@@ -1021,6 +1034,8 @@ export default class Monitor extends Vue {
       case '[object Number]':
         return unit ? value + unit : value;
       case '[object Null]':
+        return '未知';
+      case '[object Undefined]':
         return '未知';
       default:
         return value;
@@ -1050,9 +1065,14 @@ export default class Monitor extends Vue {
     this.currentCarId = val;
   }
 
+  setCarDetail(val: any) {
+    this.carDetail = val;
+  }
+
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
+      this.setCarDetail(val);
       this.setCarId(val.id);
       if (val.lat && val.lng) {
         this.currentCarId = val.id;
@@ -1133,6 +1153,7 @@ export default class Monitor extends Vue {
     this.controlVisible = false; // 控制
     const editBlock: any = this.$refs.editTable;
     this.bindVisible = false; // 绑定
+    this.unbindVisible = false; // 解绑
     this.addVisible = false; // 新增设备
     this.menuClickVisible = false; // 删除
     setTimeout(() => {
@@ -1254,17 +1275,17 @@ export default class Monitor extends Vue {
               <span class="onlineStatus">[{carDetail.online ? '在线' : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>}]</span>
             </div>
             <div class="center">
-              <span class="brandName">{carDetail.orgName? carDetail.orgName :'--'}</span>
+              <span class="brandName">{carDetail.orgName ? carDetail.orgName : '--'}</span>
             </div>
             <div class="bottom">
               <div class="loc">
                 <i class="iconfont-location icon"></i>
-                <span>{carDetail.address}</span>
+                <span>{carDetail.address ? carDetail.address : '未知地址'}</span>
               </div>
               <div class="time">
                 <i class="iconfont-time-circle icon"></i>
                 <span>
-                  {new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss')}
+                  {carDetail.gpsTime ? new Date(carDetail.gpsTime).Format('yyyy-MM-dd hh:mm:ss') : '未知时间'}
                 </span>
                 <span class="status">
                   ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
@@ -1420,6 +1441,12 @@ export default class Monitor extends Vue {
         <bind-model
           data={this.bindData}
           visible={this.bindVisible}
+          on-close={this.closeModal}
+          on-refresh={this.reFresh}
+        />
+        <unbind-model
+          data={this.unbindData}
+          visible={this.unbindVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
         />

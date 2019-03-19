@@ -57,7 +57,7 @@ export default class BsjThreshold extends Vue {
     return (
       <el-dialog
         width="760px"
-        title="阈值设置"
+        title="阈值设置 aaa"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}

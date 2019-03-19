@@ -35,17 +35,6 @@ export default class SetModal extends Vue {
 
   loading: boolean = false;
 
-  created() {
-    // menuSelect(null).then((res) => {
-    //   if (res.result.resultCode === '0') {
-    //     this.menuList = res.entity;
-    //   } else {
-    //     this.$message.error(res.result.resultMessage || '未知错误');
-    //   }
-    // });
-  }
-
-
   @Watch('time')
   onDataChange(data: any) {
     const trees: any = this.$refs.tree;
@@ -63,7 +52,15 @@ export default class SetModal extends Vue {
           }
         }
       } else {
-        this.$message.error(resultMessage || '未知错误');
+        this.$message.error(resultMessage);
+      }
+    });
+    menuSelect({ roleId: this.data.roleId }).then((res) => {
+      const { result: { resultCode, resultMessage }, entity } = res;
+      if (resultCode === '0') {
+        this.menuList = res.entity;
+      } else {
+        this.$message.error(resultMessage);
       }
     });
   }

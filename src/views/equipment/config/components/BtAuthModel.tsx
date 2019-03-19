@@ -44,9 +44,8 @@ export default class BtAuthModel extends Vue {
           {this.data.productCode}
           <div style={{ textAlign: 'center' }}>
             {
-              this.updateAble ?
-                <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>重新生成</el-button> :
-                null
+              this.updateAble
+                ? <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>重新生成</el-button> : null
             }
             <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
           </div>

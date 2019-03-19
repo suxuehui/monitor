@@ -42,6 +42,7 @@ module.exports = {
     'vue/require-default-prop': 'error',
     'vue/require-prop-types': 'error',
     'vue/attributes-order': 'error',
-    'vue/order-in-components': 'error'
+    'vue/order-in-components': 'error',
+    "prettier.singleQuote": true,
   }
 }

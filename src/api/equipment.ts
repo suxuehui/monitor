@@ -140,7 +140,7 @@ export async function terminalInfo(params: any) {
 }
 
 // 导出
-export async function terminalExport(params: any, fileName:string) {
+export async function terminalExport(params: any, fileName: string) {
   return request({
     url: `/device/terminal/exportExcel?${params}`,
     method: 'get',
@@ -177,8 +177,8 @@ export async function queryConfiguration(params: any) {
   });
 }
 
-// 获取二级联动下拉框数据 商户名-门店名
-export async function shopAnd4S(params: any) {
+// 获取二级联动下拉框数据 设备型号
+export async function deviceModel(params: any) {
   return request({
     url: '/device/terminalModel/secondaryLinkageDropdownBox',
     method: 'get',

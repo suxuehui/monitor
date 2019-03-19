@@ -4,6 +4,7 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import exportExcel from '@/api/export';
 import { roleUpdateStatus } from '@/api/permission';
+import utils from '@/utils';
 import AddModal from '@/views/permission/role/components/AddModal';
 import SetModal from '@/views/permission/role/components/setModal';
 
@@ -88,7 +89,7 @@ export default class Role extends Vue {
       sortBy: 'countUser',
       formatter: (row: any) => (row.countUser ? row.countUser : '--'),
     },
-    { label: '添加人', prop: 'remark' },
+    { label: '添加人', prop: 'crtUserName' },
     {
       label: '添加时间',
       prop: 'crtTime',
@@ -145,6 +146,7 @@ export default class Role extends Vue {
         remark: row.remark,
       };
     } else if (key === 'forbid') {
+      // 禁用、启用
       roleUpdateStatus({ roleId: row.roleId }).then((res) => {
         if (res.result.resultCode === '0') {
           FromTable.reloadTable();
@@ -154,9 +156,10 @@ export default class Role extends Vue {
         }
       });
     } else if (key === 'setAuth') {
+      // 设置权限
       this.setVisible = true;
       this.setAuthData = row;
-      this.setTime = `${new Date().getTime()}`;
+      this.setTime = `${utils.getNowTime()}`;
       this.setTitle = `权限设置-${row.roleName}`;
     }
   }

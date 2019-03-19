@@ -37,7 +37,7 @@ export default class Merchants extends Vue {
       options: [],
     },
     {
-      key: 'activeStatus',
+      key: 'activeStatus1',
       type: 'select',
       label: '切换地址',
       placeholder: '请选择地址',
@@ -71,7 +71,7 @@ export default class Merchants extends Vue {
     { label: '关联门店', prop: 'orgName' },
     { label: '同步设备', prop: 'orgName' },
     { label: '登录账号', prop: 'manageUser' },
-    { label: '切换地址', prop: 'manageUser' },
+    { label: '切换地址', prop: 'manageUser', formatter: this.locSet },
     {
       label: '车辆数',
       prop: 'carNum',
@@ -95,7 +95,17 @@ export default class Merchants extends Vue {
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
 
-  // 地址
+  locSet(row: any) {
+    return row.chgDevAddr === 0 ? '不切换' : `切换(${row.devAddr})`;
+  }
+
+  // 是否激活:1，正常、激活，2,冻结
+  statusDom(row: any) {
+    const type = row.activeStatus === 2 ? 'danger' : 'success';
+    return <el-tag size="medium" type={type}>{row.activeStatus === 2 ? '冻结' : '正常'}</el-tag>;
+  }
+
+  // 操作
   opreat: Opreat[] = [
     {
       key: 'edit',
@@ -161,17 +171,14 @@ export default class Merchants extends Vue {
     contactAddress: '',
   }
 
-  // 是否激活:1，正常、激活，2,冻结
-  statusDom(row: any) {
-    const type = row.activeStatus === 2 ? 'danger' : 'success';
-    return <el-tag size="medium" type={type}>{row.activeStatus === 2 ? '冻结' : '正常'}</el-tag>;
-  }
-
+  // 商户状态
   activeTypes: ActiveType[] = [
     { key: 0, value: 0, label: '状态(全部)' },
     { key: 1, value: 1, label: '正常' },
     { key: 2, value: 2, label: '冻结' },
   ]
+
+  // 是否切换地址
 
   mounted() {
     this.filterList[0].options = this.activeTypes;

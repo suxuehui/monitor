@@ -78,9 +78,9 @@ export default class RecordTable extends Vue {
       prop: 'address',
     },
     {
-      label: '型号',
-      prop: 'clientType',
-      formatter: this.checkClientType,
+      label: '设备型号',
+      prop: 'terminalTypeModel',
+      // formatter: this.checkClientType,
     },
     {
       label: 'imei号',

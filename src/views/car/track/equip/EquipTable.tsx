@@ -45,9 +45,9 @@ export default class EquipTable extends Vue {
       prop: 'imei',
     },
     {
-      label: '型号',
-      prop: 'clientType',
-      formatter: this.typeConfirm,
+      label: '设备型号',
+      prop: 'terminalTypeModel',
+      // formatter: this.typeConfirm,
     },
     {
       label: '配置启动',
@@ -229,7 +229,7 @@ export default class EquipTable extends Vue {
 
   activated() {
     this.outParams.vehicleId = this.$route.params.id;
-    const Table:any = this.$refs.table;
+    const Table: any = this.$refs.table;
     Table.reloadTable();
   }
 

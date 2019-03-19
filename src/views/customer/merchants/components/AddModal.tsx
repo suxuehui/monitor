@@ -34,13 +34,12 @@ export default class AddModal extends Vue {
 
   modelForm: any = {
     orgName: '',
-    contactUser: '',
     manageUser: '',
     password: '',
-    contactPhone: '',
-    contactAddress: '',
     nameAndLev: '',
     deviceType: [],
+    mainAddr: '',
+    secondaryAddr: '',
   };
 
   shopFilteredList: any = []; // 商户列表
@@ -52,7 +51,7 @@ export default class AddModal extends Vue {
   selectLoading: boolean = true;
 
   created() {
-    this.modelForm = JSON.parse(JSON.stringify(this.data));
+    // this.modelForm = JSON.parse(JSON.stringify(this.data));
     // 设备类型
     terminalType(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -90,14 +89,8 @@ export default class AddModal extends Vue {
   }
 
   rules = {
-    contactUser: [
-      { required: true, message: '请输入联系人', trigger: 'blur' },
-    ],
-    contactPhone: [
-      { required: true, message: '请输入联系电话', trigger: 'blur' },
-    ],
-    contactAddress: [
-      { required: true, message: '请输入联系地址', trigger: 'blur' },
+    orgName: [
+      { required: true, message: '请输入商户名称', trigger: 'blur' },
     ],
     rebootRule: [
       { required: true, message: '请选择时候切换' },
@@ -130,7 +123,7 @@ export default class AddModal extends Vue {
   ]
 
   remarkRule = [
-    { required: true, validator: this.checkPointRule, trigger: 'blur' },
+    { required: true, message: '请输入地址', trigger: 'blur' },
   ]
 
   ruleStatus: boolean = true;
@@ -204,23 +197,6 @@ export default class AddModal extends Vue {
     }, 500);
   }
 
-
-  // 验证地址
-  checkPointRule(rule: any, value: string, callback: Function) {
-    setTimeout(() => {
-      if (value) {
-        const exp: any = /^\s+$/;
-        if (!exp.test(value)) {
-          callback();
-        } else {
-          callback(new Error('地址不能为空！'));
-        }
-      } else {
-        callback(new Error('地址不能为空！'));
-      }
-    }, 500);
-  }
-
   typeEdit(str: string) {
     let arr: any = [];
     if (str.split(',').length === this.typeList.length - 1) {
@@ -235,13 +211,12 @@ export default class AddModal extends Vue {
   resetData() {
     this.modelForm = {
       orgName: '',
-      contactUser: '',
       manageUser: '',
       password: '',
-      contactPhone: '',
-      contactAddress: '',
+      mainAddr: '',
+      secondaryAddr: '',
     };
-    this.reBootStatus ='1';
+    this.reBootStatus = '0';
     this.nameAndLev = '';
     this.deviceType = [];
   }
@@ -260,47 +235,48 @@ export default class AddModal extends Vue {
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
-    this.loading = true;
-    if (this.nameAndLev === '') {
-      this.$message.error('请选择商户');
-      return false;
-    }
-    if (this.deviceType.length === 0) {
-      this.$message.error('请选择设备类型');
-      return false;
-    }
+    // this.loading = true;
+    // if (this.nameAndLev === '') {
+    //   this.$message.error('请选择商户');
+    //   return false;
+    // }
+    // if (this.deviceType.length === 0) {
+    //   this.$message.error('请选择设备类型');
+    //   return false;
+    // }
     obj = {
       orgName: this.nameAndLev.split('***')[1] ? this.nameAndLev.split('***')[1] : '',
-      contactUser: this.modelForm.contactUser,
-      contactPhone: this.modelForm.contactPhone,
       manageUser: this.modelForm.manageUser,
       password: this.modelForm.password,
-      contactAddress: this.modelForm.contactAddress,
+      chgAddrAble: this.reBootStatus,
       oldLevelCode: this.nameAndLev.split('***')[0],
       deviceType: this.deviceType.indexOf('1026') > -1 ? '3,22,23,16,17' : this.deviceType.join(','),
+      mainAddr: this.modelForm.mainAddr,
+      secondaryAddr: this.modelForm.secondaryAddr,
     };
     From.validate((valid: any) => {
       if (valid) {
         if (this.title === '新增商户') {
+          console.log(obj);
           // 新增
-          customerAdd(obj).then((res) => {
-            if (res.result.resultCode === '0') {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.success(res.result.resultMessage);
-                From.resetFields();
-                this.nameAndLev = '';
-                this.deviceType = [];
-                this.ruleStatus = true;
-                this.$emit('refresh');
-              }, 1500);
-            } else {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.error(res.result.resultMessage);
-              }, 1500);
-            }
-          });
+          // customerAdd(obj).then((res) => {
+          //   if (res.result.resultCode === '0') {
+          //     setTimeout(() => {
+          //       this.loading = false;
+          //       this.$message.success(res.result.resultMessage);
+          //       From.resetFields();
+          //       this.nameAndLev = '';
+          //       this.deviceType = [];
+          //       this.ruleStatus = true;
+          //       this.$emit('refresh');
+          //     }, 1500);
+          //   } else {
+          //     setTimeout(() => {
+          //       this.loading = false;
+          //       this.$message.error(res.result.resultMessage);
+          //     }, 1500);
+          //   }
+          // });
         } else {
           obj.id = this.data.id;
           if (obj.password === '********') {
@@ -308,23 +284,24 @@ export default class AddModal extends Vue {
           }
           obj.orgName = this.data.orgName;
           obj.oldLevelCode = this.data.oldLevelCode;
-          customerUpdate(obj).then((res) => {
-            if (res.result.resultCode === '0') {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.success(res.result.resultMessage);
-                From.resetFields();
-                this.ruleStatus = true;
-                this.resetData();
-                this.$emit('refresh');
-              }, 1500);
-            } else {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.error(res.result.resultMessage);
-              }, 1500);
-            }
-          });
+          console.log(obj);
+          // customerUpdate(obj).then((res) => {
+          //   if (res.result.resultCode === '0') {
+          //     setTimeout(() => {
+          //       this.loading = false;
+          //       this.$message.success(res.result.resultMessage);
+          //       From.resetFields();
+          //       this.ruleStatus = true;
+          //       this.resetData();
+          //       this.$emit('refresh');
+          //     }, 1500);
+          //   } else {
+          //     setTimeout(() => {
+          //       this.loading = false;
+          //       this.$message.error(res.result.resultMessage);
+          //     }, 1500);
+          //   }
+          // });
         }
       } else {
         this.loading = false;
@@ -364,7 +341,7 @@ export default class AddModal extends Vue {
     this.nameAndLev = val;
   }
 
-  reBootStatus: string = '1';
+  reBootStatus: string = '0';
 
   rebootChange(data: any) {
     this.reBootStatus = data;
@@ -421,10 +398,10 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col>
-              <el-form-item label="商户名称" prop="contactUser">
+              <el-form-item label="商户名称" prop="orgName">
                 <el-input
-                  id="contactUser"
-                  v-model={this.modelForm.contactUser}
+                  id="orgName"
+                  v-model={this.modelForm.orgName}
                   placeholder="请输入商户名称"
                 ></el-input>
               </el-form-item>
@@ -486,8 +463,8 @@ export default class AddModal extends Vue {
               <el-form-item label="切换地址" prop="reboot" class="isStart">
                 <div class="radioGroup">
                   <el-radio-group v-model={this.reBootStatus} on-change={this.rebootChange}>
-                    <el-radio id="availableY" label="1">不切换</el-radio>
-                    <el-radio id="availableN" label="2">切换</el-radio>
+                    <el-radio id="availableY" label="0">不切换</el-radio>
+                    <el-radio id="availableN" label="1">切换</el-radio>
                   </el-radio-group>
                 </div>
                 <span class="star2">*</span>
@@ -495,28 +472,40 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             {
-              Number(this.reBootStatus) === 2
-                ? <el-col>
-                  <el-form-item
-                    label="地址"
-                    prop="contactUser"
-                    rules={this.modelForm.terminalStatus === '2' ? this.remarkRule : null}>
-                    <el-input
-                      id="contactUser"
-                      v-model={this.modelForm.contactUser}
-                      placeholder="请输入地址"
-                    ></el-input>
-                  </el-form-item>
-                </el-col> : null
+              this.reBootStatus === '1'
+                ? <div>
+                  <el-col>
+                    <el-form-item
+                      label="主地址"
+                      prop="mainAddr"
+                      rules={this.remarkRule}>
+                      <el-input
+                        id="mainAddr"
+                        v-model={this.modelForm.mainAddr}
+                        placeholder="请输入地址"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col>
+                    <el-form-item
+                      label="副地址"
+                      prop="secondaryAddr"
+                      rules={this.remarkRule}>
+                      <el-input
+                        id="secondaryAddr"
+                        v-model={this.modelForm.secondaryAddr}
+                        placeholder="请输入地址"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                </div> : null
             }
           </el-row>
         </el-form>
-        <el-row>
-          <el-col offset={7} span={12}>
-            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-          </el-col>
-        </el-row>
+        <div style={{ textAlign: 'center' }}>
+          <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>提交</el-button>
+          <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+        </div>
       </el-dialog>
     );
   }

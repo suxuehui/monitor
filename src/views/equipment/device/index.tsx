@@ -1,9 +1,11 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { Tag, Button, Popover } from 'element-ui';
+import {
+  Tag, Button, Popover, Tooltip,
+} from 'element-ui';
 import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import {
-  terminalType, resetTime, getOnLineAddress,
+  resetTime, getOnLineAddress, deviceModel,
 } from '@/api/equipment';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
@@ -26,6 +28,7 @@ interface TerminalType { key: number, value: number, label: string, color: strin
     'el-tag': Tag,
     'el-button': Button,
     'el-popover': Popover,
+    'el-tooltip': Tooltip,
     'bind-model': BindModel,
     'accept-model': AcceptModel,
     'upload-model': UploadModel,
@@ -56,15 +59,12 @@ export default class Device extends Vue {
       options: [],
     },
     {
-      key: 'levelCode',
-      type: 'levelcode',
+      key: 'terid',
+      type: 'cascader',
       label: '设备型号',
       filterable: true,
-      props: {
-        value: 'levelCode',
-        children: 'children',
-        label: 'orgName',
-      },
+      props: {},
+      change: this.typeChange,
       placeholder: '设备型号（全部）',
       options: [],
     },
@@ -92,16 +92,13 @@ export default class Device extends Vue {
       options: [],
     },
     {
-      key: 'levelCode',
-      type: 'levelcode',
+      key: 'terid',
+      type: 'cascader',
       label: '设备型号',
       filterable: true,
-      props: {
-        value: 'levelCode',
-        children: 'children',
-        label: 'orgName',
-      },
-      placeholder: '请选择设备型号',
+      props: {},
+      change: this.typeChange,
+      placeholder: '设备型号（全部）',
       options: [],
     },
     {
@@ -126,13 +123,35 @@ export default class Device extends Vue {
     },
   ];
 
-  // 筛选参数
-  filterParams: any = {};
+  typeChange(val: any) {
+    this.outParams = {
+      terminalModelId: '',
+      terminalType: '',
+    };
+    if (val.length === 0) {
+      this.outParams.terminalType = '';
+      this.outParams.terminalModelId = '';
+    } else if (val.length === 1) {
+      this.outParams.terminalType = val[val.length - 1];
+      this.outParams.terminalModelId = '';
+    } else if (val.length === 2) {
+      this.outParams.terminalType = val[val.length - 2];
+      this.outParams.terminalModelId = val[val.length - 1];
+    }
+  }
 
-  outParams: any = {};
+  // 筛选参数
+  filterParams: any = {
+    terid: [],
+  };
+
+  outParams: any = {
+    terminalModelId: '', // 具体设备型号id值 ,
+    terminalType: '', // 设备类型:3-OTU,22-KeLong,23-BSJ,16-BT
+  };
 
   // 请求地址
-  url: string = '/vehicle/config/list';
+  url: string = '/device/terminal/list';
 
   // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   // 网络状态online 1-在线，0-离线
@@ -143,7 +162,7 @@ export default class Device extends Vue {
       color: 'green',
       text: '绑定',
       msg: '是否要绑定？',
-      // disabled: this.bindDisable,
+      disabled: this.bindDisable,
       roles: true,
     },
     {
@@ -153,14 +172,14 @@ export default class Device extends Vue {
       text: '解绑',
       msg: '是否要解绑？',
       roles: true,
-      // disabled: this.unBindDisable,
+      disabled: this.unBindDisable,
     },
     {
       key: 'accept',
       rowKey: 'imei',
       color: 'blue',
       text: '验收',
-      // disabled: this.acceptDisable,
+      disabled: this.acceptDisable,
       roles: true,
     },
     {
@@ -169,6 +188,7 @@ export default class Device extends Vue {
       color: 'blue',
       text: '切换地址',
       roles: true,
+      disabled: this.changeLocDisable,
     },
     {
       key: 'setThreshold',
@@ -176,6 +196,7 @@ export default class Device extends Vue {
       color: 'blue',
       text: '阈值',
       roles: true,
+      disabled: this.unBindDisable,
     },
     {
       key: 'logs',
@@ -186,6 +207,7 @@ export default class Device extends Vue {
     },
   ];
 
+  // 验收状态：待验收2 未合格4
   acceptDisable(row: any) {
     if (row.status === 1 || row.status === 3 || row.status === 5) {
       return true;
@@ -193,19 +215,119 @@ export default class Device extends Vue {
     return false;
   }
 
+  // 绑定状态：待安绑1
   bindDisable(row: any) {
-    // 待安绑
     if (row.status === 1) {
       return false;
     }
     return true;
   }
 
+  // 解绑状态\阈值状态：待验收2 未合格4 已合格3
   unBindDisable(row: any) {
     if (row.status === 2 || row.status === 3 || row.status === 4) {
       return false;
     }
     return true;
+  }
+
+  // 切换地址状态：已合格3 且门店支持切换switchAddress 设备在线online
+  changeLocDisable(row: any) {
+    if (row.status === 3 && row.switchAddress && row.online) {
+      return false;
+    }
+    return true;
+  }
+
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/device/terminal/save',
+      '/device/terminal/bind',
+      '/device/terminal/unbind/{imei}',
+      '/device/terminal/confirm',
+      '/device/terminal/getBluetoothAuthCode',
+      '/device/terminal/createBluetoothAuthCode',
+      '/device/terminal/deliveryCfg',
+      '/device/terminal/clearCfg',
+      '/device/terminal/reset/{id}',
+      '/terminal/ops/list',
+      '/device/terminal/exportExcel',
+    ];
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[1]); // 绑定
+    //   this.opreat[1].roles = !!(res[2]); // 解绑
+    //   this.opreat[2].roles = !!(res[3]); // 验收
+    //   this.opreat[3].roles = !!(res[4]); // 鉴权码
+    //   this.authBtn = !!(res[5]);
+    //   this.opreat[4].roles = !!(res[6]);
+    //   this.opreat[5].roles = !!(res[7]);
+    //   this.addBtn = !!(res[0]);
+    //   this.resetBtn = !!(res[8]);
+    //   this.opsBtn = !!(res[9]);
+    //   this.exportBtn = !!(res[10]);
+    // });
+    // 门店
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '全部',
+        });
+        this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+    // 设备状态
+    this.filterGrade[2].options = this.terminalStatus;
+    // 网络状态
+    this.filterGrade[3].options = this.onlineStatus;
+  }
+
+  mounted() {
+    deviceModel(null).then((res) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        const list: any = [];
+        entity.forEach((item: any, index: number) => {
+          if (item.terminalModelList.length > 0) {
+            item.terminalModelList.forEach((it: any, ind: number) => {
+              it.label = it.name;
+              it.value = it.id;
+            });
+            list.push({
+              value: parseInt(item.dictionary.enumValue, 10),
+              label: item.dictionary.name,
+              children: item.terminalModelList,
+            });
+          } else {
+            list.push({
+              value: parseInt(item.dictionary.enumValue, 10),
+              label: item.dictionary.name,
+            });
+          }
+        });
+        list.unshift({
+          label: '全部',
+          value: '',
+        });
+        this.filterList[1].options = list;
+        this.filterList[1].props = {
+          value: 'value',
+          children: 'children',
+        };
+        this.filterGrade[1].options = list;
+        this.filterGrade[1].props = {
+          value: 'value',
+          children: 'children',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 表格参数
@@ -215,21 +337,23 @@ export default class Device extends Vue {
     { label: '主机编码', prop: 'barCode' },
     { label: 'ICCID', prop: 'iccId' },
     { label: '设备型号', prop: 'terminalModel' },
-    { label: '网络类型', prop: 'wireless' },
+    { label: '网络类型', prop: 'wireless', formatter: this.wireCheck },
     { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
-    { label: '上线地址', prop: 'plateNum', formatter: this.upLoc },
+    { label: '上线地址', prop: 'imei', formatter: this.upLoc },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
 
-  /**
-   * @method 查看上线地址
-   * @param {obj} row 列数据
-   */
+  // 是否无线设备
+  wireCheck(row: any) {
+    return row.wireless === 0 ? <el-tag type="blue">有线</el-tag> : <el-tag type="green">无线</el-tag>;
+  }
+
+  // 查看上线地址
   upLoc(row: any) {
-    return <el-button type="text" on-click={() => this.checkLoc(row)}>查看地址</el-button>;
+    return <el-button type="text" disabled={!row.switchAddress} on-click={() => this.checkLoc(row)}>查看地址</el-button>;
   }
 
   // 点击操作时的时间
@@ -305,8 +429,11 @@ export default class Device extends Vue {
   }
 
   onlineSelect(row: any) {
-    const type = row.online === 1 ? 'success' : 'danger';
-    return <el-tag size="medium" type={type}>{row.online ? '在线' : '离线'}</el-tag>;
+    return row.online
+      ? <span style="color:#67953A">在线</span>
+      : <el-tooltip class="item" effect="dark" content={`离线 (${row.offlineTime}分钟)`} placement="top">
+        <span style="color:#F56C6C">离线 ({row.offlineTime}分钟)</span>
+      </el-tooltip>;
   }
 
   terSelect(row: any) {
@@ -355,74 +482,6 @@ export default class Device extends Vue {
       key: 5, value: 5, label: '已返厂', color: 'danger',
     },
   ]
-
-  created() {
-    const getNowRoles: string[] = [
-      // 操作
-      '/device/terminal/save',
-      '/device/terminal/bind',
-      '/device/terminal/unbind/{imei}',
-      '/device/terminal/confirm',
-      '/device/terminal/getBluetoothAuthCode',
-      '/device/terminal/createBluetoothAuthCode',
-      '/device/terminal/deliveryCfg',
-      '/device/terminal/clearCfg',
-      '/device/terminal/reset/{id}',
-      '/terminal/ops/list',
-      '/device/terminal/exportExcel',
-    ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.opreat[0].roles = !!(res[1]); // 绑定
-    //   this.opreat[1].roles = !!(res[2]); // 解绑
-    //   this.opreat[2].roles = !!(res[3]); // 验收
-    //   this.opreat[3].roles = !!(res[4]); // 鉴权码
-    //   this.authBtn = !!(res[5]);
-    //   this.opreat[4].roles = !!(res[6]);
-    //   this.opreat[5].roles = !!(res[7]);
-    //   this.addBtn = !!(res[0]);
-    //   this.resetBtn = !!(res[8]);
-    //   this.opsBtn = !!(res[9]);
-    //   this.exportBtn = !!(res[10]);
-    // });
-    // 门店
-    orgTree(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.unshift({
-          id: Math.random(),
-          levelCode: '',
-          orgName: '全部',
-        });
-        this.filterList[0].options = res.entity;
-        this.filterGrade[0].options = res.entity;
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-    // 设备类型
-    terminalType(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.map((item: any) => this.typeList.push({
-          key: Math.random(),
-          value: parseInt(item.enumValue, 10),
-          label: item.name,
-        }));
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-      // 设备类型(全部)
-      this.typeList.unshift({
-        key: Math.random(),
-        value: 0,
-        label: '设备类型(全部)',
-      });
-      this.filterList[1].options = this.typeList;
-      this.filterGrade[1].options = this.typeList;
-    });
-    // 设备状态
-    this.filterGrade[2].options = this.terminalStatus;
-    // 网络状态
-    this.filterGrade[3].options = this.onlineStatus;
-  }
 
   // 网络状态 1-在线，0-离线，
   onlineStatus: any = [
@@ -479,9 +538,6 @@ export default class Device extends Vue {
   modelForm: any = {
     imei: '',
   };
-
-  // 设备类型
-  typeList: any = [];
 
   // 门店列表
   shopList: any = [];
@@ -550,11 +606,6 @@ export default class Device extends Vue {
     }
   }
 
-  // downLoad(data: any) {
-  //   const data1 = qs.stringify(data);
-  //   terminalExport(data1, '设备管理列表');
-  // }
-
   downLoad(data: any) {
     const data1 = qs.stringify(data);
     exportExcel(data1, '设备管理列表', '/device/terminal/exportExcel');
@@ -571,6 +622,12 @@ export default class Device extends Vue {
     this.aThresholdVisible = false; // 阀值2a1
     this.checkLogVisible = false; // 日志
     this.loading = false;
+  }
+
+  clear() {
+    this.outParams = {
+      terminalModelId: '',
+    };
   }
 
   // 关闭弹窗时刷新
@@ -595,6 +652,7 @@ export default class Device extends Vue {
           opreat={this.opreat}
           opreatWidth={'150px'}
           out-params={this.outParams}
+          on-clearOutParams={this.clear}
           table-list={this.tableList}
           url={this.url}
           export-btn={this.exportBtn}
