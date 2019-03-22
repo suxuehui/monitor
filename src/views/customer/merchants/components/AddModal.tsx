@@ -33,13 +33,15 @@ export default class AddModal extends Vue {
   @Prop() private data: any;
 
   modelForm: any = {
-    orgName: '',
-    manageUser: '',
-    password: '',
-    nameAndLev: '',
-    deviceType: [],
-    mainAddr: '',
-    secondaryAddr: '',
+    orgName: '', // 添加的商户名
+    manageUser: '', // 管理账号、登录账号
+    password: '', // 密码
+    nameAndLev: '', // 关联门店
+    deviceType: [], // 设备类型
+    mainAddr: '', // 主地址
+    secondaryAddr: '', // 副地址
+    mainAddrPort: '', // 主地址端口
+    secondaryAddrPort: '', // 副地址端口
   };
 
   shopFilteredList: any = []; // 商户列表
@@ -48,7 +50,7 @@ export default class AddModal extends Vue {
 
   loading: boolean = false;
 
-  selectLoading: boolean = true;
+  selectLoading: boolean = true; // 筛选关联门店时的loading状态
 
   created() {
     // this.modelForm = JSON.parse(JSON.stringify(this.data));
@@ -76,10 +78,16 @@ export default class AddModal extends Vue {
   onDataChange(data: any) {
     if (data.id > 0) {
       // 编辑
-      this.modelForm = JSON.parse(JSON.stringify(data));
-      // 编辑时设置默认密码为********
-      this.modelForm.password = '********';
-      this.ruleStatus = false;
+      // this.modelForm = JSON.parse(JSON.stringify(data));
+      this.modelForm = {
+        orgName: data.orgName,
+        contactUser: data.contactUser,
+        manageUser: data.manageUser,
+        contactPhone: data.contactPhone,
+        contactAddress: data.contactAddress,
+        password: '********', // 编辑时设置默认密码为********
+      };
+      // this.modelForm.password = '********';
       this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
       this.nameAndLev = `${this.data.orgName}`;
     } else {
@@ -122,12 +130,63 @@ export default class AddModal extends Vue {
     },
   ]
 
-  remarkRule = [
+  netAddressRule = [
     { required: true, message: '请输入地址', trigger: 'blur' },
   ]
 
-  ruleStatus: boolean = true;
+  netMainPortRule = [
+    { required: true, message: '请输入端口', trigger: 'blur' },
+    {
+      validator: this.netMainPortValue,
+    },
+  ]
 
+  netSecondPortRule = [
+    { required: true, message: '请输入端口', trigger: 'blur' },
+    {
+      validator: this.netSecondPortValue,
+    },
+  ]
+
+  /**
+   * @method 端口校验规则
+   */
+  @Emit()
+  netMainPortValue(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (this.modelForm.mainAddrPort) {
+        if (!this.isNumber(this.modelForm.mainAddrPort)) {
+          callback(new Error('端口输入错误，请重新输入'));
+        } else {
+          callback();
+        }
+      } else {
+        callback(new Error('端口不能为空'));
+      }
+    }, 500);
+  }
+
+  /**
+  * @method 端口校验规则
+  */
+  @Emit()
+  netSecondPortValue(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (this.modelForm.secondaryAddrPort) {
+        if (!this.isNumber(this.modelForm.secondaryAddrPort)) {
+          callback(new Error('端口输入错误，请重新输入'));
+        } else {
+          callback();
+        }
+      } else {
+        callback(new Error('端口不能为空'));
+      }
+    }, 500);
+  }
+
+  /**
+   * @method 密码校验规则
+   */
   @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
     setTimeout(() => {
@@ -143,11 +202,21 @@ export default class AddModal extends Vue {
     }, 500);
   }
 
+  /**
+   * @method 中文校验规则
+   */
   isChineseChar(str: any) {
     const reg = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
     return reg.test(str);
   }
 
+  /**
+  * @method 数字校验规则
+  */
+  isNumber(str: any) {
+    const reg = /^[0-9]{1,20}$/;
+    return reg.test(str);
+  }
 
   /**
    * @method 商户验证规则
@@ -165,7 +234,7 @@ export default class AddModal extends Vue {
   }
 
   /**
-   * @method 商户验证规则
+   * @method 设备类型规则
    */
   checkTypeValue(rule: any, value: string, callback: Function) {
     if (this.deviceType) {
@@ -179,7 +248,9 @@ export default class AddModal extends Vue {
     }
   }
 
-  // 验证登录账号
+  /**
+   * @method 登录账号规则
+   */
   @Emit()
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
@@ -226,7 +297,6 @@ export default class AddModal extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
-      this.ruleStatus = true;
       this.resetData();
     }, 200);
     this.loading = false;
@@ -236,23 +306,23 @@ export default class AddModal extends Vue {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     // this.loading = true;
-    // if (this.nameAndLev === '') {
-    //   this.$message.error('请选择商户');
-    //   return false;
-    // }
-    // if (this.deviceType.length === 0) {
-    //   this.$message.error('请选择设备类型');
-    //   return false;
-    // }
+    if (this.nameAndLev === '') {
+      this.$message.error('请选择商户');
+      return false;
+    }
+    if (this.deviceType.length === 0) {
+      this.$message.error('请选择设备类型');
+      return false;
+    }
     obj = {
-      orgName: this.nameAndLev.split('***')[1] ? this.nameAndLev.split('***')[1] : '',
-      manageUser: this.modelForm.manageUser,
-      password: this.modelForm.password,
-      chgAddrAble: this.reBootStatus,
-      oldLevelCode: this.nameAndLev.split('***')[0],
-      deviceType: this.deviceType.indexOf('1026') > -1 ? '3,22,23,16,17' : this.deviceType.join(','),
-      mainAddr: this.modelForm.mainAddr,
-      secondaryAddr: this.modelForm.secondaryAddr,
+      orgName: this.nameAndLev.split('***')[1] ? this.nameAndLev.split('***')[1] : '', // 添加的商户名
+      manageUser: this.modelForm.manageUser, // 账号
+      password: this.modelForm.password, // 密码
+      oldLevelCode: this.nameAndLev.split('***')[0], // 旧系统中商户的levelcode
+      deviceType: this.deviceType.indexOf('1026') > -1 ? '3,22,23,16,17' : this.deviceType.join(','), // 设备类型
+      chgAddrAble: this.reBootStatus, // 是否切换服务地址
+      mainAddr: `${this.modelForm.mainAddr}:${this.modelForm.mainAddrPort}`, // 主地址
+      secondaryAddr: `${this.modelForm.secondaryAddr}:${this.modelForm.secondaryAddrPort}`, // 副地址端口
     };
     From.validate((valid: any) => {
       if (valid) {
@@ -267,7 +337,6 @@ export default class AddModal extends Vue {
           //       From.resetFields();
           //       this.nameAndLev = '';
           //       this.deviceType = [];
-          //       this.ruleStatus = true;
           //       this.$emit('refresh');
           //     }, 1500);
           //   } else {
@@ -291,7 +360,6 @@ export default class AddModal extends Vue {
           //       this.loading = false;
           //       this.$message.success(res.result.resultMessage);
           //       From.resetFields();
-          //       this.ruleStatus = true;
           //       this.resetData();
           //       this.$emit('refresh');
           //     }, 1500);
@@ -378,7 +446,7 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="merchants-model">
           <el-row >
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser" rules={!this.ruleStatus ? null : this.manageUserRule}>
+              <el-form-item label="登录账号" prop="manageUser" rules={this.title === '新增商户' ? this.manageUserRule : null}>
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
@@ -407,7 +475,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col class="shopName">
-              <el-form-item label="关联门店" prop="oldLevelCode" rules={!this.ruleStatus ? null : this.oldLevelCodeRule}>
+              <el-form-item label="关联门店" prop="oldLevelCode" rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}>
                 <el-select
                   id="oldLevelCode"
                   v-model={this.nameAndLev}
@@ -474,11 +542,11 @@ export default class AddModal extends Vue {
             {
               this.reBootStatus === '1'
                 ? <div>
-                  <el-col>
+                  <el-col span={12}>
                     <el-form-item
                       label="主地址"
                       prop="mainAddr"
-                      rules={this.remarkRule}>
+                      rules={this.netAddressRule}>
                       <el-input
                         id="mainAddr"
                         v-model={this.modelForm.mainAddr}
@@ -486,15 +554,39 @@ export default class AddModal extends Vue {
                       ></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col>
+                  <el-col span={12}>
+                    <el-form-item
+                      label="端口"
+                      prop="mainAddrPort"
+                      rules={this.netMainPortRule}>
+                      <el-input
+                        id="mainAddrPort"
+                        v-model={this.modelForm.mainAddrPort}
+                        placeholder="请输入端口"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col span={12}>
                     <el-form-item
                       label="副地址"
                       prop="secondaryAddr"
-                      rules={this.remarkRule}>
+                      rules={this.netAddressRule}>
                       <el-input
                         id="secondaryAddr"
                         v-model={this.modelForm.secondaryAddr}
                         placeholder="请输入地址"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col span={12}>
+                    <el-form-item
+                      label="端口"
+                      prop="secondaryAddrPort"
+                      rules={this.netSecondPortRule}>
+                      <el-input
+                        id="secondaryAddrPort"
+                        v-model={this.modelForm.secondaryAddrPort}
+                        placeholder="请输入端口"
                       ></el-input>
                     </el-form-item>
                   </el-col>

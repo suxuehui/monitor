@@ -80,11 +80,7 @@ export default class BindModal extends Vue {
         >
           <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="carBindModel">
             <el-form-item label="imei号" prop="imei">
-              <el-input
-                id="imei"
-                v-model={this.modelForm.imei}
-                placeholder="请输入imei号"
-              ></el-input>
+              <el-checkbox v-model={this.modelForm}>备选项</el-checkbox>
             </el-form-item>
           </el-form>
           <div style={{ textAlign: 'center' }}>
