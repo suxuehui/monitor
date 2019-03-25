@@ -37,14 +37,29 @@ export default class BtNameModel extends Vue {
 
   loading: boolean = false;
 
-  // 车型列表
-  modelList: any = []
-
   rules = {
     vin: [
-      { required: true, message: '请输入蓝牙名称', trigger: 'blur' },
+      { required: true, validator: this.checkBtName, trigger: 'blur' },
     ],
   }
+
+  // 验证理由
+  checkBtName(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        const exp: any = /^[a-zA-Z0-9]{1,16}/;
+        console.log(exp.test(value));
+        if (exp.test(value)) {
+          callback();
+        } else {
+          callback(new Error('蓝牙名称格式错误，只能为数字和字母且长度最长为16位！！！'));
+        }
+      } else {
+        callback(new Error('请输入蓝牙名称'));
+      }
+    }, 500);
+  }
+
 
   // 重置数据
   resetData() {

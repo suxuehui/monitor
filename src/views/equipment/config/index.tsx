@@ -146,7 +146,7 @@ export default class ConfigModel extends Vue {
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
   statusSet(row: any) {
-    return row.online === 1 && row.softVersion.substr(0, 3) === 'ovt' ? false : true;
+    return !(row.online === 1 && row.softVersion.substr(0, 3) === 'ovt');
   }
 
   // 表格参数
