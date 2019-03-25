@@ -110,6 +110,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '下发配置',
       roles: true,
+      disabled: this.statusSet,
     },
     {
       key: 'clearConfig',
@@ -117,6 +118,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '清除配置',
       roles: true,
+      disabled: this.statusSet,
     },
     {
       key: 'checkConfig',
@@ -124,6 +126,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '查询配置',
       roles: true,
+      disabled: this.statusSet,
     },
     {
       key: 'btAuth',
@@ -141,6 +144,11 @@ export default class ConfigModel extends Vue {
     },
   ];
 
+  // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
+  statusSet(row: any) {
+    return row.online === 1 && row.softVersion.substr(0, 3) === 'ovt' ? false : true;
+  }
+
   // 表格参数
   tableList: tableList[] = [
     { label: '商户门店', prop: 'cfgName' },
@@ -154,6 +162,20 @@ export default class ConfigModel extends Vue {
     { label: '操作记录', prop: 'reboot', formatter: this.upLoc },
     { label: '网络状态', prop: 'reboot' },
   ];
+
+  // // 表格参数
+  // tableList: tableList[] = [
+  //   { label: '商户门店', prop: 'orgName' },
+  //   { label: 'imei号', prop: 'imei' },
+  //   { label: '主机编码', prop: 'barCode' },
+  //   { label: '设备型号', prop: 'terminalModel' },
+  //   { label: '软件版本', prop: 'softVersion' },
+  //   { label: '配置名称', prop: 'cfgName' },
+  //   { label: '产品编码', prop: 'productCode' },
+  //   { label: '当前车辆', prop: 'platenum' },
+  //   { label: '操作记录', prop: 'orgName', formatter: this.upLoc },
+  //   { label: '网络状态', prop: 'online' },
+  // ];
 
   /**
    * @method 查看上线地址
