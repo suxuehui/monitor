@@ -4,6 +4,9 @@ import {
 import {
   Tag, Dialog, Form, FormItem, Input, Button,
 } from 'element-ui';
+import {
+  setBtName,
+} from '@/api/equipment';
 
 @Component({
   components: {

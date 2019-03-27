@@ -16,8 +16,8 @@ import AcceptModel from './components/AcceptModel';
 import UnbindModel from './components/UnbindModel';
 import UploadModel from './components/UploadModel';
 import ChangelocModel from './components/ChangelocModel';
+import BThresholdModel from './components/BThresholdModel';
 import AThresholdModel from './components/AThresholdModel';
-import BsjThresholdModel from './components/BsjThresholdModel';
 import CheckLogModel from './components/CheckLogModel';
 import './index.less';
 
@@ -34,8 +34,8 @@ interface TerminalType { key: number, value: number, label: string, color: strin
     'upload-model': UploadModel,
     'unbind-model': UnbindModel,
     'changeloc-model': ChangelocModel,
+    'bThreshold-model': BThresholdModel,
     'aThreshold-model': AThresholdModel,
-    'bsjThreshold-model': BsjThresholdModel,
     'checkLog-model': CheckLogModel,
     'popconfirm-block': PopconfirmBlock,
   },
@@ -335,6 +335,7 @@ export default class Device extends Vue {
     { label: '商户门店', prop: 'merchantStores' },
     { label: 'imei号', prop: 'imei' },
     { label: '主机编码', prop: 'barCode' },
+    { label: '2a1', prop: 'reportLabel2a1' },
     { label: 'ICCID', prop: 'iccId' },
     { label: '设备型号', prop: 'terminalModel' },
     { label: '网络类型', prop: 'wireless', formatter: this.wireCheck },
@@ -429,10 +430,10 @@ export default class Device extends Vue {
   }
 
   onlineSelect(row: any) {
-    return row.online
+    return row.online === 1
       ? <span style="color:#67953A">在线</span>
-      : <el-tooltip class="item" effect="dark" content={`离线 (${row.offlineTime}分钟)`} placement="top">
-        <span style="color:#F56C6C">离线 ({row.offlineTime}分钟)</span>
+      : <el-tooltip class="item" effect="dark" content={`离线 (${utils.minToAll(row.offlineTime)})`} placement="top">
+        <span style="color:#F56C6C">离线 ({utils.minToAll(row.offlineTime)}分钟)</span>
       </el-tooltip>;
   }
 
@@ -519,14 +520,14 @@ export default class Device extends Vue {
 
   // 阀值设置
   // 2a1
+  bThresholdData: any = {};
+
+  bThresholdVisible: boolean = false;
+
+  // BSJ或WK
   aThresholdData: any = {};
 
   aThresholdVisible: boolean = false;
-
-  // BSJ或WK
-  bsjThresholdData: any = {};
-
-  bsjThresholdVisible: boolean = false;
 
   // 查看日志
   checkLogVisible: boolean = false;
@@ -585,13 +586,14 @@ export default class Device extends Vue {
       // 阈值
       case 'setThreshold':
         console.log(row);
+        this.clickTime = utils.getNowTime();
         if (row.reportLabel2a1) {
           // 上报2a1
           this.aThresholdVisible = true;
           this.aThresholdData = row;
         } else {
-          this.bsjThresholdVisible = true;
-          this.bsjThresholdData = row;
+          this.bThresholdVisible = true;
+          this.bThresholdData = row;
         }
         break;
       // 日志
@@ -618,8 +620,8 @@ export default class Device extends Vue {
     this.acceptVisible = false; // 验收
     this.upLocVisible = false; // 线上地址
     this.changelocVisible = false; // 切换地址
-    this.bsjThresholdVisible = false; // 阀值bsj wk
-    this.aThresholdVisible = false; // 阀值2a1
+    this.aThresholdVisible = false; // 阀值bsj wk
+    this.bThresholdVisible = false; // 阀值2a1
     this.checkLogVisible = false; // 日志
     this.loading = false;
   }
@@ -691,15 +693,17 @@ export default class Device extends Vue {
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
-        <aThreshold-model
-          data={this.aThresholdData}
-          visible={this.aThresholdVisible}
+        <bThreshold-model
+          time={this.clickTime}
+          data={this.bThresholdData}
+          visible={this.bThresholdVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
-        <bsjThreshold-model
-          data={this.bsjThresholdData}
-          visible={this.bsjThresholdVisible}
+        <aThreshold-model
+          time={this.clickTime}
+          data={this.aThresholdData}
+          visible={this.aThresholdVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />

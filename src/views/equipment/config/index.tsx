@@ -1,29 +1,39 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
-import { Tag, Button } from 'element-ui';
+import { Tag, Button, Tooltip } from 'element-ui';
 import exportExcel from '@/api/export';
-
+import {
+  deviceModel, queryCfg, getBtName,
+} from '@/api/equipment';
 import DownConfigModel from './components/DownConfigModel';
 import ClearConfigModel from './components/ClearConfigModel';
 import BtAuthModel from './components/BtAuthModel';
 import BtNameModel from './components/BtNameModel';
 import CheckConfigModel from './components/CheckConfigModel';
+import CheckLogModel from './components/CheckLogModel';
 import SearchConfigModel from './components/SearchConfigModel';
 import utils from '@/utils';
+
+interface OnlineType { key: any, value: any, label: string }
+
 @Component({
   components: {
     'el-tag': Tag,
     'el-button': Button,
+    'el-tooltip': Tooltip,
     'downconfig-model': DownConfigModel,
     'clearconfig-model': ClearConfigModel,
     'btauth-model': BtAuthModel,
     'btname-model': BtNameModel,
     'checkconfig-model': CheckConfigModel,
+    'checkOpeLog-model': CheckLogModel,
     'searchconfig-model': SearchConfigModel,
   },
   name: 'ConfigModel',
 })
+
+
 export default class ConfigModel extends Vue {
   // data
   // 普通筛选
@@ -49,7 +59,7 @@ export default class ConfigModel extends Vue {
       options: [],
     },
     {
-      key: 'online',
+      key: 'terminalModel',
       type: 'select',
       label: '设备型号',
       placeholder: '请选择设备型号',
@@ -60,12 +70,12 @@ export default class ConfigModel extends Vue {
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
-      key: 'levelCode',
+      key: 'levelCode1',
       type: 'levelcode',
       label: '商户门店',
       filterable: true,
       props: {
-        value: 'levelCode',
+        value: 'levelCode1',
         children: 'children',
         label: 'orgName',
       },
@@ -80,14 +90,14 @@ export default class ConfigModel extends Vue {
       options: [],
     },
     {
-      key: 'online',
+      key: 'terminalModel',
       type: 'select',
       label: '设备型号',
       placeholder: '请选择设备型号',
       options: [],
     },
     {
-      key: 'keyWord',
+      key: 'keyword',
       type: 'input',
       label: '其他参数',
       placeholder: 'imei号、主机编码、车牌号、配置名称、产品编码',
@@ -95,9 +105,14 @@ export default class ConfigModel extends Vue {
   ];
 
   // 筛选参数
-  filterParams: any = {};
+  filterParams: any = {
+    terminalModel: '',
+  };
 
-  outParams: any = {};
+  outParams: any = {
+    levelCode: '', // 新监控levelcode
+    srLevelCode: '', // 4s门户levelcode
+  };
 
   // 请求地址
   url: string = '/vehicle/config/list';
@@ -159,8 +174,8 @@ export default class ConfigModel extends Vue {
     { label: '配置名称', prop: 'reboot' },
     { label: '产品编码', prop: 'reboot' },
     { label: '当前车辆', prop: 'reboot' },
-    { label: '操作记录', prop: 'reboot', formatter: this.upLoc },
-    { label: '网络状态', prop: 'reboot' },
+    { label: '操作记录', prop: 'reboot', formatter: this.opeList },
+    { label: '网络状态', prop: 'reboot', formatter: this.onlineStatus },
   ];
 
   // // 表格参数
@@ -173,31 +188,29 @@ export default class ConfigModel extends Vue {
   //   { label: '配置名称', prop: 'cfgName' },
   //   { label: '产品编码', prop: 'productCode' },
   //   { label: '当前车辆', prop: 'platenum' },
-  //   { label: '操作记录', prop: 'orgName', formatter: this.upLoc },
+  //   { label: '操作记录', prop: 'orgName', formatter: this.opeList },
   //   { label: '网络状态', prop: 'online' },
   // ];
 
-  /**
-   * @method 查看上线地址
-   * @param {obj} row 列数据
-   */
-  upLoc(row: any) {
+  onlineStatus(row: any) {
+    return row.online === 1
+      ? <span style="color:#67953A">在线</span>
+      : <el-tooltip class="item" effect="dark" content={`离线 (${utils.minToAll(row.offlineTime)})`} placement="top">
+        <span style="color:#F56C6C">离线 ({utils.minToAll(row.offlineTime)}分钟)</span>
+      </el-tooltip>;
+  }
+
+  // 查看操作记录
+  opeList(row: any) {
     return <el-button type="text" on-click={() => this.checkLoc(row)}>查看</el-button>;
   }
 
-  // 查看上线地址
+  // 查看上线地址 按钮
   checkLoc(data: any) {
     this.clickTime = utils.getNowTime();
-    // this.upLocVisible = true;
-    // this.upLocData = data;
-    console.log(data);
-    // getOnLineAddress(data.id).then((res) => {
-    //   if (res.result.resultCode === '0') {
-    //     console.log(res)
-    //   } else {
-    //     this.$message.error(res.result.resultMessage);
-    //   }
-    // })
+    this.checkLogTitle = `操作记录（${data.imei}）`;
+    this.checkLogData = data;
+    this.checkLogVisible = true;
   }
 
   // 权限设置
@@ -218,6 +231,38 @@ export default class ConfigModel extends Vue {
     // });
   }
 
+  mounted() {
+    // 设备型号
+    deviceModel(null).then((res) => {
+      const otuList: any = [];
+      res.entity.forEach((item: any, index: number) => {
+        if (item.dictionary.name === 'OTU') {
+          item.terminalModelList.forEach((it: any, ind: number) => {
+            otuList.push({
+              value: it.id,
+              label: it.name,
+            });
+          });
+        }
+      });
+      otuList.unshift({
+        value: 0,
+        label: '设备型号(全部)',
+      });
+      this.filterList[2].options = otuList;
+      this.filterGrade[2].options = otuList;
+    });
+    // 网络状态
+    this.filterList[1].options = this.onlineTypes;
+    this.filterGrade[1].options = this.onlineTypes;
+  }
+
+  onlineTypes: OnlineType[] = [
+    { key: null, value: null, label: '网络状态(全部)' },
+    { key: 1, value: 1, label: '在线' },
+    { key: 0, value: 0, label: '离线' },
+  ]
+
   // 导出按钮展示
   exportBtn: boolean = true;
 
@@ -237,12 +282,18 @@ export default class ConfigModel extends Vue {
       this.clearconfigVisible = true;
       this.clearconfigData = row;
     } else if (key === 'checkConfig') { // 查询配置
-      this.searchconfigVisible = true;
-      this.searchconfigData = row;
+      queryCfg(row.imei).then((res: any) => {
+        console.log(res);
+      });
+      // this.searchconfigVisible = true;
+      // this.searchconfigData = row;
     } else if (key === 'btAuth') { // 蓝牙鉴权
       this.btAuthVisible = true;
       this.btAuthData = row;
     } else if (key === 'btName') { // 蓝牙名称
+      // getBtName(row.imei).then((res: any) => {
+      //   console.log(res);
+      // });
       this.btNameVisible = true;
       this.btNameData = row;
       this.clickTime = utils.getNowTime();
@@ -279,8 +330,16 @@ export default class ConfigModel extends Vue {
 
   searchconfigData: any = {};
 
+  // 操作记录
+  checkLogTitle: string = '';
+
+  checkLogData: any = {};
+
+  checkLogVisible: boolean = false;
+
   // 点击时间
   clickTime: string = '';
+
 
   // 关闭弹窗
   closeModal(): void {
@@ -289,6 +348,7 @@ export default class ConfigModel extends Vue {
     this.btAuthVisible = false; // 蓝牙鉴权
     this.btNameVisible = false; // 蓝牙名称
     this.searchconfigVisible = false; // 查询配置
+    this.checkLogVisible = false; // 查询操作记录
   }
 
   // 打开配置参数校验
@@ -381,6 +441,14 @@ export default class ConfigModel extends Vue {
           data={this.searchconfigData}
           visible={this.searchconfigVisible}
           on-close={this.closeCheckModel}
+          on-refresh={this.refresh}
+        />
+        <checkOpeLog-model
+          time={this.clickTime}
+          title={this.checkLogTitle}
+          data={this.checkLogData}
+          visible={this.checkLogVisible}
+          on-close={this.closeModal}
           on-refresh={this.refresh}
         />
       </div>

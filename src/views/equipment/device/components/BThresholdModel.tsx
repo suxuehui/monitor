@@ -1,14 +1,14 @@
 import {
-  Component, Prop, Vue, Emit, Watch,
+  Component, Prop, Vue, Watch, Emit,
 } from 'vue-property-decorator';
 import {
-  Dialog, Row, Col, Button, Form, FormItem, Input, Radio, RadioGroup,
+  Dialog, Row, Col, Button, Form, FormItem, Input, InputNumber, Radio, RadioGroup,
 } from 'element-ui';
 import utils from '@/utils';
 import {
   searchThrDefaultVal, searchThrVal, setThrVal,
 } from '@/api/equipment';
-import './AThresholdModel.less';
+import './BThresholdModel.less';
 
 @Component({
   components: {
@@ -19,6 +19,7 @@ import './AThresholdModel.less';
     'el-input': Input,
     'el-form-item': FormItem,
     'el-button': Button,
+    'el-input-number': InputNumber,
     'el-radio-group': RadioGroup,
     'el-radio': Radio,
   },
@@ -62,6 +63,16 @@ export default class BsjThreshold extends Vue {
   };
 
   rules = {
+    initialMileage: [
+      {
+        validator: this.checkNum, trigger: 'blur',
+      },
+    ],
+    overSpeed: [
+      {
+        validator: this.overSpeedNumRule, trigger: 'blur',
+      },
+    ],
     vibrationAcceleration: [
       {
         validator: this.checkNum, trigger: 'blur',
@@ -87,27 +98,19 @@ export default class BsjThreshold extends Vue {
         validator: this.collisionNumRule, trigger: 'blur',
       },
     ],
-    flip: [
-      {
-        validator: this.flipNumRule, trigger: 'blur',
-      },
-    ],
     batchSetting: [
       { required: true },
     ],
   }
 
-  // 急转弯规则（4个）
+  // 超速规则（4个）
   @Emit()
-  sharpAngleNumRule(rule: any, value: string, callback: Function) {
+  overSpeedNumRule(rule: any, value: string, callback: Function) {
     const {
-      sharpLowSpeed, sharpLowAngleThreshold,
-      sharpHighThreshold, sharpHighAngleThreshold,
+      overSpeedSpec, overSpeedDuration,
     } = this.modelForm;
-    if (sharpLowSpeed !== '' && sharpLowAngleThreshold !== ''
-      && sharpHighThreshold !== '' && sharpHighAngleThreshold !== '') {
-      if (utils.expNum(sharpLowSpeed) && utils.expNum(sharpLowAngleThreshold)
-        && utils.expNum(sharpHighThreshold) && utils.expNum(sharpHighAngleThreshold)) {
+    if (overSpeedSpec !== '' && overSpeedDuration !== '') {
+      if (utils.expNum(overSpeedSpec) && utils.expNum(overSpeedDuration)) {
         callback();
       } else {
         callback(new Error('阈值输入不合法，请重新输入！'));
@@ -137,16 +140,18 @@ export default class BsjThreshold extends Vue {
     }
   }
 
-  // 翻滚规则（4个）
+  // 急转弯规则（5个）
   @Emit()
-  flipNumRule(rule: any, value: string, callback: Function) {
+  sharpAngleNumRule(rule: any, value: string, callback: Function) {
     const {
-      flipAngularthreshold, flipChangeThreshold, flipParkingDuration,
+      sharpLowSpeed, sharpLowAngleThreshold,
+      sharpHighThreshold, sharpHighAngleThreshold,
+      sharpAngleSpec,
     } = this.modelForm;
-    if (flipAngularthreshold !== '' && flipChangeThreshold !== ''
-      && flipParkingDuration !== '') {
-      if (utils.expNum(flipAngularthreshold) && utils.expNum(flipChangeThreshold)
-        && utils.expNum(flipParkingDuration)) {
+    if (sharpLowSpeed !== '' && sharpLowAngleThreshold !== ''
+      && sharpHighThreshold !== '' && sharpHighAngleThreshold !== '' && sharpAngleSpec !== '') {
+      if (utils.expNum(sharpLowSpeed) && utils.expNum(sharpLowAngleThreshold)
+        && utils.expNum(sharpHighThreshold) && utils.expNum(sharpHighAngleThreshold) && utils.expNum(sharpAngleSpec)) {
         callback();
       } else {
         callback(new Error('阈值输入不合法，请重新输入！'));
@@ -199,166 +204,179 @@ export default class BsjThreshold extends Vue {
     return (
       <el-dialog
         width="760px"
-        title="阈值设置2a1"
+        title="阈值设置bsj"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="90px" class="fzkBsjModel">
+        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="90px" class="fzkAModel">
+          <el-form-item label="里程" prop="initialMileage">
+            <div class="aItemOne">
+              <el-input
+                id="initialMileage"
+                class="aItemOneInput"
+                v-model={this.modelForm.initialMileage}
+                placeholder="请输入初始里程"
+              />
+              <span class="aItemTitle color909399">初始里程</span>
+              <span class="star1">*</span>
+              <el-button type="text" class="btn">默认值</el-button>
+            </div>
+          </el-form-item>
+          <el-form-item label="超速" prop="overSpeed">
+            <div class="aItemTwo">
+              <el-col span={12} class="aItemTwoItem">
+                <el-input
+                  id="overSpeedSpec"
+                  class="aItemTwoInput"
+                  v-model={this.modelForm.overSpeedSpec}
+                  placeholder="请输入超速阀值"
+                />
+                <span class="aItemTitle color909399">超速阀值</span>
+              </el-col>
+              <el-col span={12} class="aItemTwoItem">
+                <el-input
+                  id="overSpeedDuration"
+                  class="aItemTwoInput"
+                  v-model={this.modelForm.overSpeedDuration}
+                  placeholder="请输入持续时间"
+                />
+                <span class="aItemTitle color909399">持续时间</span>
+              </el-col>
+              <span class="star1">*</span>
+              <el-button type="text" class="btn">默认值</el-button>
+            </div>
+          </el-form-item>
           <el-form-item label="振动" prop="vibrationAcceleration">
-            <div class="bItemOne">
+            <div class="aItemOne">
               <el-input
                 id="vibrationAcceleration"
-                class="bItemOneInput"
+                class="aItemOneInput"
                 v-model={this.modelForm.vibrationAcceleration}
                 placeholder="请输入震动阀值"
               />
-              <span class="itemTitle color909399">震动阀值</span>
+              <span class="aItemTitle color909399">震动阀值</span>
               <span class="star1">*</span>
-              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('震动')}>默认值</el-button>
+              <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急加速" prop="accelerationThreshold">
-            <div class="bItemOne">
+            <div class="aItemOne">
               <el-input
                 id="accelerationThreshold"
-                class="bItemOneInput"
+                class="aItemOneInput"
                 v-model={this.modelForm.accelerationThreshold}
                 placeholder="请输入加速阀值"
               />
-              <span class="itemTitle color909399">加速阀值</span>
+              <span class="aItemTitle color909399">加速阀值</span>
               <span class="star2">*</span>
-              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急加速')}>默认值</el-button>
+              <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急减速" prop="decelerationThreshold">
-            <div class="bItemOne">
+            <div class="aItemOne">
               <el-input
                 id="decelerationThreshold"
-                class="bItemOneInput"
+                class="aItemOneInput"
                 v-model={this.modelForm.decelerationThreshold}
                 placeholder="请输入减速阀值"
               />
-              <span class="itemTitle color909399">减速阀值</span>
+              <span class="aItemTitle color909399">减速阀值</span>
               <span class="star2">*</span>
-              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急减速')}>默认值</el-button>
+              <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急转弯" prop="sharpAngle">
-            <div class="bItemFour">
-              <el-col span={6} class="bItemFourItem">
+            <div class="aItemFive">
+              <el-col class="aItemFiveItem">
+                <el-input
+                  id="sharpAngleSpec"
+                  class="aItemFiveInput"
+                  v-model={this.modelForm.sharpAngleSpec}
+                  placeholder="请输入转弯阀值"
+                />
+                <span class="aItemTitle color909399">转弯阀值</span>
+              </el-col>
+              <el-col class="aItemFiveItem">
                 <el-input
                   id="sharpLowSpeed"
-                  class="bItemFourInput"
+                  class="aItemFiveInput"
                   v-model={this.modelForm.sharpLowSpeed}
                   placeholder="请输入低速时速"
                 />
-                <span class="itemTitle color909399">低速时速</span>
+                <span class="aItemTitle color909399">低速时速</span>
               </el-col>
-              <el-col span={6} class="bItemFourItem">
+              <el-col class="aItemFiveItem">
                 <el-input
                   id="sharpLowAngleThreshold"
-                  class="bItemFourInput"
+                  class="aItemFiveInput"
                   v-model={this.modelForm.sharpLowAngleThreshold}
                   placeholder="请输入低速角度"
                 />
-                <span class="itemTitle color909399">低速角度</span>
+                <span class="aItemTitle color909399">低速角度</span>
               </el-col>
-              <el-col span={6} class="bItemFourItem">
+              <el-col class="aItemFiveItem">
                 <el-input
                   id="sharpHighThreshold"
-                  class="bItemFourInput"
+                  class="aItemFiveInput"
                   v-model={this.modelForm.sharpHighThreshold}
                   placeholder="请输入高速时速"
                 />
-                <span class="itemTitle color909399">高速时速</span>
+                <span class="aItemTitle color909399">高速时速</span>
               </el-col>
-              <el-col span={6} class="bItemFourItem">
+              <el-col class="aItemFiveItem">
                 <el-input
                   id="sharpHighAngleThreshold"
-                  class="bItemFourInput"
+                  class="aItemFiveInput"
                   v-model={this.modelForm.sharpHighAngleThreshold}
                   placeholder="请输入高速角度"
                 />
-                <span class="itemTitle color909399">高速角度</span>
+                <span class="aItemTitle color909399">高速角度</span>
               </el-col>
               <span class="star1">*</span>
-              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急转弯')}>默认值</el-button>
+              <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="碰撞" prop="collision">
-            <div class="bItemFour">
-              <el-col span={6} class="bItemFourItem">
+            <div class="aItemFour">
+              <el-col span={6} class="aItemFourItem">
                 <el-input
                   id="collisionAcceleration"
-                  class="bItemFourInput"
+                  class="aItemFourInput"
                   v-model={this.modelForm.collisionAcceleration}
                   placeholder="请输入碰撞阀值"
                 />
-                <span class="itemTitle color909399">碰撞阀值</span>
+                <span class="aItemTitle color909399">碰撞阀值</span>
               </el-col>
-              <el-col span={6} class="bItemFourItem">
+              <el-col span={6} class="aItemFourItem">
                 <el-input
                   id="collisionDetectionDuration"
-                  class="bItemFourInput"
+                  class="aItemFourInput"
                   v-model={this.modelForm.collisionDetectionDuration}
                   placeholder="请输入检测时长"
                 />
-                <span class="itemTitle color909399">检测时长</span>
+                <span class="aItemTitle color909399">检测时长</span>
               </el-col>
-              <el-col span={6} class="bItemFourItem">
+              <el-col span={6} class="aItemFourItem">
                 <el-input
                   id="collisionDuration"
-                  class="bItemFourInput"
+                  class="aItemFourInput"
                   v-model={this.modelForm.collisionDuration}
                   placeholder="请输入持续时长"
                 />
-                <span class="itemTitle color909399">持续时长</span>
+                <span class="aItemTitle color909399">持续时长</span>
               </el-col>
-              <el-col span={6} class="bItemFourItem">
+              <el-col span={6} class="aItemFourItem">
                 <el-input
                   id="collisionStopDuration"
-                  class="bItemFourInput"
+                  class="aItemFourInput"
                   v-model={this.modelForm.collisionStopDuration}
                   placeholder="请输入停车时长"
                 />
-                <span class="itemTitle color909399">停车时长</span>
-              </el-col>
-              <span class="star2">*</span>
-              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('碰撞')}>默认值</el-button>
-            </div>
-          </el-form-item>
-          <el-form-item label="翻滚" prop="flip">
-            <div class="bItemThree">
-              <el-col span={8} class="bItemThreeItem">
-                <el-input
-                  id="flipAngularthreshold"
-                  class="bItemThreeInput"
-                  v-model={this.modelForm.flipAngularthreshold}
-                  placeholder="请输入翻滚角度"
-                />
-                <span class="itemTitle color909399">翻滚角度</span>
-              </el-col>
-              <el-col span={8} class="bItemThreeItem">
-                <el-input
-                  id="flipChangeThreshold"
-                  class="bItemThreeInput"
-                  v-model={this.modelForm.flipChangeThreshold}
-                  placeholder="请输入翻滚变化"
-                />
-                <span class="itemTitle color909399">翻滚变化</span>
-              </el-col>
-              <el-col span={8} class="bItemThreeItem">
-                <el-input
-                  id="flipParkingDuration"
-                  class="bItemThreeInput"
-                  v-model={this.modelForm.flipParkingDuration}
-                  placeholder="请输入停车时长"
-                />
-                <span class="itemTitle color909399">停车时长</span>
+                <span class="aItemTitle color909399">停车时长</span>
               </el-col>
               <span class="star1">*</span>
-              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('翻滚')}>默认值</el-button>
+              <el-button type="text" class="btn">默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="批量设置" prop="batchSetting" class="setBtnGroup">
@@ -369,7 +387,7 @@ export default class BsjThreshold extends Vue {
             <div class="noAll color909399">(只对当前设备生效)</div>
             <div class="All color909399">(对同类型的其它设备同时生效)</div>
           </el-form-item>
-          <div class="bsjBtn">
+          <div class="Abtn">
             <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
             <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
           </div>

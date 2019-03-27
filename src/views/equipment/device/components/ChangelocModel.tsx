@@ -4,7 +4,9 @@ import {
 import {
   Dialog, Row, Col, Button, Form, FormItem, Input,
 } from 'element-ui';
-
+import {
+  changeAddress,
+} from '@/api/equipment';
 import './ChangelocModel.less';
 
 @Component({
@@ -41,15 +43,31 @@ export default class ChangelocModel extends Vue {
   render() {
     return (
       <el-dialog
-        width="450px"
+        width="500px"
         title="切换地址"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <p class="top">确定切换设备地址到</p>
-        <p class="content">{this.data.imei}</p>
-        <p class="alert">(请谨慎操作，切换后设备将改变上线地址)</p>
+        {/* <p class="top">确定切换设备地址到</p>
+        <div>
+
+        </div>
+        <p class="alert">(请谨慎操作，切换后设备将改变上线地址)</p> */}
+        <div class="content">
+          <p>确定切换设备地址</p>
+          <ul class="locs">
+            <li class="item">
+              <span class="tit">主地址：</span>
+              <span class="loc">www.baidu.com</span>
+            </li>
+            <li class="item">
+              <span class="tit">副地址：</span>
+              <span class="loc">www.baidu.com11111</span>
+            </li>
+          </ul>
+          <p class="alert">(请谨慎操作，切换后设备将改变上线地址)</p>
+        </div>
         <div class="changelocBtn">
           <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>确定</el-button>
           <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>

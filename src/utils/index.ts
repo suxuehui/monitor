@@ -213,7 +213,6 @@ function postDownload(url: string) {
   Form.submit();
 }
 
-
 /**
  * @method 获取当前时间
  */
@@ -222,7 +221,34 @@ function getNowTime() {
   return `${time}`;
 }
 
+/**
+ * @method 按分钟数换算为天数小时分钟格式
+ */
+function minToAll(data: any) {
+  const day: any = data / 60 / 24;
+  const hour: any = (data / 60) % 24;
+  const min: any = data % 60;
+  const strDay = parseInt(day, 10) > 0 ? `${parseInt(day, 10)}天` : '';
+  const strHour = parseInt(hour, 10) > 0 ? `${parseInt(hour, 10)}小时` : '';
+  const strMin = parseInt(min, 10) > 0 ? `${parseInt(min, 10)}分钟` : '';
+  const str = `${strDay}${strHour}${strMin}`;
+  if (day === 0 && hour === 0 && min === 0) {
+    return '0分钟';
+  }
+  return str;
+}
+
+/**
+ * @method 验证是否全为数字
+ */
+function expNum(data: any) {
+  const exp = /^[0-9]*$/;
+  return exp.test(data);
+}
+
 export default {
+  expNum,
+  minToAll,
   param2Obj,
   levelcodeToArray,
   routeToArray,

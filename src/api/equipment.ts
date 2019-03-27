@@ -169,11 +169,10 @@ export async function updateBtName(params: any) {
 }
 
 // 查询配置
-export async function queryConfiguration(params: any) {
+export async function queryCfg(params: any) {
   return request({
-    url: `/device/terminal/queryConfiguration/${params}`,
-    method: 'post',
-    data: params,
+    url: `/device/terminal/queryCfg/${params}`,
+    method: 'get',
   });
 }
 
@@ -182,5 +181,64 @@ export async function deviceModel(params: any) {
   return request({
     url: '/device/terminalModel/secondaryLinkageDropdownBox',
     method: 'get',
+  });
+}
+
+// 查询蓝牙名称
+export async function getBtName(params: any) {
+  return request({
+    url: `/device/terminal/queryBluetoothName/${params}`,
+    method: 'get',
+  });
+}
+
+// 设置蓝牙名称
+export async function setBtName(params: any) {
+  return request({
+    url: '/device/terminal/settingBluetoothName',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 查询操作记录
+export async function getOpeList(params: any) {
+  return request({
+    url: `/device/terminal/opsList/${params}`,
+    method: 'get',
+  });
+}
+
+// 切换设备服务器地址
+export async function changeAddress(params: any) {
+  return request({
+    url: `/device/terminal/addrChange/${params}`,
+    method: 'get',
+  });
+}
+
+// 查询阈值默认值
+export async function searchThrDefaultVal(params: any) {
+  return request({
+    url: '/device/terminal/defaultThreshold',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 查询阈值
+export async function searchThrVal(params: any) {
+  return request({
+    url: `/device/terminal/thresholdShow/${params}`,
+    method: 'get',
+  });
+}
+
+// 设置阈值
+export async function setThrVal(params: any) {
+  return request({
+    url: '/device/terminal/thresholdSetting',
+    method: 'post',
+    data: params,
   });
 }
