@@ -4,7 +4,7 @@ import {
 import {
   Dialog, Row, Col, Button, RadioGroup, Radio,
 } from 'element-ui';
-import { controlCar } from '@/api/monitor';
+import { cmdControl } from '@/api/monitor';
 import './ControlModel.less';
 @Component({
   components: {
@@ -52,6 +52,7 @@ export default class ControlModel extends Vue {
   onSubmit() {
     const cmd = this.modelForm.cmd ? this.modelForm.cmd : this.data.cmd;
     console.log(cmd);
+    console.log(this.data);
     // this.loading = true;
     // controlCar({ imei: this.data.imei, cmd: this.data.cmd }).then((res: any) => {
     //   if (res.result.resultCode === '0') {
@@ -81,15 +82,15 @@ export default class ControlModel extends Vue {
     } if (this.data.num === '06') {
       return (
         <el-radio-group v-model={this.modelForm.cmd} style={{ margin: '15px 0 30px' }}>
-          <el-radio label="4">开锁通油</el-radio>
-          <el-radio label="5">立即通油</el-radio>
+          <el-radio label="1">开锁通油</el-radio>
+          <el-radio label="2">立即通油</el-radio>
         </el-radio-group>
       );
     } if (this.data.num === '07') {
       return (
         <el-radio-group v-model={this.modelForm.cmd} style={{ margin: '15px 0 30px' }}>
-          <el-radio label="6">熄火断油</el-radio>
-          <el-radio label="7">立即断油</el-radio>
+          <el-radio label="1">熄火断油</el-radio>
+          <el-radio label="2">立即断油</el-radio>
         </el-radio-group>
       );
     }

@@ -151,7 +151,8 @@ export default class BsjThreshold extends Vue {
     if (sharpLowSpeed !== '' && sharpLowAngleThreshold !== ''
       && sharpHighThreshold !== '' && sharpHighAngleThreshold !== '' && sharpAngleSpec !== '') {
       if (utils.expNum(sharpLowSpeed) && utils.expNum(sharpLowAngleThreshold)
-        && utils.expNum(sharpHighThreshold) && utils.expNum(sharpHighAngleThreshold) && utils.expNum(sharpAngleSpec)) {
+        && utils.expNum(sharpHighThreshold) && utils.expNum(sharpHighAngleThreshold)
+        && utils.expNum(sharpAngleSpec)) {
         callback();
       } else {
         callback(new Error('阈值输入不合法，请重新输入！'));

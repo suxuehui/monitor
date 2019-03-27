@@ -76,3 +76,19 @@ export async function vehicleCalvalid(params: any) {
     fetchType: 'JSON',
   });
 }
+
+// 获取命令清单
+export async function cmdList(params: any) {
+  return request({
+    url: '/cmd/list',
+    method: 'post',
+  });
+}
+
+// 车辆控制
+export async function cmdControl(params: any) {
+  return request({
+    url: '/cmd/control',
+    method: 'post',
+  });
+}

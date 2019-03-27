@@ -5,7 +5,11 @@ import {
 import {
   tableList, Opreat, FilterFormList, MapCarData,
 } from '@/interface';
-import { vehicleInfo, vehicleRadiusQuery } from '@/api/monitor';
+import {
+  vehicleInfo, vehicleRadiusQuery, cmdList, cmdControl,
+} from '@/api/monitor';
+import { carSource, carBindStatus } from '@/api/car';
+import { fenceOption } from '@/api/fence';
 import exportExcel from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
 import { terminalType } from '@/api/equipment';
@@ -638,6 +642,16 @@ export default class Monitor extends Vue {
    * @method 根据车辆ID获取车辆详情
    * @param {string} id 车辆id
    */
+  getCarControlList(data: any) {
+    // cmdList(id).then((res:any)=>{
+
+    // })
+  }
+
+  /**
+   * @method 根据车辆ID获取车辆详情
+   * @param {string} id 车辆id
+   */
   getCarDetail(id: string) {
     let carDetail: any = {};
     this.detailShow = true;
@@ -1074,6 +1088,7 @@ export default class Monitor extends Vue {
     if (val) {
       this.setCarDetail(val);
       this.setCarId(val.id);
+      this.getCarControlList(val);
       if (val.lat && val.lng) {
         this.currentCarId = val.id;
         this.mapCenter = {
@@ -1191,14 +1206,14 @@ export default class Monitor extends Vue {
 
   // 远程控制选项
   remoteControlArr = [
-    { label: '降窗', num: '01', command: '01' },
-    { label: '升窗', num: '02', command: '02' },
+    { label: '降窗', num: '01', command: 'CMD_WIN_CLOSE' },
+    { label: '升窗', num: '02', command: 'CMD_WIN_OPEN' },
     { label: '解锁', num: '03', command: 'CMD_UNLOCK' },
     { label: '上锁', num: '04', command: 'CMD_LOCK' },
-    { label: '夺权', num: '05', command: '05' },
-    { label: '授权', num: '06', command: '06' },
-    { label: '断油', num: '07', command: '07' },
-    { label: '通油', num: '08', command: '08' },
+    { label: '夺权', num: '05', command: 'CMD_AUTH_OIL_OFF' },
+    { label: '授权', num: '06', command: 'CMD_AUTH_OIL_ON' },
+    { label: '断油', num: '07', command: 'CMD_OIL_ON' },
+    { label: '通油', num: '08', command: 'CMD_OIL_OFF' },
     { label: '熄火', num: '09', command: 'CMD_STOP' },
     { label: '启动', num: '10', command: 'CMD_START' },
     { label: '寻车', num: '11', command: 'CMD_CALL' },

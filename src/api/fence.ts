@@ -54,11 +54,10 @@ export async function updateFence(params: any) {
   });
 }
 
-// 获得围栏监控车辆
-export async function getFenceCars(params: any) {
+// 围栏内外筛选条件
+export async function fenceOption(params: any) {
   return request({
-    url: '/vehicle/fence/vehicleList',
+    url: '/fence/fioQueryOptions',
     method: 'post',
-    data: params,
   });
 }

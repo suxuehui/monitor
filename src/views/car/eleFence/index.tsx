@@ -6,7 +6,7 @@ import {
   Input, Button, Tag, Pagination, Autocomplete, Tooltip,
 } from 'element-ui';
 import qs from 'qs';
-import { getFenceCars } from '@/api/fence';
+import { getFenceCars } from '@/api/car';
 import exportExcel from '@/api/export';
 
 import { queryAddress, orgTree } from '@/api/app';

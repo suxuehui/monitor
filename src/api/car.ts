@@ -37,3 +37,27 @@ export async function vehicleModelInfo(params: any) {
   });
 }
 
+// 获得围栏监控车辆
+export async function getFenceCars(params: any) {
+  return request({
+    url: '/vehicle/fence/vehicleList',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 车辆来源
+export async function carSource(params: any) {
+  return request({
+    url: '/vehicle/srcQueryOptions',
+    method: 'post',
+  });
+}
+
+// 车辆绑定状态
+export async function carBindStatus(params: any) {
+  return request({
+    url: '/vehicle/bindStatuslist',
+    method: 'post',
+  });
+}
