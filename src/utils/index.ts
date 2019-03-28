@@ -225,17 +225,20 @@ function getNowTime() {
  * @method 按分钟数换算为天数小时分钟格式
  */
 function minToAll(data: any) {
-  const day: any = data / 60 / 24;
-  const hour: any = (data / 60) % 24;
-  const min: any = data % 60;
-  const strDay = parseInt(day, 10) > 0 ? `${parseInt(day, 10)}天` : '';
-  const strHour = parseInt(hour, 10) > 0 ? `${parseInt(hour, 10)}小时` : '';
-  const strMin = parseInt(min, 10) > 0 ? `${parseInt(min, 10)}分钟` : '';
-  const str = `${strDay}${strHour}${strMin}`;
-  if (day === 0 && hour === 0 && min === 0) {
-    return '0分钟';
+  if (data > 0) {
+    const day: any = data / 60 / 24;
+    const hour: any = (data / 60) % 24;
+    const min: any = data % 60;
+    const strDay = parseInt(day, 10) > 0 ? `${parseInt(day, 10)}天` : '';
+    const strHour = parseInt(hour, 10) > 0 ? `${parseInt(hour, 10)}小时` : '';
+    const strMin = parseInt(min, 10) > 0 ? `${parseInt(min, 10)}分钟` : '';
+    const str = `${strDay}${strHour}${strMin}`;
+    if (day === 0 && hour === 0 && min === 0) {
+      return '0分钟';
+    }
+    return str;
   }
-  return str;
+  return '--';
 }
 
 /**
@@ -246,7 +249,19 @@ function expNum(data: any) {
   return exp.test(data);
 }
 
+/**
+ * @method 返回当天0:0:0
+*/
+function returnTime() {
+  const time = new Date(
+    new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0,
+  );
+  return time.Format('yyyy-MM-dd hh:mm:ss');
+}
+
+
 export default {
+  returnTime,
   expNum,
   minToAll,
   param2Obj,

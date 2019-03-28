@@ -6,6 +6,7 @@ import {
 } from 'element-ui';
 import { tableList, Opreat } from '@/interface';
 import MTable from '@/components/FilterTable/MTable';
+import utils from '@/utils';
 
 import './CheckLogModel.less';
 @Component({
@@ -31,41 +32,47 @@ export default class CheckLogModel extends Vue {
 
   @Prop() private time: any;
 
-  created() {
-    // id、imei
+  mounted() {
     this.tableParams = {
       page: true,
       pageNum: 1,
       pageSize: 5,
-      imei: this.$route.query.imei,
     };
     this.defaultPageSize = 5;
   }
 
+  nowTime: any = null;
+
   @Watch('time')
   onDataChange() {
+    /**
+     * 每次点击进来重新设置查询时间、显示时间，然后再更新数据，
+     */
     this.defaultTime = [
       new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
       new Date(new Date().getFullYear(), new Date().getMonth(),
         new Date().getDate(), new Date().getHours(), new Date().getMinutes(),
         new Date().getSeconds()),
     ];
+    const date = new Date();
+    this.tableParams.imei = this.data.imei;
+    this.tableParams.startTime = utils.returnTime();
+    this.tableParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
+    this.getTableData();
   }
-
-  loading: boolean = false;
-
-  modelForm: any = {
-  };
 
   tableParams: any = {
     page: true,
     pageNum: 1,
     pageSize: 5,
+    startTime: '',
+    endTime: '',
+    imei: '',
   }
 
   defaultPageSize: any = null;
 
-  url: string = '/terminal/ops/list';
+  url: string = '/device/terminal/findTerminalLog';
 
   opreat: Opreat[] = [];
 
@@ -82,44 +89,60 @@ export default class CheckLogModel extends Vue {
       const start = new Date(data[0]).getTime();
       const end = new Date(data[1]).getTime();
       if (end - start < 90 * 24 * 60 * 60 * 1000) {
-        const time = {
+        this.tableParams = {
+          imei: this.data.imei,
           startTime: data[0],
           endTime: data[1],
         };
-        console.log(time);
-        // this.createdDrivingData(time, 'refresh');
       } else {
         this.$message.error('查询时间范围最大为三个月，请重新选择');
       }
+    } else {
+      this.tableParams = {
+        imei: this.data.imei,
+        startTime: '',
+        endTime: '',
+      };
     }
   }
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '时间', prop: 'orgName' },
-    { label: '事件', prop: 'opsRealName' },
-    { label: '软件版本', prop: 'opsType' },
-    { label: '上电状态标志', prop: 'crtTime' },
-    { label: '重启次数', prop: 'installUrl' },
-    { label: '离线前状态', prop: 'vinUrl' },
+    { label: '时间', prop: 'time' },
+    { label: '事件', prop: 'event' },
+    { label: '软件版本', prop: 'softVersion' },
+    { label: '上电状态标志', prop: 'powerOnStatus' },
+    {
+      label: '重启次数',
+      prop: 'restartNumber',
+      formatter: this.numSet,
+    },
+    { label: '离线前状态', prop: 'preOfflineState' },
   ];
+
+  numSet(row: any) {
+    return row.restartNumber ? `${row.restartNumber}` : '--';
+  }
 
   closeModal() {
     this.$emit('close');
-    setTimeout(() => {
-      this.modelForm = {};
-      this.defaultTime = [];
-    }, 200);
   }
 
   tableClick(key: string, row: any) { }
 
-  handleSearch() { }
+  handleSearch() {
+    const mTable: any = this.$refs.MTable;
+    if (mTable) {
+      mTable.getData();
+    }
+  }
 
   // 查询数据
   getTableData() {
     const mTable: any = this.$refs.MTable;
-    mTable.getData();
+    if (mTable) {
+      mTable.getData();
+    }
   }
 
   render() {
@@ -153,6 +176,7 @@ export default class CheckLogModel extends Vue {
             table-params={this.tableParams}
             url={this.url}
             row-key="rowKey"
+            pageSizeList={[5, 10, 15]}
             fetchType='post'
             dataType={'JSON'}
             opreat={this.opreat}
