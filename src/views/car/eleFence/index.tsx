@@ -7,6 +7,7 @@ import {
 } from 'element-ui';
 import qs from 'qs';
 import { getFenceCars } from '@/api/car';
+import CoordTrasns from '@/utils/coordTrasns';
 import exportExcel from '@/api/export';
 
 import { queryAddress, orgTree } from '@/api/app';
@@ -419,7 +420,9 @@ export default class EleFence extends Vue {
   // 取消展示详情
   cancel(): any {
     this.detailShow = false;
-    this.fenceDetail = {};
+    setTimeout(() => {
+      this.fenceDetail = {};
+    }, 200);
   }
 
   // 表格显示
@@ -522,17 +525,44 @@ export default class EleFence extends Vue {
       this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
       // 新建圆圈、多边形
       this.remark(val);
-      const opts = {
-        width: 200, // 信息窗口宽度
-        // offset: { height: -10, width: -10 },
-        title: '围栏名称：', // 信息窗口标题
-      };
-      const infoWindow = new this.BMap.InfoWindow(val.name, opts);
-      this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-      point.addEventListener('click', () => {
-        this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-      });
+      // const opts = {
+      //   width: 200, // 信息窗口宽度
+      //   // offset: { height: -10, width: -10 },
+      //   title: '围栏名称：', // 信息窗口标题
+      // };
+      // const infoWindow = new this.BMap.InfoWindow(val.name, opts);
+      // this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+      // point.addEventListener('click', () => {
+      //   this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+      // });
     }
+  }
+
+  // 打开地图信息窗口
+  openMsg = (data: any) => {
+    const opts = {
+      width: 200, // 信息窗口宽度
+      // offset: { height: -10, width: -10 },
+      title: '围栏名称：', // 信息窗口标题
+    };
+    const infoWindow = new this.BMap.InfoWindow(this.msgContent(data), opts);
+    const point = CoordTrasns.transToBaidu(
+      {
+        lat: data.lat,
+        lng: data.lng,
+      },
+      data.coordinateSystem,
+    );
+    this.SMap.openInfoWindow(
+      infoWindow,
+      new this.BMap.Point(point.lng, point.lat),
+    );
+  }
+
+  msgContent(content: any) {
+    return `<div class="makerMsg1">
+    ${content.name}
+    </div>`;
   }
 
   /**
@@ -541,7 +571,7 @@ export default class EleFence extends Vue {
   */
   remark(data: any) {
     if (data.fenceType === '1') {
-      this.circleInMap(data.lng, data.lat, data.radius);
+      this.circleInMap(data);
     } else if (data.fenceType === '2') {
       this.polygonInMap(data);
     }
@@ -553,13 +583,18 @@ export default class EleFence extends Vue {
    * @param {Number} lat 纬度
    * @param {Number} radius 半径
   */
-  circleInMap = (lng: number, lat: number, radius: number) => {
+  circleInMap = (data: any) => {
+    const { lat, lng, radius } = data;
     const point: any = new this.BMap.Point(lng, lat);
     const circle: any = new this.BMap.Circle(point, radius, this.styleOptions);
     const marker = new this.BMap.Marker(point);
     this.SMap.clearOverlays();
     this.SMap.addOverlay(marker);
     this.SMap.addOverlay(circle);
+    marker.addEventListener('click', () => {
+      this.openMsg(data);
+      this.showDetailBox(data);
+    });
   }
 
   /**
@@ -578,6 +613,10 @@ export default class EleFence extends Vue {
     this.SMap.clearOverlays();
     this.SMap.addOverlay(marker);
     this.SMap.addOverlay(ret);
+    marker.addEventListener('click', () => {
+      this.openMsg(data);
+      this.showDetailBox(data);
+    });
   }
 
   // 定位至当前位置
