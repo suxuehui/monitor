@@ -53,7 +53,6 @@ export async function vehicleDeviceSet(params: any) {
     url: '/vehicle/tracke/saveConfig',
     method: 'post',
     data: params,
-    fetchType: 'JSON',
   });
 }
 
@@ -63,7 +62,6 @@ export async function vehicleDeviceRev(params: any) {
     url: '/vehicle/tracke/reserveConfig',
     method: 'post',
     data: params,
-    fetchType: 'JSON',
   });
 }
 
@@ -73,7 +71,6 @@ export async function vehicleCalvalid(params: any) {
     url: '/vehicle/tracke/calvalid',
     method: 'post',
     data: params,
-    fetchType: 'JSON',
   });
 }
 

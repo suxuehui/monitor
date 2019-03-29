@@ -196,6 +196,7 @@ export default class RecordTable extends Vue {
           filter-params={this.filterParams}
           back-params={this.backParams}
           add-btn={false}
+          page-size-list={[5, 10, 15]}
           export-btn={this.exportBtn}
           on-downBack={this.downLoad}
           highlight-current-row={true}
@@ -206,7 +207,6 @@ export default class RecordTable extends Vue {
           url={this.tableUrl}
           default-page-size={5}
           localName={'recordTable'}
-          dataType={'JSON'}
           opreat={this.opreat}
           out-params={this.outParams}
           opreat-width="150px"

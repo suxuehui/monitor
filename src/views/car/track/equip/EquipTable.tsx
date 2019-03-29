@@ -4,6 +4,10 @@ import {
   Button, Tabs, TabPane, Tag, Tooltip,
 } from 'element-ui';
 import qs from 'qs';
+import utils from '@/utils';
+import {
+  deviceModel,
+} from '@/api/equipment';
 import exportExcel from '@/api/export';
 import DeployModel from './components/deployModel';
 import ReverseModel from './components/reverseModel';
@@ -25,10 +29,13 @@ export default class EquipTable extends Vue {
   // 表格参数
   filterList: FilterFormList[] = [
     {
-      key: 'clientType',
-      type: 'select',
-      label: '设备类型',
-      placeholder: '请选择型号',
+      key: 'terid',
+      type: 'cascader',
+      label: '设备型号',
+      filterable: true,
+      props: {},
+      change: this.typeChange,
+      placeholder: '设备型号（全部）',
       options: [],
     },
     {
@@ -47,7 +54,6 @@ export default class EquipTable extends Vue {
     {
       label: '设备型号',
       prop: 'terminalTypeModel',
-      // formatter: this.typeConfirm,
     },
     {
       label: '配置启动',
@@ -67,25 +73,26 @@ export default class EquipTable extends Vue {
     {
       label: '上报频率',
       prop: 'frequency',
-      formatter: (row: any) => this.addUnit(row, 'frequency'),
     },
     {
       label: '追踪时间',
       prop: 'trackDate',
+      formatter: (row: any) => this.specialAddUnit(row, 'trackDate'),
     },
     {
       label: '生效时间',
       prop: 'effectiveDate',
+      formatter: (row: any) => this.specialAddUnit(row, 'effectiveDate'),
     },
     {
       label: '追踪时长',
       prop: 'trackDuration',
-      formatter: (row: any) => this.addUnit(row, 'trackDuration'),
+      formatter: (row: any) => this.specialAddUnit(row, 'trackDuration'),
     },
     {
       label: '追踪频率',
       prop: 'trackFrequency',
-      formatter: (row: any) => this.addUnit(row, 'trackFrequency'),
+      formatter: (row: any) => this.specialAddUnit(row, 'trackFrequency'),
     },
     {
       label: '剩余电量',
@@ -133,13 +140,16 @@ export default class EquipTable extends Vue {
   // 表格请求地址
   outParams: any = {
     vehicleId: '',
+    terminalModelId: '',
+    terminalType: '',
   }
 
   addUnit(row: any, unit: string) {
     let str = '';
     switch (unit) {
       case 'configDate':
-        str = row.configDate ? `每天 ${row.configDate}` : '--';
+        str = row.configDate ? `每天 ${utils.removeMarks(row.configDate)}` : '--';
+        // str = row.configDate ? `每天 ${row.configDate}` : '--';
         break;
       case 'startDate':
         str = row.startDate ? `每天 ${row.startDate}` : '--';
@@ -150,31 +160,73 @@ export default class EquipTable extends Vue {
       case 'frequency':
         str = row.frequency > 0 ? `${row.frequency}分钟/次` : '--';
         break;
-      case 'trackDuration':
-        str = row.trackDuration > 0 ? `${row.trackDuration}分钟` : '--';
-        break;
-      case 'trackFrequency':
-        str = row.trackFrequency > 0 ? `${row.trackFrequency}分钟/次` : '--';
-        break;
       default:
         break;
     }
-    return <el-tooltip class="item" effect="dark" content={str} placement="top">
-      <span>{str}</span>
-    </el-tooltip>;
+    return (
+      <el-tooltip class="item" effect="dark" content={str} placement="top">
+        <span>{str}</span>
+      </el-tooltip>
+    );
+  }
+
+  specialAddUnit(row: any, unit?: string) {
+    if (row.trackStatus && row.trackStatus !== 1) {
+      let str = '';
+      switch (unit) {
+        case 'trackDuration':
+          str = row.trackDuration > 0 ? `${row.trackDuration}分钟` : '--';
+          break;
+        case 'trackFrequency':
+          str = row.trackFrequency > 0 ? `${row.trackFrequency}分钟/次` : '--';
+          break;
+        case 'trackDate':
+          str = row.trackDate ? utils.removeMarks(row.trackDate) : '--';
+          break;
+        case 'effectiveDate':
+          str = row.effectiveDate ? utils.removeMarks(row.effectiveDate) : '--';
+          break;
+        default:
+          break;
+      }
+      return (
+        <el-tooltip class="item" effect="dark" content={str} placement="top">
+          <span>{str}</span>
+        </el-tooltip>
+      );
+    } return '--';
+  }
+
+  typeChange(val: any) {
+    this.outParams = {
+      terminalModelId: '',
+      terminalType: '',
+    };
+    if (val.length === 0) {
+      this.outParams.terminalType = '';
+      this.outParams.terminalModelId = '';
+    } else if (val.length === 1) {
+      this.outParams.terminalType = val[val.length - 1];
+      this.outParams.terminalModelId = '';
+    } else if (val.length === 2) {
+      this.outParams.terminalType = val[val.length - 2];
+      this.outParams.terminalModelId = val[val.length - 1];
+    }
   }
 
   typeConfirm(row: any) {
     const str = row.clientType === 17 ? 'GL500' : '--';
-    return <el-tooltip class="item" effect="dark" content={str} placement="top">
-      <span>{str}</span>
-    </el-tooltip>;
+    return (
+      <el-tooltip class="item" effect="dark" content={str} placement="top">
+        <span>{str}</span>
+      </el-tooltip>
+    );
   }
 
   // 格式化状态
   formatStatus(row: any) {
     let type;
-    switch (row.status) {
+    switch (row.trackStatus) {
       case 1:
         type = <el-tag size="small" type="info">未预约</el-tag>;
         break;
@@ -185,7 +237,7 @@ export default class EquipTable extends Vue {
         type = <el-tag size="small" type="success">追踪中</el-tag>;
         break;
       default:
-        type = '--';
+        type = <el-tag size="small" type="info">未知</el-tag>;
         break;
     }
     return type;
@@ -210,21 +262,51 @@ export default class EquipTable extends Vue {
       '/vehicle/tracke/reserveConfig',
       '/vehicle/tracke/exportExcel',
     ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.deviceTable = !!(res[0]);
-      this.opreat[0].roles = !!(res[1]);
-      this.opreat[1].roles = !!(res[2]);
-      this.exportBtn = !!(res[3]);
-    });
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.deviceTable = !!(res[0]);
+    //   this.opreat[0].roles = !!(res[1]);
+    //   this.opreat[1].roles = !!(res[2]);
+    //   this.exportBtn = !!(res[3]);
+    // });
   }
 
-  deviceTypes: any[] = [
-    { key: '', value: '', label: '型号(全部)' },
-    { key: '17', value: '17', label: 'GL500' },
-  ]
-
   mounted() {
-    this.filterList[0].options = this.deviceTypes;
+    // this.filterList[0].options = this.deviceTypes;
+    // deviceModel(null).then((res) => {
+    //   const { entity, result } = res;
+    //   if (result.resultCode === '0') {
+    //     const list: any = [];
+    //     entity.forEach((item: any, index: number) => {
+    //       if (item.terminalModelList.length > 0) {
+    //         item.terminalModelList.forEach((it: any, ind: number) => {
+    //           it.label = it.name;
+    //           it.value = it.id;
+    //         });
+    //         list.push({
+    //           value: parseInt(item.dictionary.enumValue, 10),
+    //           label: item.dictionary.name,
+    //           children: item.terminalModelList,
+    //         });
+    //       } else {
+    //         list.push({
+    //           value: parseInt(item.dictionary.enumValue, 10),
+    //           label: item.dictionary.name,
+    //         });
+    //       }
+    //     });
+    //     list.unshift({
+    //       label: '全部',
+    //       value: '',
+    //     });
+    //     this.filterList[0].options = list;
+    //     this.filterList[0].props = {
+    //       value: 'value',
+    //       children: 'children',
+    //     };
+    //   } else {
+    //     this.$message.error(res.result.resultMessage);
+    //   }
+    // });
   }
 
   activated() {
@@ -249,6 +331,7 @@ export default class EquipTable extends Vue {
         startDate: row.configDate, // 配置时间
         id: row.id,
         imei: row.imei,
+        frequency: row.frequency,
         type: 'deploy',
       };
       this.rowData = data;
@@ -258,10 +341,11 @@ export default class EquipTable extends Vue {
         vehicleId: this.$route.params.id,
         id: row.id,
         imei: row.imei,
-        trackDate: row.trackDate ? row.trackDate.split(' ')[1] : '',
+        trackDate: utils.removeMarks(row.trackDate).split(' ')[1],
         trackFrequency: row.trackFrequency,
         trackDuration: row.trackDuration,
-        effectiveDate: row.effectiveDate,
+        effectiveDate: utils.removeMarks(row.effectiveDate),
+        type: 'reserve',
       };
       this.rowData = data;
       this.reverseVisible = true;
@@ -302,12 +386,12 @@ export default class EquipTable extends Vue {
             export-btn={this.exportBtn}
             on-downBack={this.downLoad}
             highlight-current-row={true}
+            page-size-list={[5, 10, 15]}
             on-currentChange={this.currentChange}
             on-menuClick={this.menuClick}
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'equipTable'}
-            dataType={'JSON'}
             default-page-size={5}
             opreat={this.opreat}
             out-params={this.outParams}

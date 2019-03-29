@@ -19,14 +19,14 @@ export default class Driving extends Vue {
     {
       key: 'levelcode',
       type: 'levelcode',
-      label: '商户门店',
+      label: '所属商户',
       filterable: true,
       props: {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择商户门店',
+      placeholder: '请选择所属商户',
       options: [],
     },
     {
@@ -66,7 +66,7 @@ export default class Driving extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '商户门店', prop: 'orgName' },
+    { label: '所属商户', prop: 'orgName' },
     { label: '车牌号', prop: 'platenum' },
     { label: '车架号', prop: 'vin' },
     {

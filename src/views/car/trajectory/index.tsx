@@ -151,9 +151,9 @@ export default class Trajectory extends Vue {
       sortBy: 'periodMinute',
     }, {
       label: '耗油',
-      prop: 'oilConsumption',
+      prop: 'fuelCons',
       sortable: true,
-      sortBy: 'oilConsumption',
+      sortBy: 'fuelCons',
     }, {
       label: '耗电',
       prop: 'powerCons',

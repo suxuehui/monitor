@@ -2,8 +2,9 @@ import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
-  Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect,
+  Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect, Select, Option,
 } from 'element-ui';
+import utils from '@/utils';
 import { vehicleCalvalid, vehicleDeviceSet } from '@/api/monitor';
 import { terminalDict } from '@/api/app';
 @Component({
@@ -14,7 +15,9 @@ import { terminalDict } from '@/api/app';
     'el-input': Input,
     'el-button': Button,
     'el-time-select': TimeSelect,
+    'el-select': Select,
     'el-col': Col,
+    'el-option': Option,
     'el-row': Row,
   },
 })
@@ -33,12 +36,15 @@ export default class DeployModel extends Vue {
 
   @Watch('data')
   onDataChange(data: any) {
-    const obj: any = JSON.parse(JSON.stringify(data));
-    this.modelForm.startTime = '';
-    this.modelForm.startTime = obj.startDate;
-    if (obj.type === 'deploy') {
-      if (this.modelForm.startTime !== '') {
-        this.timeChange(this.modelForm.startTime);
+    if (data.type === 'deploy') {
+      const obj: any = JSON.parse(JSON.stringify(data));
+      this.modelForm.frequency = obj.frequency;
+      this.modelForm.startTime = '';
+      this.modelForm.startTime = utils.removeMarks(obj.startDate);
+      if (obj.type === 'deploy') {
+        if (this.modelForm.startTime !== '') {
+          this.timeChange(this.modelForm.startTime);
+        }
       }
     }
   }
@@ -60,11 +66,8 @@ export default class DeployModel extends Vue {
       if (res.result.resultCode === '0') {
         if (res.entity !== null) {
           res.entity.forEach((item: any) => {
-            if (item.enumValue === 'frequency') {
-              this.modelForm.frequency = `${item.name}分钟/次`;
-            }
             if (item.enumValue === 'duration') {
-              this.modelForm.duration = `${item.name}分钟`;
+              this.modelForm.duration = item.name;
             }
           });
         }
@@ -81,10 +84,47 @@ export default class DeployModel extends Vue {
     end: '24:00',
   }
 
+  // 上报频率
+  reportFrequencyOptions: any = [
+    {
+      value: '1',
+      label: '1',
+    },
+    {
+      value: '2',
+      label: '2',
+    },
+    {
+      value: '3',
+      label: '3',
+    },
+    {
+      value: '4',
+      label: '4',
+    },
+    {
+      value: '6',
+      label: '6',
+    },
+    {
+      value: '8',
+      label: '8',
+    },
+    {
+      value: '12',
+      label: '12',
+    },
+    {
+      value: '24',
+      label: '24',
+    },
+  ]
+
   // 重置数据
   resetData() {
     this.modelForm = {
       startTime: '',
+      frequency: '',
     };
   }
 
@@ -108,6 +148,8 @@ export default class DeployModel extends Vue {
     });
   }
 
+  selectChange() { }
+
   closeModal() {
     this.$emit('close');
     setTimeout(() => {
@@ -121,12 +163,11 @@ export default class DeployModel extends Vue {
     const From: any = this.$refs.modelForm;
     this.loading = true;
     obj = {
-      vehicleId: this.data.vehicleId,
-      id: this.data.id,
       imei: this.data.imei,
-      cfgName: 'wirelessDeviceConfiguration',
-      // 启动时间$生效时间$启动时长$频率
-      cfgVal: `${this.modelForm.startTime}$${this.valdate}$${this.modelForm.duration.split('分')[0]}$${this.modelForm.frequency.split('分')[0]}`,
+      startTime: this.modelForm.startTime, // 启动时间
+      startUpTime: this.valdate, // 生效时间
+      duration: this.modelForm.duration, // 追踪时长
+      frequency: this.modelForm.frequency, // 追踪频率
     };
     From.validate((valid: any) => {
       if (valid) {
@@ -173,19 +214,19 @@ export default class DeployModel extends Vue {
               placeholder="请选择启动时间">
             </el-time-select>
           </el-form-item>
-          <el-form-item label="启动时长" prop="duration">
-            <el-input
-              id="duration"
-              v-model={this.modelForm.duration}
-              disabled={true}
-            ></el-input>
-          </el-form-item>
           <el-form-item label="上报频率" prop="frequency">
-            <el-input
+            <el-select
               id="frequency"
               v-model={this.modelForm.frequency}
-              disabled={true}
-            ></el-input>
+              on-change={this.selectChange}
+              style="width:100%"
+            >
+              {
+                this.reportFrequencyOptions.map((item: any) => (
+                  <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                ))
+              }
+            </el-select>
           </el-form-item>
         </el-form>
         <el-row>

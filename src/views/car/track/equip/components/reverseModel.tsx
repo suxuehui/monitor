@@ -4,6 +4,7 @@ import {
 import {
   Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect,
 } from 'element-ui';
+import utils from '@/utils';
 import { vehicleCalvalid, vehicleDeviceRev } from '@/api/monitor';
 @Component({
   components: {
@@ -24,18 +25,14 @@ export default class ReverseModel extends Vue {
 
   @Watch('data')
   onDataChange(data: any) {
-    if (data.id > 0) {
-      const obj: any = JSON.parse(JSON.stringify(data));
+    if (data.type === 'reserve') {
       setTimeout(() => {
-        this.modelForm = {
-          startTime: obj.trackDate,
-          frequency: obj.trackFrequency,
-          duration: obj.trackDuration,
-          valdate: obj.effectiveDate,
-        };
-      }, 200);
-    } else {
-      this.resetData();
+        const obj: any = JSON.parse(JSON.stringify(data));
+        this.modelForm.startTime = obj.trackDate;
+        this.modelForm.frequency = obj.trackFrequency;
+        this.modelForm.duration = obj.trackDuration;
+        this.modelForm.valdate = obj.effectiveDate;
+      }, 300);
     }
   }
 
@@ -151,12 +148,11 @@ export default class ReverseModel extends Vue {
     const From: any = this.$refs.modelForm;
     this.loading = true;
     obj = {
-      vehicleId: this.data.vehicleId,
-      id: this.data.id,
       imei: this.data.imei,
-      cfgName: 'wirelessDeviceReserve',
-      // 启动时间$生效时间$启动时长$频率
-      cfgVal: `${this.modelForm.startTime}$${this.modelForm.valdate}$${this.modelForm.duration}$${this.modelForm.frequency}`,
+      startTime: this.modelForm.startTime, // 追踪时间
+      startUpTime: this.modelForm.valdate, // 生效时间
+      duration: this.modelForm.duration, // 追踪时长
+      frequency: this.modelForm.frequency, // 上报频率
     };
     From.validate((valid: any) => {
       if (valid) {
@@ -193,7 +189,7 @@ export default class ReverseModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
+        <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-form-item label="追踪时间" prop="startTime">
             <el-time-select
               v-model={this.modelForm.startTime}

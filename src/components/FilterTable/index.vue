@@ -31,6 +31,7 @@
       :fetch-type="fetchType"
       :fetch-error="fetchError"
       :table-params="tableParams"
+      :page-size-list="pageSizeList"
       :out-params="outParams"
       :default-page-size="defaultPageSize"
       :highlight-current-row="highlightCurrentRow"
@@ -69,6 +70,10 @@ export default class FilterTable extends Vue {
   // 外部参数
   @Prop({ default: {} })
   private outParams!: any;
+
+  // 表格分页大小参数
+ @Prop({ default: () => [5, 10, 15, 20, 50, 100] }) private pageSizeList!: number[];
+
 
   // 是否展示新增按钮
   @Prop() private addBtn!: boolean;

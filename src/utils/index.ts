@@ -259,8 +259,15 @@ function returnTime() {
   return time.Format('yyyy-MM-dd hh:mm:ss');
 }
 
+/**
+ * @method 去掉首尾双引号
+*/
+function removeMarks(data:string) {
+  return data.replace(/"/g, '');
+}
 
 export default {
+  removeMarks,
   returnTime,
   expNum,
   minToAll,
