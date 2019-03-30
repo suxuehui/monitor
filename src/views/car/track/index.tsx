@@ -152,7 +152,7 @@ export default class Track extends Vue {
 
   render() {
     return (
-      <div class="monitor-wrap">
+      <div class="track-monitor-wrap">
         <div id="map"></div>
         <div ref="tabList" class={['tab-table-track', !this.locChange ? 'table-active' : '']}>
           <div ref="btnControl" id="btnControl" class={'loc-change-box-track'}>
