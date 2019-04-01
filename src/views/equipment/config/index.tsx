@@ -6,7 +6,7 @@ import exportExcel from '@/api/export';
 import {
   deviceModel, queryCfg, getBtName,
 } from '@/api/equipment';
-import { getInfoByLevelCode, } from '@/api/customer';
+import { getInfoByLevelCode } from '@/api/customer';
 import DownConfigModel from './components/DownConfigModel';
 import ClearConfigModel from './components/ClearConfigModel';
 import BtAuthModel from './components/BtAuthModel';

@@ -37,10 +37,10 @@ export default class Merchants extends Vue {
       options: [],
     },
     {
-      key: 'activeStatus1',
+      key: 'chgAddrAble',
       type: 'select',
       label: '切换地址',
-      placeholder: '切换地址（全部）',
+      placeholder: '请选择地址',
       options: [],
     },
     {
@@ -56,6 +56,7 @@ export default class Merchants extends Vue {
 
   // 筛选参数
   filterParams: any = {
+    chgAddrAble: '',
     activeStatus: 0,
     keyword: '',
   };
@@ -68,8 +69,8 @@ export default class Merchants extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '商户名称', prop: 'orgName' },
-    { label: '关联门店', prop: 'orgName' },
-    { label: '同步设备', prop: 'orgName' },
+    { label: '关联门店', prop: 'oldLevelNames' },
+    { label: '同步设备', prop: 'deviceNames' },
     { label: '登录账号', prop: 'manageUser' },
     { label: '切换地址', prop: 'manageUser', formatter: this.locSet },
     {
@@ -96,7 +97,8 @@ export default class Merchants extends Vue {
   ];
 
   locSet(row: any) {
-    return row.chgDevAddr === 0 ? '不切换' : `切换(${row.devAddr})`;
+    // chgAddrAble:2-不能切换 1-能切换 ,
+    return row.chgAddrAble === 2 ? '不切换' : `切换(${row.mainAddr})`;
   }
 
   // 是否激活:1，正常、激活，2,冻结
@@ -157,19 +159,8 @@ export default class Merchants extends Vue {
   // 导出按钮展示
   exportBtn: boolean = true;
 
-  // 新增、编辑
-  modelVisible: boolean = false;
-
-  modelTitle: string = '';
-
-  modelForm: any = {
-    orgName: '',
-    contactUser: '',
-    manageUser: '',
-    password: '',
-    contactPhone: '',
-    contactAddress: '',
-  }
+  // 单行数据
+  rowData: any = {}
 
   // 商户状态
   activeTypes: ActiveType[] = [
@@ -178,16 +169,27 @@ export default class Merchants extends Vue {
     { key: 2, value: 2, label: '冻结' },
   ]
 
+  // 商户状态 
+  // 是否能切换服务地址：2-不能切换 1-能切换
+  chgAddrAbleTypes: ActiveType[] = [
+    { key: '', value: '', label: '切换地址（全部）' },
+    { key: 2, value: 2, label: '不切换' },
+    { key: 1, value: 1, label: '切换' },
+  ]
+
   // 是否切换地址
 
   mounted() {
     this.filterList[0].options = this.activeTypes;
+    this.filterList[1].options = this.chgAddrAbleTypes;
   }
 
   // 新增、编辑
   addVisible: boolean = false;
 
   addTitle: string = '';
+
+  oldShopName: string = '';
 
   // 冻结、解冻
   freezeVisible: boolean = false;
@@ -197,12 +199,12 @@ export default class Merchants extends Vue {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
       // 编辑
-      this.modelForm = row;
       this.addVisible = true;
       this.addTitle = '编辑商户';
+      this.oldShopName = row.oldLevelNames;
       customerInfo(row.id).then((res) => {
         if (res.result.resultCode === '0') {
-          this.modelForm = res.entity;
+          this.rowData = res.entity;
         } else {
           this.$message.error(res.result.resultMessage);
         }
@@ -282,7 +284,8 @@ export default class Merchants extends Vue {
           ref="addTable"
           title={this.addTitle}
           visible={this.addVisible}
-          data={this.modelForm}
+          oldShopName={this.oldShopName}
+          data={this.rowData}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></add-modal>

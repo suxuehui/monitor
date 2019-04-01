@@ -7,7 +7,7 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import {
   resetTime, deviceModel, getOnlineUrl,
 } from '@/api/equipment';
-import { getInfoByLevelCode, } from '@/api/customer';
+import { getInfoByLevelCode } from '@/api/customer';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
 import PopconfirmBlock from '@/components/Popconfirm/index';

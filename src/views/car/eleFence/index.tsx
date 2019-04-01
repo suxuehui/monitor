@@ -167,6 +167,7 @@ export default class EleFence extends Vue {
     alarmType: '',
     available: '',
     keyword: '',
+    areaNum: '',
   };
 
   backParams: object = {
@@ -268,8 +269,12 @@ export default class EleFence extends Vue {
     if (val.length === 0) {
       this.outParams.area = '';
     } else if (val.length === 1) {
-      this.getCitys(val[0]);
-      this.outParams.area = val[val.length - 1].substring(0, 2);
+      if (val[0] !== '') {
+        this.getCitys(val[0]);
+        this.outParams.area = val[val.length - 1].substring(0, 2);
+      } else {
+        this.outParams.area = '';
+      }
     } else if (val.length === 2) {
       this.outParams.area = val[val.length - 1].substring(0, 4);
       this.getDistricts(val[1]);
@@ -363,6 +368,10 @@ export default class EleFence extends Vue {
             children: [],
             value: item.regionalismcode,
           });
+        });
+        this.provinceList.unshift({
+          label: '所在地区（全部）',
+          value: '',
         });
         this.filterList[1].props = this.props;
         this.filterList[1].options = this.provinceList;

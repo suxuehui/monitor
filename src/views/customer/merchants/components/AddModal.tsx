@@ -32,11 +32,13 @@ export default class AddModal extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private oldShopName: any;
+
   modelForm: any = {
     orgName: '', // 添加的商户名
     manageUser: '', // 管理账号、登录账号
     password: '', // 密码
-    nameAndLev: '', // 关联门店
+    nameAndLev: [], // 关联门店
     deviceType: [], // 设备类型
     mainAddr: '', // 主地址
     secondaryAddr: '', // 副地址
@@ -78,7 +80,6 @@ export default class AddModal extends Vue {
   onDataChange(data: any) {
     if (data.id > 0) {
       // 编辑
-      // this.modelForm = JSON.parse(JSON.stringify(data));
       this.modelForm = {
         orgName: data.orgName,
         contactUser: data.contactUser,
@@ -87,9 +88,9 @@ export default class AddModal extends Vue {
         contactAddress: data.contactAddress,
         password: '********', // 编辑时设置默认密码为********
       };
-      // this.modelForm.password = '********';
       this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
       this.nameAndLev = `${this.data.orgName}`;
+      this.reBootStatus = data.chgDevAddr === 0 ? '2' : '1';
     } else {
       // 新增
       this.resetData();
@@ -255,13 +256,17 @@ export default class AddModal extends Vue {
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        userCheck(value).then((res) => {
-          if (res.result.resultCode === '0') {
-            callback();
-          } else {
-            callback(new Error('登录账号已存在，请重新输入'));
-          }
-        });
+        if (!this.isChineseChar(value)) {
+          userCheck(value).then((res) => {
+            if (res.result.resultCode === '0') {
+              callback();
+            } else {
+              callback(new Error('登录账号已存在，请重新输入'));
+            }
+          });
+        } else {
+          callback(new Error('登录账号不能为中文，请重新输入'));
+        }
       } else {
         callback(new Error('登录账号不能为空'));
       }
@@ -281,14 +286,18 @@ export default class AddModal extends Vue {
   // 重置数据
   resetData() {
     this.modelForm = {
-      orgName: '',
-      manageUser: '',
-      password: '',
-      mainAddr: '',
-      secondaryAddr: '',
+      orgName: '', // 添加的商户名
+      manageUser: '', // 管理账号、登录账号
+      password: '', // 密码
+      nameAndLev: [], // 关联门店
+      deviceType: [], // 设备类型
+      mainAddr: '', // 主地址
+      secondaryAddr: '', // 副地址
+      mainAddrPort: '', // 主地址端口
+      secondaryAddrPort: '', // 副地址端口
     };
-    this.reBootStatus = '0';
-    this.nameAndLev = '';
+    this.reBootStatus = '2';
+    this.nameAndLev = [];
     this.deviceType = [];
   }
 
@@ -302,11 +311,28 @@ export default class AddModal extends Vue {
     this.loading = false;
   }
 
+  // 分别获取旧系统中的商户名称以及对应levelcode
+  getOldInfo() {
+    let oldNames: any = [];
+    let oldLevelCodes: any = [];
+    this.nameAndLev.forEach((item: any) => {
+      oldNames.push(
+        item.split('***')[1]
+      );
+      oldLevelCodes.push(
+        item.split('***')[0]
+      );
+    })
+    oldNames = oldNames.join(',');
+    oldLevelCodes = oldLevelCodes.join(',');
+    return { oldNames, oldLevelCodes };
+  }
+
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
-    // this.loading = true;
-    if (this.nameAndLev === '') {
+    this.loading = true;
+    if (this.nameAndLev === []) {
       this.$message.error('请选择商户');
       return false;
     }
@@ -315,10 +341,10 @@ export default class AddModal extends Vue {
       return false;
     }
     obj = {
-      orgName: this.nameAndLev.split('***')[1] ? this.nameAndLev.split('***')[1] : '', // 添加的商户名
+      orgName: this.modelForm.orgName, // 添加的商户名
       manageUser: this.modelForm.manageUser, // 账号
       password: this.modelForm.password, // 密码
-      oldLevelCode: this.nameAndLev.split('***')[0], // 旧系统中商户的levelcode
+      // oldLevelCode: this.getOldInfo().oldLevelCodes, // 旧系统中商户的levelcode
       deviceType: this.deviceType.indexOf('1026') > -1 ? '3,22,23,16,17' : this.deviceType.join(','), // 设备类型
       chgAddrAble: this.reBootStatus, // 是否切换服务地址
       mainAddr: `${this.modelForm.mainAddr}:${this.modelForm.mainAddrPort}`, // 主地址
@@ -327,49 +353,57 @@ export default class AddModal extends Vue {
     From.validate((valid: any) => {
       if (valid) {
         if (this.title === '新增商户') {
-          console.log(obj);
+          if (obj.chgAddrAble === '2') {
+            delete obj.mainAddr;
+            delete obj.secondaryAddr;
+          }
+          obj.oldLevelCode = this.getOldInfo().oldLevelCodes;
           // 新增
-          // customerAdd(obj).then((res) => {
-          //   if (res.result.resultCode === '0') {
-          //     setTimeout(() => {
-          //       this.loading = false;
-          //       this.$message.success(res.result.resultMessage);
-          //       From.resetFields();
-          //       this.nameAndLev = '';
-          //       this.deviceType = [];
-          //       this.$emit('refresh');
-          //     }, 1500);
-          //   } else {
-          //     setTimeout(() => {
-          //       this.loading = false;
-          //       this.$message.error(res.result.resultMessage);
-          //     }, 1500);
-          //   }
-          // });
+          customerAdd(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.nameAndLev = '';
+                this.deviceType = [];
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1000);
+            }
+          });
         } else {
           obj.id = this.data.id;
           if (obj.password === '********') {
             delete obj.password;
           }
+          if (obj.chgAddrAble === '2') {
+            delete obj.mainAddr;
+            delete obj.secondaryAddr;
+          }
           obj.orgName = this.data.orgName;
           obj.oldLevelCode = this.data.oldLevelCode;
           console.log(obj);
-          // customerUpdate(obj).then((res) => {
-          //   if (res.result.resultCode === '0') {
-          //     setTimeout(() => {
-          //       this.loading = false;
-          //       this.$message.success(res.result.resultMessage);
-          //       From.resetFields();
-          //       this.resetData();
-          //       this.$emit('refresh');
-          //     }, 1500);
-          //   } else {
-          //     setTimeout(() => {
-          //       this.loading = false;
-          //       this.$message.error(res.result.resultMessage);
-          //     }, 1500);
-          //   }
-          // });
+          customerUpdate(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.resetData();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
         }
       } else {
         this.loading = false;
@@ -380,6 +414,7 @@ export default class AddModal extends Vue {
     return true;
   }
 
+  // 搜索商户
   remoteMethod(query: any) {
     if (query !== '') {
       this.selectLoading = true;
@@ -402,19 +437,21 @@ export default class AddModal extends Vue {
     }
   }
 
-  // 名字加levelCode
-  nameAndLev: string = '';
+  // 名字加levelCode 多个门店
+  nameAndLev: any = [];
 
   shopChecked(val: any) {
     this.nameAndLev = val;
   }
 
-  reBootStatus: string = '0';
+  // 切换地址
+  reBootStatus: string = '2';
 
   rebootChange(data: any) {
     this.reBootStatus = data;
   }
 
+  // 设备类型设置
   deviceType: any = [];
 
   typeChecked(val: any) {
@@ -474,35 +511,49 @@ export default class AddModal extends Vue {
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col class="shopName">
-              <el-form-item label="关联门店" prop="oldLevelCode" rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}>
-                <el-select
-                  id="oldLevelCode"
-                  v-model={this.nameAndLev}
-                  filterable={true}
-                  remote={true}
-                  disabled={this.title !== '新增商户'}
-                  placeholder="请选择商户"
-                  remote-method={this.remoteMethod}
-                  on-change={this.shopChecked}
-                  loading={this.selectLoading}
-                  style="width:100%">
-                  {
-                    this.shopFilteredList.map((item: any, index: number) => (
-                      <el-option
-                        id={item.value}
-                        key={index}
-                        value={item.value}
-                        label={item.label}
-                      >{item.label}</el-option>
-                    ))
-                  }
-                </el-select>
-                {
-                  this.title === '新增商户' ? <span class="star1">*</span> : null
-                }
-              </el-form-item>
-            </el-col>
+            {
+              this.title === '编辑商户'
+                ? <el-col>
+                  <el-form-item label="关联门店" prop="oldLevelCode">
+                    <el-input
+                      id="oldLevelCode"
+                      v-model={this.oldShopName}
+                      disabled={true}
+                      placeholder="请输入商户名称"
+                    ></el-input>
+                  </el-form-item>
+                </el-col> :
+                <el-col class="shopName">
+                  <el-form-item label="关联门店" prop="oldLevelCode" rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}>
+                    <el-select
+                      id="oldLevelCode"
+                      v-model={this.nameAndLev}
+                      filterable={true}
+                      remote={true}
+                      disabled={this.title !== '新增商户'}
+                      placeholder="请选择商户"
+                      multiple={true}
+                      remote-method={this.remoteMethod}
+                      on-change={this.shopChecked}
+                      loading={this.selectLoading}
+                      style="width:100%">
+                      {
+                        this.shopFilteredList.map((item: any, index: number) => (
+                          <el-option
+                            id={item.value}
+                            key={index}
+                            value={item.value}
+                            label={item.label}
+                          >{item.label}</el-option>
+                        ))
+                      }
+                    </el-select>
+                    {
+                      this.title === '新增商户' ? <span class="star1">*</span> : null
+                    }
+                  </el-form-item>
+                </el-col>
+            }
             <el-col class="typeName">
               <el-form-item label="设备同步" prop="deviceType" rules={this.typeRule}>
                 <el-select
@@ -531,7 +582,7 @@ export default class AddModal extends Vue {
               <el-form-item label="切换地址" prop="reboot" class="isStart">
                 <div class="radioGroup">
                   <el-radio-group v-model={this.reBootStatus} on-change={this.rebootChange}>
-                    <el-radio id="availableY" label="0">不切换</el-radio>
+                    <el-radio id="availableY" label="2">不切换</el-radio>
                     <el-radio id="availableN" label="1">切换</el-radio>
                   </el-radio-group>
                 </div>

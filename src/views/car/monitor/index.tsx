@@ -309,11 +309,22 @@ export default class Monitor extends Vue {
 
   // online
   onlineFormat(row: any) {
-    if (row.onlineCN) {
-      return row.onlineCN.indexOf('在线') >= 0
-        ? <el-tag size="small" type="success">在线</el-tag> : <el-tag size="small" type="danger">离线</el-tag>;
+    let str = null;
+    switch (row.onlineCN) {
+      case '在线':
+        str = <el-tag size="small" type="success">在线</el-tag>;
+        break;
+      case '离线':
+        str = <el-tag size="small" type="danger">离线</el-tag>;
+        break;
+      case '未知':
+        str = <el-tag size="small" type="info">未知</el-tag>;
+        break;
+      default:
+        str = <el-tag size="small" type="info">未知</el-tag>;
+        break;
     }
-    return <el-tag size="small" type="danger">未知</el-tag>;
+    return str;
   }
 
   // 表格数据源添加单位
