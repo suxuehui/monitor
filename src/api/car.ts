@@ -61,3 +61,28 @@ export async function carBindStatus(params: any) {
     method: 'post',
   });
 }
+
+// 查询绑定状态列表
+export async function getBindStatusOptions(params: any) {
+  return request({
+    url: '/vehicle/bindStatusOptions',
+    method: 'get',
+  });
+}
+
+// 围栏内外筛选条件
+export async function getFioQueryOptions(params: any) {
+  return request({
+    url: '/vehicle/fioQueryOptions',
+    method: 'get',
+  });
+}
+
+
+// 车辆来源筛选条件
+export async function getSrcQueryOptions(params: any) {
+  return request({
+    url: '/vehicle/srcQueryOptions',
+    method: 'get',
+  });
+}

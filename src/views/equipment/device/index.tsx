@@ -5,8 +5,11 @@ import {
 import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import {
-  resetTime, getOnLineAddress, deviceModel,
+  resetTime, deviceModel, getOnlineUrl,
 } from '@/api/equipment';
+import {
+  getInfoByLevelCode,
+} from '@/api/customer';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
 import { orgTree } from '@/api/app';
@@ -50,11 +53,7 @@ export default class Device extends Vue {
       type: 'levelcode',
       label: '商户门店',
       filterable: true,
-      props: {
-        value: 'levelCode',
-        children: 'children',
-        label: 'orgName',
-      },
+      props: {},
       placeholder: '商户门店（全部）',
       options: [],
     },
@@ -83,13 +82,10 @@ export default class Device extends Vue {
       type: 'levelcode',
       label: '商户门店',
       filterable: true,
-      props: {
-        value: 'levelCode',
-        children: 'children',
-        label: 'orgName',
-      },
+      props: {},
       placeholder: '请选择商户门店',
       options: [],
+      change: this.levelChange,
     },
     {
       key: 'terid',
@@ -140,6 +136,23 @@ export default class Device extends Vue {
     }
   }
 
+  levelChange(val: any) {
+    // this.outParams = {
+    //   terminalModelId: '',
+    //   terminalType: '',
+    // };
+    // if (val.length === 0) {
+    //   this.outParams.terminalType = '';
+    //   this.outParams.terminalModelId = '';
+    // } else if (val.length === 1) {
+    //   this.outParams.terminalType = val[val.length - 1];
+    //   this.outParams.terminalModelId = '';
+    // } else if (val.length === 2) {
+    //   this.outParams.terminalType = val[val.length - 2];
+    //   this.outParams.terminalModelId = val[val.length - 1];
+    // }
+  }
+
   // 筛选参数
   filterParams: any = {
     terid: [],
@@ -148,6 +161,8 @@ export default class Device extends Vue {
   outParams: any = {
     terminalModelId: '', // 具体设备型号id值 ,
     terminalType: '', // 设备类型:3-OTU,22-KeLong,23-BSJ,16-BT
+    levelCode: '', // 组织
+    srLevelcode: '', // 门店
   };
 
   // 请求地址
@@ -267,20 +282,7 @@ export default class Device extends Vue {
     //   this.opsBtn = !!(res[9]);
     //   this.exportBtn = !!(res[10]);
     // });
-    // 门店
-    orgTree(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.unshift({
-          id: Math.random(),
-          levelCode: '',
-          orgName: '全部',
-        });
-        this.filterList[0].options = res.entity;
-        this.filterGrade[0].options = res.entity;
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
+    // });
     // 设备状态
     this.filterGrade[2].options = this.terminalStatus;
     // 网络状态
@@ -288,7 +290,8 @@ export default class Device extends Vue {
   }
 
   mounted() {
-    deviceModel(null).then((res) => {
+    // 获取所有设备类型、型号
+    deviceModel('ALL').then((res) => {
       const { entity, result } = res;
       if (result.resultCode === '0') {
         const list: any = [];
@@ -328,6 +331,36 @@ export default class Device extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // 获取商户-4s
+    getInfoByLevelCode(null).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        entity.forEach((item: any) => {
+          item.label = item.orgName;
+          item.value = item.levelCode;
+          item.siruiOrgs.forEach((it: any) => {
+            it.label = it.name;
+            it.value = it.levelCode;
+          });
+        });
+        entity.unshift({
+          label: '全部',
+          value: '',
+        });
+        this.filterList[0].options = entity;
+        this.filterList[0].props = {
+          value: 'value',
+          children: 'siruiOrgs',
+        };
+        this.filterGrade[0].options = entity;
+        this.filterGrade[0].props = {
+          value: 'value',
+          children: 'siruiOrgs',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 表格参数
@@ -341,7 +374,6 @@ export default class Device extends Vue {
     { label: '网络类型', prop: 'wireless', formatter: this.wireCheck },
     { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
-    // { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
     { label: '上线地址', prop: 'imei', formatter: this.upLoc },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
@@ -349,7 +381,7 @@ export default class Device extends Vue {
 
   // 是否无线设备
   wireCheck(row: any) {
-    return row.wireless === 0 ? <el-tag type="blue">有线</el-tag> : <el-tag type="green">无线</el-tag>;
+    return row.wireless === 0 ? <el-tag>有线</el-tag> : <el-tag type="success">无线</el-tag>;
   }
 
   // 查看上线地址
@@ -362,44 +394,24 @@ export default class Device extends Vue {
 
   // 查看上线地址
   checkLoc(data: any) {
-    this.clickTime = utils.getNowTime();
-    this.upLocVisible = true;
-    this.upLocData = data;
-    console.log(data);
-    // getOnLineAddress(data.id).then((res) => {
-    //   if (res.result.resultCode === '0') {
-    //     console.log(res)
-    //   } else {
-    //     this.$message.error(res.result.resultMessage);
-    //   }
-    // })
+    setTimeout(() => {
+      this.upLocVisible = true;
+    }, 200);
+    getOnlineUrl(data.id).then((res: any) => {
+      const { result, entity } = res;
+      if (result.resultCode === '0') {
+        this.upLocData = entity;
+      } else {
+        this.upLocData.masterUrl = '--';
+        this.upLocData.slaveUrl = '--';
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 查看安绑记录
   bindLog(row: any) {
     return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看记录</el-button>;
-  }
-
-  // 设备到期时间
-  endDay(row: any) {
-    return <div>
-      <span style="marginLeft:-6px">{row.serviceEndDay !== null ? `${row.serviceEndDay}天` : '--'}</span>
-      {
-        this.resetBtn
-          ? <popconfirm-block
-            ref={`popBlock${row.id}`}
-            title="确定要对此设备进行续期1年？"
-            width="225"
-            keyName='续期'
-            disabled={row.status !== 3}
-            loading={this.loading}
-            on-confirm={() => this.onResetTime(row)}
-            on-cancel={this.closePop}
-          >
-            <el-button style="marginLeft:10px" disabled={row.status !== 3} type="text" size="small" >续期</el-button>
-          </popconfirm-block> : null
-      }
-    </div>;
   }
 
   onResetTime(data: any) {
@@ -681,7 +693,6 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         />
         <upload-model
-          time={this.clickTime}
           data={this.upLocData}
           visible={this.upLocVisible}
           on-close={this.closeModal}

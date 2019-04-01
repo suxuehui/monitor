@@ -115,8 +115,8 @@ export default class ConfigModel extends Vue {
   };
 
   // 请求地址
-  url: string = '/vehicle/config/list';
-  // url: string = '/device/terminal/configurationLis';
+  // url: string = '/vehicle/config/list';
+  url: string = '/device/terminal/configurationList';
 
   opreat: Opreat[] = [
     {
@@ -233,17 +233,16 @@ export default class ConfigModel extends Vue {
 
   mounted() {
     // 设备型号
-    deviceModel(null).then((res) => {
+    deviceModel('WIRELESS').then((res) => {
       const otuList: any = [];
       res.entity.forEach((item: any, index: number) => {
-        if (item.dictionary.name === 'OTU') {
-          item.terminalModelList.forEach((it: any, ind: number) => {
-            otuList.push({
-              value: it.id,
-              label: it.name,
-            });
+        console.log(item);
+        item.terminalModelList.forEach((it: any, ind: number) => {
+          otuList.push({
+            value: it.id,
+            label: it.name,
           });
-        }
+        });
       });
       otuList.unshift({
         value: 0,

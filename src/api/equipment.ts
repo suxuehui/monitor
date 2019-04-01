@@ -150,15 +150,6 @@ export async function terminalExport(params: any, fileName: string) {
   });
 }
 
-// 根据设备id获取设备上线地址
-export async function getOnLineAddress(params: any) {
-  return request({
-    url: `/device/terminal/urlOnLine/${params}`,
-    method: 'get',
-    data: params,
-  });
-}
-
 // 修改蓝牙名称
 export async function updateBtName(params: any) {
   return request({
@@ -176,10 +167,10 @@ export async function queryCfg(params: any) {
   });
 }
 
-// 获取二级联动下拉框数据 设备型号
+// 设备型号下拉选择框
 export async function deviceModel(params: any) {
   return request({
-    url: '/device/terminalModel/secondaryLinkageDropdownBox',
+    url: `/device/terminalModel/findTerminalTypeAndModel/${params}`,
     method: 'get',
   });
 }
@@ -240,5 +231,13 @@ export async function setThrVal(params: any) {
     url: '/device/terminal/thresholdSetting',
     method: 'post',
     data: params,
+  });
+}
+
+// 设置阈值
+export async function getOnlineUrl(params: any) {
+  return request({
+    url: `/device/terminal/onlineUrl/${params}`,
+    method: 'get',
   });
 }

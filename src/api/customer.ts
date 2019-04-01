@@ -53,3 +53,11 @@ export async function customerInfo(params: any) {
     method: 'get',
   });
 }
+
+// 商户门店下拉框列表
+export async function getInfoByLevelCode(params: any) {
+  return request({
+    url: '/customer/org/getInfoByLevelCode',
+    method: 'get',
+  });
+}

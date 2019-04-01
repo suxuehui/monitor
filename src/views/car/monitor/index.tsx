@@ -8,7 +8,9 @@ import {
 import {
   vehicleInfo, vehicleRadiusQuery, cmdList, cmdControl,
 } from '@/api/monitor';
-import { carSource, carBindStatus } from '@/api/car';
+import {
+  carSource, carBindStatus, getBindStatusOptions, getFioQueryOptions, getSrcQueryOptions,
+} from '@/api/car';
 import { fenceOption } from '@/api/fence';
 import exportExcel from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
@@ -52,12 +54,12 @@ const pointIcon = require('@/assets/point.png');
 export default class Monitor extends Vue {
   // 过滤表单数据
   filterParams: object = {
-    levelCodeArr: [],
-    brandModelArr: [],
-    levelCode: '',
-    energyType: '',
-    online: '',
-    noMoveTime: '',
+    // levelCodeArr: [],
+    // brandModelArr: [],
+    // levelCode: '',
+    // energyType: '',
+    // online: '',
+    // noMoveTime: '',
   };
 
   // 表格ajax请求返回数据格式
@@ -92,11 +94,24 @@ export default class Monitor extends Vue {
       options: [],
     },
     {
-      key: 'energyType',
+      key: 'online',
       type: 'select',
       label: '网络状态',
-      placeholder: '请选择网络状态',
-      options: [],
+      placeholder: '网络状态',
+      options: [
+        {
+          value: '',
+          label: '网络状态（全部）',
+        },
+        {
+          value: 'true',
+          label: '在线',
+        },
+        {
+          value: 'false',
+          label: '离线',
+        },
+      ],
     },
     {
       key: 'noMoveTime',
@@ -106,7 +121,7 @@ export default class Monitor extends Vue {
       options: [],
     },
     {
-      key: 'energyType',
+      key: 'fenceIO',
       type: 'select',
       label: '围栏内外',
       placeholder: '请选择围栏内外',
@@ -129,11 +144,24 @@ export default class Monitor extends Vue {
       options: [],
     },
     {
-      key: 'energyType',
+      key: 'online',
       type: 'select',
       label: '网络状态',
-      placeholder: '请选择网络状态',
-      options: [],
+      placeholder: '网络状态',
+      options: [
+        {
+          value: '',
+          label: '网络状态（全部）',
+        },
+        {
+          value: 'true',
+          label: '在线',
+        },
+        {
+          value: 'false',
+          label: '离线',
+        },
+      ],
     },
     {
       key: 'noMoveTime',
@@ -143,7 +171,7 @@ export default class Monitor extends Vue {
       options: [],
     },
     {
-      key: 'energyType',
+      key: 'fenceIO',
       type: 'select',
       label: '围栏内外',
       placeholder: '请选择围栏内外',
@@ -157,7 +185,7 @@ export default class Monitor extends Vue {
       options: [],
     },
     {
-      key: 'energyType',
+      key: 'bindStatus',
       type: 'select',
       label: '绑定状态',
       placeholder: '请选择绑定状态',
@@ -188,16 +216,16 @@ export default class Monitor extends Vue {
     },
     {
       label: '车辆来源',
-      prop: 'otuImei',
+      prop: 'sourceName',
+      formatter: (row: any) => this.sourceCheck(row),
     },
     {
       label: '绑定状态',
-      prop: 'clientType',
-      formatter: this.clientTypeCheck,
+      prop: 'bindStatusName',
     },
     {
       label: '设备数量',
-      prop: 'bsmName',
+      prop: 'deviceNum',
     },
     {
       label: '剩余油量',
@@ -242,29 +270,20 @@ export default class Monitor extends Vue {
     },
     {
       label: '围栏内外',
-      prop: 'minutesString',
+      prop: 'fenceIOName',
       sortable: true,
-      sortBy: 'minutesString',
+      sortBy: 'fenceIOName',
     },
     {
       label: '网络状态',
-      prop: 'online',
-      formatter: this.onlineFormat,
+      prop: 'onlineCN',
+      formatter: (row: any) => this.onlineFormat(row),
     },
   ];
 
-  clientTypeCheck(row: any) {
-    let str: string = '';
-    this.typeList.forEach((item: any) => {
-      if (row.clientType !== null) {
-        if (item.value === row.clientType) {
-          str = item.label;
-        }
-      } else {
-        str = '--';
-      }
-    });
-    return str;
+  // 确定车辆来源
+  sourceCheck(data: any) {
+    return data.sourceName.indexOf('系统') >= 0 ? <el-tag size="small">系统生成</el-tag> : <el-tag type="success" size="small">设备绑定</el-tag>;
   }
 
   // 无位置变化时间格式化
@@ -289,6 +308,15 @@ export default class Monitor extends Vue {
       return '--';
     }
     return str;
+  }
+
+  // online
+  onlineFormat(row: any) {
+    if (row.onlineCN) {
+      return row.onlineCN.indexOf('在线') >= 0 ?
+        <el-tag size="small" type="success">在线</el-tag> : <el-tag size="small" type="danger">离线</el-tag>;
+    }
+    return <el-tag size="small" type="danger">未知</el-tag>;
   }
 
   // 表格数据源添加单位
@@ -456,19 +484,6 @@ export default class Monitor extends Vue {
         });
       });
     });
-    // 车型全列表
-    allList(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.brandList = res.entity;
-        res.entity.unshift({
-          id: Math.random(),
-          name: '全部',
-        });
-        this.filterList[1].options = res.entity;
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
     // 门店数据查询
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -482,22 +497,56 @@ export default class Monitor extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    // 设备类型
-    terminalType(null).then((res) => {
+    // 获取绑定状态
+    getBindStatusOptions(null).then((res: any) => {
       if (res.result.resultCode === '0') {
-        res.entity.map((item: any) => this.typeList.push({
-          key: Math.random(),
-          value: item.enumValue,
-          label: item.name,
-        }));
+        res.entity.forEach((item: any) => {
+          item.label = item.desc;
+          item.value = item.val;
+        });
+        res.entity.unshift({
+          label: '全部',
+          value: '',
+        });
+        this.filterGrade[5].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+    // 围栏内外状态
+    getFioQueryOptions(null).then((res: any) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((item: any) => {
+          item.label = item.desc;
+          item.value = item.val;
+        });
+        res.entity.unshift({
+          label: '全部',
+          value: '',
+        });
+        this.filterList[3].options = res.entity;
+        this.filterGrade[3].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+    // 车辆来源
+    getSrcQueryOptions(null).then((res: any) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((item: any) => {
+          item.label = item.desc;
+          item.value = item.val;
+        });
+        res.entity.unshift({
+          label: '全部',
+          value: '',
+        });
+        this.filterGrade[4].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
   }
-
-  // 设备类型
-  typeList: any = [];
 
   // 清除表格ajax请求的外部参数
   clearOutParams() {
@@ -698,16 +747,6 @@ export default class Monitor extends Vue {
     };
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
     this.radiusGetData(val.id);
-  }
-
-  // online
-  onlineFormat(row: any) {
-    if (row.online) {
-      return <el-tag size="small" type="success">在线</el-tag>;
-    } if (row.online === null) {
-      return <el-tag size="small" type="info">未知</el-tag>;
-    }
-    return <el-tag size="small" type="danger">离线</el-tag>;
   }
 
   // 格式化能源类型
@@ -1270,6 +1309,14 @@ export default class Monitor extends Vue {
     this.$router.push({ name: '驾驶行为', params: { id } });
   }
 
+  onLineStatus(data: any) {
+    if (data) {
+      return data ? <span style={{ margin: '0 3px' }}>在线</span> : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>
+    } else {
+      return <span style={{ color: 'red', margin: '0 3px' }}>未知</span>
+    }
+  }
+
   render() {
     const { carDetail } = this;
     return (
@@ -1287,7 +1334,7 @@ export default class Monitor extends Vue {
           <div class="car-info">
             <div class="top">
               <span class="plateNumber">{carDetail.plateNum}</span>
-              <span class="onlineStatus">[{carDetail.online ? '在线' : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>}]</span>
+              <span class="onlineStatus">[{this.onLineStatus(carDetail.online)}]</span>
             </div>
             <div class="center">
               <span class="brandName">{carDetail.orgName ? carDetail.orgName : '--'}</span>
@@ -1420,7 +1467,6 @@ export default class Monitor extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
-            data-type={'JSON'}
             on-clearOutParams={this.clearOutParams}
             out-params={this.outParams}
             highlight-current-row={true}

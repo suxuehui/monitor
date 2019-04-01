@@ -271,42 +271,41 @@ export default class EquipTable extends Vue {
   }
 
   mounted() {
-    // this.filterList[0].options = this.deviceTypes;
-    // deviceModel(null).then((res) => {
-    //   const { entity, result } = res;
-    //   if (result.resultCode === '0') {
-    //     const list: any = [];
-    //     entity.forEach((item: any, index: number) => {
-    //       if (item.terminalModelList.length > 0) {
-    //         item.terminalModelList.forEach((it: any, ind: number) => {
-    //           it.label = it.name;
-    //           it.value = it.id;
-    //         });
-    //         list.push({
-    //           value: parseInt(item.dictionary.enumValue, 10),
-    //           label: item.dictionary.name,
-    //           children: item.terminalModelList,
-    //         });
-    //       } else {
-    //         list.push({
-    //           value: parseInt(item.dictionary.enumValue, 10),
-    //           label: item.dictionary.name,
-    //         });
-    //       }
-    //     });
-    //     list.unshift({
-    //       label: '全部',
-    //       value: '',
-    //     });
-    //     this.filterList[0].options = list;
-    //     this.filterList[0].props = {
-    //       value: 'value',
-    //       children: 'children',
-    //     };
-    //   } else {
-    //     this.$message.error(res.result.resultMessage);
-    //   }
-    // });
+    deviceModel('WIRELESS').then((res) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        const list: any = [];
+        entity.forEach((item: any, index: number) => {
+          if (item.terminalModelList.length > 0) {
+            item.terminalModelList.forEach((it: any, ind: number) => {
+              it.label = it.name;
+              it.value = it.id;
+            });
+            list.push({
+              value: parseInt(item.dictionary.enumValue, 10),
+              label: item.dictionary.name,
+              children: item.terminalModelList,
+            });
+          } else {
+            list.push({
+              value: parseInt(item.dictionary.enumValue, 10),
+              label: item.dictionary.name,
+            });
+          }
+        });
+        list.unshift({
+          label: '全部',
+          value: '',
+        });
+        this.filterList[0].options = list;
+        this.filterList[0].props = {
+          value: 'value',
+          children: 'children',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   activated() {

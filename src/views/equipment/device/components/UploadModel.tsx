@@ -25,27 +25,8 @@ export default class UploadModel extends Vue {
 
   loading: boolean = false;
 
-  modelForm: any = {
-    mainAddress: '',
-    secondAddress: '',
-  };
-
-  @Watch('time')
-  onTimeChange(data:any) {
-    this.modelForm = {
-      mainAddress: this.data.imei,
-      secondAddress: this.data.orgName,
-    };
-  }
-
   closeModal() {
     this.$emit('close');
-    setTimeout(() => {
-      this.modelForm = {
-        mainAddress: '',
-        secondAddress: '',
-      };
-    }, 200);
   }
 
   render() {
@@ -57,14 +38,14 @@ export default class UploadModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} label-width="80px" class="fzkUploadModel">
+        <el-form label-width="80px" class="fzkUploadModel">
           <el-row>
             <el-col>
               <el-form-item label="主地址" prop="mainAddress">
                 <el-input
                   id="mainAddress"
                   disabled={true}
-                  v-model={this.modelForm.mainAddress}
+                  v-model={this.data.masterUrl}
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -73,8 +54,7 @@ export default class UploadModel extends Vue {
                 <el-input
                   id="secondAddress"
                   disabled={true}
-                  type="textarea"
-                  v-model={this.modelForm.secondAddress}
+                  v-model={this.data.slaveUrl}
                 ></el-input>
               </el-form-item>
             </el-col>
