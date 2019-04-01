@@ -40,7 +40,7 @@ export default class Merchants extends Vue {
       key: 'activeStatus1',
       type: 'select',
       label: '切换地址',
-      placeholder: '请选择地址',
+      placeholder: '切换地址（全部）',
       options: [],
     },
     {

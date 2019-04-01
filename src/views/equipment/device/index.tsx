@@ -7,12 +7,9 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import {
   resetTime, deviceModel, getOnlineUrl,
 } from '@/api/equipment';
-import {
-  getInfoByLevelCode,
-} from '@/api/customer';
+import { getInfoByLevelCode, } from '@/api/customer';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
-import { orgTree } from '@/api/app';
 import PopconfirmBlock from '@/components/Popconfirm/index';
 import BindModel from './components/BindModel';
 import AcceptModel from './components/AcceptModel';
@@ -49,13 +46,14 @@ export default class Device extends Vue {
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'levelCode',
-      type: 'levelcode',
+      key: 'levelCODE',
+      type: 'cascader',
       label: '商户门店',
       filterable: true,
       props: {},
       placeholder: '商户门店（全部）',
       options: [],
+      change: this.levelChange,
     },
     {
       key: 'terid',
@@ -78,12 +76,12 @@ export default class Device extends Vue {
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
-      key: 'levelCode',
-      type: 'levelcode',
+      key: 'levelCODE',
+      type: 'cascader',
       label: '商户门店',
       filterable: true,
       props: {},
-      placeholder: '请选择商户门店',
+      placeholder: '商户门店（全部）',
       options: [],
       change: this.levelChange,
     },
@@ -137,32 +135,35 @@ export default class Device extends Vue {
   }
 
   levelChange(val: any) {
-    // this.outParams = {
-    //   terminalModelId: '',
-    //   terminalType: '',
-    // };
-    // if (val.length === 0) {
-    //   this.outParams.terminalType = '';
-    //   this.outParams.terminalModelId = '';
-    // } else if (val.length === 1) {
-    //   this.outParams.terminalType = val[val.length - 1];
-    //   this.outParams.terminalModelId = '';
-    // } else if (val.length === 2) {
-    //   this.outParams.terminalType = val[val.length - 2];
-    //   this.outParams.terminalModelId = val[val.length - 1];
-    // }
+    this.outParams = {
+      levelCode: '',
+      srLevelcode: '',
+    };
+    if (val.length === 0) {
+      this.outParams.levelCode = '';
+      this.outParams.srLevelcode = '';
+    } else if (val.length === 1) {
+      this.outParams.levelCode = val[val.length - 1];
+      this.outParams.srLevelcode = '';
+    } else if (val.length === 2) {
+      this.outParams.levelCode = val[val.length - 2];
+      this.outParams.srLevelcode = val[val.length - 1];
+    }
   }
 
   // 筛选参数
   filterParams: any = {
-    terid: [],
+    terid: [''],
+    levelCODE: [''],
+    status: 0,
+    online: -1,
   };
 
   outParams: any = {
     terminalModelId: '', // 具体设备型号id值 ,
     terminalType: '', // 设备类型:3-OTU,22-KeLong,23-BSJ,16-BT
-    levelCode: '', // 组织
-    srLevelcode: '', // 门店
+    levelCode: '', // 监控商户的门店
+    srLevelcode: '', // 4s的门店
   };
 
   // 请求地址
@@ -314,7 +315,7 @@ export default class Device extends Vue {
           }
         });
         list.unshift({
-          label: '全部',
+          label: '设备型号（全部）',
           value: '',
         });
         this.filterList[1].options = list;
@@ -344,7 +345,7 @@ export default class Device extends Vue {
           });
         });
         entity.unshift({
-          label: '全部',
+          label: '商户门店（全部）',
           value: '',
         });
         this.filterList[0].options = entity;
@@ -394,12 +395,10 @@ export default class Device extends Vue {
 
   // 查看上线地址
   checkLoc(data: any) {
-    setTimeout(() => {
-      this.upLocVisible = true;
-    }, 200);
     getOnlineUrl(data.id).then((res: any) => {
       const { result, entity } = res;
       if (result.resultCode === '0') {
+        this.upLocVisible = true;
         this.upLocData = entity;
       } else {
         this.upLocData.masterUrl = '--';
@@ -477,7 +476,7 @@ export default class Device extends Vue {
   // 设备状态 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   terminalStatus: TerminalType[] = [
     {
-      key: 0, value: 0, label: '全部', color: '',
+      key: 0, value: 0, label: '设备状态（全部）', color: '',
     },
     {
       key: 1, value: 1, label: '待安绑', color: '',
@@ -498,7 +497,7 @@ export default class Device extends Vue {
 
   // 网络状态 1-在线，0-离线，
   onlineStatus: any = [
-    { key: -1, value: -1, label: '全部' },
+    { key: -1, value: -1, label: '网络状态（全部）' },
     { key: 1, value: 1, label: '在线' },
     { key: 0, value: 0, label: '离线' },
   ]

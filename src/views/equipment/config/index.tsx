@@ -6,6 +6,7 @@ import exportExcel from '@/api/export';
 import {
   deviceModel, queryCfg, getBtName,
 } from '@/api/equipment';
+import { getInfoByLevelCode, } from '@/api/customer';
 import DownConfigModel from './components/DownConfigModel';
 import ClearConfigModel from './components/ClearConfigModel';
 import BtAuthModel from './components/BtAuthModel';
@@ -39,17 +40,14 @@ export default class ConfigModel extends Vue {
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'levelCode',
-      type: 'levelcode',
+      key: 'levelCODE',
+      type: 'cascader',
       label: '商户门店',
       filterable: true,
-      props: {
-        value: 'levelCode',
-        children: 'children',
-        label: 'orgName',
-      },
+      props: {},
       placeholder: '商户门店（全部）',
       options: [],
+      change: this.levelChange,
     },
     {
       key: 'online',
@@ -70,17 +68,14 @@ export default class ConfigModel extends Vue {
   // 高级筛选
   filterGrade: FilterFormList[] = [
     {
-      key: 'levelCode1',
-      type: 'levelcode',
+      key: 'levelCODE',
+      type: 'cascader',
       label: '商户门店',
       filterable: true,
-      props: {
-        value: 'levelCode1',
-        children: 'children',
-        label: 'orgName',
-      },
+      props: {},
       placeholder: '商户门店（全部）',
       options: [],
+      change: this.levelChange,
     },
     {
       key: 'online',
@@ -104,9 +99,28 @@ export default class ConfigModel extends Vue {
     },
   ];
 
+  levelChange(val: any) {
+    this.outParams = {
+      levelCode: '',
+      srLevelcode: '',
+    };
+    if (val.length === 0) {
+      this.outParams.levelCode = '';
+      this.outParams.srLevelcode = '';
+    } else if (val.length === 1) {
+      this.outParams.levelCode = val[val.length - 1];
+      this.outParams.srLevelcode = '';
+    } else if (val.length === 2) {
+      this.outParams.levelCode = val[val.length - 2];
+      this.outParams.srLevelcode = val[val.length - 1];
+    }
+  }
+
   // 筛选参数
   filterParams: any = {
-    terminalModel: '',
+    terminalModel: 0,
+    online: null,
+    levelCODE: [''],
   };
 
   outParams: any = {
@@ -236,7 +250,6 @@ export default class ConfigModel extends Vue {
     deviceModel('WIRELESS').then((res) => {
       const otuList: any = [];
       res.entity.forEach((item: any, index: number) => {
-        console.log(item);
         item.terminalModelList.forEach((it: any, ind: number) => {
           otuList.push({
             value: it.id,
@@ -254,6 +267,36 @@ export default class ConfigModel extends Vue {
     // 网络状态
     this.filterList[1].options = this.onlineTypes;
     this.filterGrade[1].options = this.onlineTypes;
+    // 获取商户-4s
+    getInfoByLevelCode(null).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        entity.forEach((item: any) => {
+          item.label = item.orgName;
+          item.value = item.levelCode;
+          item.siruiOrgs.forEach((it: any) => {
+            it.label = it.name;
+            it.value = it.levelCode;
+          });
+        });
+        entity.unshift({
+          label: '商户门店（全部）',
+          value: '',
+        });
+        this.filterList[0].options = entity;
+        this.filterList[0].props = {
+          value: 'value',
+          children: 'siruiOrgs',
+        };
+        this.filterGrade[0].options = entity;
+        this.filterGrade[0].props = {
+          value: 'value',
+          children: 'siruiOrgs',
+        };
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   onlineTypes: OnlineType[] = [

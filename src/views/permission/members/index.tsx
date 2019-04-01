@@ -52,7 +52,7 @@ export default class Members extends Vue {
   // 筛选参数
   filterParams: any = {
     roleId: '',
-    active: '',
+    active: null,
     keyword: '',
   };
 

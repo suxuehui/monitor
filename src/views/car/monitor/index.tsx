@@ -54,12 +54,13 @@ const pointIcon = require('@/assets/point.png');
 export default class Monitor extends Vue {
   // 过滤表单数据
   filterParams: object = {
-    // levelCodeArr: [],
-    // brandModelArr: [],
-    // levelCode: '',
-    // energyType: '',
-    // online: '',
-    // noMoveTime: '',
+    levelCodeArr: [''],
+    levelCode: ' ',
+    energyType: '',
+    online: '',
+    noMoveTime: '',
+    fenceIO: '',
+    bindStatus: '',
   };
 
   // 表格ajax请求返回数据格式
@@ -72,11 +73,7 @@ export default class Monitor extends Vue {
   };
 
   // 表格ajax请求外部参数
-  outParams: any = {
-    brandId: '',
-    seriesId: '',
-    modelId: '',
-  }
+  outParams: any = {}
 
   // 表格筛选表单配置数组
   filterList: FilterFormList[] = [
@@ -313,8 +310,8 @@ export default class Monitor extends Vue {
   // online
   onlineFormat(row: any) {
     if (row.onlineCN) {
-      return row.onlineCN.indexOf('在线') >= 0 ?
-        <el-tag size="small" type="success">在线</el-tag> : <el-tag size="small" type="danger">离线</el-tag>;
+      return row.onlineCN.indexOf('在线') >= 0
+        ? <el-tag size="small" type="success">在线</el-tag> : <el-tag size="small" type="danger">离线</el-tag>;
     }
     return <el-tag size="small" type="danger">未知</el-tag>;
   }
@@ -490,9 +487,10 @@ export default class Monitor extends Vue {
         res.entity.unshift({
           id: Math.random(),
           levelCode: '',
-          orgName: '全部',
+          orgName: '商户门店（全部）',
         });
         this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -505,7 +503,7 @@ export default class Monitor extends Vue {
           item.value = item.val;
         });
         res.entity.unshift({
-          label: '全部',
+          label: '绑定状态（全部）',
           value: '',
         });
         this.filterGrade[5].options = res.entity;
@@ -521,7 +519,7 @@ export default class Monitor extends Vue {
           item.value = item.val;
         });
         res.entity.unshift({
-          label: '全部',
+          label: '围栏内外（全部）',
           value: '',
         });
         this.filterList[3].options = res.entity;
@@ -538,7 +536,7 @@ export default class Monitor extends Vue {
           item.value = item.val;
         });
         res.entity.unshift({
-          label: '全部',
+          label: '车辆来源（全部）',
           value: '',
         });
         this.filterGrade[4].options = res.entity;
@@ -546,15 +544,6 @@ export default class Monitor extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-  }
-
-  // 清除表格ajax请求的外部参数
-  clearOutParams() {
-    this.outParams = {
-      brandId: '',
-      seriesId: '',
-      modelId: '',
-    };
   }
 
   /**
@@ -1311,10 +1300,9 @@ export default class Monitor extends Vue {
 
   onLineStatus(data: any) {
     if (data) {
-      return data ? <span style={{ margin: '0 3px' }}>在线</span> : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>
-    } else {
-      return <span style={{ color: 'red', margin: '0 3px' }}>未知</span>
+      return data ? <span style={{ margin: '0 3px' }}>在线</span> : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>;
     }
+    return <span style={{ color: 'red', margin: '0 3px' }}>未知</span>;
   }
 
   render() {
@@ -1467,7 +1455,6 @@ export default class Monitor extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
-            on-clearOutParams={this.clearOutParams}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
