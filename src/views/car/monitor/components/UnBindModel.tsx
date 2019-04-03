@@ -109,7 +109,7 @@ export default class BindModal extends Vue {
                   id={item.field}
                   on-change={(e: any) => this.checkBoxChange(e, item, index)}
                 ></el-checkbox><span class="itemTitle">{item.wireless === 0 ? '有线设备' : '无线设备'} {item.terminalModel} {item.imei}</span>
-              </div>) : <div style={{ lineHeight: "50px",fontSize:'20px', textAlign: "center" }}>暂无设备信息</div>
+              </div>) : <div style={{ lineHeight: '50px', fontSize: '20px', textAlign: 'center' }}>暂无设备信息</div>
             }
           </div>
           <div style={{ textAlign: 'center' }}>

@@ -377,22 +377,22 @@ export default class Monitor extends Vue {
 
   // 绑定按钮状态
   bindStatus(row: any) {
-    return row.sourceName.indexOf('设备绑定') >= 0 && row.bindStatusName.indexOf('未绑定') >= 0 ? false : true;
+    return !(row.sourceName.indexOf('设备绑定') >= 0 && row.bindStatusName.indexOf('未绑定') >= 0);
   }
 
   // 解绑按钮状态、新增按钮状态
   unbindStatus(row: any) {
-    return row.sourceName.indexOf('设备绑定') >= 0 && row.bindStatusName.indexOf('已绑定') >= 0 ? false : true;
+    return !(row.sourceName.indexOf('设备绑定') >= 0 && row.bindStatusName.indexOf('已绑定') >= 0);
   }
 
   // 编辑按钮状态
   editStatus(row: any) {
-    return row.sourceName.indexOf('设备绑定') >= 0 ? false : true;
+    return !(row.sourceName.indexOf('设备绑定') >= 0);
   }
 
   // 删除按钮状态
   deleteStatus(row: any) {
-    return row.bindStatusName.indexOf('未绑定') >= 0 ? false : true;
+    return !(row.bindStatusName.indexOf('未绑定') >= 0);
   }
 
   // 表格请求地址
@@ -711,14 +711,16 @@ export default class Monitor extends Vue {
     return direction;
   }
 
-  /**
-   * @method 根据车辆ID获取车辆详情
-   * @param {string} id 车辆id
-   */
+  // 获取当前车辆控制列表
   getCarControlList(data: any) {
-    // cmdList(id).then((res:any)=>{
-
-    // })
+    cmdList({ vehicleId: data.id }).then((res: any) => {
+      const { result, entity } = res;
+      if (result.resultCode === '0') {
+        this.remoteControlArr = entity;
+      } else {
+        this.$message.error(result.resultMessage);
+      }
+    });
   }
 
   /**
@@ -945,6 +947,8 @@ export default class Monitor extends Vue {
   controlTitle: string = '';
 
   clickTime: string = '';
+
+  cclickTime: string = '';
 
   // 绑定设备
   bindVisible: boolean = false;
@@ -1175,11 +1179,10 @@ export default class Monitor extends Vue {
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
-      console.log(val);
-      this.findTerminalList(val);
-      this.setCarDetail(val);
-      this.setCarId(val.id);
-      this.getCarControlList(val);
+      this.findTerminalList(val); // 获取设备列表
+      this.setCarDetail(val); // 设置详情
+      this.setCarId(val.id); // 设置车辆ID
+      this.getCarControlList(val); // 获取车辆控制列表
       if (val.lat && val.lng) {
         this.currentCarId = val.id;
         this.mapCenter = {
@@ -1244,15 +1247,6 @@ export default class Monitor extends Vue {
     this.SMap.addOverlay(marker); // 创建标注
   }
 
-
-  // 关闭编辑
-  closeEdit() {
-    this.editVisible = false;
-    this.controlVisible = false;
-  }
-
-  brandList: any = [];
-
   // 关闭弹窗
   closeModal(): void {
     this.editVisible = false; // 编辑
@@ -1276,7 +1270,7 @@ export default class Monitor extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '车辆列表', '/vehicle/monitor/exportExcel');
+    exportExcel(data1, `车辆列表${utils.returnNowTime()}`, '/vehicle/monitor/exportExcel');
   }
 
   showDeviceTran: boolean = false; // 展示设备数量
@@ -1296,44 +1290,33 @@ export default class Monitor extends Vue {
   }
 
   // 远程控制选项
-  remoteControlArr = [
-    { label: '降窗', num: '01', command: 'CMD_WIN_CLOSE' },
-    { label: '升窗', num: '02', command: 'CMD_WIN_OPEN' },
-    { label: '解锁', num: '03', command: 'CMD_UNLOCK' },
-    { label: '上锁', num: '04', command: 'CMD_LOCK' },
-    { label: '夺权', num: '05', command: 'CMD_AUTH_OIL_OFF' },
-    { label: '授权', num: '06', command: 'CMD_AUTH_OIL_ON' },
-    { label: '断油', num: '07', command: 'CMD_OIL_ON' },
-    { label: '通油', num: '08', command: 'CMD_OIL_OFF' },
-    { label: '熄火', num: '09', command: 'CMD_STOP' },
-    { label: '启动', num: '10', command: 'CMD_START' },
-    { label: '寻车', num: '11', command: 'CMD_CALL' },
-  ]
+  remoteControlArr = [];
 
   // 车辆控制
-  carControl(label: string, command: string, num: string) {
+  carControl(item:any) {
     this.controlData = {
-      cmd: command,
+      ...item,
+      cmd: item.name,
       imei: this.carDetail.otuImei,
-      operateStr: label,
-      num,
+      vin: this.carDetail.vin,
+      operateStr: item.desc,
     };
     this.controlVisible = true;
-    this.controlTitle = this.setControlTitle(num);
-    this.clickTime = utils.getNowTime();
+    this.controlTitle = this.setControlTitle(item.desc);
+    this.cclickTime = utils.getNowTime();
   }
 
   // 车辆控制弹框标题
   setControlTitle(num: string) {
     let title = '';
     switch (num) {
-      case '05':
+      case '夺权':
         title = '夺权选择';
         break;
-      case '06':
+      case '授权':
         title = '授权选择';
         break;
-      case '07':
+      case '断油':
         title = '断油选择';
         break;
       default:
@@ -1438,7 +1421,7 @@ export default class Monitor extends Vue {
             <div v-show={this.showDeviceTran}>
               <div class="deviceInfo">
                 <div class="deviceItem">
-                  <div class="deviceTit">有线设备：1个</div>
+                  <div class="deviceTit">有线设备：{this.wiredTerminals.length}个</div>
                   <ul class="deviceList">
                     <li class="deviceLi">
                       <span class="deviceModel w700">型号</span>
@@ -1453,7 +1436,7 @@ export default class Monitor extends Vue {
                   </ul>
                 </div>
                 <div class="deviceItem">
-                  <div class="deviceTit">无线设备：3个</div>
+                  <div class="deviceTit">无线设备：{this.wirelessTerminals.length}个</div>
                   <ul class="deviceList">
                     <li class="deviceLi">
                       <span class="deviceModel w700">型号</span>
@@ -1476,7 +1459,7 @@ export default class Monitor extends Vue {
               <ul class="controlList">
                 {
                   this.remoteControlArr.map((item: any, index: number) => (
-                    <li class="controlItem" on-click={() => this.carControl(item.label, item.command, item.num)}>{item.label}</li>
+                    <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
                   ))
                 }
               </ul>
@@ -1538,7 +1521,7 @@ export default class Monitor extends Vue {
         />
         <control-model
           ref="controlTable"
-          time={this.clickTime}
+          controltime={this.cclickTime}
           title={this.controlTitle}
           data={this.controlData}
           visible={this.controlVisible}

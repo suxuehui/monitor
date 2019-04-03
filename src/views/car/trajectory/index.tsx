@@ -7,7 +7,7 @@ import qs from 'qs';
 import exportExcel from '@/api/export';
 import { tripGPS } from '@/api/trajectory';
 import coordTrasns from '@/utils/coordTrasns';
-import config from '@/utils';
+import utils from '@/utils';
 import commonfun from './commonfun';
 import MapControl from './mapContorl';
 import './index.less';
@@ -231,7 +231,7 @@ export default class Trajectory extends Vue {
 
   constructor(props: any) {
     super(props);
-    config
+    utils
       .loadMap()
       .then((BMap: any) => {
         this.BMap = BMap;
@@ -257,11 +257,11 @@ export default class Trajectory extends Vue {
         });
         this.SMap.enableScrollWheelZoom(true); // 设置鼠标滚动
         // 加载地图信息框
-        config.loadMapInfoBox().then((BMapLib: any) => {
+        utils.loadMapInfoBox().then((BMapLib: any) => {
           this.mapContorl = new MapControl({ SMap: this.SMap });
         });
         // 加载canvas图层
-        config.loadCanvasLayer().then((CanvasLayer: any) => {
+        utils.loadCanvasLayer().then((CanvasLayer: any) => {
           this.CanvasLayer = CanvasLayer;
         });
       });
@@ -937,7 +937,7 @@ export default class Trajectory extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '轨迹列表', '/device/trip/exportExcel');
+    exportExcel(data1, `围栏列表${utils.returnNowTime()}`, '/device/trip/exportExcel');
   }
 
   render() {

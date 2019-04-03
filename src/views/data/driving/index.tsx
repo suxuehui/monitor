@@ -4,6 +4,7 @@ import qs from 'qs';
 import { Tag } from 'element-ui';
 import exportExcel from '@/api/export';
 import { orgTree } from '@/api/app';
+import utils from '@/utils';
 import './index.less';
 
 @Component({
@@ -238,7 +239,7 @@ export default class Driving extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '数据统计列表', '/statistics/driving/exportExcel');
+    exportExcel(data1, `数据统计列表${utils.returnNowTime()}`, '/statistics/driving/exportExcel');
   }
 
   render(h: any) {

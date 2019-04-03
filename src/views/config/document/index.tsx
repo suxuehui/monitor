@@ -5,7 +5,7 @@ import { Tag } from 'element-ui';
 import { configDelete, configInfo } from '@/api/config';
 import exportExcel from '@/api/export';
 import AddModel from './components/Addmodel';
-
+import utils from '@/utils';
 @Component({
   components: {
     'el-tag': Tag,
@@ -155,7 +155,7 @@ export default class DeviceModel extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '配置列表', '/vehicle/config/exportExcel');
+    exportExcel(data1, `配置列表${utils.returnNowTime()}`, '/vehicle/config/exportExcel');
   }
 
   render(h: any) {

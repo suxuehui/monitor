@@ -80,17 +80,19 @@ export default class AddModal extends Vue {
   onDataChange(data: any) {
     if (data.id > 0) {
       // 编辑
-      this.modelForm = {
-        orgName: data.orgName,
-        contactUser: data.contactUser,
-        manageUser: data.manageUser,
-        contactPhone: data.contactPhone,
-        contactAddress: data.contactAddress,
-        password: '********', // 编辑时设置默认密码为********
-      };
+      this.modelForm.orgName = data.orgName;
+      this.modelForm.contactUser = data.contactUser;
+      this.modelForm.manageUser = data.manageUser;
+      this.modelForm.password = '********';
+      if (data.chgAddrAble === 1) {
+        this.modelForm.mainAddr = data.mainAddr.split(':')[0];
+        this.modelForm.mainAddrPort = data.mainAddr.split(':')[1];
+        this.modelForm.secondaryAddr = data.secondaryAddr.split(':')[0];
+        this.modelForm.secondaryAddrPort = data.secondaryAddr.split(':')[1];
+      }
       this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
       this.nameAndLev = `${this.data.orgName}`;
-      this.reBootStatus = data.chgDevAddr === 0 ? '2' : '1';
+      this.reBootStatus = data.chgAddrAble === 2 ? '2' : '1';
     } else {
       // 新增
       this.resetData();
@@ -344,7 +346,6 @@ export default class AddModal extends Vue {
       orgName: this.modelForm.orgName, // 添加的商户名
       manageUser: this.modelForm.manageUser, // 账号
       password: this.modelForm.password, // 密码
-      // oldLevelCode: this.getOldInfo().oldLevelCodes, // 旧系统中商户的levelcode
       deviceType: this.deviceType.indexOf('1026') > -1 ? '3,22,23,16,17' : this.deviceType.join(','), // 设备类型
       chgAddrAble: this.reBootStatus, // 是否切换服务地址
       mainAddr: `${this.modelForm.mainAddr}:${this.modelForm.mainAddrPort}`, // 主地址
@@ -385,9 +386,7 @@ export default class AddModal extends Vue {
             delete obj.mainAddr;
             delete obj.secondaryAddr;
           }
-          obj.orgName = this.data.orgName;
           obj.oldLevelCode = this.data.oldLevelCode;
-          console.log(obj);
           customerUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {

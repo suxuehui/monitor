@@ -9,6 +9,7 @@ import exportExcel from '@/api/export';
 import { orgTree, getDict } from '@/api/app';
 import { getSolution } from '@/api/message';
 import CoordTrasns from '@/utils/coordTrasns';
+import utils from '@/utils';
 
 import HandleModel from '@/views/message/alarm/components/HandleModel';
 import CheckModel from '@/views/message/alarm/components/CheckModel';
@@ -338,7 +339,7 @@ export default class Alarm extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '告警列表', '/message/alarm/exportExcel');
+    exportExcel(data1, `告警列表${utils.returnNowTime()}`, '/message/alarm/exportExcel');
   }
 
   render(h: any) {

@@ -7,6 +7,7 @@ import {
 import exportExcel from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
 import AddModal from '@/views/customer/merchants/components/AddModal';
+import utils from '@/utils';
 
 interface ActiveType { key: any, value: any, label: string }
 
@@ -98,7 +99,7 @@ export default class Merchants extends Vue {
 
   locSet(row: any) {
     // chgAddrAble:2-不能切换 1-能切换 ,
-    return row.chgAddrAble === 2 ? '不切换' : `切换(${row.mainAddr})`;
+    return row.chgAddrAble === 2 ? '不切换' : '切换';
   }
 
   // 是否激活:1，正常、激活，2,冻结
@@ -256,7 +257,7 @@ export default class Merchants extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '商户列表', '/customer/org/exportExcel');
+    exportExcel(data1, `商户列表${utils.returnNowTime()}`, '/customer/org/exportExcel');
   }
 
   render(h: any) {

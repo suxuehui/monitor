@@ -12,7 +12,7 @@ import exportExcel from '@/api/export';
 
 import { queryAddress, orgTree } from '@/api/app';
 import { getProvince, getCity, getDistrict } from '@/api/province';
-import config from '@/utils';
+import utils from '@/utils';
 import './index.less';
 import '../../../styles/var.less';
 
@@ -52,7 +52,7 @@ export default class EleFence extends Vue {
 
   constructor(props: any) {
     super(props);
-    config.loadMap().then((BMap: any) => {
+    utils.loadMap().then((BMap: any) => {
       this.BMap = BMap;
       this.SMap = new BMap.Map('map', { enableMapClick: false });
       this.SMap.setMapStyle({
@@ -167,7 +167,7 @@ export default class EleFence extends Vue {
     alarmType: '',
     available: '',
     keyword: '',
-    areaNum: '',
+    areaNum: [],
   };
 
   backParams: object = {
@@ -292,16 +292,15 @@ export default class EleFence extends Vue {
       if (res.result.resultCode === '0') {
         this.provinceList.forEach((item: any, index: number) => {
           if (item.value === `${data}`) {
-            setTimeout(() => {
-              this.provinceList[index].children = [];
-              res.entity.forEach((items: any) => {
-                this.provinceList[index].children.push({
-                  label: items.name,
-                  children: [],
-                  value: `${items.regionalismcode}`,
-                });
+            this.provinceList[index].children = [];
+            res.entity.forEach((items: any) => {
+              this.provinceList[index].children.push({
+                label: items.name,
+                children: [],
+                value: `${items.regionalismcode}`,
               });
-            }, 200);
+            });
+            console.log(this.provinceList);
           }
         });
       } else {
@@ -318,7 +317,7 @@ export default class EleFence extends Vue {
     getDistrict({ regionalismCode: data }).then((res) => {
       if (res.result.resultCode === '0') {
         this.provinceList.forEach((item: any, index: number) => {
-          item.children.forEach((items: any, inx: number) => {
+          item.children && item.children.forEach((items: any, inx: number) => {
             this.provinceList[index].children[inx].children = [];
             if (`${data}` === items.value) {
               res.entity.forEach((it: any, key: number) => {
@@ -350,7 +349,7 @@ export default class EleFence extends Vue {
         res.entity.unshift({
           id: Math.random(),
           levelCode: '',
-          orgName: '全部',
+          orgName: '全部商户',
         });
         this.filterList[0].options = res.entity;
       } else {
@@ -372,6 +371,7 @@ export default class EleFence extends Vue {
         this.provinceList.unshift({
           label: '所在地区（全部）',
           value: '',
+          // children: [],
         });
         this.filterList[1].props = this.props;
         this.filterList[1].options = this.provinceList;
@@ -708,7 +708,7 @@ export default class EleFence extends Vue {
   */
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '围栏列表', '/vehicle/fence/exportExcel');
+    exportExcel(data1, `围栏列表${utils.returnNowTime()}`, '/vehicle/fence/exportExcel');
   }
 
   render() {

@@ -5,6 +5,7 @@ import {
 } from 'element-ui';
 import qs from 'qs';
 import exportExcel from '@/api/export';
+import utils from '@/utils';
 
 import './RecordTable.less';
 @Component({
@@ -182,7 +183,7 @@ export default class RecordTable extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '追踪记录列表', '/vehicle/tracke/exportExcelRecord');
+    exportExcel(data1, `追踪记录列表${utils.returnNowTime()}`, '/vehicle/tracke/exportExcelRecord');
   }
 
   render() {

@@ -260,6 +260,16 @@ function returnTime() {
 }
 
 /**
+ * @method 返回当前时间
+*/
+function returnNowTime() {
+  const time = new Date(
+    new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds(),
+  );
+  return time.Format('yyyy-MM-dd hh:mm:ss');
+}
+
+/**
  * @method 去掉首尾双引号
 */
 function removeMarks(data:string) {
@@ -267,6 +277,7 @@ function removeMarks(data:string) {
 }
 
 export default {
+  returnNowTime,
   removeMarks,
   returnTime,
   expNum,

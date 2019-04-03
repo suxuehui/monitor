@@ -63,16 +63,14 @@ export default class BindLog extends Vue {
   activated() {
     const FormTable: any = this.$refs.MTable;
     this.defaultPageSize = 5;
+    FormTable.getData(this.tableParams);
+    this.getTerminalInfo(this.curId);
     this.tableParams = {
       page: true,
       pageNum: 1,
       pageSize: 5,
-      imei: this.$route.query.imei,
+      imei: this.curImei,
     };
-    FormTable.getData(this.tableParams);
-    if (this.$route.query.id) {
-      this.getTerminalInfo(this.$route.query.id);
-    }
   }
 
   // 新增、导出按钮展示
@@ -93,7 +91,14 @@ export default class BindLog extends Vue {
       pageSize: 5,
       imei: this.$route.query.imei,
     };
+    this.curId = this.$route.query.id;
+    this.curImei = this.$route.query.imei;
   }
+
+  // 当前车辆imei和id
+  curId: any = '';
+
+  curImei: any = '';
 
   // 车辆信息
   getTerminalInfo(data: any) {

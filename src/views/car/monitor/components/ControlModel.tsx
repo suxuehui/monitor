@@ -24,7 +24,7 @@ export default class ControlModel extends Vue {
 
   @Prop() private title: any;
 
-  @Prop() private time: any;
+  @Prop() private controltime: any;
 
   loading: boolean = false;
 
@@ -32,7 +32,7 @@ export default class ControlModel extends Vue {
     cmd: '',
   };
 
-  @Watch('time')
+  @Watch('controltime')
   dataChange() {
     this.modelForm = {
       cmd: '',
@@ -50,47 +50,37 @@ export default class ControlModel extends Vue {
   }
 
   onSubmit() {
-    const cmd = this.modelForm.cmd ? this.modelForm.cmd : this.data.cmd;
-    console.log(cmd);
-    console.log(this.data);
-    // this.loading = true;
-    // controlCar({ imei: this.data.imei, cmd: this.data.cmd }).then((res: any) => {
-    //   if (res.result.resultCode === '0') {
-    //     setTimeout(() => {
-    //       this.loading = false;
-    //       this.$message.success(res.result.resultMessage);
-    //       this.$emit('refresh');
-    //     }, 1500);
-    //   } else {
-    //     setTimeout(() => {
-    //       this.loading = false;
-    //       this.$message.error(res.result.resultMessage);
-    //     }, 1500);
-    //   }
-    // });
+    this.loading = true;
+    const obj:any = {
+      keyword: this.data.imei,
+      cmd: this.data.desc,
+      optionVal: this.modelForm.cmd,
+    }
+    cmdControl(obj).then((res: any) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.success(res.result.resultMessage);
+          this.$emit('refresh');
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage);
+        }, 1500);
+      }
+    });
   }
 
   renderContent() {
-    if (this.data.num === '05') {
+    if (this.data.options) {
       return (
         <el-radio-group v-model={this.modelForm.cmd} style={{ margin: '15px 0 30px' }}>
-          <el-radio label="1">上锁断油</el-radio>
-          <el-radio label="2">熄火断油</el-radio>
-          <el-radio label="3">立即断油</el-radio>
-        </el-radio-group>
-      );
-    } if (this.data.num === '06') {
-      return (
-        <el-radio-group v-model={this.modelForm.cmd} style={{ margin: '15px 0 30px' }}>
-          <el-radio label="1">开锁通油</el-radio>
-          <el-radio label="2">立即通油</el-radio>
-        </el-radio-group>
-      );
-    } if (this.data.num === '07') {
-      return (
-        <el-radio-group v-model={this.modelForm.cmd} style={{ margin: '15px 0 30px' }}>
-          <el-radio label="1">熄火断油</el-radio>
-          <el-radio label="2">立即断油</el-radio>
+          {
+            this.data.options.map((item: any) => <el-radio label={item.optionVal}>
+              {item.optionName}
+            </el-radio>)
+          }
         </el-radio-group>
       );
     }

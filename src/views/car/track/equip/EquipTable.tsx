@@ -367,7 +367,7 @@ export default class EquipTable extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '追踪设备列表', '/vehicle/tracke/exportExcel');
+    exportExcel(data1, `追踪设备列表${utils.returnNowTime()}`, '/vehicle/tracke/exportExcel');
   }
 
   render() {

@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
+import utils from '@/utils';
 import exportExcel from '@/api/export';
 
 @Component({
@@ -128,7 +129,7 @@ export default class ModelManage extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '配置列表', '/vehicle/config/exportExcel');
+    exportExcel(data1, `配置列表${utils.returnNowTime()}`, '/vehicle/config/exportExcel');
   }
 
   render(h: any) {

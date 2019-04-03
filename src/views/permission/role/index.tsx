@@ -189,7 +189,7 @@ export default class Role extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '角色列表', '/sys/role/exportExcel');
+    exportExcel(data1, `角色列表${utils.returnNowTime()}`, '/sys/role/exportExcel');
   }
 
   render(h: any) {

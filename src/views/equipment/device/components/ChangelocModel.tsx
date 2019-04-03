@@ -1,11 +1,11 @@
 import {
-  Component, Prop, Vue,
+  Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
   Dialog, Row, Col, Button, Form, FormItem, Input,
 } from 'element-ui';
 import {
-  changeAddress,
+  changeAddress, getOnlineUrl,
 } from '@/api/equipment';
 import './ChangelocModel.less';
 
@@ -26,18 +26,46 @@ export default class ChangelocModel extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private changeTime: any;
+
   loading: boolean = false;
+
+  @Watch('changeTime')
+  onDataChange() {
+    getOnlineUrl(this.data.id).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        this.deviceUrl = entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  // 设备备用地址
+  deviceUrl: any = {};
 
   closeModal() {
     this.$emit('close');
   }
 
   onSubmit() {
-    // this.loading = true;
-    const obj: any = {
-      imei: this.data.imei,
-    };
-    console.log(this.data.imei);
+    this.loading = true;
+    changeAddress(this.data.imei).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.success(result.resultMessage);
+          this.$emit('refresh');
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(result.resultMessage);
+        }, 1500);
+      }
+    });
   }
 
   render() {
@@ -49,21 +77,16 @@ export default class ChangelocModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        {/* <p class="top">确定切换设备地址到</p>
-        <div>
-
-        </div>
-        <p class="alert">(请谨慎操作，切换后设备将改变上线地址)</p> */}
         <div class="content">
           <p>确定切换设备地址</p>
           <ul class="locs">
             <li class="item">
               <span class="tit">主地址：</span>
-              <span class="loc">www.baidu.com</span>
+              <span class="loc">{this.deviceUrl.masterUrl ? this.deviceUrl.masterUrl : '--'}</span>
             </li>
             <li class="item">
               <span class="tit">副地址：</span>
-              <span class="loc">www.baidu.com11111</span>
+              <span class="loc">{this.deviceUrl.slaveUrl ? this.deviceUrl.slaveUrl : '--'}</span>
             </li>
           </ul>
           <p class="alert">(请谨慎操作，切换后设备将改变上线地址)</p>

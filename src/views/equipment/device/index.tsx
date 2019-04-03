@@ -393,6 +393,8 @@ export default class Device extends Vue {
   // 点击操作时的时间
   clickTime: string = '';
 
+  changeClickTime: string = '';
+
   aclickTime: string = '';
 
   bclickTime: string = '';
@@ -441,7 +443,7 @@ export default class Device extends Vue {
   }
 
   checkLog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id }, params:{imei: row.imei, id: row.id} });
   }
 
   onlineSelect(row: any) {
@@ -597,6 +599,7 @@ export default class Device extends Vue {
       case 'changeLoc':
         this.changelocVisible = true;
         this.changelocData = row;
+        this.changeClickTime = utils.getNowTime();
         break;
       // 阈值
       case 'setThreshold':
@@ -625,7 +628,7 @@ export default class Device extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '设备管理列表', '/device/terminal/exportExcel');
+    exportExcel(data1, `设备管理列表${utils.returnNowTime()}`, '/device/terminal/exportExcel');
   }
 
   // 关闭弹窗
@@ -705,6 +708,7 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         />
         <changeloc-model
+          changeTime={this.changeClickTime}
           data={this.changelocData}
           visible={this.changelocVisible}
           on-close={this.closeModal}

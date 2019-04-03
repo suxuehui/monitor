@@ -426,7 +426,7 @@ export default class ConfigModel extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '配置列表', '/vehicle/config/exportExcel');
+    exportExcel(data1, `设备配置${utils.returnNowTime()}`, '/device/terminal/configurationExport');
   }
 
   clear() {

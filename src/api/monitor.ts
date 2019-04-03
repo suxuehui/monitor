@@ -79,6 +79,7 @@ export async function cmdList(params: any) {
   return request({
     url: '/cmd/list',
     method: 'post',
+    data: params,
   });
 }
 
@@ -87,5 +88,6 @@ export async function cmdControl(params: any) {
   return request({
     url: '/cmd/control',
     method: 'post',
+    data: params,
   });
 }

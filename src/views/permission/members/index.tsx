@@ -6,7 +6,7 @@ import exportExcel from '@/api/export';
 import {
   roleSelect, userLock, userUnlock, userInfo,
 } from '@/api/permission';
-
+import utils from '@/utils';
 import AddModal from '@/views/permission/members/components/AddModal';
 
 interface RoleType { key: number, value: string, label: string }
@@ -235,7 +235,7 @@ export default class Members extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '成员列表', '/sys/user/exportExcel');
+    exportExcel(data1, `成员列表${utils.returnNowTime()}`, '/sys/user/exportExcel');
   }
 
   render(h: any) {
