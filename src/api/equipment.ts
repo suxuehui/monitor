@@ -111,6 +111,7 @@ export async function getBluetooth(params: any) {
     fetchType: 'JSON',
   });
 }
+
 // 生成蓝牙鉴权码
 export async function createBluetooth(params: any) {
   return request({
@@ -189,6 +190,7 @@ export async function setBtName(params: any) {
     url: '/device/terminal/settingBluetoothName',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 
@@ -214,6 +216,7 @@ export async function searchThrDefaultVal(params: any) {
     url: '/device/terminal/defaultThreshold',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 
@@ -231,6 +234,7 @@ export async function setThrVal(params: any) {
     url: '/device/terminal/thresholdSetting',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 
@@ -238,6 +242,14 @@ export async function setThrVal(params: any) {
 export async function getOnlineUrl(params: any) {
   return request({
     url: `/device/terminal/onlineUrl/${params}`,
+    method: 'get',
+  });
+}
+
+// 查询车辆绑定设备
+export async function findBindTerminalList(params: any) {
+  return request({
+    url: `/device/terminal/findBindTerminalList/${params}`,
     method: 'get',
   });
 }

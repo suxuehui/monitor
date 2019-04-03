@@ -25,7 +25,12 @@ export default class CheckLogModel extends Vue {
 
   @Watch('time')
   onDataChange() {
-    this.url = `/device/terminal/opsList/${this.data.iemi}`;
+    this.url = '/device/terminal/opsList';
+    this.tableParams.imei = this.data.imei;
+    const mtable: any = this.$refs.MTable;
+    if (mtable) {
+      mtable.reload();
+    }
   }
 
   loading: boolean = false;
@@ -33,10 +38,11 @@ export default class CheckLogModel extends Vue {
   tableParams: any = {
     page: true,
     pageNum: 1,
-    pageSize: 5,
+    pageSize: 10,
+    imei: '',
   }
 
-  defaultPageSize: any = null;
+  defaultPageSize: any = 10;
 
   url: string = '';
 
@@ -45,18 +51,16 @@ export default class CheckLogModel extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '操作人员', prop: 'orgName', formatter: this.manSet },
-    { label: '操作时间', prop: 'opsRealName' },
-    { label: '操作内容', prop: 'opsType' },
+    { label: '操作时间', prop: 'crtTime' },
+    { label: '操作内容', prop: 'content' },
   ];
 
   // 操作人员设置
   manSet(row: any) {
     return (
       <div style={{ textAlign: 'center' }}>
-        {/* <p>{row.orgName}-{row.realName}</p>
-        <p>({row.userName})</p> */}
-        <p>1111-222</p>
-        <p>({2222})</p>
+        <p>{row.orgName}-{row.realName}</p>
+        <p>({row.userName})</p>
       </div>
     );
   }
@@ -89,6 +93,7 @@ export default class CheckLogModel extends Vue {
             fetchType='post'
             dataType={'JSON'}
             opreat={this.opreat}
+            height={'300'}
             opreat-width={'180px'}
             on-tableClick={this.tableClick}
             defaultPageSize={this.defaultPageSize}

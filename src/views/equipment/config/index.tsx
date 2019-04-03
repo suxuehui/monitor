@@ -4,7 +4,7 @@ import qs from 'qs';
 import { Tag, Button, Tooltip } from 'element-ui';
 import exportExcel from '@/api/export';
 import {
-  deviceModel, queryCfg, getBtName,
+  deviceModel, queryCfg, getBtName, getBluetooth,
 } from '@/api/equipment';
 import { getInfoByLevelCode } from '@/api/customer';
 import DownConfigModel from './components/DownConfigModel';
@@ -118,7 +118,7 @@ export default class ConfigModel extends Vue {
 
   // 筛选参数
   filterParams: any = {
-    terminalModel: 0,
+    terminalModel: '',
     online: null,
     levelCODE: [''],
   };
@@ -129,7 +129,6 @@ export default class ConfigModel extends Vue {
   };
 
   // 请求地址
-  // url: string = '/vehicle/config/list';
   url: string = '/device/terminal/configurationList';
 
   opreat: Opreat[] = [
@@ -175,43 +174,26 @@ export default class ConfigModel extends Vue {
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
   statusSet(row: any) {
-    return !(row.online === 1 && row.softVersion.substr(0, 3) === 'ovt');
+    return !(row.online === 1 && row.softVersion && row.softVersion.substr(0, 3) === 'ovt');
   }
 
-  // 表格参数
-  tableList: tableList[] = [
-    { label: '商户门店', prop: 'cfgName' },
-    { label: 'imei号', prop: 'productCode' },
-    { label: '主机编码', prop: 'remark' },
-    { label: '设备型号', prop: 'reboot' },
-    { label: '软件版本', prop: 'reboot' },
-    { label: '配置名称', prop: 'reboot' },
-    { label: '产品编码', prop: 'reboot' },
-    { label: '当前车辆', prop: 'reboot' },
-    { label: '操作记录', prop: 'reboot', formatter: this.opeList },
-    { label: '网络状态', prop: 'reboot', formatter: this.onlineStatus },
-  ];
-
   // // 表格参数
-  // tableList: tableList[] = [
-  //   { label: '商户门店', prop: 'orgName' },
-  //   { label: 'imei号', prop: 'imei' },
-  //   { label: '主机编码', prop: 'barCode' },
-  //   { label: '设备型号', prop: 'terminalModel' },
-  //   { label: '软件版本', prop: 'softVersion' },
-  //   { label: '配置名称', prop: 'cfgName' },
-  //   { label: '产品编码', prop: 'productCode' },
-  //   { label: '当前车辆', prop: 'platenum' },
-  //   { label: '操作记录', prop: 'orgName', formatter: this.opeList },
-  //   { label: '网络状态', prop: 'online' },
-  // ];
+  tableList: tableList[] = [
+    { label: '商户门店', prop: 'orgName' },
+    { label: 'imei号', prop: 'imei' },
+    { label: '主机编码', prop: 'barCode' },
+    { label: '设备型号', prop: 'terminalModel' },
+    { label: '软件版本', prop: 'softVersion' },
+    { label: '配置名称', prop: 'cfgName' },
+    { label: '产品编码', prop: 'productCode' },
+    { label: '当前车辆', prop: 'platenum' },
+    { label: '操作记录', prop: 'orgNam111e', formatter: this.opeList },
+    { label: '网络状态', prop: 'online', formatter: this.onlineStatus },
+  ];
 
   onlineStatus(row: any) {
     return row.online === 1
-      ? <span style="color:#67953A">在线</span>
-      : <el-tooltip class="item" effect="dark" content={`离线 (${utils.minToAll(row.offlineTime)})`} placement="top">
-        <span style="color:#F56C6C">离线 ({utils.minToAll(row.offlineTime)}分钟)</span>
-      </el-tooltip>;
+      ? <el-tag type="success">在线</el-tag> : <el-tag type="danger">离线</el-tag>;
   }
 
   // 查看操作记录
@@ -258,7 +240,7 @@ export default class ConfigModel extends Vue {
         });
       });
       otuList.unshift({
-        value: 0,
+        value: '',
         label: '设备型号(全部)',
       });
       this.filterList[2].options = otuList;
@@ -331,15 +313,36 @@ export default class ConfigModel extends Vue {
       // this.searchconfigData = row;
     } else if (key === 'btAuth') { // 蓝牙鉴权
       this.btAuthVisible = true;
-      this.btAuthData = row;
+      this.getAuthCode(row);
     } else if (key === 'btName') { // 蓝牙名称
-      // getBtName(row.imei).then((res: any) => {
-      //   console.log(res);
-      // });
       this.btNameVisible = true;
       this.btNameData = row;
-      this.clickTime = utils.getNowTime();
     }
+  }
+
+  // 查询蓝牙鉴权码
+  getAuthCode(data: any) {
+    const obj: any = {
+      cfgName: 'bluetoothAuthCode',
+      id: data.id,
+      imei: data.imei,
+    };
+    this.btAuthData = {};
+    getBluetooth(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.btAuthData = {
+          id: data.id,
+          imei: data.imei,
+          cfgVal: res.entity.length > 0 ? res.entity[0].cfgVal : '暂无蓝牙鉴权码',
+        };
+      } else {
+        this.btAuthData = {
+          id: data.id,
+          imei: data.imei,
+        };
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 下发配置
@@ -426,6 +429,13 @@ export default class ConfigModel extends Vue {
     exportExcel(data1, '配置列表', '/vehicle/config/exportExcel');
   }
 
+  clear() {
+    this.outParams = {
+      levelCode: '', // 新监控levelcode
+      srLevelCode: '', // 4s门户levelcode
+    };
+  }
+
   render(h: any) {
     return (
       <div class="fzk-config-wrap">
@@ -436,7 +446,6 @@ export default class ConfigModel extends Vue {
           filter-params={this.filterParams}
           add-btn={false}
           opreatWidth={'180px'}
-          localName={'model'}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
@@ -444,6 +453,7 @@ export default class ConfigModel extends Vue {
           export-btn={this.exportBtn}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
+          on-clearOutParams={this.clear}
         />
         <downconfig-model
           data={this.downconfigData}
@@ -466,7 +476,6 @@ export default class ConfigModel extends Vue {
           on-refresh={this.refresh}
         />
         <btname-model
-          time={this.clickTime}
           data={this.btNameData}
           visible={this.btNameVisible}
           on-close={this.closeModal}

@@ -169,7 +169,7 @@ export default class Merchants extends Vue {
     { key: 2, value: 2, label: '冻结' },
   ]
 
-  // 商户状态 
+  // 商户状态
   // 是否能切换服务地址：2-不能切换 1-能切换
   chgAddrAbleTypes: ActiveType[] = [
     { key: '', value: '', label: '切换地址（全部）' },

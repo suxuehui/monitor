@@ -4,6 +4,7 @@ import {
 import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
 } from 'element-ui';
+import { bindTerminal } from '@/api/car';
 
 @Component({
   components: {
@@ -55,11 +56,25 @@ export default class BindModal extends Vue {
     this.loading = true;
     const From: any = this.$refs.modelForm;
     const obj: any = {
-      imei: this.data.imei,
+      imei: this.modelForm.imei,
+      vehicleId: this.data.id,
     };
     From.validate((valid: any) => {
       if (valid) {
-        console.log(222);
+        bindTerminal(obj).then((res: any) => {
+          if (res.result.resultCode === '0') {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.success(res.result.resultMessage);
+              this.$emit('refresh');
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
       } else {
         this.loading = false;
         return false;

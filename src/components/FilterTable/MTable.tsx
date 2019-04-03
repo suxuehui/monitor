@@ -59,6 +59,9 @@ export default class MTable extends Vue {
   // 操作栏width
   @Prop({ default: '100px' }) private opreatWidth!: string;
 
+  // 固定高度--固定表头
+  @Prop() private height!: string;
+
   // 本地存储名称
   @Prop({ default: 'filter-table' }) private localName!: string;
 
@@ -221,6 +224,7 @@ export default class MTable extends Vue {
       <div class="m-table" >
         <m-spin show={this.loading} />
         <el-table
+          height={this.height}
           data={this.tableData}
           on-row-click={this.currentChange}
           on-selection-change={this.selectChange}

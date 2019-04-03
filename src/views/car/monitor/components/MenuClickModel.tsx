@@ -34,15 +34,20 @@ export default class DeleteModel extends Vue {
   onSubmit() {
     this.loading = true;
     const obj: any = {
-      imei: this.data.imei,
+      id: this.data.id,
     };
-    // vehicleDelete(obj).then((res) => {
-    //   if (res.result.resultCode === '0') {
-    //     this.$message.success(res.result.resultMessage);
-    //   } else {
-    //     this.$message.error(res.result.resultMessage);
-    //   }
-    // });
+    vehicleDelete(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.$emit('refresh');
+        this.closeModal();
+        this.$message.success(res.result.resultMessage);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage);
+        }, 1000);
+      }
+    });
   }
 
   render() {

@@ -4,6 +4,7 @@ import {
 import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
 } from 'element-ui';
+import { bindTerminal } from '@/api/car';
 
 @Component({
   components: {
@@ -17,7 +18,7 @@ import {
     'el-button': Button,
   },
 })
-export default class AddDeviceModel extends Vue {
+export default class BindModal extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
 
@@ -55,11 +56,25 @@ export default class AddDeviceModel extends Vue {
     this.loading = true;
     const From: any = this.$refs.modelForm;
     const obj: any = {
-      imei: this.data.imei,
+      imei: this.modelForm.imei,
+      vehicleId: this.data.id,
     };
     From.validate((valid: any) => {
       if (valid) {
-        console.log(222);
+        bindTerminal(obj).then((res: any) => {
+          if (res.result.resultCode === '0') {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.success(res.result.resultMessage);
+              this.$emit('refresh');
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
       } else {
         this.loading = false;
         return false;
@@ -78,7 +93,7 @@ export default class AddDeviceModel extends Vue {
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="addDeviceModel">
+          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="carBindModel">
             <el-form-item label="imei号" prop="imei">
               <el-input
                 id="imei"

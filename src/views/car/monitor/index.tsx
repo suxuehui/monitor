@@ -14,10 +14,9 @@ import {
 import { fenceOption } from '@/api/fence';
 import exportExcel from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
-import { terminalType } from '@/api/equipment';
+import { terminalType, findBindTerminalList } from '@/api/equipment';
 import qs from 'qs';
-import { allList } from '@/api/model';
-import config from '@/utils';
+import utils from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
 import EditModel from './components/EditModel';
 import ControlModel from './components/ControlModel';
@@ -340,6 +339,7 @@ export default class Monitor extends Vue {
       color: 'blue',
       text: '绑定',
       roles: true,
+      disabled: (row: any) => this.bindStatus(row),
     },
     {
       key: 'unbind',
@@ -347,6 +347,7 @@ export default class Monitor extends Vue {
       color: 'red',
       text: '解绑',
       roles: true,
+      disabled: (row: any) => this.unbindStatus(row),
     },
     {
       key: 'addDevice',
@@ -354,6 +355,7 @@ export default class Monitor extends Vue {
       color: 'blue',
       text: '添加设备',
       roles: true,
+      disabled: (row: any) => this.unbindStatus(row),
     },
     {
       key: 'edit',
@@ -361,6 +363,7 @@ export default class Monitor extends Vue {
       color: 'blue',
       text: '编辑',
       roles: true,
+      disabled: (row: any) => this.editStatus(row),
     },
     {
       key: 'delete',
@@ -368,8 +371,29 @@ export default class Monitor extends Vue {
       color: 'red',
       text: '删除',
       roles: true,
+      disabled: (row: any) => this.deleteStatus(row),
     },
   ];
+
+  // 绑定按钮状态
+  bindStatus(row: any) {
+    return row.sourceName.indexOf('设备绑定') >= 0 && row.bindStatusName.indexOf('未绑定') >= 0 ? false : true;
+  }
+
+  // 解绑按钮状态、新增按钮状态
+  unbindStatus(row: any) {
+    return row.sourceName.indexOf('设备绑定') >= 0 && row.bindStatusName.indexOf('已绑定') >= 0 ? false : true;
+  }
+
+  // 编辑按钮状态
+  editStatus(row: any) {
+    return row.sourceName.indexOf('设备绑定') >= 0 ? false : true;
+  }
+
+  // 删除按钮状态
+  deleteStatus(row: any) {
+    return row.bindStatusName.indexOf('未绑定') >= 0 ? false : true;
+  }
 
   // 表格请求地址
   tableUrl: string = '/vehicle/monitor/list';
@@ -457,7 +481,7 @@ export default class Monitor extends Vue {
   constructor(props: any) {
     super(props);
     // 初始化百度地图
-    config.loadMap().then((BMap: any) => {
+    utils.loadMap().then((BMap: any) => {
       this.BMap = BMap;
       this.SMap = new BMap.Map('map', { enableMapClick: false });
       this.SMap.setMapStyle({
@@ -480,9 +504,9 @@ export default class Monitor extends Vue {
       // 创建新的图标
       this.CarIcon = new BMap.Icon(carIcon, new BMap.Size(20, 40));
       // 加载地图覆盖层组件
-      config.loadMapTextIcon().then(() => {
+      utils.loadMapTextIcon().then(() => {
         // 地图大数据优化组件
-        config.loadMapLib().then((BMapLib: any) => {
+        utils.loadMapLib().then((BMapLib: any) => {
           this.BMapLib = BMapLib;
           // 根据当前地图中心，半径查询车辆
           this.radiusGetData();
@@ -855,6 +879,7 @@ export default class Monitor extends Vue {
         this.unbindVisible = true;
         this.unbindData = row;
         this.menuClickStr = '解绑';
+        this.clickTime = utils.getNowTime();
         break;
       // 新增设备
       case 'addDevice':
@@ -873,14 +898,39 @@ export default class Monitor extends Vue {
         break;
       // 删除
       case 'delete':
-        this.menuClickVisible = true;
-        this.menuClickData = row;
+        this.deleteClickVisible = true;
+        this.deleteClickData = row;
         this.menuClickStr = '删除';
         break;
       default:
         break;
     }
   }
+
+  // 获取绑定设备信息
+  findTerminalList(data: any) {
+    this.wiredTerminals = [];
+    this.wirelessTerminals = [];
+    findBindTerminalList(data.id).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        entity.forEach((item: any) => {
+          if (item.wireless === 0) {
+            this.wiredTerminals.push(item);
+          } else if (item.wireless === 1) {
+            this.wirelessTerminals.push(item);
+          }
+        });
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  // 查询该设备所绑定的有线、无线设备信息
+  wiredTerminals: any = [];
+
+  wirelessTerminals: any = [];
 
   // 编辑开关
   editVisible: boolean = false;
@@ -912,9 +962,9 @@ export default class Monitor extends Vue {
   addData: any = {}
 
   // 删除
-  menuClickVisible: boolean = false;
+  deleteClickVisible: boolean = false;
 
-  menuClickData: any = {}
+  deleteClickData: any = {}
 
   menuClickStr: string = '';
 
@@ -1125,6 +1175,8 @@ export default class Monitor extends Vue {
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
+      console.log(val);
+      this.findTerminalList(val);
       this.setCarDetail(val);
       this.setCarId(val.id);
       this.getCarControlList(val);
@@ -1209,7 +1261,7 @@ export default class Monitor extends Vue {
     this.bindVisible = false; // 绑定
     this.unbindVisible = false; // 解绑
     this.addVisible = false; // 新增设备
-    this.menuClickVisible = false; // 删除
+    this.deleteClickVisible = false; // 删除
     setTimeout(() => {
       editBlock.resetData();
     }, 200);
@@ -1268,7 +1320,7 @@ export default class Monitor extends Vue {
     };
     this.controlVisible = true;
     this.controlTitle = this.setControlTitle(num);
-    this.clickTime = config.getNowTime();
+    this.clickTime = utils.getNowTime();
   }
 
   // 车辆控制弹框标题
@@ -1392,10 +1444,12 @@ export default class Monitor extends Vue {
                       <span class="deviceModel w700">型号</span>
                       <span class="deviceIMEI w700">imei号</span>
                     </li>
-                    <li class="deviceLi">
-                      <span class="deviceModel">OTU-OL50</span>
-                      <span class="deviceIMEI">866646037641274</span>
-                    </li>
+                    {
+                      this.wiredTerminals.map((item: any) => <li class="deviceLi">
+                        <span class="deviceModel">{item.terminalModel}</span>
+                        <span class="deviceIMEI">{item.imei}</span>
+                      </li>)
+                    }
                   </ul>
                 </div>
                 <div class="deviceItem">
@@ -1405,18 +1459,12 @@ export default class Monitor extends Vue {
                       <span class="deviceModel w700">型号</span>
                       <span class="deviceIMEI w700">imei号</span>
                     </li>
-                    <li class="deviceLi">
-                      <span class="deviceModel">OTU-OL50</span>
-                      <span class="deviceIMEI">866646037642224</span>
-                    </li>
-                    <li class="deviceLi">
-                      <span class="deviceModel">OTU-OL50</span>
-                      <span class="deviceIMEI">866646037641222</span>
-                    </li>
-                    <li class="deviceLi">
-                      <span class="deviceModel">OTU-OL50</span>
-                      <span class="deviceIMEI">866646037641122</span>
-                    </li>
+                    {
+                      this.wirelessTerminals.map((item: any) => <li class="deviceLi">
+                        <span class="deviceModel">{item.terminalModel}</span>
+                        <span class="deviceIMEI">{item.imei}</span>
+                      </li>)
+                    }
                   </ul>
                 </div>
               </div>
@@ -1504,6 +1552,7 @@ export default class Monitor extends Vue {
           on-refresh={this.reFresh}
         />
         <unbind-model
+          time={this.clickTime}
           data={this.unbindData}
           visible={this.unbindVisible}
           on-close={this.closeModal}
@@ -1517,8 +1566,8 @@ export default class Monitor extends Vue {
         />
         <menuclick-model
           menuStr={this.menuClickStr}
-          data={this.menuClickData}
-          visible={this.menuClickVisible}
+          data={this.deleteClickData}
+          visible={this.deleteClickVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
         />

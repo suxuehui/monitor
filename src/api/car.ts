@@ -86,3 +86,13 @@ export async function getSrcQueryOptions(params: any) {
     method: 'get',
   });
 }
+
+// 绑定设备
+export async function bindTerminal(params: any) {
+  return request({
+    url: '/vehicle/monitor/bindTerminal',
+    data: params,
+    method: 'post',
+    fetchType: 'JSON',
+  });
+}

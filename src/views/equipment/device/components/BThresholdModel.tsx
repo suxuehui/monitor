@@ -30,18 +30,28 @@ export default class BsjThreshold extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private btime: any;
+
   loading: boolean = false;
 
-  @Watch('time')
-  onTimeChange(data: any) {
+  @Watch('btime')
+  onTimeChange() {
     searchThrVal(this.data.imei).then((res: any) => {
-      console.log(res);
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        this.modelForm = {
+          batchSetting: 'false',
+          ...entity,
+        };
+      } else {
+        this.$message.error(result.resultMessage);
+      }
     });
   }
 
   modelForm: any = {
     cfgName: '',
-    batchSetting: 'false', // 是否批量设置
+    batchSetting: '', // 是否批量设置
     accelerationThreshold: 10, // 急加速加速阈值
     collisionAcceleration: 0, // 碰撞加速度阈值
     collisionDetectionDuration: 0, // 碰撞检测时长
@@ -183,11 +193,42 @@ export default class BsjThreshold extends Vue {
   }
 
   onSubmit() {
-    // this.loading = true;
+    const From: any = this.$refs.modelForm;
+    this.loading = true;
+    for (const key in this.modelForm) {
+      if (this.modelForm[key]) {
+        this.modelForm[key] = Number(this.modelForm[key]);
+      }
+    }
     const obj: any = {
+      ...this.modelForm,
+      modelId: this.data.terminalModelId,
       imei: this.data.imei,
+      batchSetting: this.modelForm.batchSetting === 'false',
     };
-    console.log(this.modelForm);
+    From.validate((valid: any) => {
+      if (valid) {
+        setThrVal(obj).then((res) => {
+          if (res.result.resultCode === '0') {
+            setTimeout(() => {
+              this.$emit('refresh');
+              this.loading = false;
+              this.$message.success(res.result.resultMessage);
+              From.resetFields();
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
+      } else {
+        this.loading = false;
+        return false;
+      }
+      return true;
+    });
   }
 
   // 获取默认值
@@ -196,9 +237,23 @@ export default class BsjThreshold extends Vue {
       terminalModelType: this.data.terminalModel,
       keyword: name,
     };
-    // searchThrDefaultVal(obj).then((res:any)=>{
-    //   console.log(res)
-    // })
+    searchThrDefaultVal(obj).then((res: any) => {
+      const { result, entity } = res;
+      if (result.resultCode === '0') {
+        this.setDefaultVal(entity);
+      } else {
+        this.$message.error(result.resultMessage);
+      }
+    });
+  }
+
+  // 设置默认值：
+  setDefaultVal(data: any) {
+    if (data) {
+      data.forEach((item: any) => {
+        this.modelForm[`${item.name}`] = item.enumValue;
+      });
+    }
   }
 
   render() {
@@ -221,7 +276,7 @@ export default class BsjThreshold extends Vue {
               />
               <span class="aItemTitle color909399">初始里程</span>
               <span class="star1">*</span>
-              <el-button type="text" class="btn">默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('里程')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="超速" prop="overSpeed">
@@ -245,7 +300,7 @@ export default class BsjThreshold extends Vue {
                 <span class="aItemTitle color909399">持续时间</span>
               </el-col>
               <span class="star1">*</span>
-              <el-button type="text" class="btn">默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('超速')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="振动" prop="vibrationAcceleration">
@@ -258,7 +313,7 @@ export default class BsjThreshold extends Vue {
               />
               <span class="aItemTitle color909399">震动阀值</span>
               <span class="star1">*</span>
-              <el-button type="text" class="btn">默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('振动')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急加速" prop="accelerationThreshold">
@@ -271,7 +326,7 @@ export default class BsjThreshold extends Vue {
               />
               <span class="aItemTitle color909399">加速阀值</span>
               <span class="star2">*</span>
-              <el-button type="text" class="btn">默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急加速')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急减速" prop="decelerationThreshold">
@@ -284,7 +339,7 @@ export default class BsjThreshold extends Vue {
               />
               <span class="aItemTitle color909399">减速阀值</span>
               <span class="star2">*</span>
-              <el-button type="text" class="btn">默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急减速')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急转弯" prop="sharpAngle">
@@ -335,7 +390,7 @@ export default class BsjThreshold extends Vue {
                 <span class="aItemTitle color909399">高速角度</span>
               </el-col>
               <span class="star1">*</span>
-              <el-button type="text" class="btn">默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急转弯')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="碰撞" prop="collision">
@@ -377,7 +432,7 @@ export default class BsjThreshold extends Vue {
                 <span class="aItemTitle color909399">停车时长</span>
               </el-col>
               <span class="star1">*</span>
-              <el-button type="text" class="btn">默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('碰撞')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="批量设置" prop="batchSetting" class="setBtnGroup">

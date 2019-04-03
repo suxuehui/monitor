@@ -137,17 +137,17 @@ export default class Device extends Vue {
   levelChange(val: any) {
     this.outParams = {
       levelCode: '',
-      srLevelcode: '',
+      srLevelCode: '',
     };
     if (val.length === 0) {
       this.outParams.levelCode = '';
-      this.outParams.srLevelcode = '';
+      this.outParams.srLevelCode = '';
     } else if (val.length === 1) {
       this.outParams.levelCode = val[val.length - 1];
-      this.outParams.srLevelcode = '';
+      this.outParams.srLevelCode = '';
     } else if (val.length === 2) {
       this.outParams.levelCode = val[val.length - 2];
-      this.outParams.srLevelcode = val[val.length - 1];
+      this.outParams.srLevelCode = val[val.length - 1];
     }
   }
 
@@ -163,7 +163,7 @@ export default class Device extends Vue {
     terminalModelId: '', // 具体设备型号id值 ,
     terminalType: '', // 设备类型:3-OTU,22-KeLong,23-BSJ,16-BT
     levelCode: '', // 监控商户的门店
-    srLevelcode: '', // 4s的门店
+    srLevelCode: '', // 4s的门店
   };
 
   // 请求地址
@@ -369,7 +369,7 @@ export default class Device extends Vue {
     { label: '商户门店', prop: 'merchantStores' },
     { label: 'imei号', prop: 'imei' },
     { label: '主机编码', prop: 'barCode' },
-    { label: '2a1', prop: 'reportLabel2a1' },
+    { label: '2a1', prop: 'drivingCfgPower' },
     { label: 'ICCID', prop: 'iccId' },
     { label: '设备型号', prop: 'terminalModel' },
     { label: '网络类型', prop: 'wireless', formatter: this.wireCheck },
@@ -391,7 +391,11 @@ export default class Device extends Vue {
   }
 
   // 点击操作时的时间
-  clickTime: string = ''
+  clickTime: string = '';
+
+  aclickTime: string = '';
+
+  bclickTime: string = '';
 
   // 查看上线地址
   checkLoc(data: any) {
@@ -596,13 +600,13 @@ export default class Device extends Vue {
         break;
       // 阈值
       case 'setThreshold':
-        console.log(row);
-        this.clickTime = utils.getNowTime();
-        if (row.reportLabel2a1) {
+        if (row.drivingCfgPower) {
+          this.aclickTime = utils.getNowTime();
           // 上报2a1
           this.aThresholdVisible = true;
           this.aThresholdData = row;
         } else {
+          this.bclickTime = utils.getNowTime();
           this.bThresholdVisible = true;
           this.bThresholdData = row;
         }
@@ -639,7 +643,10 @@ export default class Device extends Vue {
 
   clear() {
     this.outParams = {
-      terminalModelId: '',
+      terminalModelId: '', // 具体设备型号id值 ,
+      terminalType: '', // 设备类型:3-OTU,22-KeLong,23-BSJ,16-BT
+      levelCode: '', // 监控商户的门店
+      srLevelCode: '', // 4s的门店
     };
   }
 
@@ -704,14 +711,14 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         />
         <bThreshold-model
-          time={this.clickTime}
+          btime={this.bclickTime}
           data={this.bThresholdData}
           visible={this.bThresholdVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
         <aThreshold-model
-          time={this.clickTime}
+          atime={this.aclickTime}
           data={this.aThresholdData}
           visible={this.aThresholdVisible}
           on-close={this.closeModal}

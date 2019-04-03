@@ -5,7 +5,7 @@ import {
   Tag, Dialog, Form, FormItem, Input, Button,
 } from 'element-ui';
 import {
-  setBtName,
+  setBtName, getBtName,
 } from '@/api/equipment';
 
 @Component({
@@ -26,22 +26,26 @@ export default class BtNameModel extends Vue {
 
   @Prop() private time: any;
 
-  @Watch('time')
-  onTimeChange(data: any) {
-    console.log(this.data);
-    this.modelForm = {
-      vin: this.data.productCode,
-    };
+  @Watch('data')
+  onTimeChange() {
+    // 查询蓝牙名称
+    getBtName(this.data.imei).then((res: any) => {
+      if (res.result.resultCode === '0') {
+        this.modelForm.btName = res.entity;
+      } else {
+        this.$message.error('该设备暂无蓝牙名称');
+      }
+    });
   }
 
   modelForm: any = {
-    vin: '',
+    btName: '',
   };
 
   loading: boolean = false;
 
   rules = {
-    vin: [
+    btName: [
       { required: true, validator: this.checkBtName, trigger: 'blur' },
     ],
   }
@@ -51,7 +55,6 @@ export default class BtNameModel extends Vue {
     setTimeout(() => {
       if (value) {
         const exp: any = /^[a-zA-Z0-9]{1,16}/;
-        console.log(exp.test(value));
         if (exp.test(value)) {
           callback();
         } else {
@@ -83,10 +86,21 @@ export default class BtNameModel extends Vue {
     const From: any = this.$refs.modelForm;
     const obj: any = {
       imei: this.data.imei,
+      bluetoothName: this.modelForm.btName,
     };
     From.validate((valid: any) => {
       if (valid) {
-        console.log(1);
+        setBtName(obj).then((res: any) => {
+          if (res.result.resultCode === '0') {
+            console.log(res);
+            this.loading = false;
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
       } else {
         this.loading = false;
         return false;
@@ -106,18 +120,21 @@ export default class BtNameModel extends Vue {
           close-on-click-modal={false}
         >
           <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="fzkBtNameModel">
-            <el-form-item label="蓝牙名称" prop="vin">
+            <el-form-item label="蓝牙名称" prop="btName">
               <el-input
-                id="vin"
-                v-model={this.modelForm.vin}
+                id="btName"
+                v-model={this.modelForm.btName}
                 placeholder="请输入蓝牙名称"
               ></el-input>
             </el-form-item>
           </el-form>
-          <div class="bindBtn">
-            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
-            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-          </div>
+          {
+            this.data.online === 1
+              ? <div class="bindBtn">
+                <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
+                <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+              </div> : null
+          }
         </el-dialog>
       </div >
     );

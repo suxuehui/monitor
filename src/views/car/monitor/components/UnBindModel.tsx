@@ -1,9 +1,11 @@
 import {
-  Component, Prop, Vue,
+  Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
-  Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Button, Checkbox, CheckboxGroup,
 } from 'element-ui';
+import { findBindTerminalList, terminalUnbind } from '@/api/equipment';
+import './UnBindModel.less';
 
 @Component({
   components: {
@@ -15,6 +17,8 @@ import {
     'el-form-item': FormItem,
     'el-input': Input,
     'el-button': Button,
+    'el-checkbox': Checkbox,
+    'el-checkbox-group': CheckboxGroup,
   },
 })
 export default class BindModal extends Vue {
@@ -23,9 +27,21 @@ export default class BindModal extends Vue {
 
   @Prop() private data: any;
 
-  modelForm: any = {
-    imei: '',
-  };
+  @Prop() private time: any;
+
+  @Watch('time')
+  onDataChange() {
+    findBindTerminalList(this.data.id).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        this.allTerminals = entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
+  allTerminals: any = [];
 
   loading: boolean = false;
 
@@ -35,36 +51,43 @@ export default class BindModal extends Vue {
     ],
   }
 
-  // 重置数据
-  resetData() {
-    this.modelForm = {
-      imei: '',
-    };
-  }
-
   closeModal() {
     this.$emit('close');
-    const From: any = this.$refs.modelForm;
-    setTimeout(() => {
-      From.resetFields();
-    }, 200);
     this.loading = false;
   }
 
   onSubmit() {
     this.loading = true;
-    const From: any = this.$refs.modelForm;
-    const obj: any = {
-      imei: this.data.imei,
-    };
-    From.validate((valid: any) => {
-      if (valid) {
-        console.log(222);
-      } else {
-        this.loading = false;
-        return false;
+    const imeiList: any = [];
+    this.allTerminals.forEach((item: any) => {
+      if (item.checked === true) {
+        imeiList.push(item.imei);
       }
-      return false;
+    });
+    const obj: any = {
+      imeiList,
+    };
+    terminalUnbind(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.success(res.result.resultMessage);
+          this.$emit('refresh');
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage);
+        }, 1500);
+      }
+    });
+  }
+
+  checkBoxChange(e: any, data: any, indx: number) {
+    this.allTerminals.forEach((item: any) => {
+      if (data.imei === item.imei) {
+        item.checked = e;
+      }
     });
   }
 
@@ -73,16 +96,22 @@ export default class BindModal extends Vue {
       <div>
         <el-dialog
           width="500px"
-          title="绑定设备"
+          title="解绑设备"
           visible={this.visible}
           before-close={this.closeModal}
           close-on-click-modal={false}
         >
-          <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="carBindModel">
-            <el-form-item label="imei号" prop="imei">
-              <el-checkbox v-model={this.modelForm}>备选项</el-checkbox>
-            </el-form-item>
-          </el-form>
+          <div class="boxGroup">
+            {
+              this.allTerminals.length ? this.allTerminals.map((item: any, index: number) => <div class="boxItem">
+                <el-checkbox
+                  style={{ marginRight: '10px' }}
+                  id={item.field}
+                  on-change={(e: any) => this.checkBoxChange(e, item, index)}
+                ></el-checkbox><span class="itemTitle">{item.wireless === 0 ? '有线设备' : '无线设备'} {item.terminalModel} {item.imei}</span>
+              </div>) : <div style={{ lineHeight: "50px",fontSize:'20px', textAlign: "center" }}>暂无设备信息</div>
+            }
+          </div>
           <div style={{ textAlign: 'center' }}>
             <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
             <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>

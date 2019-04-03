@@ -4,6 +4,7 @@ import {
 import {
   Dialog, Row, Col, Button,
 } from 'element-ui';
+import { createBluetooth } from '@/api/equipment';
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -23,12 +24,35 @@ export default class BtAuthModel extends Vue {
   loading: boolean = false;
 
   closeModal() {
-    this.$emit('close');
+    setTimeout(() => {
+      this.$emit('close');
+    }, 100);
     this.loading = false;
   }
 
-  onSubmit() {
+  newCfgVal: string = '';
 
+  onSubmit() {
+    this.loading = true;
+    const obj: any = {
+      cfgName: 'bluetoothAuthCode',
+      id: this.data.id,
+      imei: this.data.imei,
+    };
+    createBluetooth(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.newCfgVal = res.entity;
+          this.loading = false;
+          this.$message.success(res.result.resultMessage);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage);
+        }, 1500);
+      }
+    });
   }
 
   render() {
@@ -41,7 +65,7 @@ export default class BtAuthModel extends Vue {
         close-on-click-modal={false}
       >
         <div style={{ lineHeight: '50px', fontSize: '16px' }}>
-          {this.data.productCode}
+          <p>{this.newCfgVal !== '' ? this.newCfgVal : this.data.cfgVal}</p>
           <div style={{ textAlign: 'center' }}>
             {
               this.updateAble

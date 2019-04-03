@@ -32,7 +32,7 @@ export default class UnbindModel extends Vue {
   onSubmit() {
     this.loading = true;
     const obj: any = {
-      imei: this.data.imei,
+      imeiList: [this.data.imei],
     };
     terminalUnbind(obj).then((res) => {
       if (res.result.resultCode === '0') {

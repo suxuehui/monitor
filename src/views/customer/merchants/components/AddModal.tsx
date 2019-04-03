@@ -317,12 +317,12 @@ export default class AddModal extends Vue {
     let oldLevelCodes: any = [];
     this.nameAndLev.forEach((item: any) => {
       oldNames.push(
-        item.split('***')[1]
+        item.split('***')[1],
       );
       oldLevelCodes.push(
-        item.split('***')[0]
+        item.split('***')[0],
       );
-    })
+    });
     oldNames = oldNames.join(',');
     oldLevelCodes = oldLevelCodes.join(',');
     return { oldNames, oldLevelCodes };
@@ -522,8 +522,8 @@ export default class AddModal extends Vue {
                       placeholder="请输入商户名称"
                     ></el-input>
                   </el-form-item>
-                </el-col> :
-                <el-col class="shopName">
+                </el-col>
+                : <el-col class="shopName">
                   <el-form-item label="关联门店" prop="oldLevelCode" rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}>
                     <el-select
                       id="oldLevelCode"
