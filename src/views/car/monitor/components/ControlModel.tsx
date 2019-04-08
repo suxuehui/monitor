@@ -53,7 +53,7 @@ export default class ControlModel extends Vue {
     this.loading = true;
     const obj:any = {
       keyword: this.data.imei,
-      cmd: this.data.desc,
+      cmd: this.data.name,
       optionVal: this.modelForm.cmd,
     }
     cmdControl(obj).then((res: any) => {

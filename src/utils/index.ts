@@ -260,7 +260,7 @@ function returnTime() {
 }
 
 /**
- * @method 返回当前时间
+ * @method 返回当前时间--时分秒
 */
 function returnNowTime() {
   const time = new Date(

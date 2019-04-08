@@ -385,7 +385,9 @@ export default class MapContorl {
    * 展示轨迹点详情
   */
 
-  haoverMap = ['', '震动', '碰撞', '翻滚', '急加速', '急减速', '急转弯'];
+  // haoverMap = ['', '震动', '碰撞', '翻滚', '急加速', '急减速', '急转弯'];
+  haoverMap = ['', '急加速', '急减速', '急转弯', '震动', '', '碰撞', '翻滚', '超速'];
+  // 1-急加速 2-急减速 3-急转弯 4-震动 6-碰撞 7-翻滚 8-超速 
 
   getDirection(itm: number) {
     let direction = '';
@@ -418,9 +420,7 @@ export default class MapContorl {
     gpsToAddress({ lat: data.lat, lng: data.lng, coordinateSystem: 'bd09ll' }).then((response) => {
       if (response.status === 0) {
         const address = response.result.formatted_address + response.result.sematic_description;
-        const infor = [
-          ['速度方向', `${data.speed >= 0 ? `${data.speed}km/h` : '未知'}（${this.getDirection(data.direction)}）`],
-        ];
+        const infor = [];
         if (data.event && data.event[0] !== '0') {
           const haovrData: string[] = [];
           data.event.forEach((item: string) => {

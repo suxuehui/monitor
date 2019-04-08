@@ -96,3 +96,13 @@ export async function bindTerminal(params: any) {
     fetchType: 'JSON',
   });
 }
+
+// 查询车辆驾驶行为
+export async function driveBehavior(params: any) {
+  return request({
+    url: '/vehicle/monitor/driveBehavior',
+    data: params,
+    method: 'post',
+  });
+}
+

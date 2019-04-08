@@ -267,8 +267,6 @@ export default class Monitor extends Vue {
     {
       label: '围栏内外',
       prop: 'fenceIOName',
-      sortable: true,
-      sortBy: 'fenceIOName',
     },
     {
       label: '网络状态',
@@ -1168,23 +1166,20 @@ export default class Monitor extends Vue {
 
   currentCarId: number = 0;
 
-  setCarId(val: number) {
-    this.currentCarId = val;
-  }
 
-  setCarDetail(val: any) {
+  setInfo(val: any) {
+    this.currentCarId = val.id;
     this.carDetail = val;
+    window.localStorage.setItem('monitorCurrentCarPlate',val.plateNum)
   }
 
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
       this.findTerminalList(val); // 获取设备列表
-      this.setCarDetail(val); // 设置详情
-      this.setCarId(val.id); // 设置车辆ID
+      this.setInfo(val);
       this.getCarControlList(val); // 获取车辆控制列表
       if (val.lat && val.lng) {
-        this.currentCarId = val.id;
         this.mapCenter = {
           lat: val.lat,
           lng: val.lng,
@@ -1198,7 +1193,6 @@ export default class Monitor extends Vue {
       } else {
         this.detailShow = false;
         this.$message.error('车辆暂无定位，使用默认位置！');
-        this.currentCarId = val.id;
         this.mapCenter = {
           lat: 29.627258,
           lng: 106.496422,
@@ -1293,7 +1287,7 @@ export default class Monitor extends Vue {
   remoteControlArr = [];
 
   // 车辆控制
-  carControl(item:any) {
+  carControl(item: any) {
     this.controlData = {
       ...item,
       cmd: item.name,

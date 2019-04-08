@@ -375,10 +375,21 @@ export default class Device extends Vue {
     { label: '网络类型', prop: 'wireless', formatter: this.wireCheck },
     { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
+    { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
     { label: '上线地址', prop: 'imei', formatter: this.upLoc },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
+
+  endDay(row: any) {
+    const str = `${row.serviceEndDay} 天`;
+    return row.serviceEndDay
+      ? <el-tooltip class="item" effect="dark" content={str} placement="top">
+        <div>
+          <p>{str}</p>
+        </div>
+      </el-tooltip> : '--';
+  }
 
   // 是否无线设备
   wireCheck(row: any) {
@@ -443,7 +454,7 @@ export default class Device extends Vue {
   }
 
   checkLog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id }, params:{imei: row.imei, id: row.id} });
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id }, params: { imei: row.imei, id: row.id } });
   }
 
   onlineSelect(row: any) {
@@ -536,12 +547,12 @@ export default class Device extends Vue {
   changelocData: any = {};
 
   // 阀值设置
-  // 2a1
+  // BSJ或WK
   bThresholdData: any = {};
 
   bThresholdVisible: boolean = false;
 
-  // BSJ或WK
+  // 2a1
   aThresholdData: any = {};
 
   aThresholdVisible: boolean = false;

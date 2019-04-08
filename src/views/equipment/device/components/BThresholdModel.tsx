@@ -195,16 +195,18 @@ export default class BsjThreshold extends Vue {
   onSubmit() {
     const From: any = this.$refs.modelForm;
     this.loading = true;
+    const boo: any = this.modelForm.batchSetting;
     for (const key in this.modelForm) {
       if (this.modelForm[key]) {
         this.modelForm[key] = Number(this.modelForm[key]);
       }
     }
+    this.modelForm.batchSetting = boo;
     const obj: any = {
       ...this.modelForm,
       modelId: this.data.terminalModelId,
       imei: this.data.imei,
-      batchSetting: this.modelForm.batchSetting === 'false',
+      batchSetting: !(this.modelForm.batchSetting === 'false'),
     };
     From.validate((valid: any) => {
       if (valid) {
@@ -241,6 +243,7 @@ export default class BsjThreshold extends Vue {
       const { result, entity } = res;
       if (result.resultCode === '0') {
         this.setDefaultVal(entity);
+        this.$message.success(`${name}默认值设置成功`);
       } else {
         this.$message.error(result.resultMessage);
       }

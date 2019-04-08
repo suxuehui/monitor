@@ -238,7 +238,7 @@ export async function setThrVal(params: any) {
   });
 }
 
-// 设置阈值
+// 查看上线地址
 export async function getOnlineUrl(params: any) {
   return request({
     url: `/device/terminal/onlineUrl/${params}`,

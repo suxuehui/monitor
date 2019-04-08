@@ -84,7 +84,7 @@ export default class BindModal extends Vue {
           callback(new Error('车牌号输入不合法，请重新输入'));
         }
       } else {
-        callback();
+        callback(new Error('请输入车牌号'));
       }
     }, 500);
   }

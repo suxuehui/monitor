@@ -2,9 +2,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import {
   Button, DatePicker,
 } from 'element-ui';
-import config from '@/utils';
-import commonfun from './commonfun';
+import utils from '@/utils';
 import MapControl from './mapContorl';
+import { driveBehavior } from '@/api/car';
 import './index.less';
 
 @Component({
@@ -15,12 +15,6 @@ import './index.less';
   name: 'DrivingBehavior',
 })
 export default class DrivingBehavior extends Vue {
-  locChange: boolean = false;
-
-  timeRangeChange(val: any) {
-    console.log(val);
-  }
-
   // 百度地图对象
   BMap: any = null;
 
@@ -40,9 +34,9 @@ export default class DrivingBehavior extends Vue {
     lat: number,
     lng: number
   } = {
-    lat: 29.563694,
-    lng: 106.560421,
-  };
+      lat: 29.563694,
+      lng: 106.560421,
+    };
 
   // 车辆位置
   CarPoint: any = null;
@@ -60,7 +54,7 @@ export default class DrivingBehavior extends Vue {
 
   constructor(props: any) {
     super(props);
-    config
+    utils
       .loadMap()
       .then((BMap: any) => {
         this.BMap = BMap;
@@ -86,11 +80,11 @@ export default class DrivingBehavior extends Vue {
         });
         this.SMap.enableScrollWheelZoom(true); // 设置鼠标滚动
         // 加载地图信息框
-        config.loadMapInfoBox().then((BMapLib: any) => {
+        utils.loadMapInfoBox().then((BMapLib: any) => {
           this.mapContorl = new MapControl({ SMap: this.SMap });
         });
         // 加载canvas图层
-        config.loadCanvasLayer().then((CanvasLayer: any) => {
+        utils.loadCanvasLayer().then((CanvasLayer: any) => {
           this.CanvasLayer = CanvasLayer;
         });
       });
@@ -114,25 +108,70 @@ export default class DrivingBehavior extends Vue {
 
   // 切换回当前页面的时候，重新获取数据，去掉前面的轨迹数据
   activated() {
-    console.log('再次进入该页面');
     const day: any = new Date();
-    const startTime = `${day.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`;
-    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
-    this.searchTime={
-      startTime,
-      endTime,
-    };
-    // 判断是否新的id值传入
-    this.behaivorData = [
-      { num: 0, txt: '急加速' },
-      { num: 0, txt: '急减速' },
-      { num: 0, txt: '急转弯' },
-      { num: 0, txt: '超速' },
-      { num: 0, txt: '震动' },
-      { num: 0, txt: '碰撞' },
-      { num: 0, txt: '翻滚' },
-    ];
+    const startTime = day.Format('yyyy-MM-dd');
+    this.GetCarBehavior(this.$route.params.id, startTime, startTime);
+    this.plateNum = window.localStorage.getItem("monitorCurrentCarPlate");
+    this.defaultTime = [
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
+      new Date(new Date().getFullYear(), new Date().getMonth(),
+        new Date().getDate(), new Date().getHours(), new Date().getMinutes(),
+        new Date().getSeconds()),
+    ]
   }
+
+  // 当前车辆车牌
+  plateNum: any = '';
+
+  // 所有驾驶行为数据
+  behaviorDetail: any = [];
+
+  // 查询驾驶行为
+  GetCarBehavior(id: any, startTime: string, endTime: string) {
+    const obj = {
+      vehicleId: id,
+      startDate: startTime,
+      endDate: endTime,
+    };
+    driveBehavior(obj).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        entity.forEach((item: any) => {
+          // 数量展示用
+          this.behaviorData.forEach((it: any) => {
+            if (item.typeName === it.txt) {
+              it.num = item.number
+            }
+          });
+          item.driveBehaviors && item.driveBehaviors.forEach((its: any) => {
+            // 渲染用
+            this.behaviorDetail.push({
+              events: [`${item.type}`],
+              lng: its.lng,
+              lat: its.lat,
+              utctime: its.addTime,
+            })
+          })
+        })
+        this.$message.success('驾驶行为查询成功');
+        if (this.behaviorDetail && this.behaviorDetail.length > 0) {
+          this.trackView(this.behaviorDetail);
+        }
+      } else {
+        this.behaviorData = [
+          { num: 0, txt: '急加速' },
+          { num: 0, txt: '急减速' },
+          { num: 0, txt: '急转弯' },
+          { num: 0, txt: '超速' },
+          { num: 0, txt: '震动' },
+          { num: 0, txt: '碰撞' },
+          { num: 0, txt: '翻滚' },
+        ];
+        this.$message.error(result.resultMessage);
+      }
+    });
+  }
+
 
   // 清除图层
   clearCanvas = () => {
@@ -157,7 +196,6 @@ export default class DrivingBehavior extends Vue {
     }
     const that = this;
     const totalPoints: any = [];
-    const viewportPoints = [];
     if (data.length === 0) {
       return;
     }
@@ -166,11 +204,9 @@ export default class DrivingBehavior extends Vue {
        * BMap.PointCollection中的元素为BMap.Point，在加入点集合BMap.PointCollection之前，让BMap.Point携带数据
        */
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
-      tempPoint.speed = data[i].obdSpeed >= 0 ? data[i].obdSpeed : data[i].gpsSpeed;
-      tempPoint.direction = data[i].direction;
-      tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
-      tempPoint.lnglat = `${data[i].lng.toFixed(2)},${data[i].lat.toFixed(2)}`;
       tempPoint.event = data[i].events;
+      tempPoint.uTCTime = data[i].utctime;
+      tempPoint.lnglat = `${data[i].lng.toFixed(2)},${data[i].lat.toFixed(2)}`;
       totalPoints.push(tempPoint);
     }
     if (that.first) {
@@ -180,8 +216,9 @@ export default class DrivingBehavior extends Vue {
     // 绘制驾驶行为
     function renderBehavior() {
       // 定义车辆驾驶行为及对应颜色
-      const NameMap = ['', '震', '碰', '翻', '加', '减', '弯'];
-      const ColorMap = ['', '#52c41a', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2'];
+      // 1-急加速 2-急减速 3-急转弯 4-震动 6-碰撞 7-翻滚 8-超速 
+      const NameMap = ['', '加', '减', '弯', '震', '', '碰', '滚', '超'];
+      const ColorMap = ['', '#52c41a', '#f5222d', '#eb2f96', '#1890ff', '', '#2f54eb', '#13c2c2', '#eb2296'];
       const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
       if (!ctx) {
         return;
@@ -222,19 +259,8 @@ export default class DrivingBehavior extends Vue {
       function removeMul(x: number, y: number, num: number) {
         ctx.clearRect(x - 10, y - 40, num * 30, 20);
       }
-      // canvas渲染图片
-      function iconRender(x: number, y: number, url: string) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, x, y);
-        };
-        img.src = url;
-      }
       if (totalPoints.length !== 0) {
-        // 轨迹开始点
-        const oneXY = self.SMap.pointToPixel(totalPoints[0]);
-        iconRender(oneXY.x - 13, oneXY.y - 26, require('@/assets/start.png'));
-        for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
+        for (let i = 0, len = totalPoints.length; i <= len - 1; i += 1) {
           if (totalPoints[i].event && totalPoints[i].event.length && totalPoints[i].event[0] !== '0') {
             // pointToPixel：经纬度坐标转像素坐标
             const pixel = self.SMap.pointToPixel(totalPoints[i]);
@@ -290,8 +316,6 @@ export default class DrivingBehavior extends Vue {
       this.pointCollection.addEventListener('click', (e: any) => {
         this.mapContorl.showTrackInfoBox({
           ...e.point,
-          plateNum: this.getPlateNum(),
-          status: e.point.printSpeed,
           point: e.point,
         });
       });
@@ -304,36 +328,18 @@ export default class DrivingBehavior extends Vue {
       // 添加Overlay
       this.SMap.addOverlay(this.pointCollection);
     };
+    if (that.first) {
+      setTimeout(() => render(), 100);
+    } else {
+      this.render();
+    }
   }
 
   getPlateNum() {
     return this.plateNum;
   }
 
-  plateNum = '';
-
-  behaivorData: { num: number, txt: string }[] = []
-
-  // 循环转换轨迹坐标点
-  // data = data.filter((item: any, index: number) => {
-  //   // 过滤异常坐标点数据
-  //   if (item.lat > 0 || item.lng > 0) {
-  //     const point = coordTrasns.transToBaidu(item, 'bd09ll');
-  //     item.lat = point.lat;
-  //     item.lng = point.lng;
-  //     // 判断是否有驾驶行为数据
-  //     if (item.events) {
-  //       // 循环统计驾驶行为数据
-  //       item.events.forEach((items: string) => {
-  //         if (items !== '0') {
-  //           this.behaivorData[parseInt(items, 10) - 1].num += 1;
-  //         }
-  //       });
-  //     }
-  //     return item;
-  //   }
-  //   return false;
-  // });
+  behaviorData: { num: number, txt: string }[] = []
 
   todayActive: boolean = true; // 当天
 
@@ -341,12 +347,13 @@ export default class DrivingBehavior extends Vue {
 
   thirtydayActive: boolean = false; // 30天
 
-  allActive: boolean = false; // 全部（三个月）
+  allActive: boolean = false; // 全部（当前时间往前推三个月）
 
+  // 查询时间
   searchTime: any = {
     startTime: '',
     endTime: '',
-  }; // 查询时间
+  };
 
   // 默认时间（当天）
   defaultTime: any = [
@@ -433,28 +440,24 @@ export default class DrivingBehavior extends Vue {
     };
   }
 
-  timeSelect(data: any) {
+  timePick(data: any) {
     this.cancelAllActive();
     if (data) {
       const start = new Date(data[0]).getTime();
       const end = new Date(data[1]).getTime();
       if (end - start < 90 * 24 * 60 * 60 * 1000) {
-        // const time = {
-        //   startTime: data[0],
-        //   endTime: data[1],
-        // };
         this.searchTime = {
           startTime: data[0],
           endTime: data[1],
-        };
+        }
       } else {
         this.$message.error('查询时间范围最大为三个月，请重新选择');
       }
     }
   }
 
-  getBehaviorData(time: any, str?: string) {
-    console.log(this.searchTime);
+  getBehaviorData() {
+    this.GetCarBehavior(this.$route.params.id, this.searchTime.startTime, this.searchTime.endTime);
   }
 
   cancelAllActive() {
@@ -465,14 +468,19 @@ export default class DrivingBehavior extends Vue {
   }
 
   render() {
+    const pickerOptions = {
+      disabledDate(time: any) {
+        return time.getTime() > Date.now();
+      }
+    }
     return (
       <div class="drivingBehavior-wrap">
         <div id="map"></div>
         <div class="behavior-info">
-          <span class="car-plate">渝BPD418</span>
+          <span class="car-plate">{this.plateNum}</span>
           <ul class="behavior-list">
             {
-              this.behaivorData && this.behaivorData.map((item, index) => (
+              this.behaviorData && this.behaviorData.map((item, index) => (
                 <li class="list-item">
                   <span class="item-val">{item.num}</span>
                   <span class="item-tit">{item.txt}</span>
@@ -482,6 +490,28 @@ export default class DrivingBehavior extends Vue {
           </ul>
         </div>
         <div class="timeSet">
+          <div class="operate">
+            <el-date-picker
+              v-model={this.defaultTime}
+              type="daterange"
+              align="right"
+              unlink-panels
+              on-change={this.timePick}
+              range-separator="至"
+              value-format="yyyy-MM-dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              picker-options={pickerOptions}
+            >
+            </el-date-picker>
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              size="mini"
+              class="search"
+              on-click={() => this.getBehaviorData()}
+            >查询</el-button>
+          </div>
           <ul class="normalTime">
             <li
               id="toDay"
@@ -512,25 +542,6 @@ export default class DrivingBehavior extends Vue {
               全部
               </li>
           </ul>
-          <el-date-picker
-            id="datePicker"
-            v-model={this.defaultTime}
-            type="datetimerange"
-            class="datePicker"
-            size="mini"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            on-change={(val: any) => this.timeSelect(val)}
-            range-separator="至"
-            start-placeholder="开始"
-            end-placeholder="结束">
-          </el-date-picker>
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            class="search"
-            on-click={() => this.getBehaviorData('111')}
-          >查询</el-button>
         </div>
       </div>
     );

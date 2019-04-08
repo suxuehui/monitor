@@ -81,9 +81,9 @@ export default class BindLog extends Vue {
       // 操作
       '/terminal/accept/list',
     ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]);
-    });
+    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+    //   this.opreat[0].roles = !!(res[0]);
+    // });
     // id、imei
     this.tableParams = {
       page: true,
