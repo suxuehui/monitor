@@ -36,7 +36,7 @@ export default class BindLog extends Vue {
     pageSize: 5,
   }
 
-  defaultPageSize: any = null;
+  defaultPageSize: number = 5;
 
   url: string = '/terminal/ops/list';
 
@@ -63,14 +63,14 @@ export default class BindLog extends Vue {
   activated() {
     const FormTable: any = this.$refs.MTable;
     this.defaultPageSize = 5;
-    FormTable.getData(this.tableParams);
-    this.getTerminalInfo(this.curId);
     this.tableParams = {
       page: true,
       pageNum: 1,
       pageSize: 5,
-      imei: this.curImei,
+      imei: this.$route.query.imei,
     };
+    this.getTerminalInfo(this.$route.query.id);
+    FormTable.getData(this.tableParams);
   }
 
   // 新增、导出按钮展示
@@ -91,21 +91,14 @@ export default class BindLog extends Vue {
       pageSize: 5,
       imei: this.$route.query.imei,
     };
-    this.curId = this.$route.query.id;
-    this.curImei = this.$route.query.imei;
   }
-
-  // 当前车辆imei和id
-  curId: any = '';
-
-  curImei: any = '';
 
   // 车辆信息
   getTerminalInfo(data: any) {
     terminalInfo(data).then((res) => {
       if (res.result.resultCode === '0') {
         this.modelForm = {
-          orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
+          orgName: '总部',
           plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
           vin: res.entity.vin !== null ? res.entity.vin : '--',
         };

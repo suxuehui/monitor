@@ -9,6 +9,7 @@
     :file-list="logoUrl"
     :show-file-list="showList"
     :list-type="listType"
+    :data="systemSource"
     :before-upload="handleBeforeUpload"
     :on-success="handleSuccess"
     :on-remove="handleRemove"
@@ -18,18 +19,20 @@
   </el-upload>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import {
   Component, Prop, Vue, Emit,
 } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface/index';
 import { Upload } from 'element-ui';
 import './index.less';
+
 @Component({
   components: {
     'el-upload': Upload,
   },
 })
+
 export default class FilterTable extends Vue {
   // 请求数据地址
   @Prop() private url!: string;
@@ -42,6 +45,9 @@ export default class FilterTable extends Vue {
 
   // 默认文件名
   @Prop({ default: 'file' }) private name!: string;
+
+  // 系统名
+  @Prop() private systemSource!: object;
 
   // 图片地址
   @Prop() private logoUrl!: any;
@@ -80,6 +86,5 @@ export default class FilterTable extends Vue {
 }
 </script>
 
-<style scoped lang="less">
-
+<style scoped lang='less'>
 </style>

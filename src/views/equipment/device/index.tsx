@@ -369,7 +369,6 @@ export default class Device extends Vue {
     { label: '商户门店', prop: 'merchantStores' },
     { label: 'imei号', prop: 'imei' },
     { label: '主机编码', prop: 'barCode' },
-    { label: '2a1', prop: 'drivingCfgPower' },
     { label: 'ICCID', prop: 'iccId' },
     { label: '设备型号', prop: 'terminalModel' },
     { label: '网络类型', prop: 'wireless', formatter: this.wireCheck },
@@ -420,6 +419,7 @@ export default class Device extends Vue {
       } else {
         this.upLocData.masterUrl = '--';
         this.upLocData.slaveUrl = '--';
+        this.upLocVisible = true;
         this.$message.error(res.result.resultMessage);
       }
     });

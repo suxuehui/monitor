@@ -105,8 +105,8 @@ export default class RecordTable extends Vue {
 
   // 表格请求地址
   outParams: any = {
-    startDate: '',
-    endDate: '',
+    startDate: null,
+    endDate: null,
     vehicleId: '',
   }
 
@@ -144,8 +144,8 @@ export default class RecordTable extends Vue {
 
   clear() {
     this.outParams = {
-      startDate: '',
-      endDate: '',
+      startDate: null,
+      endDate: null,
       vehicleId: this.$route.params.id,
     };
   }
@@ -162,8 +162,8 @@ export default class RecordTable extends Vue {
         this.outParams.endDate = `${val[1]}`;
       }
     } else {
-      this.outParams.startDate = '';
-      this.outParams.endDate = '';
+      this.outParams.startDate = null;
+      this.outParams.endDate = null;
     }
   }
 

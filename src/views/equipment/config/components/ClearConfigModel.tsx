@@ -4,6 +4,7 @@ import {
 import {
   Dialog, Row, Col, Button,
 } from 'element-ui';
+import { clearCfg } from '@/api/equipment';
 import './ClearConfigModel.less';
 @Component({
   components: {
@@ -33,7 +34,20 @@ export default class ClearConfigModel extends Vue {
     const obj: any = {
       imei: this.data.imei,
     };
-    //
+    clearCfg(obj).then((res) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.success(res.result.resultMessage);
+          this.$emit('refresh');
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage);
+        }, 1500);
+      }
+    });
   }
 
   render() {

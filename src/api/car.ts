@@ -87,10 +87,20 @@ export async function getSrcQueryOptions(params: any) {
   });
 }
 
-// 绑定设备
+// 车辆绑定设备
 export async function bindTerminal(params: any) {
   return request({
     url: '/vehicle/monitor/bindTerminal',
+    data: params,
+    method: 'post',
+    fetchType: 'JSON',
+  });
+}
+
+// 车辆解绑设备
+export async function unbindTerminal(params: any) {
+  return request({
+    url: '/vehicle/monitor/unbindTerminal',
     data: params,
     method: 'post',
     fetchType: 'JSON',
@@ -106,3 +116,10 @@ export async function driveBehavior(params: any) {
   });
 }
 
+// 查询车辆绑定设备
+export async function findBindTerminalList(params: any) {
+  return request({
+    url: `/vehicle/monitor/findBindTerminalList/${params}`,
+    method: 'get',
+  });
+}

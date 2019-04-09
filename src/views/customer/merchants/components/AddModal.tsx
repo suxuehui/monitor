@@ -258,17 +258,13 @@ export default class AddModal extends Vue {
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        if (!this.isChineseChar(value)) {
-          userCheck(value).then((res) => {
-            if (res.result.resultCode === '0') {
-              callback();
-            } else {
-              callback(new Error('登录账号已存在，请重新输入'));
-            }
-          });
-        } else {
-          callback(new Error('登录账号不能为中文，请重新输入'));
-        }
+        userCheck(value).then((res) => {
+          if (res.result.resultCode === '0') {
+            callback();
+          } else {
+            callback(new Error('登录账号已存在，请重新输入'));
+          }
+        });
       } else {
         callback(new Error('登录账号不能为空'));
       }

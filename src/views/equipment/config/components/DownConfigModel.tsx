@@ -1,10 +1,10 @@
 import {
-  Component, Prop, Vue,
+  Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
   Tag, Dialog, Form, FormItem, Input, Button,
 } from 'element-ui';
-
+import { deliveryCfg } from '@/api/equipment';
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -23,8 +23,17 @@ export default class DownConfigModel extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private downLoadTime: any;
+
+  @Watch('downLoadTime')
+  dataChange() {
+    this.modelForm.imei = this.data.imei;
+    console.log(this.modelForm);
+  }
+
   modelForm: any = {
-    vin: '',
+    productCode: '',
+    imei: '',
   };
 
   loading: boolean = false;
@@ -33,14 +42,17 @@ export default class DownConfigModel extends Vue {
   modelList: any = []
 
   rules = {
-    vin: [
+    productCode: [
       { required: true, message: '请输入产品编码', trigger: 'blur' },
     ],
   }
 
   // 重置数据
   resetData() {
-    this.modelForm = {};
+    this.modelForm = {
+      productCode: '',
+      imei: '',
+    };
   }
 
   closeModal() {
@@ -54,15 +66,37 @@ export default class DownConfigModel extends Vue {
 
   onSubmit() {
     this.loading = true;
-    const parent:any = this.$parent;
-    setTimeout(() => {
-      this.loading = false;
-      if (parent) {
-        parent.closeModal(); // 关闭下发配置
-        parent.openCheckModel(); // 打开配置校验
-        parent.startCountDown(); // 开启倒计时
+    const From: any = this.$refs.modelForm;
+    const obj: any = {
+      imei: this.modelForm.imei,
+      productCode: this.modelForm.productCode,
+    };
+    const parent: any = this.$parent;
+    From.validate((valid: any) => {
+      if (valid) {
+        deliveryCfg(obj).then((res) => {
+          if (res.result.resultCode === '0') {
+            setTimeout(() => {
+              this.loading = false;
+              if (parent) {
+                parent.closeModal(); // 关闭下发配置
+                parent.openCheckModel(); // 打开配置校验
+                parent.startCountDown(); // 开启倒计时
+              }
+            }, 500);
+          } else {
+            setTimeout(() => {
+              this.loading = false;
+              this.$message.error(res.result.resultMessage);
+            }, 1500);
+          }
+        });
+      } else {
+        this.loading = false;
+        return false;
       }
-    }, 500);
+      return false;
+    });
   }
 
   render() {
@@ -76,10 +110,10 @@ export default class DownConfigModel extends Vue {
           close-on-click-modal={false}
         >
           <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="fzkDownConfigModel">
-            <el-form-item label="产品编码" prop="vin">
+            <el-form-item label="产品编码" prop="productCode">
               <el-input
-                id="vin"
-                v-model={this.modelForm.vin}
+                id="productCode"
+                v-model={this.modelForm.productCode}
                 placeholder="请输入产品编码"
               />
             </el-form-item>

@@ -65,7 +65,7 @@ export default class BindModal extends Vue {
       { required: true, message: '请输入车架号', trigger: 'blur' },
     ],
     plateNum: [
-      { required: false, message: '请输入车牌号', trigger: 'blur' },
+      { required: true, message: '请输入车牌号', trigger: 'blur' },
       {
         validator: this.checkPlateNum, trigger: 'blur',
       },
@@ -178,6 +178,10 @@ export default class BindModal extends Vue {
     });
   }
 
+  picSource = {
+    system: 'fzkMonitor',
+  }
+
   render() {
     return (
       <div>
@@ -209,13 +213,14 @@ export default class BindModal extends Vue {
                 </el-form-item>
               </el-col>
               <el-col span={24}>
-                <el-form-item label="车架图片" >
+                <el-form-item label="车架图片" class="upload">
                   <upload-Model
                     ref="uploadModel"
                     class="uploadBlock"
                     name="file"
                     listType="picture"
                     autoUpload={true}
+                    systemSource={this.picSource}
                     showUpBtn={this.showUpBtn}
                     url={this.uploadUrl}
                     logoUrl={this.logoUrl}
@@ -223,13 +228,14 @@ export default class BindModal extends Vue {
                     on-successBack={this.successBack}
                     on-removeBack={this.removeBack}
                   ></upload-Model>
+                  <span class="star">*</span>
                 </el-form-item>
               </el-col>
             </el-row>
           </el-form>
           <div class="bindBtn">
-              <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
-              <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
+            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
           </div>
         </el-dialog>
       </div >

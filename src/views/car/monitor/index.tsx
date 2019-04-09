@@ -6,15 +6,13 @@ import {
   tableList, Opreat, FilterFormList, MapCarData,
 } from '@/interface';
 import {
-  vehicleInfo, vehicleRadiusQuery, cmdList, cmdControl,
+  vehicleInfo, vehicleRadiusQuery, cmdList,
 } from '@/api/monitor';
 import {
-  carSource, carBindStatus, getBindStatusOptions, getFioQueryOptions, getSrcQueryOptions,
+  getBindStatusOptions, getFioQueryOptions, getSrcQueryOptions, findBindTerminalList,
 } from '@/api/car';
-import { fenceOption } from '@/api/fence';
 import exportExcel from '@/api/export';
 import { gpsToAddress, queryAddress, orgTree } from '@/api/app';
-import { terminalType, findBindTerminalList } from '@/api/equipment';
 import qs from 'qs';
 import utils from '@/utils';
 import CoordTrasns from '@/utils/coordTrasns';
@@ -446,7 +444,7 @@ export default class Monitor extends Vue {
     { label: '剩余电量:', prop: 'leftElectricPercent', unit: '%' },
     { label: '累计里程:', prop: 'totalMileage', unit: 'km' },
     { label: '续航里程:', prop: 'leftMileage', unit: 'km' },
-    { label: '设防状态:', prop: 'defenceStatus', unit: 'defenceStatus' },
+    { label: '设防状态:', prop: 'fenceStatus', unit: 'fenceStatus' },
     { label: '授权状态:', prop: 'authorizedStatus', unit: 'authorizedStatus' },
     { label: '油路状态:', prop: 'oilStatus', unit: 'oilStatus' },
     { label: '充电状态:', prop: 'chargeLight' },
@@ -729,6 +727,7 @@ export default class Monitor extends Vue {
     let carDetail: any = {};
     this.detailShow = true;
     vehicleInfo({ id }).then((res) => {
+      console.log(res);
       if (res.result.resultCode === '0') {
         // 如果车辆坐标为空-位置为未知
         if (res.entity.lat && res.entity.lng) {
@@ -763,7 +762,6 @@ export default class Monitor extends Vue {
     });
   }
 
-  // 刷新后重置车辆信息
   setNowCarPosi = (val: any) => {
     this.mapCenter = {
       lat: val.lat,
@@ -893,7 +891,6 @@ export default class Monitor extends Vue {
           id: row.id,
           vin: row.vin,
           plateNum: row.plateNum,
-          carCode: row.carCode.split('/'),
         };
         break;
       // 删除
@@ -908,10 +905,10 @@ export default class Monitor extends Vue {
   }
 
   // 获取绑定设备信息
-  findTerminalList(data: any) {
+  findTerminalList(id: any) {
     this.wiredTerminals = [];
     this.wirelessTerminals = [];
-    findBindTerminalList(data.id).then((res: any) => {
+    findBindTerminalList(id).then((res: any) => {
       const { entity, result } = res;
       if (result.resultCode === '0') {
         entity.forEach((item: any) => {
@@ -1067,13 +1064,8 @@ export default class Monitor extends Vue {
     // 剩余油量%
     if (unit === 'L') {
       const num: any = value; // 剩余油量
-      const num1: any = data.fuelTankCap; // 油箱容量
       if (num && num > 0) {
-        if (num1 && num1 > 0) {
-          const str = (num / num1) * 100;
-          return `${str.toFixed(2)}% (${num}L)`;
-        }
-        return `--% (${num}L)`;
+        return `${num}L`;
       }
       return '未知';
     }
@@ -1114,11 +1106,21 @@ export default class Monitor extends Vue {
       return this.setDoorStatus(data.leftRearDoor, data.leftRearLock);
     } if (unit === 'rightRearLock') {
       return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
-    } if (unit === 'defenceStatus') {
-      if (data.defenceStatus !== null) {
-        return data.defenceStatus ? '设备、原车' : '设备、原车';
+    } if (unit === 'fenceStatus') {
+      // 设备:defenceStatus 原车:withdrawDefence
+      let str1: string = '';
+      let str2: string = '';
+      if (data.defenceStatus !== null && data.defenceStatus !== undefined) {
+        str1 = data.defenceStatus ? '设防' : '撤防';
+      } else {
+        str1 = '未知';
       }
-      return '未知';
+      if (data.withdrawDefence !== null && data.withdrawDefence !== undefined) {
+        str2 = data.withdrawDefence ? '设防' : '撤防';
+      } else {
+        str2 = '未知';
+      }
+      return `${str1}；${str2}`;
     } if (unit === 'authorizedStatus') {
       if (data.authorizedStatus !== null) {
         return data.authorizedStatus ? '授权' : '夺权';
@@ -1170,13 +1172,19 @@ export default class Monitor extends Vue {
   setInfo(val: any) {
     this.currentCarId = val.id;
     this.carDetail = val;
-    window.localStorage.setItem('monitorCurrentCarPlate',val.plateNum)
+    window.localStorage.setItem('monitorCurrentCarPlate', val.plateNum);
+  }
+
+  // 关闭设备信息、远程控制显示
+  hideDeviceTran() {
+    this.showDeviceTran = false;
   }
 
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
-      this.findTerminalList(val); // 获取设备列表
+      this.hideDeviceTran();
+      this.findTerminalList(val.id); // 获取设备列表
       this.setInfo(val);
       this.getCarControlList(val); // 获取车辆控制列表
       if (val.lat && val.lng) {
@@ -1191,14 +1199,15 @@ export default class Monitor extends Vue {
         // 查询此车辆详细数据
         this.getCarDetail(val.id);
       } else {
-        this.detailShow = false;
         this.$message.error('车辆暂无定位，使用默认位置！');
         this.mapCenter = {
           lat: 29.627258,
           lng: 106.496422,
         };
         this.SMap.centerAndZoom(new this.BMap.Point(106.496422, 29.627258), 15);
+        // 以此车辆为中心点查询车辆
         this.radiusGetData(val.id);
+        // 查询此车辆详细数据
         this.getCarDetail(val.id);
       }
     }
@@ -1345,6 +1354,11 @@ export default class Monitor extends Vue {
     return <span style={{ color: 'red', margin: '0 3px' }}>未知</span>;
   }
 
+  // 绑定、解绑完成后刷新设备列表
+  getTerminalList(data: any): void {
+    this.findTerminalList(data.id);
+  }
+
   render() {
     const { carDetail } = this;
     return (
@@ -1356,9 +1370,9 @@ export default class Monitor extends Vue {
           </el-autocomplete>
           <el-button class="restore" size="small" id="reload" type="primary" icon="el-icon-refresh" on-click={this.refreshLoad}></el-button>
         </div>
-        {/* 详情头部 */}
         <div class={['car-detail-box', this.detailShow ? 'detail-active' : '', this.locChange ? '' : 'big']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
+          {/* 详情头部 */}
           <div class="car-info">
             <div class="top">
               <span class="plateNumber">{carDetail.plateNum}</span>
@@ -1381,7 +1395,7 @@ export default class Monitor extends Vue {
                   ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
                 </span>
                 <span class="fenceStatus">
-                  [<span style={{ color: 'red' }}>围栏内</span>]
+                  [<span style={{ color: 'red' }}>{carDetail.fenceIO}</span>]
                 </span>
               </div>
             </div>
@@ -1416,33 +1430,37 @@ export default class Monitor extends Vue {
               <div class="deviceInfo">
                 <div class="deviceItem">
                   <div class="deviceTit">有线设备：{this.wiredTerminals.length}个</div>
-                  <ul class="deviceList">
-                    <li class="deviceLi">
-                      <span class="deviceModel w700">型号</span>
-                      <span class="deviceIMEI w700">imei号</span>
-                    </li>
-                    {
-                      this.wiredTerminals.map((item: any) => <li class="deviceLi">
-                        <span class="deviceModel">{item.terminalModel}</span>
-                        <span class="deviceIMEI">{item.imei}</span>
-                      </li>)
-                    }
-                  </ul>
+                  {
+                    this.wiredTerminals.length > 0 ? <ul class="deviceList">
+                      <li class="deviceLi">
+                        <span class="deviceModel w700">型号</span>
+                        <span class="deviceIMEI w700">imei号</span>
+                      </li>
+                      {
+                        this.wiredTerminals.map((item: any) => <li class="deviceLi">
+                          <span class="deviceModel">{item.terminalModel}</span>
+                          <span class="deviceIMEI">{item.imei}</span>
+                        </li>)
+                      }
+                    </ul> : null
+                  }
                 </div>
                 <div class="deviceItem">
                   <div class="deviceTit">无线设备：{this.wirelessTerminals.length}个</div>
-                  <ul class="deviceList">
-                    <li class="deviceLi">
-                      <span class="deviceModel w700">型号</span>
-                      <span class="deviceIMEI w700">imei号</span>
-                    </li>
-                    {
-                      this.wirelessTerminals.map((item: any) => <li class="deviceLi">
-                        <span class="deviceModel">{item.terminalModel}</span>
-                        <span class="deviceIMEI">{item.imei}</span>
-                      </li>)
-                    }
-                  </ul>
+                  {
+                    this.wirelessTerminals.length > 0 ? <ul class="deviceList">
+                      <li class="deviceLi">
+                        <span class="deviceModel w700">型号</span>
+                        <span class="deviceIMEI w700">imei号</span>
+                      </li>
+                      {
+                        this.wirelessTerminals.map((item: any) => <li class="deviceLi">
+                          <span class="deviceModel">{item.terminalModel}</span>
+                          <span class="deviceIMEI">{item.imei}</span>
+                        </li>)
+                      }
+                    </ul> : null
+                  }
                 </div>
               </div>
             </div>
@@ -1527,6 +1545,7 @@ export default class Monitor extends Vue {
           visible={this.bindVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
+          on-getTerminal={this.getTerminalList}
         />
         <unbind-model
           time={this.clickTime}
@@ -1534,6 +1553,7 @@ export default class Monitor extends Vue {
           visible={this.unbindVisible}
           on-close={this.closeModal}
           on-refresh={this.reFresh}
+          on-getTerminal={this.getTerminalList}
         />
         <addDevice-model
           data={this.addData}

@@ -138,7 +138,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '下发配置',
       roles: true,
-      disabled: this.statusSet,
+      // disabled: this.statusSet,
     },
     {
       key: 'clearConfig',
@@ -146,7 +146,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '清除配置',
       roles: true,
-      disabled: this.statusSet,
+      // disabled: this.statusSet,
     },
     {
       key: 'checkConfig',
@@ -154,7 +154,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '查询配置',
       roles: true,
-      disabled: this.statusSet,
+      // disabled: this.statusSet,
     },
     {
       key: 'btAuth',
@@ -293,12 +293,15 @@ export default class ConfigModel extends Vue {
   // 鉴权码
   authBtn: boolean = true;
 
+  downLoadTime: string = '';
+
   rowData: any = {};
 
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'downConfig') { // 下发配置
+      this.downLoadTime = utils.getNowTime();
       this.downconfigVisibale = true;
       this.downconfigData = row;
       this.checkconfigData = row;
@@ -307,10 +310,13 @@ export default class ConfigModel extends Vue {
       this.clearconfigData = row;
     } else if (key === 'checkConfig') { // 查询配置
       queryCfg(row.imei).then((res: any) => {
-        console.log(res);
+        if (res.result.resultCode === '0') {
+          this.searchconfigVisible = true;
+          this.searchconfigData = JSON.parse(JSON.stringify(res.entity));
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
       });
-      // this.searchconfigVisible = true;
-      // this.searchconfigData = row;
     } else if (key === 'btAuth') { // 蓝牙鉴权
       this.btAuthVisible = true;
       this.getAuthCode(row);
@@ -456,6 +462,7 @@ export default class ConfigModel extends Vue {
           on-clearOutParams={this.clear}
         />
         <downconfig-model
+          downLoadTime={this.downLoadTime}
           data={this.downconfigData}
           visible={this.downconfigVisibale}
           checkVisible={this.checkconfigVisible}

@@ -128,13 +128,10 @@ export default class BtNameModel extends Vue {
               ></el-input>
             </el-form-item>
           </el-form>
-          {
-            this.data.online === 1
-              ? <div class="bindBtn">
-                <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
-                <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
-              </div> : null
-          }
+          <div class="bindBtn">
+            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>保存</el-button>
+            <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
+          </div>
         </el-dialog>
       </div >
     );

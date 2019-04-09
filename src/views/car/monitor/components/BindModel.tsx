@@ -67,6 +67,10 @@ export default class BindModal extends Vue {
               this.loading = false;
               this.$message.success(res.result.resultMessage);
               this.$emit('refresh');
+              this.$emit('getTerminal', {
+                id: this.data.id,
+              });
+              From.resetFields();
             }, 1500);
           } else {
             setTimeout(() => {

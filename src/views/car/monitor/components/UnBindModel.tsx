@@ -4,7 +4,7 @@ import {
 import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Button, Checkbox, CheckboxGroup,
 } from 'element-ui';
-import { findBindTerminalList, terminalUnbind } from '@/api/equipment';
+import { unbindTerminal, findBindTerminalList } from '@/api/car';
 import './UnBindModel.less';
 
 @Component({
@@ -31,10 +31,12 @@ export default class BindModal extends Vue {
 
   @Watch('time')
   onDataChange() {
+    this.allTerminals = [];
+    // 获取设备列表
     findBindTerminalList(this.data.id).then((res: any) => {
       const { entity, result } = res;
       if (result.resultCode === '0') {
-        this.allTerminals = entity;
+        this.allTerminals = JSON.parse(JSON.stringify(entity));
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -54,6 +56,7 @@ export default class BindModal extends Vue {
   closeModal() {
     this.$emit('close');
     this.loading = false;
+    this.allTerminals = [];
   }
 
   onSubmit() {
@@ -67,12 +70,15 @@ export default class BindModal extends Vue {
     const obj: any = {
       imeiList,
     };
-    terminalUnbind(obj).then((res) => {
+    unbindTerminal(obj).then((res) => {
       if (res.result.resultCode === '0') {
         setTimeout(() => {
-          this.loading = false;
           this.$message.success(res.result.resultMessage);
+          this.closeModal();
           this.$emit('refresh');
+          this.$emit('getTerminal', {
+            id: this.data.id,
+          });
         }, 1500);
       } else {
         setTimeout(() => {

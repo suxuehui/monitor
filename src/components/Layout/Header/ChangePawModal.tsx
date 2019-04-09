@@ -5,7 +5,6 @@ import {
   Dialog, Row, Col, Form, FormItem, Input, Button, Upload,
 } from 'element-ui';
 import { changePsw } from '@/api/permission';
-import UploadBlock from '@/components/Upload/index.vue';
 
 @Component({
   components: {
@@ -17,7 +16,6 @@ import UploadBlock from '@/components/Upload/index.vue';
     'el-input': Input,
     'el-button': Button,
     'el-upload': Upload,
-    'upload-Model': UploadBlock,
   },
 })
 export default class ChangePawModal extends Vue {

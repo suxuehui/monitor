@@ -171,7 +171,7 @@ export async function queryCfg(params: any) {
 // 设备型号下拉选择框
 export async function deviceModel(params: any) {
   return request({
-    url: `/device/terminalModel/findTerminalTypeAndModel/${params}`,
+    url: `/device/terminalModel/list/${params}`,
     method: 'get',
   });
 }
@@ -242,14 +242,6 @@ export async function setThrVal(params: any) {
 export async function getOnlineUrl(params: any) {
   return request({
     url: `/device/terminal/onlineUrl/${params}`,
-    method: 'get',
-  });
-}
-
-// 查询车辆绑定设备
-export async function findBindTerminalList(params: any) {
-  return request({
-    url: `/device/terminal/findBindTerminalList/${params}`,
     method: 'get',
   });
 }

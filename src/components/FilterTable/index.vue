@@ -25,6 +25,7 @@
       :data-type="dataType"
       :row-key="rowKey"
       :opreat="opreat"
+      :height="height"
       :opreat-width="opreatWidth"
       :back-params="BackParams"
       :header-align="headerAlign"
@@ -77,6 +78,9 @@ export default class FilterTable extends Vue {
 
   // 是否展示新增按钮
   @Prop() private addBtn!: boolean;
+
+  // 固定高度--固定表头
+  @Prop() private height!: string;
 
   // 是否展示导出按钮
   @Prop() private exportBtn!: boolean;
