@@ -340,10 +340,23 @@ export default class EleFence extends Vue {
     children: 'children',
   }
 
+  // 导出按钮
+  showExportBtn: boolean = true;
+
   created() {
+    // 权限设置
+    const getNowRoles: string[] = [
+      '/vehicle/fence/exportExcel',
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.showExportBtn = !!(res[0]);
+    });
+  }
+
+  mounted() {
     /**
-     * @method 查询门店列表
-    */
+         * @method 查询门店列表
+        */
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.unshift({
@@ -381,17 +394,7 @@ export default class EleFence extends Vue {
     });
     this.filterList[2].options = this.alarmTypes;
     this.filterList[3].options = this.statusOptions;
-    // 权限设置
-    const getNowRoles: string[] = [
-      '/vehicle/fence/exportExcel',
-    ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.exportBtn = !!(res[0]);
-    });
   }
-
-  // 导出按钮
-  exportBtn: boolean = true;
 
   // 围栏详情
   fenceDetail: any = {}
@@ -784,7 +787,7 @@ export default class EleFence extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
-            export-btn={this.exportBtn}
+            export-btn={this.showExportBtn}
             on-downBack={this.downLoad}
             defaultPageSize={5}
             highlight-current-row={true}

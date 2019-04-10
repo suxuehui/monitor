@@ -257,38 +257,41 @@ export default class Device extends Vue {
 
   created() {
     const getNowRoles: string[] = [
-      // 操作
-      '/device/terminal/save',
-      '/device/terminal/bind',
-      '/device/terminal/unbind/{imei}',
-      '/device/terminal/confirm',
-      '/device/terminal/getBluetoothAuthCode',
-      '/device/terminal/createBluetoothAuthCode',
-      '/device/terminal/deliveryCfg',
-      '/device/terminal/clearCfg',
-      '/device/terminal/reset/{id}',
-      '/terminal/ops/list',
-      '/device/terminal/exportExcel',
+      '/device/terminal/bind', // 绑定
+      '/device/terminal/unbind/{imei}', // 解绑
+      '/device/terminal/confirm', // 验收
+      '/device/terminal/addrChange/{imei}', // 切换地址
+      '/device/terminal/thresholdShow/{imei}', // 阈值
+      '/device/terminal/findTerminalLog', // 日志
+      '/terminal/ops/list', // 查看安绑记录
+      '/device/terminal/onlineUrl/{id}', // 上线地址
+      '/device/terminal/exportExcel', // 导出
     ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.opreat[0].roles = !!(res[1]); // 绑定
-    //   this.opreat[1].roles = !!(res[2]); // 解绑
-    //   this.opreat[2].roles = !!(res[3]); // 验收
-    //   this.opreat[3].roles = !!(res[4]); // 鉴权码
-    //   this.authBtn = !!(res[5]);
-    //   this.opreat[4].roles = !!(res[6]);
-    //   this.opreat[5].roles = !!(res[7]);
-    //   this.addBtn = !!(res[0]);
-    //   this.resetBtn = !!(res[8]);
-    //   this.opsBtn = !!(res[9]);
-    //   this.exportBtn = !!(res[10]);
-    // });
-    // });
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]); // 绑定
+      this.opreat[1].roles = !!(res[1]); // 解绑
+      this.opreat[2].roles = !!(res[2]); // 验收
+      this.opreat[3].roles = !!(res[3]); // 切换地址
+      this.opreat[4].roles = !!(res[4]); // 阈值
+      this.opreat[5].roles = !!(res[5]); // 日志
+      this.showOpsBtn = !!(res[6]); // 查看安绑记录
+      this.showUpUrl = !!(res[7]); // 查看上线地址
+      this.showExportBtn = !!(res[8]); // 导出
+    });
     // 设备状态
     this.filterGrade[2].options = this.terminalStatus;
     // 网络状态
     this.filterGrade[3].options = this.onlineStatus;
   }
+
+  // 导出
+  showExportBtn: boolean = true;
+
+  // 查看安绑记录
+  showOpsBtn: boolean = true;
+
+  // 查看上线地址
+  showUpUrl: boolean = true;
 
   mounted() {
     // 获取所有设备类型、型号
@@ -397,7 +400,7 @@ export default class Device extends Vue {
 
   // 查看上线地址
   upLoc(row: any) {
-    return <el-button type="text" disabled={!row.switchAddress} on-click={() => this.checkLoc(row)}>查看地址</el-button>;
+    return <el-button type="text" disabled={!row.switchAddress && this.showUpUrl} on-click={() => this.checkLoc(row)}>查看地址</el-button>;
   }
 
   // 点击操作时的时间
@@ -427,7 +430,7 @@ export default class Device extends Vue {
 
   // 查看安绑记录
   bindLog(row: any) {
-    return <el-button type="text" disabled={!this.opsBtn} on-click={() => this.checkLog(row)}>查看记录</el-button>;
+    return <el-button type="text" disabled={!this.showOpsBtn} on-click={() => this.checkLog(row)}>查看记录</el-button>;
   }
 
   onResetTime(data: any) {
@@ -573,14 +576,8 @@ export default class Device extends Vue {
 
   loading: boolean = false;
 
-  // 导出
-  exportBtn: boolean = true;
-
   // 重置
   resetBtn: boolean = true;
-
-  // 查看安绑记录
-  opsBtn: boolean = true;
 
   closePop() {
     this.loading = false;
@@ -689,7 +686,7 @@ export default class Device extends Vue {
           on-clearOutParams={this.clear}
           table-list={this.tableList}
           url={this.url}
-          export-btn={this.exportBtn}
+          export-btn={this.showExportBtn}
           on-menuClick={this.menuClick}
         />
         <bind-model

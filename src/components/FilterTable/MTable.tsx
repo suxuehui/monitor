@@ -98,10 +98,10 @@ export default class MTable extends Vue {
     pageNum: number,
     page: boolean,
   } = {
-    pageSize: this.defaultPageSize,
-    pageNum: 1,
-    page: true,
-  };
+      pageSize: this.defaultPageSize,
+      pageNum: 1,
+      page: true,
+    };
 
   // 加载状态
   loading: boolean = false;
@@ -272,29 +272,35 @@ export default class MTable extends Vue {
    */
   opreatJSX(row: any, column: string, cellValue: any, index: number) {
     // 操作数达到5个，使用下拉操作
-    if (this.opreat.length > 4) {
+    let num: number = 0;
+    this.opreat.forEach((item: any) => {
+      if (item.roles === true) {
+        num += 1;
+      }
+    })
+    if(num > 4){
       return <el-dropdown on-command={(command: string) => this.menuClick(null, command, row)}>
-        <span class="el-dropdown-link">
-          下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          {
-            this.opreat.map((item, indexs) => {
-              if (item.roles) {
-                return <el-dropdown-item
-                  id={`${item.key}`}
-                  key={indexs}
-                  command={item.key}
-                  disabled={item.disabled && item.disabled(row)}
-                >
-                  {typeof item.text === 'function' ? item.text(row) : item.text}
-                </el-dropdown-item>;
-              }
-              return true;
-            })
-          }
-        </el-dropdown-menu>
-      </el-dropdown>;
+      <span class="el-dropdown-link">
+        下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        {
+          this.opreat.map((item, indexs) => {
+            if (item.roles) {
+              return <el-dropdown-item
+                id={`${item.key}`}
+                key={indexs}
+                command={item.key}
+                disabled={item.disabled && item.disabled(row)}
+              >
+                {typeof item.text === 'function' ? item.text(row) : item.text}
+              </el-dropdown-item>;
+            }
+            return true;
+          })
+        }
+      </el-dropdown-menu>
+    </el-dropdown>;
     }
     return <div class="table-opreat">
       {

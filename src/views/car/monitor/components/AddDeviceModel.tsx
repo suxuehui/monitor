@@ -4,7 +4,7 @@ import {
 import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
 } from 'element-ui';
-import { bindTerminal } from '@/api/car';
+import { addTerminal } from '@/api/car';
 
 @Component({
   components: {
@@ -61,7 +61,7 @@ export default class BindModal extends Vue {
     };
     From.validate((valid: any) => {
       if (valid) {
-        bindTerminal(obj).then((res: any) => {
+        addTerminal(obj).then((res: any) => {
           if (res.result.resultCode === '0') {
             setTimeout(() => {
               this.loading = false;

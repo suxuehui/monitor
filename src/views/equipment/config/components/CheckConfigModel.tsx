@@ -6,6 +6,8 @@ import {
 } from 'element-ui';
 import './CheckConfigModel.less';
 
+import { queryCfg } from '@/api/equipment';
+
 const alertPic = require('@/assets/d_alert.png'); // 警告
 const donePic = require('@/assets/d_done.png'); // 完成
 const loadingPic = require('@/assets/d_loading.png'); // 加载中
@@ -50,7 +52,7 @@ export default class CheckConfigModel extends Vue {
       return (
         <div>
           <img src={donePic} />
-          <p style={{ marginTop: '8px' }}>配置参数下载成功</p>
+          <p style={{ marginTop: '8px' }}>配置参数下发成功</p>
         </div>
       );
     } if (this.step === 1) {
@@ -65,9 +67,23 @@ export default class CheckConfigModel extends Vue {
   }
 
   handleCheck() {
-    console.log(this.step);
-    this.step += 1;
-    this.disBtn = true;
+    this.loading = true;
+    const parent: any = this.$parent;
+    queryCfg(this.data.imei).then((res: any) => {
+      if (res.result.resultCode === '0') {
+        setTimeout(() => {
+          this.loading = false;
+          if (parent) {
+            parent.closeModal();
+            parent.openSearchModel(); // 打开查询配置
+            parent.searchconfigData = res.entity;
+          }
+        }, 1500);
+      } else {
+        this.loading = false;
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   render() {
@@ -85,9 +101,9 @@ export default class CheckConfigModel extends Vue {
           }
         </div>
         <div style={{ textAlign: 'center' }}>
-          <el-button disabled={this.num > 0 || this.disBtn} on-click={this.handleCheck}>
+          <el-button disabled={this.num > 0 || this.disBtn} loading={this.loading} on-click={this.handleCheck}>
             {
-              this.num > 0 ? <span>配置检验({this.num}s)</span> : <span>配置检验</span>
+              this.num > 0 ? <span>查询配置({this.num}s)</span> : <span>查询配置</span>
             }
           </el-button>
         </div>

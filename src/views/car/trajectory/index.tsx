@@ -271,7 +271,7 @@ export default class Trajectory extends Vue {
 
   first = true;
 
-  exportBtn: boolean = true;
+  showExportBtn: boolean = true;
 
   created() {
     this.tableUrl = '/device/trip/list';
@@ -281,7 +281,7 @@ export default class Trajectory extends Vue {
       '/device/trip/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.exportBtn = !!(res[0]);
+      this.showExportBtn = !!(res[0]);
     });
   }
 
@@ -1016,7 +1016,7 @@ export default class Trajectory extends Vue {
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}
-            export-btn={this.exportBtn}
+            export-btn={this.showExportBtn}
             on-downBack={this.downLoad}
             dataType={'JSON'}
             fetchType={'post'}

@@ -217,10 +217,10 @@ export default class Driving extends Vue {
     });
     const getNowRoles: string[] = [
       // 操作
-      '/statistics/driving/exportExcel',
+      '/statistics/driving/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.exportBtn = !!(res[0]);
+      this.exportBtn = !!(res[0]); // 导出
     });
     this.setDays();
   }

@@ -104,6 +104,30 @@ export default class Role extends Vue {
     return <el-tag size="medium" type={type}>{row.activeStatus === 1 ? '已启用' : '未启用'}</el-tag>;
   }
 
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/sys/role/save', // 新增
+      '/sys/role/edit', // 编辑
+      '/sys/role/updateStatus', // 冻结解冻
+      '/sys/role/saveRoleMenu', // 设置权限
+      '/sys/role/exportExcel', // 导出
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.showAddBtn = !!(res[0]); // 新增
+      this.opreat[0].roles = !!(res[1]); // 编辑
+      this.opreat[1].roles = !!(res[2]); // 冻结解冻
+      this.opreat[2].roles = !!(res[3]); // 设置权限
+      this.showExportBtn = !!(res[4]); // 导出
+    });
+  }
+
+  // 导出按钮展示
+  showExportBtn: boolean = true;
+
+  // 新增按钮展示
+  showAddBtn: boolean = true;
+
   mounted() {
     this.filterList[0].options = this.activeTypes;
   }
@@ -200,7 +224,8 @@ export default class Role extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
+          add-btn={this.showAddBtn}
+          export-btn={this.showExportBtn}
           opreatWidth={'180px'}
           on-addBack={this.addModel}
           opreat={this.opreat}
@@ -208,7 +233,6 @@ export default class Role extends Vue {
           table-list={this.tableList}
           url={this.url}
           localName={'role'}
-          export-btn={true}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />

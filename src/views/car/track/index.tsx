@@ -52,9 +52,9 @@ export default class Track extends Vue {
   }
 
   // 设备、记录
-  deviceTable: boolean = false;
+  showDeviceTable: boolean = false;
 
-  logTable: boolean = false;
+  showLogTable: boolean = false;
 
   // 权限设置
   created() {
@@ -63,9 +63,9 @@ export default class Track extends Vue {
       '/vehicle/tracke/findRecordList',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.deviceTable = !!(res[0]);
-      this.logTable = !!(res[1]);
-      if (res[1]) {
+      this.showDeviceTable = !!(res[0]);
+      this.showLogTable = !!(res[1]);
+      if (this.showLogTable) {
         this.tabActive = 'record';
       } else {
         this.tabActive = 'equipment';
@@ -169,13 +169,13 @@ export default class Track extends Vue {
             on-tab-click={this.tabClick}
           >
             {
-              this.logTable
+              this.showLogTable
                 ? <el-tab-pane label="记录" id="record" name="record">
                   <record-table on-location={this.setMapLoc}></record-table>
                 </el-tab-pane> : null
             }
             {
-              this.deviceTable
+              this.showDeviceTable
                 ? <el-tab-pane label="设备" id="equipment" name="equipment">
                   <equipment-table></equipment-table>
                 </el-tab-pane> : null

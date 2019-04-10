@@ -107,7 +107,7 @@
     .car-control {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      justify-content: space-around;
       list-style: none;
       border-bottom: 1px solid #409EFF;
       .controlItem {
@@ -116,7 +116,6 @@
         line-height: 30px;
         text-align: center;
         display: inline-block;
-        border-right: 1px solid #409EFF;
         position: relative;
         .trangle {
           height: 0;
@@ -132,10 +131,10 @@
           cursor : pointer;
           font-weight: 600;
           color: #409EFF;
+          padding: 4px;
+          border-radius: 2px;
+          border: 1px solid #409EFF;
         }
-      }
-      .controlItem:last-child{
-        border: none;
       }
     }
     // 设备信息

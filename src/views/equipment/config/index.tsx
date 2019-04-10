@@ -138,7 +138,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '下发配置',
       roles: true,
-      // disabled: this.statusSet,
+      disabled: this.statusSet,
     },
     {
       key: 'clearConfig',
@@ -146,7 +146,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '清除配置',
       roles: true,
-      // disabled: this.statusSet,
+      disabled: this.statusSet,
     },
     {
       key: 'checkConfig',
@@ -154,7 +154,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '查询配置',
       roles: true,
-      // disabled: this.statusSet,
+      disabled: this.statusSet,
     },
     {
       key: 'btAuth',
@@ -174,7 +174,7 @@ export default class ConfigModel extends Vue {
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
   statusSet(row: any) {
-    return !(row.online === 1 && row.softVersion && row.softVersion.substr(0, 3) === 'ovt');
+    return !(row.online === 1 && row.productName && row.productName.substr(0, 3) === 'ovt');
   }
 
   // // 表格参数
@@ -198,7 +198,7 @@ export default class ConfigModel extends Vue {
 
   // 查看操作记录
   opeList(row: any) {
-    return <el-button type="text" on-click={() => this.checkLoc(row)}>查看</el-button>;
+    return <el-button type="text" disabled={!this.showOprateBtn} on-click={() => this.checkLoc(row)}>查看</el-button>;
   }
 
   // 查看上线地址 按钮
@@ -212,20 +212,30 @@ export default class ConfigModel extends Vue {
   // 权限设置
   created() {
     const getNowRoles: string[] = [
-      // 操作
-      '/vehicle/config/add',
-      '/vehicle/config/info',
-      '/vehicle/config/update',
-      '/vehicle/config/delete',
-      '/vehicle/config/exportExcel',
+      '/device/terminal/deliveryCfg', // 下发配置
+      '/device/terminal/clearCfg', // 清除配置
+      '/device/terminal/queryCfg/{imei}', // 查询配置
+      '/device/terminal/createBluetoothAuthCode', // 蓝牙鉴权
+      '/device/terminal/settingBluetoothName', // 蓝牙名称
+      '/device/terminal/opsList', // 操作记录查看
+      '/device/terminal/configurationExport', // 导出
     ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.opreat[0].roles = !!(res[1] && res[2]);
-    //   this.opreat[1].roles = !!(res[3]);
-    //   this.addBtn = !!(res[0]);
-    //   this.exportBtn = !!(res[4]);
-    // });
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]); // 下发配置
+      this.opreat[1].roles = !!(res[1]); // 清除配置
+      this.opreat[2].roles = !!(res[2]); // 查询配置
+      this.opreat[3].roles = !!(res[3]); // 蓝牙鉴权
+      this.opreat[4].roles = !!(res[4]); // 蓝牙名称
+      this.showOprateBtn = !!(res[5]); // 操作记录查看
+      this.showExportBtn = !!(res[6]); // 导出
+    });
   }
+
+  // 操作记录查看
+  showOprateBtn:boolean = true;
+
+  // 导出按钮展示
+  showExportBtn: boolean = true;
 
   mounted() {
     // 设备型号
@@ -287,12 +297,6 @@ export default class ConfigModel extends Vue {
     { key: 0, value: 0, label: '离线' },
   ]
 
-  // 导出按钮展示
-  exportBtn: boolean = true;
-
-  // 鉴权码
-  authBtn: boolean = true;
-
   downLoadTime: string = '';
 
   rowData: any = {};
@@ -309,6 +313,7 @@ export default class ConfigModel extends Vue {
       this.clearconfigVisible = true;
       this.clearconfigData = row;
     } else if (key === 'checkConfig') { // 查询配置
+      this.searchconfigData = [];
       queryCfg(row.imei).then((res: any) => {
         if (res.result.resultCode === '0') {
           this.searchconfigVisible = true;
@@ -400,6 +405,7 @@ export default class ConfigModel extends Vue {
     this.btNameVisible = false; // 蓝牙名称
     this.searchconfigVisible = false; // 查询配置
     this.checkLogVisible = false; // 查询操作记录
+    this.checkconfigVisible = false; // 参数校验
   }
 
   // 打开配置参数校验
@@ -407,9 +413,16 @@ export default class ConfigModel extends Vue {
     this.checkconfigVisible = true;
   }
 
+  // 打开查询配置
+  openSearchModel() {
+    this.searchconfigVisible = true;
+    clearInterval(this.timer);
+  }
+
   // 关闭配置参数校验
   closeCheckModel() {
     this.checkconfigVisible = false;
+    clearInterval(this.timer);
   }
 
   // 关闭弹窗时刷新
@@ -419,13 +432,17 @@ export default class ConfigModel extends Vue {
     this.closeModal();
   }
 
+  // 倒计数量
   countDownNum: number = 3;
 
+  // 倒计时时间
+  timer: any = null;
+
   startCountDown() {
-    const timer = setInterval(() => {
+    this.timer = setInterval(() => {
       this.countDownNum -= 1;
       if (this.countDownNum === 0) {
-        clearInterval(timer);
+        clearInterval(this.timer);
       }
     }, 1000);
   }
@@ -456,7 +473,7 @@ export default class ConfigModel extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={this.exportBtn}
+          export-btn={this.showExportBtn}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
           on-clearOutParams={this.clear}
@@ -476,7 +493,6 @@ export default class ConfigModel extends Vue {
           on-refresh={this.refresh}
         />
         <btauth-model
-          updateAble={this.authBtn}
           data={this.btAuthData}
           visible={this.btAuthVisible}
           on-close={this.closeModal}
@@ -492,13 +508,13 @@ export default class ConfigModel extends Vue {
           num={this.countDownNum}
           data={this.checkconfigData}
           visible={this.checkconfigVisible}
-          on-close={this.closeCheckModel}
+          on-close={this.closeModal}
           on-refresh={this.refresh}
         />
         <searchconfig-model
           data={this.searchconfigData}
           visible={this.searchconfigVisible}
-          on-close={this.closeCheckModel}
+          on-close={this.closeModal}
           on-refresh={this.refresh}
         />
         <checkOpeLog-model

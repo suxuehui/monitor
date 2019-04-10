@@ -243,13 +243,10 @@ export default class EquipTable extends Vue {
     return type;
   }
 
-  // 设备
-  deviceTable: boolean = true;
-
   // 设备类型
   typeList: any = [];
 
-  exportBtn: boolean = true;
+  showExportBtn: boolean = true;
 
   // 权限设置
   created() {
@@ -257,17 +254,15 @@ export default class EquipTable extends Vue {
       this.outParams.vehicleId = this.$route.params.id;
     }
     const getNowRoles: string[] = [
-      '/vehicle/tracke/findTerminalList',
-      '/vehicle/tracke/saveConfig',
-      '/vehicle/tracke/reserveConfig',
-      '/vehicle/tracke/exportExcel',
+      '/vehicle/tracke/saveConfig', // 配置
+      '/vehicle/tracke/reserveConfig', // 预约
+      '/vehicle/tracke/exportExcel', // 导出
     ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.deviceTable = !!(res[0]);
-    //   this.opreat[0].roles = !!(res[1]);
-    //   this.opreat[1].roles = !!(res[2]);
-    //   this.exportBtn = !!(res[3]);
-    // });
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]);// 配置
+      this.opreat[1].roles = !!(res[1]); // 预约
+      this.showExportBtn = !!(res[2]); // 导出
+    });
   }
 
   mounted() {
@@ -353,7 +348,6 @@ export default class EquipTable extends Vue {
 
   // 关闭弹窗
   closeModal(): void {
-    // this.rowData = {};
     this.deployVisible = false;
     this.reverseVisible = false;
   }
@@ -373,32 +367,29 @@ export default class EquipTable extends Vue {
   render() {
     return (
       <div class="container-equip">
-        {
-          this.deviceTable ? <filter-table
-            ref="table"
-            class="map-table"
-            filter-list={this.filterList}
-            filter-grade={[]}
-            filter-params={this.filterParams}
-            back-params={this.backParams}
-            add-btn={false}
-            export-btn={this.exportBtn}
-            on-downBack={this.downLoad}
-            highlight-current-row={true}
-            page-size-list={[5, 10, 15]}
-            on-currentChange={this.currentChange}
-            on-menuClick={this.menuClick}
-            table-list={this.tableList}
-            url={this.tableUrl}
-            localName={'equipTable'}
-            default-page-size={5}
-            opreat={this.opreat}
-            out-params={this.outParams}
-            opreat-width="150px"
-          >
-          </filter-table>
-            : null
-        }
+        <filter-table
+          ref="table"
+          class="map-table"
+          filter-list={this.filterList}
+          filter-grade={[]}
+          filter-params={this.filterParams}
+          back-params={this.backParams}
+          add-btn={false}
+          export-btn={this.showExportBtn}
+          on-downBack={this.downLoad}
+          highlight-current-row={true}
+          page-size-list={[5, 10, 15]}
+          on-currentChange={this.currentChange}
+          on-menuClick={this.menuClick}
+          table-list={this.tableList}
+          url={this.tableUrl}
+          localName={'equipTable'}
+          default-page-size={5}
+          opreat={this.opreat}
+          out-params={this.outParams}
+          opreat-width="150px"
+        >
+        </filter-table>
         <deploy-model
           ref="deployModel"
           data={this.rowData}

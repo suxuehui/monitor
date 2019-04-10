@@ -139,19 +139,19 @@ export default class Merchants extends Vue {
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/customer/org/save',
-      '/customer/org/detail/{orgId}',
-      '/customer/org/update',
-      '/customer/org/lock/{orgId}',
-      '/customer/org/unlock/{orgId}',
-      '/customer/org/exportExcel',
+      '/customer/org/save', // 新增
+      '/customer/org/update', // 编辑
+      '/customer/org/lock/{orgId}', // 冻结
+      '/customer/org/unlock/{orgId}', // 解冻
+      '/customer/org/exportExcel', // 导出
     ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.opreat[0].roles = !!(res[1] && res[2]);
-    //   this.opreat[1].roles = !!(res[3] && res[4]);
-    //   this.addBtn = !!(res[0]);
-    //   this.exportBtn = !!(res[5]);
-    // });
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[1]); // 新增
+      this.opreat[1].roles = !!(res[2]); // 编辑
+      this.opreat[2].roles = !!(res[3]); // 冻结
+      this.addBtn = !!(res[0]); // 解冻
+      this.exportBtn = !!(res[4]); // 导出
+    });
   }
 
   // 新增按钮展示

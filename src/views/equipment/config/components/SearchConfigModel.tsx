@@ -4,7 +4,7 @@ import {
 import {
   Dialog, Row, Col, Button,
 } from 'element-ui';
-import './CheckConfigModel.less';
+import './SearchConfigModel.less';
 
 @Component({
   components: {
@@ -28,47 +28,31 @@ export default class SearchConfigModel extends Vue {
 
   disBtn: boolean = false;
 
-  // @Watch('num')
-  // dataChange() {
-  //   if (this.num === 0) {
-  //     this.step += 1;
-  //   }
-  // }
-
   closeModal() {
     this.$emit('close');
     this.loading = false;
-  }
-
-  showContent() {
-    // // 配置参数下发成功
-    // if (this.step === 0) {
-    //   return (
-    //     <div>
-    //       <p style={{ marginTop: '8px' }}>配置参数下载成功</p>
-    //     </div>
-    //   );
-    // } if (this.step === 1) {
-    //   return (
-    //     <div>
-    //       <p style={{ marginTop: '8px' }}>请稍等，正在校验配置...</p>
-    //     </div>
-    //   );
-    // }
   }
 
   render() {
     return (
       <el-dialog
         width="520px"
-        title="提示"
+        title="查询配置"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <div class="content">
-          111
-        </div>
+        <ul class="SearchConfigModelContent">
+          {
+            this.data && this.data.length > 0 ? this.data.map((item: any) => {
+              return (
+                <li class="item">
+                  <span class="item_title">配置项1:</span><span>{item.tag}</span>,<span>{item.paras}</span>【{item.realCfgVal}】
+                </li>
+              );
+            }) : <li class="noConfig">暂无配置</li>
+          }
+        </ul>
       </el-dialog>
     );
   }

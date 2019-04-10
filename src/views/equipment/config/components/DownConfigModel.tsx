@@ -28,7 +28,6 @@ export default class DownConfigModel extends Vue {
   @Watch('downLoadTime')
   dataChange() {
     this.modelForm.imei = this.data.imei;
-    console.log(this.modelForm);
   }
 
   modelForm: any = {
@@ -79,11 +78,12 @@ export default class DownConfigModel extends Vue {
             setTimeout(() => {
               this.loading = false;
               if (parent) {
+                From.resetFields();
                 parent.closeModal(); // 关闭下发配置
-                parent.openCheckModel(); // 打开配置校验
+                parent.openCheckModel(); // 打开查询
                 parent.startCountDown(); // 开启倒计时
               }
-            }, 500);
+            }, 1500);
           } else {
             setTimeout(() => {
               this.loading = false;

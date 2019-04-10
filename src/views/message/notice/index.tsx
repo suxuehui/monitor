@@ -75,19 +75,19 @@ export default class Notice extends Vue {
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/message/notice/publish',
-      '/message/notice/delete',
-      '/message/notice/view',
+      '/message/notice/publish', // 发布
+      '/message/notice/view', // 查看
+      '/message/notice/delete', // 删除
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[1].roles = !!(res[1]);
-      this.opreat[0].roles = !!(res[2]);
-      this.addBtn = !!(res[0]);
+      this.opreat[0].roles = !!(res[1]); // 删除
+      this.opreat[1].roles = !!(res[2]); // 查看
+      this.showAddBtn = !!(res[0]); // 发布
     });
   }
 
-  // 新增、导出按钮展示
-  addBtn: boolean = true;
+  // 新增按钮展示
+  showAddBtn: boolean = true;
 
   // 新增
   addVisible: boolean = false;
@@ -162,7 +162,7 @@ export default class Notice extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={this.addBtn}
+          add-btn={this.showAddBtn}
           on-addBack={this.addModel}
           opreat={this.opreat}
           out-params={this.outParams}

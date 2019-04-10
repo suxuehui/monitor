@@ -79,11 +79,11 @@ export default class BindLog extends Vue {
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/terminal/accept/list',
+      '/terminal/accept/list', // 验收记录
     ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.opreat[0].roles = !!(res[0]);
-    // });
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]); // 验收记录
+    });
     // id、imei
     this.tableParams = {
       page: true,
@@ -98,7 +98,7 @@ export default class BindLog extends Vue {
     terminalInfo(data).then((res) => {
       if (res.result.resultCode === '0') {
         this.modelForm = {
-          orgName: '总部',
+          orgName: res.entity.orgName !== null ? res.entity.orgName : '--',
           plateNum: res.entity.plateNum !== null ? res.entity.plateNum : '--',
           vin: res.entity.vin !== null ? res.entity.vin : '--',
         };

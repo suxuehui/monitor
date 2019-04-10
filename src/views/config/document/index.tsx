@@ -70,24 +70,24 @@ export default class DeviceModel extends Vue {
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/vehicle/config/add',
-      '/vehicle/config/info',
-      '/vehicle/config/update',
-      '/vehicle/config/delete',
-      '/vehicle/config/exportExcel',
+      '/vehicle/config/add', // 新增
+      '/vehicle/config/info', // 详情
+      '/vehicle/config/update', // 编辑
+      '/vehicle/config/delete', // 删除
+      '/vehicle/config/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.showAddBtn = !!(res[0]);
       this.opreat[0].roles = !!(res[1] && res[2]);
       this.opreat[1].roles = !!(res[3]);
-      this.addBtn = !!(res[0]);
-      this.exportBtn = !!(res[4]);
+      this.showExportBtn = !!(res[4]);
     });
   }
 
   // 新增、导出按钮展示
-  addBtn: boolean = true;
+  showAddBtn: boolean = true;
 
-  exportBtn: boolean = true;
+  showExportBtn: boolean = true;
 
   statusDom(row: any) {
     if (row.reboot === 1) {
@@ -166,7 +166,7 @@ export default class DeviceModel extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={this.addBtn}
+          add-btn={this.showAddBtn}
           opreatWidth={'180px'}
           localName={'model'}
           on-addBack={this.addModel}
@@ -174,7 +174,7 @@ export default class DeviceModel extends Vue {
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          export-btn={this.exportBtn}
+          export-btn={this.showExportBtn}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />

@@ -214,21 +214,21 @@ export default class Alarm extends Vue {
   alarmType: any = [];
 
   // 导出按钮展示
-  exportBtn: boolean = true;
+  showExportBtn: boolean = true;
 
   // 权限设置
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/message/alarm/handle',
-      '/message/alarm/getSolution',
-      '/message/alarm/exportExcel',
+      '/message/alarm/handle', // 处理
+      '/message/alarm/getSolution', // 处理结果
+      '/message/alarm/exportExcel', // 导出
     ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.opreat[0].roles = !!(res[0]);
-    //   this.opreat[1].roles = !!(res[1]);
-    //   this.exportBtn = !!(res[2]);
-    // });
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = !!(res[0]); // 处理
+      this.opreat[1].roles = !!(res[1]); // 处理结果
+      this.showExportBtn = !!(res[2]); // 导出
+    });
     // 门店搜索
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -359,7 +359,7 @@ export default class Alarm extends Vue {
           url={this.url}
           dataType={'JSON'}
           opreatWidth='180px'
-          export-btn={this.exportBtn}
+          export-btn={this.showExportBtn}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
           on-clearOutParams={this.clearOut}

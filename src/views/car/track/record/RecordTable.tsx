@@ -122,17 +122,17 @@ export default class RecordTable extends Vue {
     </el-tooltip>;
   }
 
-  exportBtn: boolean = false;
+  showExportBtn: boolean = false;
 
   created() {
     if (this.$route.params.id) {
       this.outParams.vehicleId = this.$route.params.id;
     }
     const getNowRoles: string[] = [
-      '/vehicle/tracke/exportExcelRecord',
+      '/vehicle/tracke/exportExcelRecord', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.exportBtn = !!(res[0]);
+      this.showExportBtn = !!(res[0]); // 导出
     });
   }
 
@@ -198,7 +198,7 @@ export default class RecordTable extends Vue {
           back-params={this.backParams}
           add-btn={false}
           page-size-list={[5, 10, 15]}
-          export-btn={this.exportBtn}
+          export-btn={this.showExportBtn}
           on-downBack={this.downLoad}
           highlight-current-row={true}
           on-clearOutParams={this.clear}

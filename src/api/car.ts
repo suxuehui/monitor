@@ -97,6 +97,16 @@ export async function bindTerminal(params: any) {
   });
 }
 
+// 车辆添加设备
+export async function addTerminal(params: any) {
+  return request({
+    url: '/vehicle/monitor/addTerminal',
+    data: params,
+    method: 'post',
+    fetchType: 'JSON',
+  });
+}
+
 // 车辆解绑设备
 export async function unbindTerminal(params: any) {
   return request({

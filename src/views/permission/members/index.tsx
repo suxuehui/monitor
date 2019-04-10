@@ -69,6 +69,12 @@ export default class Members extends Vue {
 
   mounted() {
     this.filterList[1].options = this.activeTypes;
+    this.getRoleList();
+  }
+
+  getRoleList(){
+    this.roleTypeList = [];
+    this.roleTypeAddList = [];
     roleSelect(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.forEach((item: any) => {
@@ -76,7 +82,7 @@ export default class Members extends Vue {
           item.value = item.id;
           item.label = item.roleName;
         });
-        this.roleTypeList = res.entity;
+        this.roleTypeList = JSON.parse(JSON.stringify(res.entity));
         this.roleTypeAddList = res.entity.filter((item: any) => item);
         // 所有品牌
         this.roleTypeList.unshift({
@@ -173,6 +179,35 @@ export default class Members extends Vue {
 
   modelForm: any = {};
 
+  // 每次进入重新获取角色类型
+  activated(){
+    this.getRoleList();
+  }
+
+  created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/sys/user/save', // 新增
+      '/sys/user/update', // 编辑
+      '/sys/user/lock', // 冻结
+      '/sys/user/unlock', // 解冻
+      '/sys/user/exportExcel', // 导出
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.showAddBtn = !!(res[0]); // 新增
+      this.opreat[0].roles = !!(res[1]); // 编辑
+      this.opreat[1].roles = !!(res[2]); // 冻结
+      this.opreat[2].roles = !!(res[3]); // 解冻
+      this.showExportBtn = !!(res[4]); // 导出
+    });
+  }
+
+  // 导出按钮展示
+  showExportBtn: boolean = true;
+
+  // 新增按钮展示
+  showAddBtn: boolean = true;
+
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
@@ -246,15 +281,15 @@ export default class Members extends Vue {
           filter-list={this.filterList}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
-          add-btn={true}
           on-addBack={this.addModel}
+          add-btn={this.showAddBtn}
+          export-btn={this.showExportBtn}
           opreatWidth={'150px'}
           opreat={this.opreat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
           localName={'remembers'}
-          export-btn={true}
           on-downBack={this.downLoad}
           on-menuClick={this.menuClick}
         />

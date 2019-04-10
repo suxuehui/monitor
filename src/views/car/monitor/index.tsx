@@ -727,7 +727,6 @@ export default class Monitor extends Vue {
     let carDetail: any = {};
     this.detailShow = true;
     vehicleInfo({ id }).then((res) => {
-      console.log(res);
       if (res.result.resultCode === '0') {
         // 如果车辆坐标为空-位置为未知
         if (res.entity.lat && res.entity.lng) {
@@ -967,11 +966,6 @@ export default class Monitor extends Vue {
 
   menuClickStr: string = '';
 
-  // 导出按钮展示
-  exportBtn: boolean = true;
-
-  controlBtn: boolean = true;
-
   locTimeOptions: any = [
     {
       value: '',
@@ -1023,26 +1017,48 @@ export default class Monitor extends Vue {
     },
   ]
 
+  showExportBtn: boolean = true; // 导出按钮展示
+
+  showTerminal: boolean = true; // 展示设备列表
+
+  showTrack: boolean = true; // 展示无线追踪
+
+  showDrive: boolean = true; // 展示驾驶行为
+
+  showTrajectory: boolean = true; // 展示轨迹
+
+  showControl: boolean = true; // 展示控制列表
+
   // 权限设置
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/vehicle/monitor/edit',
-      '/device/trip/list',
-      '/vehicle/monitor/delete',
-      '/vehicle/monitor/control',
-      '/vehicle/monitor/exportExcel',
-      '/vehicle/tracke/findTerminalList',
-      '/vehicle/tracke/findRecordList',
+      '/vehicle/monitor/bindTerminal', // 绑定
+      '/vehicle/monitor/unbindTerminal', // 解绑
+      '/vehicle/monitor/addTerminal', // 添加设备
+      '/vehicle/monitor/edit', // 编辑
+      '/vehicle/monitor/delete', // 删除
+      '/vehicle/monitor/findBindTerminalList/{vehicleId}', // 设备列表
+      '/vehicle/tracke/findRecordList', // 追踪设备记录
+      '/vehicle/tracke/findTerminalList', // 追踪设备
+      '/vehicle/monitor/driveBehavior', // 驾驶行为
+      '/device/trip/list', // 轨迹
+      '/cmd/control', // 控制命令
+      '/vehicle/monitor/exportExcel', // 导出
     ];
-    // this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-    //   this.opreat[0].roles = !!(res[0]);
-    //   this.opreat[1].roles = !!(res[1]);
-    //   this.opreat[2].roles = !!(res[2]);
-    //   this.opreat[3].roles = !!(res[5] || res[6]);
-    //   this.controlBtn = !!(res[3]);
-    //   this.exportBtn = !!(res[4]);
-    // });
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.opreat[0].roles = res[0]; // 绑定
+      this.opreat[1].roles = res[1]; // 解绑
+      this.opreat[2].roles = res[2]; // 添加设备
+      this.opreat[3].roles = res[3]; // 编辑
+      this.opreat[4].roles = res[4]; // 删除
+      this.showTerminal = res[5]; // 设备列表
+      this.showTrack = res[6] || res[7]; // 追踪设备记录、追踪设备
+      this.showDrive = res[8]; // 驾驶行为
+      this.showTrajectory = res[9]; // 轨迹
+      this.showControl = res[10]; // 控制命令
+      this.showExportBtn = res[11]; // 导出
+    });
     this.filterList[2].options = this.locTimeOptions;
     this.filterGrade[2].options = this.locTimeOptions;
   }
@@ -1107,7 +1123,7 @@ export default class Monitor extends Vue {
     } if (unit === 'rightRearLock') {
       return this.setDoorStatus(data.rightRearDoor, data.rightRearLock);
     } if (unit === 'fenceStatus') {
-      // 设备:defenceStatus 原车:withdrawDefence
+      // 设备:defenceStatus 原车:defenceSource
       let str1: string = '';
       let str2: string = '';
       if (data.defenceStatus !== null && data.defenceStatus !== undefined) {
@@ -1115,8 +1131,8 @@ export default class Monitor extends Vue {
       } else {
         str1 = '未知';
       }
-      if (data.withdrawDefence !== null && data.withdrawDefence !== undefined) {
-        str2 = data.withdrawDefence ? '设防' : '撤防';
+      if (data.defenceSource !== null && data.defenceSource !== undefined) {
+        str2 = data.defenceSource ? '设防' : '撤防';
       } else {
         str2 = '未知';
       }
@@ -1180,13 +1196,19 @@ export default class Monitor extends Vue {
     this.showDeviceTran = false;
   }
 
+  getShowTerminal() {
+    return this.showTerminal;
+  }
+
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
       this.hideDeviceTran();
-      this.findTerminalList(val.id); // 获取设备列表
       this.setInfo(val);
       this.getCarControlList(val); // 获取车辆控制列表
+      if (this.getShowTerminal() === true) {
+        this.findTerminalList(val.id); // 获取设备列表
+      }
       if (val.lat && val.lng) {
         this.mapCenter = {
           lat: val.lat,
@@ -1402,27 +1424,42 @@ export default class Monitor extends Vue {
           </div>
           {/* 控制区域 */}
           <ul class="car-control">
-            <li class="controlItem">
-              <span class="itemTit" on-click={() => this.showTran('设备')}>设备信息</span>
-              {
-                this.showDeviceTran ? <span class="trangle deviceTran"></span> : null
-              }
-            </li>
-            <li class="controlItem">
-              <span class="itemTit" on-click={this.lineLessTrack}>无线追踪</span>
-            </li>
-            <li class="controlItem">
-              <span class="itemTit" on-click={this.behaviorList}>驾驶行为</span>
-            </li>
-            <li class="controlItem">
-              <span class="itemTit" on-click={this.tripHis}>历史轨迹</span>
-            </li>
-            <li class="controlItem">
-              <span class="itemTit" on-click={() => this.showTran('控制')}>远程控制</span>
-              {
-                this.showControlTran ? <span class="trangle controlTran"></span> : null
-              }
-            </li>
+            {
+              this.showTerminal
+                ? <li class="controlItem">
+                  <span class="itemTit" on-click={() => this.showTran('设备')}>设备信息</span>
+                  {
+                    this.showDeviceTran ? <span class="trangle deviceTran"></span> : null
+                  }
+                </li> : null
+            }
+            {
+              this.showTrack
+                ? <li class="controlItem">
+                  <span class="itemTit" on-click={this.lineLessTrack}>无线追踪</span>
+                </li> : null
+            }
+            {
+              this.showDrive
+                ? <li class="controlItem">
+                  <span class="itemTit" on-click={this.behaviorList}>驾驶行为</span>
+                </li> : null
+            }
+            {
+              this.showTrajectory
+                ? <li class="controlItem">
+                  <span class="itemTit" on-click={this.tripHis}>历史轨迹</span>
+                </li> : null
+            }
+            {
+              this.showControl
+                ? <li class="controlItem">
+                  <span class="itemTit" on-click={() => this.showTran('控制')}>远程控制</span>
+                  {
+                    this.showControlTran ? <span class="trangle controlTran"></span> : null
+                  }
+                </li> : null
+            }
           </ul>
           {/* 车上所安装设备信息 */}
           <transition name="el-fade-in-linear">
@@ -1512,7 +1549,7 @@ export default class Monitor extends Vue {
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
-            export-btn={this.exportBtn}
+            export-btn={this.showExportBtn}
             on-downBack={this.downLoad}
             localName={'monitor'}
             on-menuClick={this.menuClick}
