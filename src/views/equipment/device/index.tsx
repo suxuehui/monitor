@@ -457,7 +457,13 @@ export default class Device extends Vue {
   }
 
   checkLog(row: any) {
-    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id }, params: { imei: row.imei, id: row.id } });
+    const data = {
+      imei: row.imei,
+      id: row.id,
+    };
+    this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
+    // this.$store.dispatch('getData', data);
+    window.localStorage.setItem('deviceInfoFzk', JSON.stringify(data));
   }
 
   onlineSelect(row: any) {

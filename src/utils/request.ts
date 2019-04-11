@@ -167,14 +167,14 @@ export default function request(options: Option): Promise<any> {
       msg = error.message || 'Network Error';
     }
     // 判断错误码是否为4，4为登录超时，跳转到登录页，或者是http的状态码为401也代表会话失效
-    // if (response.data.result.resultCode === 4) {
-    //   Message.error(response.data.result.resultMessage);
-    //   router.replace('/login');
-    // } else if (statusCode === 401) {
-    //   if (config.noLoginList.indexOf(window.location.hash) < 0) {
-    //     router.replace('/login');
-    //   }
-    // }
+    if (response.data.result.resultCode === 4) {
+      Message.error(response.data.result.resultMessage);
+      router.replace('/login');
+    } else if (statusCode === 401) {
+      if (config.noLoginList.indexOf(window.location.hash) < 0) {
+        router.replace('/login');
+      }
+    }
     return Promise.reject(new Error(msg));
   });
 }

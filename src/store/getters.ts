@@ -6,5 +6,7 @@ const getters = {
   username: (state: any) => state.user.users.username,
   noticeCount: (state: any) => state.infoCount.noticeCount,
   alarmCount: (state: any) => state.infoCount.alarmCount,
+  cimei: (state: any) => state.deviceInfo.cimei,
+  cid: (state: any) => state.deviceInfo.cid,
 };
 export default getters;

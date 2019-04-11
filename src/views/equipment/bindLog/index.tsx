@@ -63,13 +63,16 @@ export default class BindLog extends Vue {
   activated() {
     const FormTable: any = this.$refs.MTable;
     this.defaultPageSize = 5;
+    const data:any = window.localStorage.getItem('deviceInfoFzk');
+    const cid:any = JSON.parse(data).id;
+    const cimei:any = JSON.parse(data).imei;
     this.tableParams = {
       page: true,
       pageNum: 1,
       pageSize: 5,
-      imei: this.$route.query.imei,
+      imei: cimei,
     };
-    this.getTerminalInfo(this.$route.query.id);
+    this.getTerminalInfo(cid);
     FormTable.getData(this.tableParams);
   }
 
@@ -84,12 +87,14 @@ export default class BindLog extends Vue {
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]); // 验收记录
     });
-    // id、imei
+    const data:any = window.localStorage.getItem('deviceInfoFzk');
+    const cimei:any = JSON.parse(data).imei;
+    // imei
     this.tableParams = {
       page: true,
       pageNum: 1,
       pageSize: 5,
-      imei: this.$route.query.imei,
+      imei: cimei,
     };
   }
 

@@ -44,6 +44,7 @@ module.exports = {
     'vue/attributes-order': 'error',
     'vue/order-in-components': 'error',
     "prettier.singleQuote": true,
-    "prefer-destructuring": 0
+    "prefer-destructuring": 0,
+    "no-unused-expressions": 0,
   }
 }

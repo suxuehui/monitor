@@ -104,6 +104,52 @@ export default class EleFence extends Vue {
       filterable: true,
       change: this.areaLoad,
     },
+    // {
+    //   key: 'alarmType',
+    //   type: 'select',
+    //   label: '监控类型',
+    //   placeholder: '请选择监控类型',
+    //   options: [],
+    // },
+    // {
+    //   key: 'available',
+    //   type: 'select',
+    //   label: '状态',
+    //   placeholder: '请选择状态',
+    //   options: [],
+    // },
+    {
+      key: 'keyword',
+      type: 'input',
+      label: '围栏名称或围栏地址',
+      placeholder: '围栏名称或围栏地址',
+    },
+  ];
+
+  filterGrade: FilterFormList[] = [
+    {
+      key: 'levelCode',
+      type: 'levelcode',
+      label: '所属商户',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '请选择所属商户',
+      options: [],
+    },
+    {
+      key: 'areaNum',
+      type: 'cascader',
+      label: '所在地区',
+      placeholder: '请选择所在地区',
+      options: [],
+      props: {},
+      filterable: true,
+      change: this.areaLoad,
+    },
     {
       key: 'alarmType',
       type: 'select',
@@ -121,7 +167,7 @@ export default class EleFence extends Vue {
     {
       key: 'keyword',
       type: 'input',
-      label: '围栏名称或围栏地址',
+      label: '其他参数',
       placeholder: '围栏名称或围栏地址',
     },
   ];
@@ -317,7 +363,7 @@ export default class EleFence extends Vue {
     getDistrict({ regionalismCode: data }).then((res) => {
       if (res.result.resultCode === '0') {
         this.provinceList.forEach((item: any, index: number) => {
-          item.children && item.children.forEach((items: any, inx: number) => {
+          item && item.children && item.children.forEach((items: any, inx: number) => {
             this.provinceList[index].children[inx].children = [];
             if (`${data}` === items.value) {
               res.entity.forEach((it: any, key: number) => {
@@ -365,6 +411,7 @@ export default class EleFence extends Vue {
           orgName: '全部商户',
         });
         this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -388,12 +435,16 @@ export default class EleFence extends Vue {
         });
         this.filterList[1].props = this.props;
         this.filterList[1].options = this.provinceList;
+        this.filterGrade[1].props = this.props;
+        this.filterGrade[1].options = this.provinceList;
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
-    this.filterList[2].options = this.alarmTypes;
-    this.filterList[3].options = this.statusOptions;
+    // this.filterList[2].options = this.alarmTypes;
+    // this.filterList[3].options = this.statusOptions;
+    this.filterGrade[2].options = this.alarmTypes;
+    this.filterGrade[3].options = this.statusOptions;
   }
 
   // 围栏详情
@@ -723,7 +774,7 @@ export default class EleFence extends Vue {
           </el-autocomplete>
           <el-button id="reload" class="restore" size="small" type="primary" icon="el-icon-refresh" on-click={this.refresh}></el-button>
         </div>
-        <div class={['car-detail-box1', this.detailShow ? 'detail-active' : '']} >
+        <div class={['fzk-fence-detail-box', this.detailShow ? 'detail-active' : '']} >
           <i class="el-icon-close cancel" on-click={this.cancel} ></i>
           <div class="car-info">
             <div class="top">
@@ -769,7 +820,7 @@ export default class EleFence extends Vue {
             }
           </div>
         </div>
-        <div ref="tableList" id="TableList" class={['car-table2', !this.locChange ? 'table-active' : '']}>
+        <div ref="tableList" id="TableList" class={['fzk-fence-table', !this.locChange ? 'table-active' : '']}>
           <div ref="btnControl" id="btnControl" class="loc-change-box2">
             <el-button class="loc btn" size="mini" icon="el-icon-location" on-click={this.getNowPosition}></el-button>
             <el-button class="add btn" size="mini" icon="el-icon-plus" on-click={this.addZoom}></el-button>
@@ -783,7 +834,7 @@ export default class EleFence extends Vue {
             ref="mapTable"
             class="map-table"
             filter-list={this.filterList}
-            filter-grade={[]}
+            filter-grade={this.filterGrade}
             filter-params={this.filterParams}
             back-params={this.backParams}
             add-btn={false}

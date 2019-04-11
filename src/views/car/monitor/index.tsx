@@ -1528,7 +1528,7 @@ export default class Monitor extends Vue {
             </ul>
           </div>
         </div>
-        <div class={['car-table1', !this.locChange ? 'table-active' : '']}>
+        <div class={['fzk-monitor-table', !this.locChange ? 'table-active' : '']}>
           <div class='loc-change-box1'>
             <el-button class="loc btn" size="small" icon="el-icon-location" on-click={this.setCenter}></el-button>
             <el-button class="add btn" size="small" icon="el-icon-plus" on-click={this.zoomAdd}></el-button>

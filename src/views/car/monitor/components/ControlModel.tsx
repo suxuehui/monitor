@@ -55,7 +55,7 @@ export default class ControlModel extends Vue {
       keyword: this.data.imei,
       cmd: this.data.name,
       optionVal: this.modelForm.cmd,
-    }
+    };
     cmdControl(obj).then((res: any) => {
       if (res.result.resultCode === '0') {
         setTimeout(() => {
