@@ -462,7 +462,6 @@ export default class Device extends Vue {
       id: row.id,
     };
     this.$router.push({ name: '安绑记录', query: { imei: row.imei, id: row.id } });
-    // this.$store.dispatch('getData', data);
     window.localStorage.setItem('deviceInfoFzk', JSON.stringify(data));
   }
 
@@ -482,7 +481,7 @@ export default class Device extends Vue {
         type = <el-tag size="medium" type="blue" >待安绑</el-tag>;
         break;
       case 2:
-        type = <el-tag size="medium" type="info" >待验收</el-tag>;
+        type = <el-tag size="medium" type="warning" >待验收</el-tag>;
         break;
       case 3:
         type = <el-tag size="medium" type="success" >已合格</el-tag>;

@@ -38,7 +38,6 @@ export default class AddModal extends Vue {
     orgName: '', // 添加的商户名
     manageUser: '', // 管理账号、登录账号
     password: '', // 密码
-    nameAndLev: [], // 关联门店
     deviceType: [], // 设备类型
     mainAddr: '', // 主地址
     secondaryAddr: '', // 副地址
@@ -55,7 +54,6 @@ export default class AddModal extends Vue {
   selectLoading: boolean = true; // 筛选关联门店时的loading状态
 
   created() {
-    // this.modelForm = JSON.parse(JSON.stringify(this.data));
     // 设备类型
     terminalType(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -91,12 +89,19 @@ export default class AddModal extends Vue {
         this.modelForm.secondaryAddrPort = data.secondaryAddr.split(':')[1];
       }
       this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
-      this.nameAndLev = `${this.data.orgName}`;
+      this.nameAndLev = this.setFormat(this.oldShopName);
       this.reBootStatus = data.chgAddrAble === 2 ? '2' : '1';
     } else {
       // 新增
       this.resetData();
     }
+  }
+
+  setFormat(name: any) {
+    if (name.indexOf(',') > -1) {
+      return name.split(',');
+    }
+    return [`${name}`];
   }
 
   rules = {
@@ -225,15 +230,17 @@ export default class AddModal extends Vue {
    * @method 商户验证规则
    */
   checkShopValue(rule: any, value: string, callback: Function) {
-    if (this.nameAndLev) {
-      setTimeout(() => {
-        callback();
-      }, 200);
-    } else {
-      setTimeout(() => {
-        callback(new Error('请选择商户'));
-      }, 200);
-    }
+    setTimeout(() => {
+      if (this.nameAndLev.length > 0) {
+        setTimeout(() => {
+          callback();
+        }, 100);
+      } else {
+        setTimeout(() => {
+          callback(new Error('请选择商户'));
+        }, 100);
+      }
+    }, 200);
   }
 
   /**
@@ -287,7 +294,6 @@ export default class AddModal extends Vue {
       orgName: '', // 添加的商户名
       manageUser: '', // 管理账号、登录账号
       password: '', // 密码
-      nameAndLev: [], // 关联门店
       deviceType: [], // 设备类型
       mainAddr: '', // 主地址
       secondaryAddr: '', // 副地址
@@ -295,7 +301,7 @@ export default class AddModal extends Vue {
       secondaryAddrPort: '', // 副地址端口
     };
     this.reBootStatus = '2';
-    this.nameAndLev = [];
+    this.nameAndLev = []; // 关联门店
     this.deviceType = [];
   }
 
@@ -326,10 +332,55 @@ export default class AddModal extends Vue {
     return { oldNames, oldLevelCodes };
   }
 
+  // 编辑时用于获取oldLevelCodes
+  editGetOldInfo() {
+    let oldShopNameArr: any = []; // 原本 4S商户名称
+    let oldShopLevelCodeArr: any = []; // 原本 4S商户levelCode
+    if (this.data.oldLevelCode.indexOf(',') > -1) {
+      oldShopNameArr = this.oldShopName.split(',');
+      oldShopLevelCodeArr = this.data.oldLevelCode.split(',');
+    } else {
+      oldShopNameArr = [`${this.oldShopName}`];
+      oldShopLevelCodeArr = [`${this.data.oldLevelCode}`];
+    }
+    const nameAndLev: any = JSON.parse(JSON.stringify(this.nameAndLev)); // 编辑后关联商户数据
+    const editOld: any = []; // 编辑后 原本 4S商户名称
+    const editNew: any = []; // 编辑后 新加入 4S商户名称
+    const editNewCodes: any = []; // 编辑后 新加入 4S商户名称
+    nameAndLev.forEach((item: any) => {
+      if (item.indexOf('***') > -1) {
+        editNew.push(item);
+      }
+      editOld.push(item);
+    });
+    // 得到新加入4s商户的levelcode值
+    editNew.forEach((item: any) => {
+      editNewCodes.push(
+        item.split('***')[0],
+      );
+    });
+    // 判断编辑前后原本设置的4S门店有无变化
+    const changeArr = this.getArrDifference(oldShopNameArr, editOld); // 编辑前后改变的4S门店
+    changeArr.forEach((item: any) => {
+      if (oldShopNameArr.indexOf(item) > -1) {
+        oldShopLevelCodeArr.splice(oldShopLevelCodeArr.indexOf(item), 1); // 去除已经被删除掉4S商户的levelcode值
+      }
+    });
+    const endArr = oldShopLevelCodeArr.concat(editNewCodes);
+    return endArr.join(',');
+  }
+
+  // 找出两个数组不同之处
+  getArrDifference(arr1: any, arr2: any) {
+    return arr1.concat(arr2).filter(
+      (v: any, i: any, arr: any) => arr.indexOf(v) === arr.lastIndexOf(v),
+    );
+  }
+
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
-    this.loading = true;
+    // this.loading = true;
     if (this.nameAndLev === []) {
       this.$message.error('请选择商户');
       return false;
@@ -382,7 +433,11 @@ export default class AddModal extends Vue {
             delete obj.mainAddr;
             delete obj.secondaryAddr;
           }
-          obj.oldLevelCode = this.data.oldLevelCode;
+          obj.oldLevelCode = this.editGetOldInfo();
+          if (obj.oldLevelCode === '') {
+            this.$message.error('请选择商户');
+            return false;
+          }
           customerUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -506,49 +561,33 @@ export default class AddModal extends Vue {
                 ></el-input>
               </el-form-item>
             </el-col>
-            {
-              this.title === '编辑商户'
-                ? <el-col>
-                  <el-form-item label="关联门店" prop="oldLevelCode">
-                    <el-input
-                      id="oldLevelCode"
-                      v-model={this.oldShopName}
-                      disabled={true}
-                      placeholder="请输入商户名称"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-                : <el-col class="shopName">
-                  <el-form-item label="关联门店" prop="oldLevelCode" rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}>
-                    <el-select
-                      id="oldLevelCode"
-                      v-model={this.nameAndLev}
-                      filterable={true}
-                      remote={true}
-                      disabled={this.title !== '新增商户'}
-                      placeholder="请选择商户"
-                      multiple={true}
-                      remote-method={this.remoteMethod}
-                      on-change={this.shopChecked}
-                      loading={this.selectLoading}
-                      style="width:100%">
-                      {
-                        this.shopFilteredList.map((item: any, index: number) => (
-                          <el-option
-                            id={item.value}
-                            key={index}
-                            value={item.value}
-                            label={item.label}
-                          >{item.label}</el-option>
-                        ))
-                      }
-                    </el-select>
-                    {
-                      this.title === '新增商户' ? <span class="star1">*</span> : null
-                    }
-                  </el-form-item>
-                </el-col>
-            }
+            <el-col class="shopName">
+              <el-form-item label="关联门店" prop="oldLevelCode" rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}>
+                <el-select
+                  id="oldLevelCode"
+                  v-model={this.nameAndLev}
+                  filterable={true}
+                  remote={true}
+                  placeholder="请选择商户"
+                  multiple={true}
+                  remote-method={this.remoteMethod}
+                  on-change={this.shopChecked}
+                  loading={this.selectLoading}
+                  style="width:100%">
+                  {
+                    this.shopFilteredList.map((item: any, index: number) => (
+                      <el-option
+                        id={item.value}
+                        key={index}
+                        value={item.value}
+                        label={item.label}
+                      >{item.label}</el-option>
+                    ))
+                  }
+                </el-select>
+                <span class="star1">*</span>
+              </el-form-item>
+            </el-col>
             <el-col class="typeName">
               <el-form-item label="设备同步" prop="deviceType" rules={this.typeRule}>
                 <el-select
