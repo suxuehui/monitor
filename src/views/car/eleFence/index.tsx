@@ -400,8 +400,8 @@ export default class EleFence extends Vue {
 
   mounted() {
     /**
-         * @method 查询门店列表
-        */
+     * @method 查询门店列表
+    */
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.unshift({

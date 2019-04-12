@@ -266,10 +266,14 @@ export default class ConfigModel extends Vue {
         entity.forEach((item: any) => {
           item.label = item.orgName;
           item.value = item.levelCode;
-          item.siruiOrgs.forEach((it: any) => {
-            it.label = it.name;
-            it.value = it.levelCode;
-          });
+          if (item.siruiOrgs.length > 0) {
+            item.siruiOrgs.forEach((it: any) => {
+              it.label = it.name;
+              it.value = it.levelCode;
+            });
+          } else {
+            delete item.siruiOrgs;
+          }
         });
         entity.unshift({
           label: '商户门店（全部）',
