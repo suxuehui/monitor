@@ -213,7 +213,7 @@ export default class EleFence extends Vue {
     alarmType: '',
     available: '',
     keyword: '',
-    areaNum: [],
+    areaNum: [''],
   };
 
   backParams: object = {
