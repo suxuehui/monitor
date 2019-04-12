@@ -261,8 +261,7 @@ export default class MFilter extends Vue {
           options={item.options}
           v-model={this.params[item.key]}
           placeholder={item.placeholder}
-          props={item.props} // 开发
-          // props={{ props: item.props }} // 打包
+          props={process.env.NODE_ENV === 'production' ? { props: item.props } : item.props} // 修改props
           filterable={item.filterable}
           change-on-select
           on-active-item-change={item.itemChange}
@@ -272,8 +271,7 @@ export default class MFilter extends Vue {
       case 'levelcode':
         itemDom = <el-cascader style="width: 100%;"
           id={item.key}
-          props={item.props} // 开发
-          // props={{ props: item.props }} // 以vue中jsx为准，
+          props={process.env.NODE_ENV === 'production' ? { props: item.props } : item.props} // 修改props
           change-on-select
           filterable={true}
           options={item.options}
