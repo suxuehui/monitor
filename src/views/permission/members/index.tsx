@@ -73,11 +73,11 @@ export default class Members extends Vue {
   }
 
   // 每次进入重新获取角色类型
-  activated(){
+  activated() {
     this.getRoleList();
   }
 
-  getRoleList(){
+  getRoleList() {
     this.roleTypeList = [];
     this.roleTypeAddList = [];
     roleSelect(null).then((res) => {

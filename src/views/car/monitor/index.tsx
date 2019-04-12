@@ -1505,13 +1505,15 @@ export default class Monitor extends Vue {
           {/* 远程控制选项 */}
           <transition name="el-fade-in-linear">
             <div v-show={this.showControlTran}>
-              <ul class="controlList">
-                {
-                  this.remoteControlArr.map((item: any, index: number) => (
-                    <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
-                  ))
-                }
-              </ul>
+              {
+                this.remoteControlArr.length > 0 ? <ul class="controlList">
+                  {
+                    this.remoteControlArr.map((item: any, index: number) => (
+                      <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
+                    ))
+                  }
+                </ul> : <span class="noControl">未绑定设备，暂无控制功能</span>
+              }
             </div>
           </transition>
           {/* 车辆状态 */}
