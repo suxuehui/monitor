@@ -17,8 +17,6 @@ export default class BtAuthModel extends Vue {
   // 筛选表单生成参数
   @Prop({ default: false }) private visible !: boolean;
 
-  @Prop() private updateAble !: boolean;
-
   @Prop() private data: any;
 
   loading: boolean = false;
@@ -64,13 +62,10 @@ export default class BtAuthModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <div style={{ lineHeight: '50px', fontSize: '16px' }}>
+        <div style={{ lineHeight: '50px', fontSize: '16px', minHeight: '50px' }}>
           <p>{this.newCfgVal !== '' ? this.newCfgVal : this.data.cfgVal}</p>
           <div style={{ textAlign: 'center' }}>
-            {
-              this.updateAble
-                ? <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>重新生成</el-button> : null
-            }
+            <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>重新生成</el-button>
             <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>
           </div>
         </div>

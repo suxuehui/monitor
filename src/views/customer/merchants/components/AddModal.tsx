@@ -32,7 +32,7 @@ export default class AddModal extends Vue {
 
   @Prop() private data: any;
 
-  @Prop() private oldShopName: any;
+  @Prop() private oldLevAndName: any;
 
   modelForm: any = {
     orgName: '', // 添加的商户名
@@ -89,7 +89,7 @@ export default class AddModal extends Vue {
         this.modelForm.secondaryAddrPort = data.secondaryAddr.split(':')[1];
       }
       this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
-      this.nameAndLev = this.setFormat(this.oldShopName);
+      this.nameAndLev = this.setFormat(this.oldLevAndName);
       this.reBootStatus = data.chgAddrAble === 2 ? '2' : '1';
     } else {
       // 新增
@@ -97,11 +97,15 @@ export default class AddModal extends Vue {
     }
   }
 
-  setFormat(name: any) {
-    if (name.indexOf(',') > -1) {
-      return name.split(',');
-    }
-    return [`${name}`];
+  setFormat(names: any) {
+    const arr: any = names && names.indexOf(',') > -1 ? names.split(',') : [names];
+    const nameArr: any = [];
+    arr.forEach((item: any) => {
+      if (item) {
+        nameArr.push(item.split('-')[1]);
+      }
+    });
+    return nameArr;
   }
 
   rules = {
@@ -334,15 +338,15 @@ export default class AddModal extends Vue {
 
   // 编辑时用于获取oldLevelCodes
   editGetOldInfo() {
-    let oldShopNameArr: any = []; // 原本 4S商户名称
-    let oldShopLevelCodeArr: any = []; // 原本 4S商户levelCode
-    if (this.data.oldLevelCode.indexOf(',') > -1) {
-      oldShopNameArr = this.oldShopName.split(',');
-      oldShopLevelCodeArr = this.data.oldLevelCode.split(',');
-    } else {
-      oldShopNameArr = [`${this.oldShopName}`];
-      oldShopLevelCodeArr = [`${this.data.oldLevelCode}`];
-    }
+    const oldShopNameArr: any = []; // 原本 4S商户名称
+    const oldShopLevelCodeArr: any = []; // 原本 4S商户levelCode
+    const arr: any = this.oldLevAndName && this.oldLevAndName.indexOf(',') > -1 ? this.oldLevAndName.split(',') : [this.oldLevAndName];
+    arr.forEach((item: any) => {
+      if (item) {
+        oldShopLevelCodeArr.push(item.split('-')[0]);
+        oldShopNameArr.push(item.split('-')[1]);
+      }
+    });
     const nameAndLev: any = JSON.parse(JSON.stringify(this.nameAndLev)); // 编辑后关联商户数据
     const editOld: any = []; // 编辑后 原本 4S商户名称
     const editNew: any = []; // 编辑后 新加入 4S商户名称
@@ -380,7 +384,7 @@ export default class AddModal extends Vue {
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
-    // this.loading = true;
+    this.loading = true;
     if (this.nameAndLev === []) {
       this.$message.error('请选择商户');
       return false;

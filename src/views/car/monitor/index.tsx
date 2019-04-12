@@ -1417,7 +1417,7 @@ export default class Monitor extends Vue {
                   ({carDetail.minutes ? this.timeChange(carDetail) : ''}无位置变化)
                 </span>
                 <span class="fenceStatus">
-                  [<span style={{ color: 'red' }}>{carDetail.fenceIO}</span>]
+                  [<span style={{ color: 'red' }}>{carDetail.fenceIO ? carDetail.fenceIO : '未知'}</span>]
                 </span>
               </div>
             </div>

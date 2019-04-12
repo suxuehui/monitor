@@ -69,6 +69,11 @@ export default class Members extends Vue {
 
   mounted() {
     this.filterList[1].options = this.activeTypes;
+    // this.getRoleList();
+  }
+
+  // 每次进入重新获取角色类型
+  activated(){
     this.getRoleList();
   }
 
@@ -178,11 +183,6 @@ export default class Members extends Vue {
   addRoleList: any = [];
 
   modelForm: any = {};
-
-  // 每次进入重新获取角色类型
-  activated(){
-    this.getRoleList();
-  }
 
   created() {
     const getNowRoles: string[] = [

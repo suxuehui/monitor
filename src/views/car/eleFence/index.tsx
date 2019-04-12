@@ -346,7 +346,6 @@ export default class EleFence extends Vue {
                 value: `${items.regionalismcode}`,
               });
             });
-            console.log(this.provinceList);
           }
         });
       } else {

@@ -2,7 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import {
-  Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col,
+  Tag, Dialog, Form, FormItem, Select, Input, Button, Row, Col, Tooltip,
 } from 'element-ui';
 import exportExcel from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
@@ -22,6 +22,7 @@ interface ActiveType { key: any, value: any, label: string }
     'el-button': Button,
     'el-row': Row,
     'el-col': Col,
+    'el-tooltip': Tooltip,
     'add-modal': AddModal,
   },
   name: 'Merchants',
@@ -70,7 +71,7 @@ export default class Merchants extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '商户名称', prop: 'orgName' },
-    { label: '关联门店', prop: 'oldLevelNames' },
+    { label: '关联门店', prop: 'oldLevelNames', formatter: this.nameSet },
     { label: '同步设备', prop: 'deviceNames' },
     { label: '登录账号', prop: 'manageUser' },
     { label: '切换地址', prop: 'manageUser', formatter: this.locSet },
@@ -96,6 +97,33 @@ export default class Merchants extends Vue {
     },
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
+
+  nameSet(row: any) {
+    const nameLevArr: any = row.oldLevelNames && row.oldLevelNames.indexOf(',') > -1 ? row.oldLevelNames && row.oldLevelNames.split(',') : [row.oldLevelNames];
+    const nameArr: any = [];
+    nameLevArr.forEach((item: any) => {
+      if (item) {
+        nameArr.push(item.split('-')[1]);
+      }
+    });
+    let showName: string = '';
+    if (nameArr.length > 1) {
+      showName = `${nameArr[0]}...`;
+    } else if (nameArr.length === 1) {
+      if (nameArr[0] === 'null') {
+        showName = '--';
+      } else {
+        showName = nameArr.join('');
+      }
+    } else if (nameArr.length === 0) {
+      showName = '--';
+    }
+    return (
+      <el-tooltip class="item" effect="dark" content={nameArr.length > 1 ? nameArr.join(',') : nameArr.join('')} placement="top">
+        <span>{showName}</span>
+      </el-tooltip>
+    );
+  }
 
   locSet(row: any) {
     // chgAddrAble:2-不能切换 1-能切换 ,
@@ -190,7 +218,7 @@ export default class Merchants extends Vue {
 
   addTitle: string = '';
 
-  oldShopName: string = '';
+  oldLevAndName: string = '';
 
   // 冻结、解冻
   freezeVisible: boolean = false;
@@ -202,7 +230,7 @@ export default class Merchants extends Vue {
       // 编辑
       this.addVisible = true;
       this.addTitle = '编辑商户';
-      this.oldShopName = row.oldLevelNames;
+      this.oldLevAndName = row.oldLevelNames;
       customerInfo(row.id).then((res) => {
         if (res.result.resultCode === '0') {
           this.rowData = res.entity;
@@ -285,7 +313,7 @@ export default class Merchants extends Vue {
           ref="addTable"
           title={this.addTitle}
           visible={this.addVisible}
-          oldShopName={this.oldShopName}
+          oldLevAndName={this.oldLevAndName}
           data={this.rowData}
           on-close={this.closeModal}
           on-refresh={this.refresh}
