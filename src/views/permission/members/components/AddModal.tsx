@@ -1,5 +1,5 @@
 import {
-  Component, Prop, Vue, Watch,
+  Component, Prop, Vue, Watch, Emit,
 } from 'vue-property-decorator';
 import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option,
@@ -75,16 +75,19 @@ export default class AddModal extends Vue {
     { required: true, message: '请选择角色类型', trigger: 'change' },
   ];
 
+  @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
-    if (this.modelForm.password) {
-      if (this.isChineseChar(this.modelForm.password)) {
-        callback(new Error('登录密码格式有误，请重新输入'));
+    setTimeout(() => {
+      if (this.modelForm.password) {
+        if (this.isChineseChar(this.modelForm.password)) {
+          callback(new Error('登录密码格式有误，请重新输入'));
+        } else {
+          callback();
+        }
       } else {
-        callback();
+        callback(new Error('登录密码不能为空'));
       }
-    } else {
-      callback(new Error('登录密码不能为空'));
-    }
+    }, 500);
   }
 
   // 检测角色
@@ -125,20 +128,19 @@ export default class AddModal extends Vue {
 
   @Watch('data')
   onDataChange(data: any) {
-    if (this.data.id > 0) {
-      this.modelForm = {};
-      this.modelForm = JSON.parse(JSON.stringify(this.data));
-      this.modelForm.roleIdList = this.data.IdList;
+    if (data.userId > 0) {
+      this.resetData();
+      this.modelForm.roleIdList = data.roleIdList;
+      this.modelForm.realName = data.realName;
+      this.modelForm.userName = data.userName;
+      this.modelForm.remark = data.remark;
       this.modelForm.password = '********';
-      this.isAdmin = this.data.IdList.toString() === '1';
-      this.phoneNumber = this.data.userName;
-      this.roleLen = this.data.IdList.length;
+      this.phoneNumber = data.userName;
+      this.roleLen = data.roleIdList.length;
     } else {
       this.resetData();
     }
   }
-
-  isAdmin: boolean = false;
 
   // 编辑时角色数组长度
   roleLen: number = 0;
@@ -179,14 +181,13 @@ export default class AddModal extends Vue {
       remark: '',
       password: '',
     };
-    this.isAdmin = false;
   }
 
   closeModal() {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
-      From.clearValidate();
+      // From.clearValidate();
       From.resetFields();
     }, 600);
     this.loading = false;
@@ -198,7 +199,7 @@ export default class AddModal extends Vue {
   }
 
   onSubmit() {
-    this.loading = true;
+    // this.loading = true;
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
@@ -230,7 +231,7 @@ export default class AddModal extends Vue {
           });
         } else {
           // 修改
-          obj.userId = this.data.id;
+          obj.userId = this.data.userId;
           if (this.modelForm.roleIdList.length === 0) {
             this.$message.error('成员角色不能为空！');
             this.loading = false;
@@ -243,24 +244,24 @@ export default class AddModal extends Vue {
             this.loading = false;
             return false;
           }
-          userUpdate(obj).then((res) => {
-            if (res.result.resultCode === '0') {
-              setTimeout(() => {
-                this.loading = false;
-                this.modelForm.roleIdList = [];
-                From.clearValidate();
-                From.resetFields();
-                this.$message.success(res.result.resultMessage);
-                this.$emit('refresh');
-                this.isAdmin = false;
-              }, 1500);
-            } else {
-              setTimeout(() => {
-                this.loading = false;
-                this.$message.error(res.result.resultMessage);
-              }, 1500);
-            }
-          });
+          console.log(obj)
+          // userUpdate(obj).then((res) => {
+          //   if (res.result.resultCode === '0') {
+          //     setTimeout(() => {
+          //       this.loading = false;
+          //       this.modelForm.roleIdList = [];
+          //       From.clearValidate();
+          //       From.resetFields();
+          //       this.$message.success(res.result.resultMessage);
+          //       this.$emit('refresh');
+          //     }, 1500);
+          //   } else {
+          //     setTimeout(() => {
+          //       this.loading = false;
+          //       this.$message.error(res.result.resultMessage);
+          //     }, 1500);
+          //   }
+          // });
         }
       } else {
         this.loading = false;
@@ -271,7 +272,6 @@ export default class AddModal extends Vue {
   }
 
   change: boolean = false;
-
 
   render() {
     return (
@@ -293,45 +293,31 @@ export default class AddModal extends Vue {
                 ></el-input>
               </el-form-item>
             </el-col>
-            {
-              this.isAdmin
-                ? <el-col span={12}>
-                  <el-form-item label="角色类型" prop="roleIdList1">
-                    <el-input
-                      id="roleIdList1"
-                      disabled={true}
-                      v-model={this.modelForm.roleNames}
-                      placeholder="请输入角色类型"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-                : <el-col span={12}>
-                  <el-form-item label="角色类型" prop="roleIdList" rules={this.visible ? this.roleIdRule : null}>
-                    <el-select
-                      id="roleIdList"
-                      v-model={this.modelForm.roleIdList}
-                      multiple={true}
-                      filterable={true}
-                      disabled={this.data.id === 1}
-                      on-change={this.selectChange}
-                      on-remove-tag={this.removeTag}
-                      placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
-                      style="width:100%"
-                    >
-                      {
-                        this.roleAddList.map((item: any) => (
-                          <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                        ))
-                      }
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-            }
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="userName" rules={this.data.id > 0 ? null : this.userNameRule}>
+              <el-form-item label="角色类型" prop="roleIdList" rules={this.visible ? this.roleIdRule : null}>
+                <el-select
+                  id="roleIdList"
+                  v-model={this.modelForm.roleIdList}
+                  multiple={true}
+                  filterable={true}
+                  on-change={this.selectChange}
+                  on-remove-tag={this.removeTag}
+                  placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
+                  style="width:100%"
+                >
+                  {
+                    this.roleAddList.map((item: any) => (
+                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                    ))
+                  }
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col span={12}>
+              <el-form-item label="登录账号" prop="userName" rules={this.data.userId > 0 ? null : this.userNameRule}>
                 <el-input
                   id="userName"
-                  disabled={!!this.data.id}
+                  disabled={!!this.data.userId}
                   v-model={this.modelForm.userName}
                   placeholder="请输入登录账号"
                 ></el-input>

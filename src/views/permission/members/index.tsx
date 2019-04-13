@@ -184,6 +184,8 @@ export default class Members extends Vue {
 
   modelForm: any = {};
 
+  rowData: any = {};
+
   created() {
     const getNowRoles: string[] = [
       // 操作
@@ -216,8 +218,7 @@ export default class Members extends Vue {
         if (res.result.resultCode === '0') {
           this.addVisible = true;
           this.addTitle = '编辑成员';
-          this.modelForm = row;
-          this.modelForm.IdList = res.entity.roleIdList;
+          this.rowData = res.entity;
         } else {
           this.$message.error(res.result.resultMessage);
         }
@@ -247,14 +248,12 @@ export default class Members extends Vue {
 
   addModel() {
     this.addVisible = true;
-    this.modelForm = {};
     this.addTitle = '新增成员';
   }
 
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
-    this.modelForm = {};
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();
@@ -299,7 +298,7 @@ export default class Members extends Vue {
           roleAddList={this.roleTypeAddList}
           title={this.addTitle}
           visible={this.addVisible}
-          data={this.modelForm}
+          data={this.rowData}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         ></add-modal>
