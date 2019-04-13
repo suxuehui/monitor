@@ -254,6 +254,7 @@ export default class Members extends Vue {
   // 关闭弹窗
   closeModal(): void {
     this.addVisible = false;
+    this.rowData = {};
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();

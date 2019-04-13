@@ -32,10 +32,6 @@ export default class AddModal extends Vue {
 
   @Prop() private roleAddList: any;
 
-  created() {
-    this.modelForm = JSON.parse(JSON.stringify(this.data));
-  }
-
   modelForm: any = {
     realName: '',
     userName: '',
@@ -138,7 +134,7 @@ export default class AddModal extends Vue {
       this.phoneNumber = data.userName;
       this.roleLen = data.roleIdList.length;
     } else {
-      this.resetData();
+      this.resetData(); 
     }
   }
 
@@ -187,8 +183,9 @@ export default class AddModal extends Vue {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
-      // From.clearValidate();
+      From.clearValidate();
       From.resetFields();
+      this.resetData();
     }, 600);
     this.loading = false;
   }
@@ -199,7 +196,7 @@ export default class AddModal extends Vue {
   }
 
   onSubmit() {
-    // this.loading = true;
+    this.loading = true;
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
@@ -313,7 +310,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="userName" rules={this.data.userId > 0 ? null : this.userNameRule}>
+              <el-form-item label="登录账号" prop="userName" rules={this.data && this.data.userId > 0 ? null : this.userNameRule}>
                 <el-input
                   id="userName"
                   disabled={!!this.data.userId}
