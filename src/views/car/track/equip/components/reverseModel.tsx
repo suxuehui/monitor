@@ -123,7 +123,6 @@ export default class ReverseModel extends Vue {
       imei: this.data.imei,
       date: val,
       duration: 5,
-      frequency: this.modelForm.frequency,
     };
     vehicleCalvalid(obj).then((res) => {
       const { result, entity } = res;

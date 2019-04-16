@@ -120,7 +120,6 @@ export default class DeployModel extends Vue {
       imei: this.data.imei,
       date: val,
       duration: 5,
-      frequency: this.modelForm.frequency ? this.modelForm.frequency : this.data.frequency,
     };
     this.calculateTime(obj);
   }
@@ -137,16 +136,7 @@ export default class DeployModel extends Vue {
     });
   }
 
-  selectChange(val: any) {
-    const obj = {
-      id: this.data.id,
-      imei: this.data.imei,
-      date: this.modelForm.startTime,
-      duration: 5,
-      frequency: val,
-    };
-    this.calculateTime(obj);
-  }
+  selectChange(val: any) { }
 
   closeModal() {
     this.$emit('close');
