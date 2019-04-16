@@ -133,8 +133,6 @@ export default class AddModal extends Vue {
       this.modelForm.password = '********';
       this.phoneNumber = data.userName;
       this.roleLen = data.roleIdList.length;
-    } else {
-      this.resetData(); 
     }
   }
 
