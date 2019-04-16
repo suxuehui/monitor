@@ -6,7 +6,6 @@ import {
 } from 'element-ui';
 import utils from '@/utils';
 import { vehicleCalvalid, vehicleDeviceSet } from '@/api/monitor';
-import { terminalDict } from '@/api/app';
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -59,22 +58,6 @@ export default class DeployModel extends Vue {
     duration: [
       { required: true },
     ],
-  }
-
-  created() {
-    terminalDict({ EnumType: 'wireless_config' }).then((res) => {
-      if (res.result.resultCode === '0') {
-        if (res.entity !== null) {
-          res.entity.forEach((item: any) => {
-            if (item.enumValue === 'duration') {
-              this.modelForm.duration = item.name;
-            }
-          });
-        }
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
   }
 
   // 时间范围
@@ -137,8 +120,14 @@ export default class DeployModel extends Vue {
       imei: this.data.imei,
       date: val,
       duration: 5,
+      frequency: this.modelForm.frequency ? this.modelForm.frequency : this.data.frequency,
     };
-    vehicleCalvalid(obj).then((res) => {
+    this.calculateTime(obj);
+  }
+
+  // 计算生效时间
+  calculateTime(val: any) {
+    vehicleCalvalid(val).then((res) => {
       const { result, entity } = res;
       if (result.resultCode === '0') {
         this.valdate = entity.valdate;
@@ -148,7 +137,16 @@ export default class DeployModel extends Vue {
     });
   }
 
-  selectChange() { }
+  selectChange(val: any) {
+    const obj = {
+      id: this.data.id,
+      imei: this.data.imei,
+      date: this.modelForm.startTime,
+      duration: 5,
+      frequency: val,
+    };
+    this.calculateTime(obj);
+  }
 
   closeModal() {
     this.$emit('close');
@@ -166,7 +164,7 @@ export default class DeployModel extends Vue {
       imei: this.data.imei,
       startTime: this.modelForm.startTime, // 启动时间
       startUpTime: this.valdate, // 生效时间
-      duration: this.modelForm.duration, // 追踪时长
+      duration: 5, // 追踪时长
       frequency: this.modelForm.frequency, // 追踪频率
     };
     From.validate((valid: any) => {

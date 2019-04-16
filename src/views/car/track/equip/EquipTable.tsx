@@ -140,8 +140,8 @@ export default class EquipTable extends Vue {
   // 表格请求地址
   outParams: any = {
     vehicleId: '',
-    terminalModelId: '',
-    terminalType: '',
+    modelId: '',
+    clientType: '',
   }
 
   addUnit(row: any, unit: string) {
@@ -199,18 +199,18 @@ export default class EquipTable extends Vue {
 
   typeChange(val: any) {
     this.outParams = {
-      terminalModelId: '',
-      terminalType: '',
+      modelId: '',
+      clientType: '',
     };
     if (val.length === 0) {
-      this.outParams.terminalType = '';
-      this.outParams.terminalModelId = '';
+      this.outParams.clientType = '';
+      this.outParams.modelId = '';
     } else if (val.length === 1) {
-      this.outParams.terminalType = val[val.length - 1];
-      this.outParams.terminalModelId = '';
+      this.outParams.clientType = val[val.length - 1];
+      this.outParams.modelId = '';
     } else if (val.length === 2) {
-      this.outParams.terminalType = val[val.length - 2];
-      this.outParams.terminalModelId = val[val.length - 1];
+      this.outParams.clientType = val[val.length - 2];
+      this.outParams.modelId = val[val.length - 1];
     }
   }
 
@@ -332,6 +332,7 @@ export default class EquipTable extends Vue {
       this.deployVisible = true;
     } else if (key === 'reserve') {
       const data: any = {
+        frequency: row.frequency,
         vehicleId: this.$route.params.id,
         id: row.id,
         imei: row.imei,
@@ -364,6 +365,13 @@ export default class EquipTable extends Vue {
     exportExcel(data1, `追踪设备列表${utils.returnNowTime()}`, '/vehicle/tracke/exportExcel');
   }
 
+  clear() {
+    this.outParams = {
+      modelId: '',
+      clientType: '',
+    };
+  }
+
   render() {
     return (
       <div class="container-equip">
@@ -383,6 +391,7 @@ export default class EquipTable extends Vue {
           on-menuClick={this.menuClick}
           table-list={this.tableList}
           url={this.tableUrl}
+          on-clearOutParams={this.clear}
           localName={'equipTable'}
           default-page-size={5}
           opreat={this.opreat}
