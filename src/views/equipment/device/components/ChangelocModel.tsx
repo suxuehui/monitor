@@ -5,7 +5,7 @@ import {
   Dialog, Row, Col, Button, Form, FormItem, Input,
 } from 'element-ui';
 import {
-  changeAddress, getOnlineUrl,
+  changeAddress,
 } from '@/api/equipment';
 import './ChangelocModel.less';
 
@@ -26,21 +26,7 @@ export default class ChangelocModel extends Vue {
 
   @Prop() private data: any;
 
-  @Prop() private changeTime: any;
-
   loading: boolean = false;
-
-  @Watch('changeTime')
-  onDataChange() {
-    getOnlineUrl(this.data.id).then((res: any) => {
-      const { entity, result } = res;
-      if (result.resultCode === '0') {
-        this.deviceUrl = entity;
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
 
   // 设备备用地址
   deviceUrl: any = {};
@@ -82,11 +68,11 @@ export default class ChangelocModel extends Vue {
           <ul class="locs">
             <li class="item">
               <span class="tit">主地址：</span>
-              <span class="loc">{this.deviceUrl.masterUrl ? this.deviceUrl.masterUrl : '--'}</span>
+              <span class="loc">{this.data.masterUrl ? this.data.masterUrl : '--'}</span>
             </li>
             <li class="item">
               <span class="tit">副地址：</span>
-              <span class="loc">{this.deviceUrl.slaveUrl ? this.deviceUrl.slaveUrl : '--'}</span>
+              <span class="loc">{this.data.slaveUrl ? this.data.slaveUrl : '--'}</span>
             </li>
           </ul>
           <p class="alert">(请谨慎操作，切换后设备将改变上线地址)</p>

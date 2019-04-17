@@ -73,6 +73,7 @@ export default class EquipTable extends Vue {
     {
       label: '上报频率',
       prop: 'frequency',
+      formatter: (row: any) => this.addUnit(row, 'frequency'),
     },
     {
       label: '追踪时间',
@@ -158,7 +159,7 @@ export default class EquipTable extends Vue {
         str = row.duration > 0 ? `${row.duration}分钟` : '--';
         break;
       case 'frequency':
-        str = row.frequency > 0 ? `${row.frequency}分钟/次` : '--';
+        str = row.frequency > 0 ? `${row.frequency}次/天` : '--';
         break;
       default:
         break;
@@ -178,7 +179,7 @@ export default class EquipTable extends Vue {
           str = row.trackDuration > 0 ? `${row.trackDuration}分钟` : '--';
           break;
         case 'trackFrequency':
-          str = row.trackFrequency > 0 ? `${row.trackFrequency}分钟/次` : '--';
+          str = row.trackFrequency > 0 ? `${row.trackFrequency}次/分钟` : '--';
           break;
         case 'trackDate':
           str = row.trackDate ? utils.removeMarks(row.trackDate) : '--';

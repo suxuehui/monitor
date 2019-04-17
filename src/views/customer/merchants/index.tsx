@@ -74,7 +74,7 @@ export default class Merchants extends Vue {
     { label: '关联门店', prop: 'oldLevelNames', formatter: this.nameSet },
     { label: '同步设备', prop: 'deviceNames' },
     { label: '登录账号', prop: 'manageUser' },
-    { label: '切换地址', prop: 'manageUser', formatter: this.locSet },
+    { label: '切换地址', prop: 'manageUser11', formatter: this.locSet },
     {
       label: '车辆数',
       prop: 'carNum',

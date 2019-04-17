@@ -5,7 +5,7 @@ import {
 import qs from 'qs';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import {
-  resetTime, deviceModel, getOnlineUrl,
+  resetTime, deviceModel, getOnlineUrl, orgServer,
 } from '@/api/equipment';
 import { getInfoByLevelCode } from '@/api/customer';
 import exportExcel from '@/api/export';
@@ -410,8 +410,6 @@ export default class Device extends Vue {
   // 点击操作时的时间
   clickTime: string = '';
 
-  changeClickTime: string = '';
-
   aclickTime: string = '';
 
   bclickTime: string = '';
@@ -614,9 +612,19 @@ export default class Device extends Vue {
         break;
       // 切换地址
       case 'changeLoc':
-        this.changelocVisible = true;
-        this.changelocData = row;
-        this.changeClickTime = utils.getNowTime();
+        this.changelocData = {};
+        orgServer(row.imei).then((res: any) => {
+          const { entity, result } = res;
+          this.changelocVisible = true;
+          if (result.resultCode === '0') {
+            this.changelocData.masterUrl = `${entity.masterIp}:${entity.masterPort}`;
+            this.changelocData.slaveUrl = `${entity.slaveIp}:${entity.slavePort}`;
+            this.changelocData.imei = row.imei;
+          } else {
+            this.$message.error(res.result.resultMessage);
+          }
+          console.log(this.changelocData);
+        });
         break;
       // 阈值
       case 'setThreshold':
@@ -659,6 +667,7 @@ export default class Device extends Vue {
     this.bThresholdVisible = false; // 阀值2a1
     this.checkLogVisible = false; // 日志
     this.loading = false;
+    this.changelocData = {}; // 切换地址
   }
 
   clear() {
@@ -725,7 +734,6 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         />
         <changeloc-model
-          changeTime={this.changeClickTime}
           data={this.changelocData}
           visible={this.changelocVisible}
           on-close={this.closeModal}

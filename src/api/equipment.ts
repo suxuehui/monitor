@@ -245,3 +245,11 @@ export async function getOnlineUrl(params: any) {
     method: 'get',
   });
 }
+
+// 根据设备imei号获取，该设备所属商户指定的主，备服务器地址
+export async function orgServer(params: any) {
+  return request({
+    url: `/device/terminal/orgServer/${params}`,
+    method: 'get',
+  });
+}

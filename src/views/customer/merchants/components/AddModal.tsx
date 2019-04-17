@@ -315,6 +315,7 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       From.resetFields();
       this.resetData();
+      this.shopFilteredList = [];
     }, 200);
     this.loading = false;
   }
@@ -387,10 +388,12 @@ export default class AddModal extends Vue {
     this.loading = true;
     if (this.nameAndLev === []) {
       this.$message.error('请选择商户');
+      this.loading = false;
       return false;
     }
     if (this.deviceType.length === 0) {
       this.$message.error('请选择设备类型');
+      this.loading = false;
       return false;
     }
     obj = {
@@ -440,6 +443,7 @@ export default class AddModal extends Vue {
           obj.oldLevelCode = this.editGetOldInfo();
           if (obj.oldLevelCode === '') {
             this.$message.error('请选择商户');
+            this.loading = false;
             return false;
           }
           customerUpdate(obj).then((res) => {
@@ -475,13 +479,15 @@ export default class AddModal extends Vue {
       getAllShopNameMoni({ name: query }).then((res) => {
         if (res.result.resultCode === '0') {
           this.selectLoading = false;
-          this.shopFilteredList = [];
+          const shopArr: any = [];
           res.entity.forEach((item: any) => {
-            this.shopFilteredList.push({
+            shopArr.push({
               label: item.name,
               value: `${item.levelCode}***${item.name}`,
             });
           });
+          this.shopFilteredList = shopArr.concat(this.shopFilteredList);
+          this.nameAndLev = this.nameAndLev;
         } else {
           this.selectLoading = false;
           this.shopFilteredList = [];
