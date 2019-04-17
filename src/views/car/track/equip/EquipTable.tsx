@@ -337,10 +337,10 @@ export default class EquipTable extends Vue {
         vehicleId: this.$route.params.id,
         id: row.id,
         imei: row.imei,
-        trackDate: utils.removeMarks(row.trackDate).split(' ')[1],
+        trackDate: row.trackDate ? utils.removeMarks(row.trackDate).split(' ')[1] : '',
         trackFrequency: row.trackFrequency,
         trackDuration: row.trackDuration,
-        effectiveDate: utils.removeMarks(row.effectiveDate),
+        effectiveDate: row.effectiveDate ? utils.removeMarks(row.effectiveDate) : '',
         type: 'reserve',
       };
       this.rowData = data;
