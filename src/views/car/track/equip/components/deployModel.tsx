@@ -5,7 +5,7 @@ import {
   Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect, Select, Option,
 } from 'element-ui';
 import utils from '@/utils';
-import { vehicleCalvalid, vehicleDeviceSet } from '@/api/monitor';
+import { vehicleDeviceSet } from '@/api/monitor';
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -121,20 +121,8 @@ export default class DeployModel extends Vue {
       date: val,
       duration: 5,
     };
-    this.calculateTime(obj);
   }
 
-  // 计算生效时间
-  calculateTime(val: any) {
-    vehicleCalvalid(val).then((res) => {
-      const { result, entity } = res;
-      if (result.resultCode === '0') {
-        this.valdate = entity.valdate;
-      } else {
-        this.$message.error(result.resultMessage);
-      }
-    });
-  }
 
   selectChange(val: any) { }
 
@@ -153,8 +141,6 @@ export default class DeployModel extends Vue {
     obj = {
       imei: this.data.imei,
       startTime: this.modelForm.startTime, // 启动时间
-      startUpTime: this.valdate, // 生效时间
-      duration: 5, // 追踪时长
       frequency: this.modelForm.frequency, // 追踪频率
     };
     From.validate((valid: any) => {
