@@ -207,10 +207,7 @@ export default class Trajectory extends Vue {
   // 轨迹渲染层
   CanvasLayer: any = null;
 
-  mapCenter: {
-    lat: number,
-    lng: number
-  } = {
+  mapCenter: any = {
     lat: 29.563694,
     lng: 106.560421,
   };
@@ -295,13 +292,15 @@ export default class Trajectory extends Vue {
       this.clearCanvas();
       this.isEnd = false;
       this.locChange = false;
+      // 1-震动 2-碰撞 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
       this.behaivorData = [
-        { num: 0, txt: '震动' },
-        { num: 0, txt: '碰撞' },
-        { num: 0, txt: '翻滚' },
-        { num: 0, txt: '急加速' },
-        { num: 0, txt: '急减速' },
-        { num: 0, txt: '急转弯' },
+        { num: 0, txt: '震动', type: '1' },
+        { num: 0, txt: '碰撞', type: '2' },
+        { num: 0, txt: '翻滚', type: '4' },
+        { num: 0, txt: '超速', type: '8' },
+        { num: 0, txt: '急加速', type: '5' },
+        { num: 0, txt: '急减速', type: '6' },
+        { num: 0, txt: '急转弯', type: '7' },
       ];
     }
   }
@@ -507,8 +506,8 @@ export default class Trajectory extends Vue {
     // 绘制标记点
     function renderBehavior() {
       // 定义车辆驾驶行为及对应颜色
-      const NameMap = ['', '震', '碰', '翻', '加', '减', '弯'];
-      const ColorMap = ['', '#52c41a', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2'];
+      const NameMap = ['', '震', '碰', '', '翻', '加', '减', '弯', '超'];
+      const ColorMap = ['', '#52c41a', '#f5222d', '', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2', '#eb2296'];
       const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
       if (!ctx) {
         return;
@@ -751,7 +750,7 @@ export default class Trajectory extends Vue {
 
   plateNum = '';
 
-  behaivorData: { num: number, txt: string }[] = []
+  behaivorData: { num: number, txt: string, type: string }[] = []
 
   isEnd: boolean = true;
 
@@ -765,12 +764,13 @@ export default class Trajectory extends Vue {
         this.isEnd = true;
       }
       this.behaivorData = [
-        { num: 0, txt: '震动' },
-        { num: 0, txt: '碰撞' },
-        { num: 0, txt: '翻滚' },
-        { num: 0, txt: '急加速' },
-        { num: 0, txt: '急减速' },
-        { num: 0, txt: '急转弯' },
+        { num: 0, txt: '震动', type: '1' },
+        { num: 0, txt: '碰撞', type: '2' },
+        { num: 0, txt: '翻滚', type: '4' },
+        { num: 0, txt: '超速', type: '8' },
+        { num: 0, txt: '急加速', type: '5' },
+        { num: 0, txt: '急减速', type: '6' },
+        { num: 0, txt: '急转弯', type: '7' },
       ];
       this.plateNum = val.platenum;
       // 清除播放
@@ -795,12 +795,13 @@ export default class Trajectory extends Vue {
           }
           // 重置驾驶行为数据
           this.behaivorData = [
-            { num: 0, txt: '震动' },
-            { num: 0, txt: '碰撞' },
-            { num: 0, txt: '翻滚' },
-            { num: 0, txt: '急加速' },
-            { num: 0, txt: '急减速' },
-            { num: 0, txt: '急转弯' },
+            { num: 0, txt: '震动', type: '1' },
+            { num: 0, txt: '碰撞', type: '2' },
+            { num: 0, txt: '翻滚', type: '4' },
+            { num: 0, txt: '超速', type: '8' },
+            { num: 0, txt: '急加速', type: '5' },
+            { num: 0, txt: '急减速', type: '6' },
+            { num: 0, txt: '急转弯', type: '7' },
           ];
           // 循环转换轨迹坐标点
           data = data.filter((item: any, index: number) => {
@@ -812,9 +813,13 @@ export default class Trajectory extends Vue {
               // 判断是否有驾驶行为数据
               if (item.events) {
                 // 循环统计驾驶行为数据
-                item.events.forEach((items: string) => {
+                item.events.forEach((items: string, ind: number) => {
                   if (items !== '0') {
-                    this.behaivorData[parseInt(items, 10) - 1].num += 1;
+                    this.behaivorData.forEach((it: any, i: number) => {
+                      if (it.type === items[ind]) {
+                        this.behaivorData[i].num += 1;
+                      }
+                    });
                   }
                 });
               }
@@ -937,7 +942,7 @@ export default class Trajectory extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, `围栏列表${utils.returnNowTime()}`, '/device/trip/exportExcel');
+    exportExcel(data1, `轨迹列表${utils.returnNowTime()}`, '/device/trip/exportExcel');
   }
 
   render() {

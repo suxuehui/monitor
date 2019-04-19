@@ -381,13 +381,12 @@ export default class MapContorl {
     this.SMap.removeOverlay(this.trackInfoBox);
     this.trackInfoBox = null;
   }
+
   /**
    * 展示轨迹点详情
+   * 0-'' 1-震动 2-碰撞 3-'' 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
   */
-
-  // haoverMap = ['', '震动', '碰撞', '翻滚', '急加速', '急减速', '急转弯'];
-  haoverMap = ['', '急加速', '急减速', '急转弯', '震动', '', '碰撞', '翻滚', '超速'];
-  // 1-急加速 2-急减速 3-急转弯 4-震动 6-碰撞 7-翻滚 8-超速 
+  haoverMap = ['', '震动', '碰撞', '', '翻滚', '急加速', '急减速', '急转弯', '超速'];
 
   getDirection(itm: number) {
     let direction = '';
