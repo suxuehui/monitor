@@ -257,6 +257,8 @@ export default class Alarm extends Vue {
           value: '',
           label: '告警类型(全部)',
         });
+
+        console.log(this.alarmType);
         this.filterList[1].options = this.alarmType;
         this.filterGrade[1].options = this.alarmType;
       } else {

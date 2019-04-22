@@ -53,7 +53,7 @@ export default class Monitor extends Vue {
   filterParams: object = {
     levelCodeArr: [''],
     levelCode: ' ',
-    energyType: '',
+    vehicleSource: '',
     online: '',
     noMoveTime: '',
     fenceIO: '',
@@ -172,7 +172,7 @@ export default class Monitor extends Vue {
       options: [],
     },
     {
-      key: 'energyType',
+      key: 'vehicleSource',
       type: 'select',
       label: '车辆来源',
       placeholder: '请选择车辆来源',
@@ -768,26 +768,6 @@ export default class Monitor extends Vue {
     };
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
     this.radiusGetData(val.id);
-  }
-
-  // 格式化能源类型
-  formatEnergy(row: any) {
-    let type;
-    switch (row.energyType) {
-      case '燃油':
-        type = <el-tag size="small" type="warning">燃油</el-tag>;
-        break;
-      case '电动':
-        type = <el-tag size="small" type="success">电动</el-tag>;
-        break;
-      case '混动':
-        type = <el-tag size="small" >混动</el-tag>;
-        break;
-      default:
-        type = <el-tag size="small" type="info">未知</el-tag>;
-        break;
-    }
-    return type;
   }
 
   // 清除覆盖物
