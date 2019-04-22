@@ -58,7 +58,7 @@ export default class EquipTable extends Vue {
     {
       label: '配置启动',
       prop: 'configDate',
-      formatter: (row: any) => this.addUnit(row, 'configDate'),
+      formatter: (row: any) => row.configStatus !== 1 ? this.addUnit(row, 'configDate') : '--',
     },
     {
       label: '当前启动',
@@ -150,7 +150,6 @@ export default class EquipTable extends Vue {
     switch (unit) {
       case 'configDate':
         str = row.configDate ? `每天 ${utils.removeMarks(row.configDate)}` : '--';
-        // str = row.configDate ? `每天 ${row.configDate}` : '--';
         break;
       case 'startDate':
         str = row.startDate ? `每天 ${row.startDate}` : '--';

@@ -257,7 +257,7 @@ export default class Monitor extends Vue {
       formatter: (row: any) => this.changeStatus(row.voltage, 'V'),
     },
     {
-      label: '位置变化',
+      label: '位置未变',
       prop: 'minutesString',
       sortable: true,
       sortBy: 'minutesString',
@@ -905,9 +905,9 @@ export default class Monitor extends Vue {
 
   // 获取绑定设备信息
   findTerminalList(id: any) {
-    this.wiredTerminals = [];
-    this.wirelessTerminals = [];
     findBindTerminalList(id).then((res: any) => {
+      this.wiredTerminals = [];
+      this.wirelessTerminals = [];
       const { entity, result } = res;
       if (result.resultCode === '0') {
         entity.forEach((item: any) => {
