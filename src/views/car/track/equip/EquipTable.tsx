@@ -58,7 +58,7 @@ export default class EquipTable extends Vue {
     {
       label: '配置启动',
       prop: 'configDate',
-      formatter: (row: any) => row.configStatus !== 1 ? this.addUnit(row, 'configDate') : '--',
+      formatter: (row: any) => this.showConfigDate(row),
     },
     {
       label: '当前启动',
@@ -143,6 +143,11 @@ export default class EquipTable extends Vue {
     vehicleId: '',
     modelId: '',
     clientType: '',
+  }
+
+  // 是否展示配置启动
+  showConfigDate(row: any) {
+    return row.configStatus !== 1 ? this.addUnit(row, 'configDate') : '--';
   }
 
   addUnit(row: any, unit: string) {

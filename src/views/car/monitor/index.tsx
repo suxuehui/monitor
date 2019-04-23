@@ -260,7 +260,7 @@ export default class Monitor extends Vue {
       label: '位置未变',
       prop: 'minutesString',
       sortable: true,
-      sortBy: 'minutesString',
+      sortBy: 'minutes',
     },
     {
       label: '围栏内外',
@@ -741,7 +741,7 @@ export default class Monitor extends Vue {
                 address: response.result.formatted_address + response.result.sematic_description,
                 ...res.entity,
               };
-              this.carDetail = carDetail;
+              this.carDetail = Object.assign(this.carDetail, carDetail);
             }
           });
           // 判断当前是否展示的其他车辆
@@ -753,7 +753,7 @@ export default class Monitor extends Vue {
             address: '未知位置',
             ...res.entity,
           };
-          this.carDetail = carDetail;
+          this.carDetail = Object.assign(this.carDetail, carDetail);
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');

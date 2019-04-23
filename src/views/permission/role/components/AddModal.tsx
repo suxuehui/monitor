@@ -75,6 +75,11 @@ export default class AddModal extends Vue {
       remark: this.modelForm.remark,
       roleType: 2,
     };
+    if (obj.remark.replace(/(^\s*)|(\s*$)/g, '') === '') {
+      this.$message.error('请输入职能描述');
+      this.loading = false;
+      return false;
+    }
     From.validate((valid: any) => {
       if (valid) {
         if (this.title === '新增角色') {
@@ -119,6 +124,7 @@ export default class AddModal extends Vue {
       }
       return false;
     });
+    return true;
   }
 
   render() {

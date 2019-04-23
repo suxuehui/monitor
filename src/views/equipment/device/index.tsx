@@ -10,7 +10,6 @@ import {
 import { getInfoByLevelCode } from '@/api/customer';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
-import PopconfirmBlock from '@/components/Popconfirm/index';
 import BindModel from './components/BindModel';
 import AcceptModel from './components/AcceptModel';
 import UnbindModel from './components/UnbindModel';
@@ -37,7 +36,6 @@ interface TerminalType { key: number, value: number, label: string, color: strin
     'bThreshold-model': BThresholdModel,
     'aThreshold-model': AThresholdModel,
     'checkLog-model': CheckLogModel,
-    'popconfirm-block': PopconfirmBlock,
   },
   name: 'Device',
 })
@@ -261,7 +259,7 @@ export default class Device extends Vue {
       '/device/terminal/unbind/{imei}', // 解绑
       '/device/terminal/confirm', // 验收
       '/device/terminal/addrChange/{imei}', // 切换地址
-      '/device/terminal/thresholdShow/{imei}', // 阈值
+      '/device/terminal/thresholdSetting', // 阈值
       '/device/terminal/findTerminalLog', // 日志
       '/terminal/ops/list', // 查看安绑记录
       '/device/terminal/onlineUrl/{id}', // 上线地址
@@ -623,7 +621,6 @@ export default class Device extends Vue {
           } else {
             this.$message.error(res.result.resultMessage);
           }
-          console.log(this.changelocData);
         });
         break;
       // 阈值

@@ -145,7 +145,7 @@ export const asyncRouterMap: routerItem[] = [
     name: '配置管理',
     component: getComponent('config/index'),
     permission: [
-      '/device/terminal/list',
+      '/vehicle/config/list',
     ],
     meta: { key: 'Config' },
     children: [
@@ -153,7 +153,7 @@ export const asyncRouterMap: routerItem[] = [
         path: 'document',
         name: '配置文件',
         component: getComponent('config/document/index'),
-        permission: '/device/terminal/list',
+        permission: '/vehicle/config/list',
         meta: { key: 'Document' },
       },
     ],
@@ -165,7 +165,7 @@ export const asyncRouterMap: routerItem[] = [
     component: getComponent('equipment/index'),
     permission: [
       '/device/terminal/list',
-      '/vehicle/config/list',
+      '/device/terminal/configurationList',
     ],
     meta: { key: 'Equipment' },
     children: [
@@ -188,7 +188,7 @@ export const asyncRouterMap: routerItem[] = [
         path: 'config',
         name: '设备配置',
         component: getComponent('equipment/config/index'),
-        permission: '/vehicle/config/list',
+        permission: '/device/terminal/configurationList',
         meta: { key: 'ConfigModel' },
       },
       // {
