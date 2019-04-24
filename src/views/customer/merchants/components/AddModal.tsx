@@ -4,7 +4,7 @@ import {
 import {
   Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option, Radio, RadioGroup,
 } from 'element-ui';
-import { customerAdd, customerUpdate } from '@/api/customer';
+import { customerAdd, customerUpdate, checkOrgName } from '@/api/customer';
 import { terminalType } from '@/api/equipment';
 import { getAllShopNameMoni } from '@/api/app';
 import { userCheck } from '@/api/permission';
@@ -111,6 +111,9 @@ export default class AddModal extends Vue {
   rules = {
     orgName: [
       { required: true, message: '请输入商户名称', trigger: 'blur' },
+      {
+        validator: this.checkOrgName, trigger: 'blur',
+      },
     ],
     rebootRule: [
       { required: true, message: '请选择时候切换' },
@@ -159,6 +162,27 @@ export default class AddModal extends Vue {
       validator: this.netSecondPortValue,
     },
   ]
+
+  /**
+   * @method 商户名称校验规则
+   */
+  @Emit()
+  checkOrgName(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        checkOrgName(value).then((res) => {
+          if (res.result.resultCode === '0') {
+            callback();
+          } else {
+            callback(new Error('商户已存在，请重新输入'));
+          }
+        });
+      } else {
+        callback(new Error('商户名称不能为空'));
+      }
+    }, 500);
+  }
+
 
   /**
    * @method 端口校验规则

@@ -49,6 +49,7 @@ export default class BindModal extends Vue {
     setTimeout(() => {
       From.resetFields();
     }, 200);
+    this.resetData();
     this.loading = false;
   }
 
@@ -71,6 +72,7 @@ export default class BindModal extends Vue {
                 id: this.data.id,
               });
               From.resetFields();
+              this.resetData();
             }, 1500);
           } else {
             setTimeout(() => {

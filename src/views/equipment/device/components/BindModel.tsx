@@ -65,7 +65,7 @@ export default class BindModal extends Vue {
       { required: true, message: '请输入车架号', trigger: 'blur' },
     ],
     plateNum: [
-      { required: true, message: '请输入车牌号', trigger: 'blur' },
+      { required: false, message: '请输入车牌号', trigger: 'blur' },
       {
         validator: this.checkPlateNum, trigger: 'blur',
       },
@@ -84,7 +84,7 @@ export default class BindModal extends Vue {
           callback(new Error('车牌号输入不合法，请重新输入'));
         }
       } else {
-        callback(new Error('请输入车牌号'));
+        callback();
       }
     }, 500);
   }

@@ -279,7 +279,7 @@ export const asyncRouterMap: routerItem[] = [
     component: getComponent('permission/index'),
     icon: 'lock',
     permission: [
-      '/sys/user/list',
+      '/sys/role/list',
       '/sys/user/list',
     ],
     meta: { key: 'Permission' },
@@ -295,7 +295,7 @@ export const asyncRouterMap: routerItem[] = [
         path: 'role',
         name: '角色管理',
         component: getComponent('permission/role/index'),
-        permission: '/sys/user/list',
+        permission: '/sys/role/list',
         meta: { key: 'Role' },
       },
     ],

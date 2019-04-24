@@ -81,15 +81,13 @@ export default class Setting extends Vue {
         <span>
           {item}
           {
-            result[index] && (index !== content.length - 1) ? <el-input
-              size='mini'
-              step="0.1"
+            result[index] && (index !== content.length - 1) ? <input
               type="number"
               value={this.alarmValueList[ind][val.substring(1, val.length - 1)]}
-              on-change={
+              onInput={
                 (e: any) => this.inputChange(e, ind, val.substring(1, val.length - 1), str)
               }
-              class="alarm-input"></el-input> : null
+              class="alarm-input"></input> : null
           }
         </span>
       );
@@ -102,29 +100,29 @@ export default class Setting extends Vue {
     // 是否是电压
     if (str.indexOf('电压') > -1) {
       if (key === 'fieldThreshold') {
-        if (parseFloat(e) < 0) {
+        if (parseFloat(e.target.value) < 0) {
           this.btnDisable = true;
           this.$message.error('输入错误，请重新输入！');
         } else {
           this.btnDisable = false;
-          this.alarmValueList[ind][key] = parseFloat(e);
+          this.alarmValueList[ind][key] = parseFloat(e.target.value);
         }
-      } else if (parseInt(e, 10) < 0) {
+      } else if (parseInt(e.target.value, 10) < 0) {
         this.btnDisable = true;
         this.$message.error('输入错误，请重新输入！');
       } else {
         this.btnDisable = false;
-        this.alarmValueList[ind][key] = parseInt(e, 10);
+        this.alarmValueList[ind][key] = parseInt(e.target.value, 10);
       }
-    } else if (parseInt(e, 10) < 0) {
+    } else if (parseInt(e.target.value, 10) < 0) {
       this.btnDisable = true;
       this.$message.error('输入错误，请重新输入！');
-    } else if (Number(e) < 0) {
+    } else if (Number(e.target.value) < 0) {
       this.btnDisable = true;
       this.$message.error('输入错误，请重新输入！');
     } else {
       this.btnDisable = false;
-      this.alarmValueList[ind][key] = parseInt(e, 10);
+      this.alarmValueList[ind][key] = parseInt(e.target.value, 10);
     }
   }
 
