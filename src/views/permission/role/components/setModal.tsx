@@ -85,7 +85,8 @@ export default class SetModal extends Vue {
 
   getCheckedNodes() {
     const trees: any = this.$refs.tree;
-    return trees.getCheckedNodes();
+    const arr = trees.getCheckedKeys().concat(trees.getHalfCheckedKeys())
+    return arr;
   }
 
   closeModal() {
@@ -103,7 +104,7 @@ export default class SetModal extends Vue {
     selectTree.forEach((item: any, index: number) => {
       selectId.push({
         menuCode: '0/',
-        menuId: item.id,
+        menuId: item,
       });
     });
     roleSaveRoleMenu({
