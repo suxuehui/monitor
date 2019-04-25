@@ -6,13 +6,13 @@ export interface FilterFormList {
   type: FilterType;
   label: string;
   placeholder: string | string[];
-  props?:any;
+  props?: any;
   value?: string[];
   filterable?: boolean;
   options?: Array<{ value: any, label: string }>;
   change?: Function;
   itemChange?: Function;
-  pickerOptions?: { shortcuts: Array<{ text: string, onClick(picker: any): void }> };
+  pickerOptions?: { shortcuts?: Array<{ text: string, onClick(picker: any): void }>, disabledDate?: Function };
 }
 
 export interface TableColumnFilter {

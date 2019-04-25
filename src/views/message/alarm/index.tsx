@@ -55,6 +55,11 @@ export default class Alarm extends Vue {
       label: '告警时间',
       placeholder: ['开始', '结束'],
       change: this.dateChange,
+      pickerOptions: {
+        disabledDate(time: any) {
+          return time.getTime() > Date.now();
+        },
+      },
     },
   ];
 
@@ -105,6 +110,11 @@ export default class Alarm extends Vue {
       label: '告警时间',
       placeholder: ['开始', '结束'],
       change: this.dateChange,
+      pickerOptions: {
+        disabledDate(time: any) {
+          return time.getTime() > Date.now();
+        },
+      },
     },
   ];
 

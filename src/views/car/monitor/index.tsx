@@ -27,7 +27,7 @@ import './index.less';
 // 车子图片
 const carIcon = require('@/assets/car.png');
 // 定位点图标
-const pointIcon = require('@/assets/point.png');
+const pointIconRed = require('@/assets/point_red.png');
 @Component({
   components: {
     'el-input': Input,
@@ -305,18 +305,29 @@ export default class Monitor extends Vue {
   // online
   onlineFormat(row: any) {
     let str = null;
-    switch (row.onlineCN) {
-      case '在线':
-        str = <el-tag size="small" type="success">在线</el-tag>;
+    let num = 0;
+    if (row.onlineCN.indexOf('在线') > -1) {
+      num = 1;
+    } else if (row.onlineCN.indexOf('离线') > -1) {
+      num = 2;
+    } else if (row.onlineCN.indexOf('未知') > -1) {
+      num = 3;
+    }
+    switch (num) {
+      case 1:
+        str = <el-tooltip class="item" effect="dark" content={row.onlineCN} placement="top">
+          <span style={{ color: '#67C23A' }}>{row.onlineCN}</span>;
+        </el-tooltip>;
         break;
-      case '离线':
-        str = <el-tag size="small" type="danger">离线</el-tag>;
+      case 2:
+        str = <el-tooltip class="item" effect="dark" content={row.onlineCN} placement="top">
+          <span style={{ color: '#F56C6C' }}>{row.onlineCN}</span>;
+      </el-tooltip>;
         break;
-      case '未知':
-        str = <el-tag size="small" type="info">未知</el-tag>;
-        break;
-      default:
-        str = <el-tag size="small" type="info">未知</el-tag>;
+      case 3:
+        str = <el-tooltip class="item" effect="dark" content={row.onlineCN} placement="top">
+          <span style={{ color: '#909399' }}>{row.onlineCN}</span>;
+      </el-tooltip>;
         break;
     }
     return str;
@@ -709,6 +720,7 @@ export default class Monitor extends Vue {
 
   // 获取当前车辆控制列表
   getCarControlList(data: any) {
+    this.remoteControlArr = [];
     cmdList({ vehicleId: data.id }).then((res: any) => {
       const { result, entity } = res;
       if (result.resultCode === '0') {
@@ -1245,7 +1257,7 @@ export default class Monitor extends Vue {
     const marker = new this.BMap.Marker(
       PT,
       {
-        icon: new this.BMap.Icon(pointIcon, new this.BMap.Size(28, 40)),
+        icon: new this.BMap.Icon(pointIconRed, new this.BMap.Size(28, 40)),
       },
     );
     this.SMap.clearOverlays();
@@ -1523,6 +1535,7 @@ export default class Monitor extends Vue {
           <filter-table
             ref="mapTable"
             class="mapTable1"
+            max-height="260"
             filter-list={this.filterList}
             filter-grade={this.filterGrade}
             filter-params={this.filterParams}

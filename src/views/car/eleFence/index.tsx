@@ -19,7 +19,7 @@ import '../../../styles/var.less';
 interface AlarmType { key: any, value: any, label: string }
 
 // 坐标图片
-const pointIcon = require('@/assets/point.png');
+const pointIconRed = require('@/assets/point_red.png');
 @Component({
   components: {
     'el-input': Input,
@@ -578,7 +578,7 @@ export default class EleFence extends Vue {
       };
       // 点击设点
       const pt = new this.BMap.Point(val.lng, val.lat);
-      const myIcon = new this.BMap.Icon(pointIcon, new this.BMap.Size(32, 32));
+      const myIcon = new this.BMap.Icon(pointIconRed, new this.BMap.Size(32, 32));
       const point = new this.BMap.Marker(pt, { icon: myIcon });
       // 清除之前所涉标点
       this.SMap.clearOverlays();
@@ -748,7 +748,7 @@ export default class EleFence extends Vue {
     const marker = new this.BMap.Marker(
       PT,
       {
-        icon: new this.BMap.Icon(pointIcon, new this.BMap.Size(28, 40)),
+        icon: new this.BMap.Icon(pointIconRed, new this.BMap.Size(28, 40)),
       },
     );
     this.SMap.clearOverlays();
@@ -832,6 +832,7 @@ export default class EleFence extends Vue {
           <filter-table
             ref="mapTable"
             class="map-table"
+            max-height="260"
             filter-list={this.filterList}
             filter-grade={this.filterGrade}
             filter-params={this.filterParams}

@@ -62,6 +62,9 @@ export default class MTable extends Vue {
   // 固定高度--固定表头
   @Prop() private height!: string;
 
+  // 固定高度--固定表头
+  @Prop() private maxHeight!: string;
+
   // 本地存储名称
   @Prop({ default: 'filter-table' }) private localName!: string;
 
@@ -225,6 +228,7 @@ export default class MTable extends Vue {
         <m-spin show={this.loading} />
         <el-table
           height={this.height}
+          max-height={this.maxHeight}
           data={this.tableData}
           on-row-click={this.currentChange}
           on-selection-change={this.selectChange}
@@ -278,29 +282,29 @@ export default class MTable extends Vue {
         num += 1;
       }
     })
-    if(num > 4){
+    if (num > 4) {
       return <el-dropdown on-command={(command: string) => this.menuClick(null, command, row)}>
-      <span class="el-dropdown-link">
-        下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
-      </span>
-      <el-dropdown-menu slot="dropdown">
-        {
-          this.opreat.map((item, indexs) => {
-            if (item.roles) {
-              return <el-dropdown-item
-                id={`${item.key}`}
-                key={indexs}
-                command={item.key}
-                disabled={item.disabled && item.disabled(row)}
-              >
-                {typeof item.text === 'function' ? item.text(row) : item.text}
-              </el-dropdown-item>;
-            }
-            return true;
-          })
-        }
-      </el-dropdown-menu>
-    </el-dropdown>;
+        <span class="el-dropdown-link">
+          下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          {
+            this.opreat.map((item, indexs) => {
+              if (item.roles) {
+                return <el-dropdown-item
+                  id={`${item.key}`}
+                  key={indexs}
+                  command={item.key}
+                  disabled={item.disabled && item.disabled(row)}
+                >
+                  {typeof item.text === 'function' ? item.text(row) : item.text}
+                </el-dropdown-item>;
+              }
+              return true;
+            })
+          }
+        </el-dropdown-menu>
+      </el-dropdown>;
     }
     return <div class="table-opreat">
       {

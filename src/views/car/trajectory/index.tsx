@@ -39,6 +39,9 @@ export default class Trajectory extends Vue {
       ],
       change: this.timeRangeChange,
       pickerOptions: {
+        disabledDate(time: any) {
+          return time.getTime() > Date.now();
+        },
         shortcuts: [
           {
             text: '今天',
@@ -1016,6 +1019,7 @@ export default class Trajectory extends Vue {
           <filter-table
             ref="table"
             class="map-table"
+            max-height="255"
             filter-list={this.filterList}
             filter-grade={[]}
             filter-params={this.filterParams}

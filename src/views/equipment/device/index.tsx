@@ -469,7 +469,7 @@ export default class Device extends Vue {
     return row.online === 1
       ? <span style="color:#67953A">在线</span>
       : <el-tooltip class="item" effect="dark" content={`离线 (${utils.minToAll(row.offlineTime)})`} placement="top">
-        <span style="color:#F56C6C">离线 ({utils.minToAll(row.offlineTime)}分钟)</span>
+        <span style="color:#F56C6C">离线 ({utils.minToAll(row.offlineTime)})</span>
       </el-tooltip>;
   }
 

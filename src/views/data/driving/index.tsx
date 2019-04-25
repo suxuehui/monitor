@@ -36,6 +36,11 @@ export default class Driving extends Vue {
       label: '告警时间',
       placeholder: ['开始', '结束'],
       change: this.dateChange,
+      pickerOptions: {
+        disabledDate(time: any) {
+          return time.getTime() > Date.now();
+        },
+      },
     },
     {
       key: 'keyword',
@@ -235,7 +240,7 @@ export default class Driving extends Vue {
     this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
-  exportBtn:boolean = false;
+  exportBtn: boolean = false;
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);

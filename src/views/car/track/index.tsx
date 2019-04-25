@@ -7,7 +7,8 @@ import EquipmentTable from '@/views/car/track/equip/EquipTable';
 import './index.less';
 
 // 坐标图片
-const locaIcon = require('@/assets/point.png');
+const locaIconRed = require('@/assets/point_red.png');
+const locaIconBlue = require('@/assets/point_blue.png');
 
 @Component({
   components: {
@@ -121,7 +122,7 @@ export default class Track extends Vue {
   setMapLoc = (val: any) => {
     const infoWindow = new this.BMap.InfoWindow(this.msgContent(val));
     const pt = new this.BMap.Point(val.lng, val.lat);
-    const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
+    const myIcon = new this.BMap.Icon(locaIconBlue, new this.BMap.Size(32, 32));
     const point = new this.BMap.Marker(pt, { icon: myIcon });
     this.SMap.removeOverlay(point);
     this.SMap.addOverlay(point);

@@ -85,7 +85,7 @@ export default class SetModal extends Vue {
 
   getCheckedNodes() {
     const trees: any = this.$refs.tree;
-    const arr = trees.getCheckedKeys().concat(trees.getHalfCheckedKeys())
+    const arr = trees.getCheckedKeys().concat(trees.getHalfCheckedKeys());
     return arr;
   }
 

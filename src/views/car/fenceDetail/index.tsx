@@ -11,7 +11,7 @@ import './index.less';
 import '../../../styles/var.less';
 
 // 坐标图片
-const locaIcon = require('@/assets/point.png');
+const locaIconRed = require('@/assets/point_red.png');
 
 interface AlarmType { key: any, value: any, label: string }
 @Component({
@@ -66,7 +66,7 @@ export default class FenceDetail extends Vue {
       this.SMap.enableScrollWheelZoom(true);
 
       const pt = new this.BMap.Point(106.560421, 29.563694); // 创建坐标点
-      const myIcon = new this.BMap.Icon(locaIcon, new BMap.Size(32, 32));
+      const myIcon = new this.BMap.Icon(locaIconRed, new BMap.Size(32, 32));
       const point = new this.BMap.Marker(pt, { icon: myIcon });
 
       // 对每个点添加拖动事件
@@ -303,7 +303,7 @@ export default class FenceDetail extends Vue {
     const newPoint = new this.BMap.Point(lng, lat);
     this.inFenLng = newPoint.lng;
     this.inFenLat = newPoint.lat;
-    const newIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
+    const newIcon = new this.BMap.Icon(locaIconRed, new this.BMap.Size(32, 32));
     const newMarker = new this.BMap.Marker(newPoint, { icon: newIcon });
     this.SMap.addOverlay(newMarker);
     newMarker.enableDragging();
@@ -459,7 +459,7 @@ export default class FenceDetail extends Vue {
         const posi = res.result.location;
         this.inFenLng = posi.lng;
         this.inFenLat = posi.lat;
-        const myIcon = new this.BMap.Icon(locaIcon, new this.BMap.Size(32, 32));
+        const myIcon = new this.BMap.Icon(locaIconRed, new this.BMap.Size(32, 32));
         const point = new this.BMap.Marker(posi, { icon: myIcon });
         this.SMap.clearOverlays(); // 清除之前所涉标点
         this.SMap.addOverlay(point); // 加点

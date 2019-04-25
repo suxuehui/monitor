@@ -471,6 +471,11 @@ export default class Dashboard extends Vue {
   }
 
   render(h: any) {
+    const pickerOptions = {
+      disabledDate(time: any) {
+        return time.getTime() > Date.now();
+      },
+    };
     return (
       <div class="fzkContainer">
         <div class="monitorArea">
@@ -532,7 +537,9 @@ export default class Dashboard extends Vue {
               on-change={(val: any) => this.timeSelect(val)}
               range-separator="至"
               start-placeholder="开始"
-              end-placeholder="结束">
+              end-placeholder="结束"
+              picker-options={pickerOptions}
+            >
             </el-date-picker>
           </div>
           <div class="driveBox">

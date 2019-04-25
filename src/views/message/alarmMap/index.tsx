@@ -4,7 +4,7 @@ import config from '@/utils';
 import { gpsToAddress } from '@/api/app';
 import './index.less';
 
-const pointIcon = require('@/assets/point.png');
+const pointIconRed = require('@/assets/point_red.png');
 @Component({
   components: {
     'el-input': Input,

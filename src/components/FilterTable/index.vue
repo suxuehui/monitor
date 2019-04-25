@@ -26,6 +26,7 @@
       :row-key="rowKey"
       :opreat="opreat"
       :height="height"
+      :max-height="maxHeight"
       :opreat-width="opreatWidth"
       :back-params="BackParams"
       :header-align="headerAlign"
@@ -81,6 +82,9 @@ export default class FilterTable extends Vue {
 
   // 固定高度--固定表头
   @Prop() private height!: string;
+
+  // 最大高度
+  @Prop() private maxHeight!:string;
 
   // 是否展示导出按钮
   @Prop() private exportBtn!: boolean;

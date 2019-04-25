@@ -146,6 +146,11 @@ export default class CheckLogModel extends Vue {
   }
 
   render() {
+    const pickerOptions = {
+      disabledDate(time: any) {
+        return time.getTime() > Date.now();
+      },
+    };
     return (
       <el-dialog
         width="660px"
@@ -163,6 +168,7 @@ export default class CheckLogModel extends Vue {
             value-format="yyyy-MM-dd HH:mm:ss"
             on-change={(val: any) => this.timeSelect(val)}
             range-separator="至"
+            picker-options={pickerOptions}
             start-placeholder="开始"
             end-placeholder="结束">
           </el-date-picker>

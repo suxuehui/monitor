@@ -32,6 +32,9 @@ export default class RecordTable extends Vue {
       ],
       change: this.timeRangeChange,
       pickerOptions: {
+        disabledDate(time: any) {
+          return time.getTime() > Date.now();
+        },
         shortcuts: [
           {
             text: '今天',
@@ -81,7 +84,6 @@ export default class RecordTable extends Vue {
     {
       label: '设备型号',
       prop: 'terminalTypeModel',
-      // formatter: this.checkClientType,
     },
     {
       label: 'imei号',
@@ -155,8 +157,16 @@ export default class RecordTable extends Vue {
       if (val.length === 2) {
         const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
         const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
-        this.outParams.startDate = startT;
-        this.outParams.endDate = endT;
+        const startT1 = new Date(startT).getTime();
+        const endT1 = new Date(endT).getTime();
+        if (endT1 - startT1 < 90 * 24 * 60 * 60 * 1000) {
+          this.outParams = {
+            startTime: startT,
+            endTime: endT,
+          };
+        } else {
+          this.$message.error('查询时间范围最大为三个月，请重新选择');
+        }
       } else {
         this.outParams.startDate = `${val[0]}`;
         this.outParams.endDate = `${val[1]}`;
@@ -192,6 +202,7 @@ export default class RecordTable extends Vue {
         <filter-table
           ref="table"
           class="map-table"
+          max-height="255"
           filter-list={this.filterList}
           filter-grade={[]}
           filter-params={this.filterParams}

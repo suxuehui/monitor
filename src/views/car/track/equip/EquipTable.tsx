@@ -383,6 +383,7 @@ export default class EquipTable extends Vue {
         <filter-table
           ref="table"
           class="map-table"
+          max-height="255"
           filter-list={this.filterList}
           filter-grade={[]}
           filter-params={this.filterParams}
