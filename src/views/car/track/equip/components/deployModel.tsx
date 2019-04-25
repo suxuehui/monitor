@@ -1,5 +1,5 @@
 import {
-  Component, Prop, Vue, Watch,
+  Component, Prop, Vue, Watch, Emit,
 } from 'vue-property-decorator';
 import {
   Col, Row, Dialog, Form, FormItem, Input, Button, TimeSelect, Select, Option,
@@ -25,6 +25,8 @@ export default class DeployModel extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private time: any;
+
   modelForm: any = {
     startTime: '',
     frequency: '',
@@ -33,12 +35,13 @@ export default class DeployModel extends Vue {
 
   loading: boolean = false;
 
-  @Watch('data')
-  onDataChange(data: any) {
-    if (data.type === 'deploy') {
-      const obj: any = JSON.parse(JSON.stringify(data));
-      this.modelForm.frequency = obj.frequency;
+  @Watch('time')
+  onDataChange() {
+    if (this.data.type === 'deploy') {
+      console.log(this.time);
       this.modelForm.startTime = '';
+      const obj: any = JSON.parse(JSON.stringify(this.data));
+      this.modelForm.frequency = obj.frequency;
       this.modelForm.startTime = utils.removeMarks(obj.startDate);
       if (obj.type === 'deploy') {
         if (this.modelForm.startTime !== '') {
@@ -49,15 +52,33 @@ export default class DeployModel extends Vue {
   }
 
   rules = {
-    startTime: [
-      { required: true, message: '请输入启动时间', trigger: 'blur' },
-    ],
+    // startTime: [
+    //   { required: true, message: '请输入启动时间', trigger: 'blur' },
+    // ],
     frequency: [
       { required: true },
     ],
-    duration: [
-      { required: true },
-    ],
+  }
+
+  starTimeRule = [
+    { required: true, message: '请输入启动时间', trigger: 'blur' },
+    {
+      validator: this.starTimeValue,
+    },
+  ]
+
+  /**
+    * @method 启动时间校验
+    */
+  @Emit()
+  starTimeValue(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        callback();
+      } else {
+        callback(new Error('启动时间不能为空'));
+      }
+    }, 500);
   }
 
   // 时间范围
@@ -105,10 +126,12 @@ export default class DeployModel extends Vue {
 
   // 重置数据
   resetData() {
-    this.modelForm = {
-      startTime: '',
-      frequency: '',
-    };
+    this.$emit('close');
+    const From: any = this.$refs.modelForm;
+    setTimeout(() => {
+      From.resetFields();
+    }, 400);
+    this.loading = false;
   }
 
   // 生效日期
@@ -119,7 +142,6 @@ export default class DeployModel extends Vue {
       id: this.data.id,
       imei: this.data.imei,
       date: val,
-      duration: 5,
     };
   }
 
@@ -152,6 +174,7 @@ export default class DeployModel extends Vue {
               this.$message.success(res.result.resultMessage);
               this.modelForm.startTime = '';
               this.$emit('refresh');
+              From.resetFields();
             }, 1500);
           } else {
             setTimeout(() => {
@@ -178,7 +201,7 @@ export default class DeployModel extends Vue {
         close-on-click-modal={false}
       >
         <el-form model={this.modelForm} status-icon rules={this.rules} ref="modelForm" label-width="80px" class="model">
-          <el-form-item label="启动时间" prop="startTime">
+          <el-form-item label="启动时间" prop="startTime" rules={this.starTimeRule}>
             <el-time-select
               v-model={this.modelForm.startTime}
               id="startTime"

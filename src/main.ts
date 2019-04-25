@@ -20,12 +20,12 @@ const options = {
   height: '3px',
 };
 if (process.env.NODE_ENV === 'production') {
-  Raven.config('https://95130553210b494592fdb8be63b291be@frontend-monitor.mysirui.com//2')
-    .addPlugin(RavenVue, Vue)
-    .install();
-  Vue.config.errorHandler = (err, vm, info) => {
-    Raven.captureException(err);
-  };
+  // Raven.config('https://95130553210b494592fdb8be63b291be@frontend-monitor.mysirui.com//2')
+  //   .addPlugin(RavenVue, Vue)
+  //   .install();
+  // Vue.config.errorHandler = (err, vm, info) => {
+  //   Raven.captureException(err);
+  // };
 }
 
 Vue.prototype.$ELEMENT = { size: 'small', zIndex: 3000 };

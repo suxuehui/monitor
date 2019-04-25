@@ -320,6 +320,8 @@ export default class EquipTable extends Vue {
 
   rowData: any = {};
 
+  clickTime: any = '';
+
   currentChange = (val: any) => {
   }
 
@@ -333,6 +335,7 @@ export default class EquipTable extends Vue {
         frequency: row.frequency,
         type: 'deploy',
       };
+      this.clickTime = utils.getNowTime();
       this.rowData = data;
       this.deployVisible = true;
     } else if (key === 'reserve') {
@@ -406,6 +409,7 @@ export default class EquipTable extends Vue {
         >
         </filter-table>
         <deploy-model
+          time={this.clickTime}
           ref="deployModel"
           data={this.rowData}
           visible={this.deployVisible}

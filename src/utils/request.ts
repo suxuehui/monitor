@@ -140,7 +140,7 @@ export default function request(options: Option): Promise<any> {
         result: response.data.result,
       };
       if (process.env.NODE_ENV === 'production') {
-        Raven.captureException(JSON.stringify(responseData));
+        // Raven.captureException(JSON.stringify(responseData));
       }
     }
     // 返回数据
@@ -155,9 +155,9 @@ export default function request(options: Option): Promise<any> {
     const { response } = error;
     let msg;
     let statusCode;
-    if (process.env.NODE_ENV === 'production') {
-      Raven.captureException(JSON.stringify(error));
-    }
+    // if (process.env.NODE_ENV === 'production') {
+    //   Raven.captureException(JSON.stringify(error));
+    // }
     if (response && response instanceof Object) {
       const { data, statusText } = response;
       statusCode = response.status;

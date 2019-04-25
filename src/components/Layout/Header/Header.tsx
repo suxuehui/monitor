@@ -108,7 +108,7 @@ export default class Header extends Vue {
           this.$store.dispatch('getAlarm');
         }
       });
-    }, 400);
+    }, 1000);
   }
 
   pswVisible: boolean = false;
