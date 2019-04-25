@@ -37,21 +37,24 @@ export default class ControlModel extends Vue {
     this.modelForm = {
       cmd: '',
     };
+    if (this.data.options !== null) {
+      this.modelForm.cmd = this.data.options[0].optionVal;
+    }
   }
 
   closeModal() {
     this.$emit('close');
-    this.modelForm = {
-      cmd: '',
-    };
     setTimeout(() => {
+      this.modelForm = {
+        cmd: '',
+      };
       this.loading = false;
     }, 200);
   }
 
   onSubmit() {
     this.loading = true;
-    const obj:any = {
+    const obj: any = {
       keyword: this.data.imei,
       cmd: this.data.name,
       optionVal: this.modelForm.cmd,
