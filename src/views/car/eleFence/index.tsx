@@ -831,7 +831,7 @@ export default class EleFence extends Vue {
           </div>
           <filter-table
             ref="mapTable"
-            class="map-table"
+            class="elefence-table"
             max-height="260"
             filter-list={this.filterList}
             filter-grade={this.filterGrade}
