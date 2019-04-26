@@ -101,10 +101,10 @@ export default class MTable extends Vue {
     pageNum: number,
     page: boolean,
   } = {
-      pageSize: this.defaultPageSize,
-      pageNum: 1,
-      page: true,
-    };
+    pageSize: this.defaultPageSize,
+    pageNum: 1,
+    page: true,
+  };
 
   // 加载状态
   loading: boolean = false;
@@ -168,6 +168,7 @@ export default class MTable extends Vue {
           } else {
             this.tableData = [];
           }
+          this.$emit('pageDataChange', this.tableData);
         }
       } else {
         this.$message.error(this.getValue(this.BackParams.message, res));
@@ -281,7 +282,7 @@ export default class MTable extends Vue {
       if (item.roles === true) {
         num += 1;
       }
-    })
+    });
     if (num > 4) {
       return <el-dropdown on-command={(command: string) => this.menuClick(null, command, row)}>
         <span class="el-dropdown-link">

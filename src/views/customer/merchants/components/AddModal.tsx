@@ -170,7 +170,13 @@ export default class AddModal extends Vue {
   checkOrgName(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        checkOrgName(value).then((res) => {
+        const obj: any = {
+          orgName: value,
+        }
+        if (this.title !== '新增商户') {
+          obj.orgId = this.data.id;
+        }
+        checkOrgName(obj).then((res) => {
           if (res.result.resultCode === '0') {
             callback();
           } else {

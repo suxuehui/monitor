@@ -122,18 +122,32 @@ export default class Track extends Vue {
   setMapLoc = (val: any) => {
     const infoWindow = new this.BMap.InfoWindow(this.msgContent(val));
     const pt = new this.BMap.Point(val.lng, val.lat);
-    const myIcon = new this.BMap.Icon(locaIconBlue, new this.BMap.Size(32, 32));
-    const point = new this.BMap.Marker(pt, { icon: myIcon });
-    this.SMap.removeOverlay(point);
-    this.SMap.addOverlay(point);
-    this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
+    const myIconRed = new this.BMap.Icon(locaIconRed, new this.BMap.Size(32, 32));
+    const myIconBlue = new this.BMap.Icon(locaIconBlue, new this.BMap.Size(32, 32));
+    const pointRed = new this.BMap.Marker(pt, { icon: myIconRed });
+    const pointBlue = new this.BMap.Marker(pt, { icon: myIconBlue });
+    // 点击事件渲染
+    if (val.origin === 'click') {
+      this.SMap.removeOverlay(pointRed);
+      this.SMap.addOverlay(pointBlue);
+      this.SMap.centerAndZoom(val.lng, val.lat)
+    } else { // 循环渲染
+      this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
+      this.SMap.addOverlay(pointRed);
+    }
     this.SMap.openInfoWindow(
       infoWindow,
-      new this.BMap.Point(val.lng, val.lat),
+      pt
     );
-    point.addEventListener('click', () => {
+    pointRed.addEventListener('click', () => {
+      this.SMap.removeOverlay(pointRed);
+      this.SMap.addOverlay(pointBlue);
       this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
     });
+    infoWindow.addEventListener('close', () => {
+      this.SMap.removeOverlay(pointBlue);
+      this.SMap.addOverlay(pointRed);
+    })
   }
 
   msgContent(content: any) {
@@ -172,7 +186,7 @@ export default class Track extends Vue {
             {
               this.showLogTable
                 ? <el-tab-pane label="记录" id="record" name="record">
-                  <record-table on-location={this.setMapLoc}></record-table>
+                  <record-table on-location={(data: any) => this.setMapLoc(data)}></record-table>
                 </el-tab-pane> : null
             }
             {

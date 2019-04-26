@@ -4,6 +4,7 @@ import {
   Button, Tabs, TabPane, Tooltip,
 } from 'element-ui';
 import qs from 'qs';
+import lodash from 'lodash';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
 
@@ -140,7 +141,7 @@ export default class RecordTable extends Vue {
 
   activated() {
     this.outParams.vehicleId = this.$route.params.id;
-    const TableRecord: any = this.$refs.table;
+    const TableRecord: any = this.$refs.recordTable;
     TableRecord.reloadTable();
   }
 
@@ -180,11 +181,19 @@ export default class RecordTable extends Vue {
   currentChange(val: any) {
     if (val) {
       if (parseFloat(val.lat) >= 0) {
+        val.origin = 'click';
         this.$emit('location', val);
       } else {
         this.$message.error('该设备暂无位置信息！');
       }
     }
+  }
+
+  pageDataChange(val: any) {
+    const data: any = lodash.cloneDeep(val);
+    data.forEach((item: any, index: number) => {
+      this.$emit('location', item);
+    })
   }
 
   menuClick(key: string, row: any) {
@@ -200,7 +209,7 @@ export default class RecordTable extends Vue {
     return (
       <div class="container-record">
         <filter-table
-          ref="table"
+          ref="recordTable"
           class="map-table"
           max-height="255"
           filter-list={this.filterList}
@@ -208,12 +217,12 @@ export default class RecordTable extends Vue {
           filter-params={this.filterParams}
           back-params={this.backParams}
           add-btn={false}
-          page-size-list={[5, 10, 15]}
           export-btn={this.showExportBtn}
           on-downBack={this.downLoad}
           highlight-current-row={true}
           on-clearOutParams={this.clear}
           on-currentChange={this.currentChange}
+          on-pageDataChange={this.pageDataChange}
           on-menuClick={this.menuClick}
           table-list={this.tableList}
           url={this.tableUrl}

@@ -40,6 +40,7 @@
       @tableClick="tableClick"
       @selectChange="selectChange"
       @currentChange="currentChange"
+      @pageDataChange="pageDataChange"
     />
   </div>
 </template>
@@ -267,6 +268,14 @@ export default class FilterTable extends Vue {
   @Emit()
   currentChange(val: any) {
     this.$emit('currentChange', val);
+  }
+
+  /**
+   * @method 获取数据时回调事件
+   */
+  @Emit()
+  pageDataChange(val: any) {
+    this.$emit('pageDataChange', val);
   }
 }
 </script>

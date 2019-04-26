@@ -101,7 +101,7 @@ export default class EquipTable extends Vue {
     },
     {
       label: '状态',
-      prop: 'status',
+      prop: 'trackStatus',
       formatter: this.formatStatus,
     },
   ];

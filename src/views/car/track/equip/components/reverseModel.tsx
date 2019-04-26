@@ -118,20 +118,22 @@ export default class ReverseModel extends Vue {
   }
 
   timeChange(val: any) {
-    const obj = {
-      id: this.data.id,
-      imei: this.data.imei,
-      date: val,
-      duration: 5,
-    };
-    vehicleCalvalid(obj).then((res) => {
-      const { result, entity } = res;
-      if (result.resultCode === '0') {
-        this.modelForm.valdate = entity.valdate;
-      } else {
-        this.$message.error(result.resultMessage);
-      }
-    });
+    if(val){
+      const obj = {
+        id: this.data.id,
+        imei: this.data.imei,
+        date: val,
+        duration: 5,
+      };
+      vehicleCalvalid(obj).then((res) => {
+        const { result, entity } = res;
+        if (result.resultCode === '0') {
+          this.modelForm.valdate = entity.valdate;
+        } else {
+          this.$message.error(result.resultMessage);
+        }
+      });
+    }
   }
 
   closeModal() {
