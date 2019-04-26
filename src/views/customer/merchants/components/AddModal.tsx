@@ -49,6 +49,8 @@ export default class AddModal extends Vue {
 
   typeList: any = []; // 设备类型
 
+  typeAllList: any = []; // 全部设备类型
+
   loading: boolean = false;
 
   selectLoading: boolean = true; // 筛选关联门店时的loading状态
@@ -57,11 +59,14 @@ export default class AddModal extends Vue {
     // 设备类型
     terminalType(null).then((res) => {
       if (res.result.resultCode === '0') {
-        res.entity.forEach((item: any) => this.typeList.push({
-          key: Math.random(),
-          value: item.enumValue,
-          label: item.name,
-        }));
+        res.entity.forEach((item: any) => {
+          this.typeList.push({
+            key: Math.random(),
+            value: item.enumValue,
+            label: item.name,
+          });
+          this.typeAllList.push(item.enumValue);
+        });
         // 设备类型(全部)
         this.typeList.unshift({
           key: Math.random(),
@@ -172,7 +177,7 @@ export default class AddModal extends Vue {
       if (value) {
         const obj: any = {
           orgName: value,
-        }
+        };
         if (this.title !== '新增商户') {
           obj.orgId = this.data.id;
         }
@@ -430,7 +435,7 @@ export default class AddModal extends Vue {
       orgName: this.modelForm.orgName, // 添加的商户名
       manageUser: this.modelForm.manageUser, // 账号
       password: this.modelForm.password, // 密码
-      deviceType: this.deviceType.indexOf('1026') > -1 ? '3,22,23,16,17' : this.deviceType.join(','), // 设备类型
+      deviceType: this.deviceType.indexOf('1026') > -1 ? this.typeAllList.join(',') : this.deviceType.join(','), // 设备类型
       chgAddrAble: this.reBootStatus, // 是否切换服务地址
       mainAddr: `${this.modelForm.mainAddr}:${this.modelForm.mainAddrPort}`, // 主地址
       secondaryAddr: `${this.modelForm.secondaryAddr}:${this.modelForm.secondaryAddrPort}`, // 副地址端口

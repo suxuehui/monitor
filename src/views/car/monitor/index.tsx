@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import {
-  Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip,
+  Input, Button, Form, Tag, Autocomplete, Dialog, FormItem, Cascader, Tooltip, Card,
 } from 'element-ui';
 import {
   tableList, Opreat, FilterFormList, MapCarData,
@@ -328,6 +328,8 @@ export default class Monitor extends Vue {
         str = <el-tooltip class="item" effect="dark" content={row.onlineCN} placement="top">
           <span style={{ color: '#909399' }}>{row.onlineCN}</span>;
       </el-tooltip>;
+        break;
+      default:
         break;
     }
     return str;
@@ -753,7 +755,7 @@ export default class Monitor extends Vue {
                 address: response.result.formatted_address + response.result.sematic_description,
                 ...res.entity,
               };
-              this.carDetail = Object.assign(this.carDetail, carDetail);
+              this.carDetail = carDetail;
             }
           });
           // 判断当前是否展示的其他车辆
@@ -765,7 +767,7 @@ export default class Monitor extends Vue {
             address: '未知位置',
             ...res.entity,
           };
-          this.carDetail = Object.assign(this.carDetail, carDetail);
+          this.carDetail = carDetail;
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');
@@ -1201,6 +1203,10 @@ export default class Monitor extends Vue {
       if (this.getShowTerminal() === true) {
         this.findTerminalList(val.id); // 获取设备列表
       }
+      // 查询此车辆详细数据
+      this.getCarDetail(val.id);
+      // 以此车辆为中心点查询车辆
+      this.radiusGetData(val.id);
       if (val.lat && val.lng) {
         this.mapCenter = {
           lat: val.lat,
@@ -1208,10 +1214,6 @@ export default class Monitor extends Vue {
         };
         // 设置地图中心点
         this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
-        // 以此车辆为中心点查询车辆
-        this.radiusGetData(val.id);
-        // 查询此车辆详细数据
-        this.getCarDetail(val.id);
       } else {
         this.$message.error('车辆暂无定位，使用默认位置！');
         this.mapCenter = {
@@ -1219,10 +1221,6 @@ export default class Monitor extends Vue {
           lng: 106.496422,
         };
         this.SMap.centerAndZoom(new this.BMap.Point(106.496422, 29.627258), 15);
-        // 以此车辆为中心点查询车辆
-        this.radiusGetData(val.id);
-        // 查询此车辆详细数据
-        this.getCarDetail(val.id);
       }
     }
   }

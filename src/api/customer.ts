@@ -37,7 +37,7 @@ export async function customerUnlock(params: any) {
 // 检查商户名是否存在
 export async function checkOrgName(params: any) {
   return request({
-    url: `/customer/org/check`,
+    url: '/customer/org/check',
     data: params,
     method: 'post',
   });

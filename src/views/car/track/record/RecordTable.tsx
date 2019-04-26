@@ -193,7 +193,7 @@ export default class RecordTable extends Vue {
     const data: any = lodash.cloneDeep(val);
     data.forEach((item: any, index: number) => {
       this.$emit('location', item);
-    })
+    });
   }
 
   menuClick(key: string, row: any) {

@@ -130,14 +130,14 @@ export default class Track extends Vue {
     if (val.origin === 'click') {
       this.SMap.removeOverlay(pointRed);
       this.SMap.addOverlay(pointBlue);
-      this.SMap.centerAndZoom(val.lng, val.lat)
+      this.SMap.centerAndZoom(val.lng, val.lat);
     } else { // 循环渲染
       this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
       this.SMap.addOverlay(pointRed);
     }
     this.SMap.openInfoWindow(
       infoWindow,
-      pt
+      pt,
     );
     pointRed.addEventListener('click', () => {
       this.SMap.removeOverlay(pointRed);
@@ -147,7 +147,7 @@ export default class Track extends Vue {
     infoWindow.addEventListener('close', () => {
       this.SMap.removeOverlay(pointBlue);
       this.SMap.addOverlay(pointRed);
-    })
+    });
   }
 
   msgContent(content: any) {

@@ -118,7 +118,7 @@ export default class ReverseModel extends Vue {
   }
 
   timeChange(val: any) {
-    if(val){
+    if (val) {
       const obj = {
         id: this.data.id,
         imei: this.data.imei,
