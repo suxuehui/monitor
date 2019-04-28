@@ -70,23 +70,28 @@ export default class BindModal extends Vue {
     const obj: any = {
       imeiList,
     };
-    unbindTerminal(obj).then((res) => {
-      if (res.result.resultCode === '0') {
-        setTimeout(() => {
-          this.$message.success(res.result.resultMessage);
-          this.closeModal();
-          this.$emit('refresh');
-          this.$emit('getTerminal', {
-            id: this.data.id,
-          });
-        }, 1500);
-      } else {
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.error(res.result.resultMessage);
-        }, 1500);
-      }
-    });
+    if (obj.imeiList.length > 0) {
+      unbindTerminal(obj).then((res) => {
+        if (res.result.resultCode === '0') {
+          setTimeout(() => {
+            this.$message.success(res.result.resultMessage);
+            this.closeModal();
+            this.$emit('refresh');
+            this.$emit('getTerminal', {
+              id: this.data.id,
+            });
+          }, 1500);
+        } else {
+          setTimeout(() => {
+            this.loading = false;
+            this.$message.error(res.result.resultMessage);
+          }, 1500);
+        }
+      });
+    } else {
+      this.loading = false;
+      this.$message.error('请选择需要解绑的设备!');
+    }
   }
 
   checkBoxChange(e: any, data: any, indx: number) {

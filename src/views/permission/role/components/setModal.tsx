@@ -4,6 +4,7 @@ import {
 import {
   Dialog, Input, Button, Form, Tree,
 } from 'element-ui';
+import lodash from 'lodash';
 import { roleSaveRoleMenu, roleInfo } from '@/api/permission';
 import { menuSelect } from '@/api/menu';
 import './setModal.less';
@@ -29,24 +30,51 @@ export default class SetModal extends Vue {
 
   modelForm: any = {};
 
-  menuList: any = []
+  menuList: any = [];
 
-  checkList: number[] = [] // 权限选中项
+  checkList: number[] = []; // 权限选中项
+
+  checkBoxMainArr: any = []; // 权限第一级数组集合
 
   loading: boolean = false;
 
   @Watch('time')
   onDataChange(data: any) {
+    this.checkBoxMainArr = [];
+    menuSelect({ roleId: this.data.roleId }).then((res) => {
+      const { result: { resultCode, resultMessage }, entity } = res;
+      if (resultCode === '0') {
+        this.menuList = JSON.parse(JSON.stringify(res.entity));
+        this.menuList.forEach((item: any) => {
+          this.checkBoxMainArr.push(`${item.id}`);
+        });
+        // 查询到权限选项后再查角色信息
+        this.getRoleInfo();
+      } else {
+        this.$message.error(resultMessage);
+      }
+    });
+  }
+
+  // 获取角色权限信息
+  getRoleInfo() {
     const trees: any = this.$refs.tree;
     if (trees) {
       trees.setCheckedKeys([]);
     }
     this.checkList = [];
+    let arr: any = [];
     roleInfo({ roleId: this.data.roleId }).then((res) => {
       const { result: { resultCode, resultMessage }, entity } = res;
       if (resultCode === '0') {
         if (entity.menuIds) {
-          this.checkList = entity.menuIds.split(',');
+          arr = lodash.cloneDeep(entity.menuIds.split(','));
+          arr.forEach((item: any, index: number) => {
+            // 设置>0：取消对首页的验证
+            if (this.checkBoxMainArr.indexOf(item) <=0) {
+              this.checkList.push(item);
+            }
+          });
           if (trees) {
             trees.setCheckedKeys(this.checkList);
           }
@@ -55,16 +83,9 @@ export default class SetModal extends Vue {
         this.$message.error(resultMessage);
       }
     });
-    menuSelect({ roleId: this.data.roleId }).then((res) => {
-      const { result: { resultCode, resultMessage }, entity } = res;
-      if (resultCode === '0') {
-        this.menuList = res.entity;
-      } else {
-        this.$message.error(resultMessage);
-      }
-    });
   }
 
+  // 设置权限列表
   setList(list: any) {
     return (
       <el-tree
@@ -94,6 +115,8 @@ export default class SetModal extends Vue {
     const From: any = this.$refs.modelForm;
     From.resetFields();
     this.loading = false;
+    this.checkBoxMainArr = [];
+    this.checkList = [];
   }
 
   onSubmit() {

@@ -38,7 +38,30 @@ export default class ControlModel extends Vue {
       cmd: '',
     };
     if (this.data.options !== null) {
-      this.modelForm.cmd = this.data.options[0].optionVal;
+      this.setDefaultOption(this.data);
+    }
+  }
+
+  // 设置默认选项
+  setDefaultOption(data:any){
+    if(data.cmd === 'CMD_OIL_OFF'){
+      data.options.forEach((item:any)=>{
+        if(item.optionName === '熄火断油'){
+          this.modelForm.cmd = item.optionVal;
+        }
+      })
+    } else if(data.cmd === 'CMD_AUTH_OIL_ON'){
+      data.options.forEach((item:any)=>{
+        if(item.optionName === '立即通油'){
+          this.modelForm.cmd = item.optionVal;
+        }
+      })
+    } else if(data.cmd === 'CMD_AUTH_OIL_OFF'){
+      data.options.forEach((item:any)=>{
+        if(item.optionName === '熄火断油'){
+          this.modelForm.cmd = item.optionVal;
+        }
+      })
     }
   }
 
@@ -88,7 +111,7 @@ export default class ControlModel extends Vue {
       );
     }
     return <div class="controlModel">
-      <p>确定对该车辆进行<span class="info">{this.data.operateStr}</span>操作？</p>
+      <p>确定执行<span class="info">{this.data.operateStr}</span>操作？</p>
     </div>;
   }
 

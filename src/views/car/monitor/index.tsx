@@ -1502,7 +1502,7 @@ export default class Monitor extends Vue {
                       <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
                     ))
                   }
-                </ul> : <span class="noControl">未绑定设备，暂无控制功能</span>
+                </ul> : <span class="noControl">未绑定有线设备，暂无控制功能</span>
               }
             </div>
           </transition>

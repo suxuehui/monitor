@@ -141,7 +141,7 @@ export default class AddModal extends Vue {
             <el-col span={24}>
               <el-form-item label="角色名称" prop="roleName">
                 <el-input
-                  id="roleName"
+                  id="addRoleName"
                   v-model={this.modelForm.roleName}
                   placeholder="请输入角色名称"
                 ></el-input>
@@ -150,7 +150,7 @@ export default class AddModal extends Vue {
             <el-col span={24}>
               <el-form-item label="职能描述" prop="remark">
                 <el-input
-                  id="remark"
+                  id="addRemark"
                   v-model={this.modelForm.remark}
                   type="textarea"
                   rows="4"
