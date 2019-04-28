@@ -69,18 +69,17 @@ export default class Members extends Vue {
 
   mounted() {
     this.filterList[1].options = this.activeTypes;
-    // this.getRoleList();
   }
 
   // 每次进入重新获取角色类型
   activated() {
-    this.getRoleList();
+    this.getRoleList('1');
   }
 
-  getRoleList() {
+  getRoleList(data: any) {
     this.roleTypeList = [];
-    this.roleTypeAddList = [];
-    roleSelect(null).then((res) => {
+    // 角色下拉列表情况类型:1-筛选成员用户;2-添加成员用户
+    roleSelect({ selectType: data }).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.forEach((item: any) => {
           item.key = parseInt(item.id, 10);
@@ -88,7 +87,7 @@ export default class Members extends Vue {
           item.label = item.roleName;
         });
         this.roleTypeList = JSON.parse(JSON.stringify(res.entity));
-        this.roleTypeAddList = res.entity.filter((item: any) => item);
+        this.roleTypeAddList = JSON.parse(JSON.stringify(res.entity));
         // 所有品牌
         this.roleTypeList.unshift({
           key: Math.random(),
@@ -249,6 +248,7 @@ export default class Members extends Vue {
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增成员';
+    this.getRoleList('2');
   }
 
   // 关闭弹窗
@@ -258,6 +258,7 @@ export default class Members extends Vue {
     const addBlock: any = this.$refs.addTable;
     setTimeout(() => {
       addBlock.resetData();
+      this.roleTypeAddList = [];
     }, 200);
   }
 
@@ -296,7 +297,7 @@ export default class Members extends Vue {
         <add-modal
           ref="addTable"
           roleIds={this.addRoleList}
-          roleAddList={this.roleTypeAddList}
+          roleList={this.roleTypeAddList}
           title={this.addTitle}
           visible={this.addVisible}
           data={this.rowData}

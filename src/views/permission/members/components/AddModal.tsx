@@ -5,9 +5,6 @@ import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option,
 } from 'element-ui';
 import { userUpdate, userAdd, userCheck } from '@/api/permission';
-
-interface RoleType { key: number, value: string, label: string }
-
 @Component({
   components: {
     'el-dialog': Dialog,
@@ -30,7 +27,7 @@ export default class AddModal extends Vue {
 
   @Prop() private data: any;
 
-  @Prop() private roleAddList: any;
+  @Prop() private roleList: any;
 
   modelForm: any = {
     realName: '',
@@ -40,6 +37,8 @@ export default class AddModal extends Vue {
     password: '',
     roleIdList: [],
   };
+
+  roleAddList: any = [];
 
   isInstaller: boolean = false;
 
@@ -126,6 +125,12 @@ export default class AddModal extends Vue {
   onDataChange(data: any) {
     if (data.userId > 0) {
       this.resetData();
+      data.selectList.forEach((item: any) => {
+        this.roleAddList.push({
+          value: item.id,
+          label: item.roleName
+        })
+      })
       this.modelForm.roleIdList = data.roleIdList;
       this.modelForm.realName = data.realName;
       this.modelForm.userName = data.userName;
@@ -184,6 +189,7 @@ export default class AddModal extends Vue {
       From.clearValidate();
       From.resetFields();
       this.resetData();
+      this.roleAddList = [];
     }, 600);
     this.loading = false;
   }
@@ -214,6 +220,7 @@ export default class AddModal extends Vue {
                 this.modelForm.roleIdList = [];
                 From.clearValidate();
                 From.resetFields();
+                this.roleAddList = [];
                 this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
               }, 1500);
@@ -244,6 +251,7 @@ export default class AddModal extends Vue {
               setTimeout(() => {
                 this.loading = false;
                 this.modelForm.roleIdList = [];
+                this.roleAddList = [];
                 From.clearValidate();
                 From.resetFields();
                 this.$message.success(res.result.resultMessage);
@@ -300,9 +308,12 @@ export default class AddModal extends Vue {
                   style="width:100%"
                 >
                   {
-                    this.roleAddList.map((item: any) => (
-                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                    ))
+                    this.roleAddList.length > 0 ?
+                      this.roleAddList.map((item: any) => (
+                        <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                      )) : this.roleList.map((item: any) => (
+                        <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                      ))
                   }
                 </el-select>
               </el-form-item>

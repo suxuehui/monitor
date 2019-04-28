@@ -94,7 +94,9 @@ export default class RecordTable extends Vue {
 
   opreat: Opreat[] = [];
 
-  filterParams: object = {};
+  filterParams: any = {
+    query: [null, null],
+  };
 
   backParams: object = {
     code: 'result.resultCode',
@@ -166,7 +168,11 @@ export default class RecordTable extends Vue {
             endTime: endT,
           };
         } else {
-          this.$message.error('查询时间范围最大为三个月，请重新选择');
+          const date = new Date();
+          const startTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+          this.outParams.startDate = new Date(startTime).Format('yyyy-MM-dd hh:mm:ss');
+          this.outParams.endDate = date.Format('yyyy-MM-dd hh:mm:ss');
+          this.$message.error('查询时间不能超过3个月，请重新选择');
         }
       } else {
         this.outParams.startDate = `${val[0]}`;

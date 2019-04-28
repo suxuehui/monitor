@@ -178,7 +178,7 @@ export default class Driving extends Vue {
   dateChange(val: any) {
     if (val) {
       if ((val[1].getTime() - val[0].getTime()) > 90 * 24 * 60 * 60 * 1000) {
-        this.$message.error('查询时间不能超过90天');
+        this.$message.error('查询时间不能超过3个月，请重新选择');
       } else {
         this.outParams.startTime = val[0].Format('yyyy-MM-dd hh:mm:ss');
         this.outParams.endTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
@@ -198,11 +198,11 @@ export default class Driving extends Vue {
   clearOut(callBack: Function) {
     const newParams = JSON.parse(JSON.stringify(this.filterParams));
     const date = new Date();
-    const starTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
-    newParams.query[0] = new Date(starTime);
+    const startTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+    newParams.query[0] = new Date(startTime);
     newParams.query[1] = date;
     callBack(newParams);
-    this.outParams.startTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.startTime = new Date(startTime).Format('yyyy-MM-dd hh:mm:ss');
     this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
@@ -233,10 +233,10 @@ export default class Driving extends Vue {
   setDays() {
     // 三个月
     const date = new Date();
-    const starTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
-    this.filterParams.query[0] = new Date(starTime);
+    const startTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+    this.filterParams.query[0] = new Date(startTime);
     this.filterParams.query[1] = date;
-    this.outParams.startTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.startTime = new Date(startTime).Format('yyyy-MM-dd hh:mm:ss');
     this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 

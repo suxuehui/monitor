@@ -253,3 +253,11 @@ export async function orgServer(params: any) {
     method: 'get',
   });
 }
+
+// 查询能够支持下发配置的设备版本和类型
+export async function SendClientTypeaAndVersion(params: any) {
+  return request({
+    url: '/device/terminal/SendClientTypeaAndVersion',
+    method: 'post',
+  });
+}

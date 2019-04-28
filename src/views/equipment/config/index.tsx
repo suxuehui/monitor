@@ -4,7 +4,7 @@ import qs from 'qs';
 import { Tag, Button, Tooltip } from 'element-ui';
 import exportExcel from '@/api/export';
 import {
-  deviceModel, queryCfg, getBtName, getBluetooth,
+  deviceModel, queryCfg, getBtName, getBluetooth, SendClientTypeaAndVersion,
 } from '@/api/equipment';
 import { getInfoByLevelCode } from '@/api/customer';
 import DownConfigModel from './components/DownConfigModel';
@@ -322,6 +322,14 @@ export default class ConfigModel extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // SendClientTypeaAndVersion(null).then((res: any) => {
+    //   const { entity, result } = res;
+    //   if (result.resultCode === '0') {
+
+    //   } else {
+    //     this.$message.error(res.result.resultMessage);
+    //   }
+    // })
   }
 
   onlineTypes: OnlineType[] = [
