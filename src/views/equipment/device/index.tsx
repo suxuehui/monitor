@@ -110,7 +110,7 @@ export default class Device extends Vue {
     {
       key: 'keyword',
       type: 'input',
-      label: '模糊查询',
+      label: '输入搜索',
       placeholder: 'imei号、主机编码、ICCID、车牌号',
     },
   ];

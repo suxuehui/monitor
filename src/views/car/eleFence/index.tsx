@@ -167,7 +167,7 @@ export default class EleFence extends Vue {
     {
       key: 'keyword',
       type: 'input',
-      label: '其他参数',
+      label: '输入搜索',
       placeholder: '围栏名称或围栏地址',
     },
   ];

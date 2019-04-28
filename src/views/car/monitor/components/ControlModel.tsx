@@ -43,25 +43,25 @@ export default class ControlModel extends Vue {
   }
 
   // 设置默认选项
-  setDefaultOption(data:any){
-    if(data.cmd === 'CMD_OIL_OFF'){
-      data.options.forEach((item:any)=>{
-        if(item.optionName === '熄火断油'){
+  setDefaultOption(data: any) {
+    if (data.cmd === 'CMD_OIL_OFF') {
+      data.options.forEach((item: any) => {
+        if (item.optionName === '熄火断油') {
           this.modelForm.cmd = item.optionVal;
         }
-      })
-    } else if(data.cmd === 'CMD_AUTH_OIL_ON'){
-      data.options.forEach((item:any)=>{
-        if(item.optionName === '立即通油'){
+      });
+    } else if (data.cmd === 'CMD_AUTH_OIL_ON') {
+      data.options.forEach((item: any) => {
+        if (item.optionName === '立即通油') {
           this.modelForm.cmd = item.optionVal;
         }
-      })
-    } else if(data.cmd === 'CMD_AUTH_OIL_OFF'){
-      data.options.forEach((item:any)=>{
-        if(item.optionName === '熄火断油'){
+      });
+    } else if (data.cmd === 'CMD_AUTH_OIL_OFF') {
+      data.options.forEach((item: any) => {
+        if (item.optionName === '熄火断油') {
           this.modelForm.cmd = item.optionVal;
         }
-      })
+      });
     }
   }
 

@@ -92,7 +92,13 @@ export default class BtNameModel extends Vue {
       if (valid) {
         setBtName(obj).then((res: any) => {
           if (res.result.resultCode === '0') {
-            this.loading = false;
+            setTimeout(() => {
+              this.loading = false;
+              From.clearValidate();
+              From.resetFields();
+              this.$message.success(res.result.resultMessage);
+              this.$emit('refresh');
+            }, 1500);
           } else {
             setTimeout(() => {
               this.loading = false;

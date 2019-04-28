@@ -94,7 +94,7 @@ export default class ConfigModel extends Vue {
     {
       key: 'keyword',
       type: 'input',
-      label: '其他参数',
+      label: '输入搜索',
       placeholder: 'imei号、主机编码、车牌号、配置名称、产品编码',
     },
   ];
@@ -188,12 +188,41 @@ export default class ConfigModel extends Vue {
     { label: '产品编码', prop: 'productCode' },
     { label: '当前车辆', prop: 'platenum' },
     { label: '操作记录', prop: 'orgNam111e', formatter: this.opeList },
-    { label: '网络状态', prop: 'online', formatter: this.onlineStatus },
+    { label: '网络状态', prop: 'onlineCN', formatter: this.onlineStatus },
   ];
 
   onlineStatus(row: any) {
-    return row.online === 1
-      ? <el-tag type="success">在线</el-tag> : <el-tag type="danger">离线</el-tag>;
+    let str = null;
+    let num = 0;
+    if (row.onlineCN && row.onlineCN.indexOf('在线') > -1) {
+      num = 1;
+    } else if (row.onlineCN && row.onlineCN.indexOf('离线') > -1) {
+      num = 2;
+    } else if (row.onlineCN && row.onlineCN.indexOf('未知') > -1) {
+      num = 3;
+    } else {
+      num = 3;
+    }
+    switch (num) {
+      case 1:
+        str = <el-tooltip class="item" effect="dark" content={row.onlineCN} placement="top">
+          <span style={{ color: '#67C23A' }}>{row.onlineCN}</span>;
+        </el-tooltip>;
+        break;
+      case 2:
+        str = <el-tooltip class="item" effect="dark" content={row.onlineCN} placement="top">
+          <span style={{ color: '#F56C6C' }}>{row.onlineCN}</span>;
+      </el-tooltip>;
+        break;
+      case 3:
+        str = <el-tooltip class="item" effect="dark" content={'未知'} placement="top">
+          <span style={{ color: '#909399' }}>未知</span>;
+      </el-tooltip>;
+        break;
+      default:
+        break;
+    }
+    return str;
   }
 
   // 查看操作记录
@@ -232,7 +261,7 @@ export default class ConfigModel extends Vue {
   }
 
   // 操作记录查看
-  showOprateBtn:boolean = true;
+  showOprateBtn: boolean = true;
 
   // 导出按钮展示
   showExportBtn: boolean = true;
@@ -344,6 +373,7 @@ export default class ConfigModel extends Vue {
     };
     this.btAuthData = {};
     getBluetooth(obj).then((res) => {
+      this.clickAuthTime = utils.getNowTime();
       if (res.result.resultCode === '0') {
         this.btAuthData = {
           id: data.id,
@@ -399,6 +429,8 @@ export default class ConfigModel extends Vue {
 
   // 点击时间
   clickTime: string = '';
+
+  clickAuthTime: string = '';
 
 
   // 关闭弹窗
@@ -497,6 +529,7 @@ export default class ConfigModel extends Vue {
           on-refresh={this.refresh}
         />
         <btauth-model
+          time={this.clickAuthTime}
           data={this.btAuthData}
           visible={this.btAuthVisible}
           on-close={this.closeModal}

@@ -145,20 +145,23 @@ export default class DrivingBehavior extends Vue {
           { num: 0, txt: '急转弯', type: 7 },
         ];
         this.behaviorDetail = [];
-        entity.forEach((item: any) => {
-          // 数量展示用
-          this.behaviorData.forEach((it: any) => {
-            if (item.type === it.type) {
-              it.num = item.number;
-            }
+        entity.forEach((item: any, index: number) => {
+          this.behaviorDetail.push({
+            lng: item.lng,
+            lat: item.lat,
+            events: [],
+            utctime: item.addTime,
           });
-          item.driveBehaviors && item.driveBehaviors.forEach((its: any, index: number) => {
-            // 渲染用
-            this.behaviorDetail.push({
-              events: [`${item.type}`],
-              lng: its.lng,
-              lat: its.lat,
-              utctime: its.addTime,
+          item && item.driveBehaviors.forEach((its: any, ind: number) => {
+            // 数量展示用
+            this.behaviorData.forEach((it: any) => {
+              if (its.type === it.type) {
+                it.num += 1;
+              }
+            });
+            this.behaviorDetail.forEach((it: any) => {
+              it.events.push(its.type);
+              it.utctime = its.addTime;
             });
           });
         });

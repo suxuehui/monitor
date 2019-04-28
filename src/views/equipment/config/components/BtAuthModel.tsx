@@ -1,5 +1,5 @@
 import {
-  Component, Prop, Vue,
+  Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
   Dialog, Row, Col, Button,
@@ -18,6 +18,13 @@ export default class BtAuthModel extends Vue {
   @Prop({ default: false }) private visible !: boolean;
 
   @Prop() private data: any;
+
+  @Prop() private time: any;
+
+  @Watch('time')
+  onDataChange() {
+    this.newCfgVal = this.data.cfgVal;
+  }
 
   loading: boolean = false;
 
@@ -63,7 +70,7 @@ export default class BtAuthModel extends Vue {
         close-on-click-modal={false}
       >
         <div style={{ lineHeight: '50px', fontSize: '16px', minHeight: '50px' }}>
-          <p>{this.newCfgVal !== '' ? this.newCfgVal : this.data.cfgVal}</p>
+          <p style={{ minHeight: '30px' }}>{this.newCfgVal}</p>
           <div style={{ textAlign: 'center' }}>
             <el-button size="small" type="primary" id="submit" loading={this.loading} on-click={this.onSubmit}>重新生成</el-button>
             <el-button size="small" id="cancel" on-click={this.closeModal}>取消</el-button>

@@ -188,7 +188,7 @@ export default class Monitor extends Vue {
     {
       key: 'keyword',
       type: 'input',
-      label: '车牌/车架',
+      label: '输入搜索',
       placeholder: '车牌/车架',
     },
   ];
@@ -325,8 +325,8 @@ export default class Monitor extends Vue {
       </el-tooltip>;
         break;
       case 3:
-        str = <el-tooltip class="item" effect="dark" content={row.onlineCN} placement="top">
-          <span style={{ color: '#909399' }}>{row.onlineCN}</span>;
+        str = <el-tooltip class="item" effect="dark" content={'未知'} placement="top">
+          <span style={{ color: '#909399' }}>{'未知'}</span>;
       </el-tooltip>;
         break;
       default:
