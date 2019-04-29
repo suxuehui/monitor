@@ -210,7 +210,7 @@ export default class Device extends Vue {
       color: 'blue',
       text: '阈值',
       roles: true,
-      disabled: this.unBindDisable,
+      disabled: this.thresholdDisable,
     },
     {
       key: 'logs',
@@ -237,12 +237,34 @@ export default class Device extends Vue {
     return true;
   }
 
-  // 解绑状态\阈值状态：待验收2 未合格4 已合格3
+  // 解绑状态 待验收2 未合格4 已合格3
   unBindDisable(row: any) {
     if (row.status === 2 || row.status === 3 || row.status === 4) {
       return false;
     }
     return true;
+  }
+
+  // 阈值状态：待安绑1 待验收2 未合格4 已合格3
+  thresholdDisable(row: any) {
+    let flag: boolean = false;
+    // 以上四个状态
+    if (row.status === 1 || row.status === 2 || row.status === 3 || row.status === 4) {
+      // 设备不是BSJ
+      if (row.clientType !== 23) {
+        // 是否上报2a1
+        if (row.drivingCfgPower === false) {
+          flag = true;
+        } else {
+          flag = false;
+        }
+      } else {
+        flag = false;
+      }
+    } else {
+      flag = true;
+    }
+    return flag;
   }
 
   // 切换地址状态：已合格3 且门店支持切换switchAddress 设备在线online
@@ -625,15 +647,17 @@ export default class Device extends Vue {
         break;
       // 阈值
       case 'setThreshold':
-        if (row.drivingCfgPower) {
-          this.aclickTime = utils.getNowTime();
-          // 上报2a1
-          this.aThresholdVisible = true;
-          this.aThresholdData = row;
-        } else {
+        if (row.clientType === 23) {
           this.bclickTime = utils.getNowTime();
           this.bThresholdVisible = true;
           this.bThresholdData = row;
+        } else {
+          if (row.drivingCfgPower) {
+            this.aclickTime = utils.getNowTime();
+            // 上报2a1
+            this.aThresholdVisible = true;
+            this.aThresholdData = row;
+          }
         }
         break;
       // 日志

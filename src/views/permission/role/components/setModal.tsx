@@ -41,12 +41,19 @@ export default class SetModal extends Vue {
   @Watch('time')
   onDataChange(data: any) {
     this.checkBoxMainArr = [];
+    const arr: any = [];
     menuSelect({ roleId: this.data.roleId }).then((res) => {
       const { result: { resultCode, resultMessage }, entity } = res;
       if (resultCode === '0') {
-        this.menuList = JSON.parse(JSON.stringify(res.entity));
+        this.menuList = JSON.parse(JSON.stringify(entity));
         this.menuList.forEach((item: any) => {
-          this.checkBoxMainArr.push(`${item.id}`);
+          arr.push(`${item.id}`);
+          if (item.list !== null && item.list.length > 0) {
+            item.list.forEach((it: any) => {
+              arr.push(`${it.id}`);
+            });
+          }
+          this.checkBoxMainArr = this.arrUnique(arr);
         });
         // 查询到权限选项后再查角色信息
         this.getRoleInfo();
@@ -54,6 +61,11 @@ export default class SetModal extends Vue {
         this.$message.error(resultMessage);
       }
     });
+  }
+
+  // 数组去重
+  arrUnique(arr: any) {
+    return Array.from(new Set(arr));
   }
 
   // 获取角色权限信息
@@ -71,7 +83,7 @@ export default class SetModal extends Vue {
           arr = lodash.cloneDeep(entity.menuIds.split(','));
           arr.forEach((item: any, index: number) => {
             // 设置>0：取消对首页的验证
-            if (this.checkBoxMainArr.indexOf(item) <=0) {
+            if (this.checkBoxMainArr.indexOf(item) <= 0) {
               this.checkList.push(item);
             }
           });
@@ -120,7 +132,6 @@ export default class SetModal extends Vue {
   }
 
   onSubmit() {
-    if (this.loading) return;
     this.loading = true;
     const selectTree = this.getCheckedNodes();
     const selectId: object[] = [];

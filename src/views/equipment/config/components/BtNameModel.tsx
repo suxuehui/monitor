@@ -26,7 +26,7 @@ export default class BtNameModel extends Vue {
 
   @Prop() private time: any;
 
-  @Watch('data')
+  @Watch('time')
   onTimeChange() {
     // 查询蓝牙名称
     getBtName(this.data.imei).then((res: any) => {

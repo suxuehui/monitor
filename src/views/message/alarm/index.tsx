@@ -256,9 +256,9 @@ export default class Alarm extends Vue {
     // 告警类型
     getDict({ type: 'Alarm.Type' }).then((res) => {
       if (res.result.resultCode === '0') {
-        res.entity.map((item: any) => this.alarmType.push({
-          key: item.enumid,
-          value: item.enumvalue,
+        res.entity.map((item: any, index: number) => this.alarmType.push({
+          key: index,
+          value: item.enumValue,
           label: item.name,
         }));
         // 设备类型(全部)
@@ -267,8 +267,6 @@ export default class Alarm extends Vue {
           value: '',
           label: '告警类型(全部)',
         });
-
-        console.log(this.alarmType);
         this.filterList[1].options = this.alarmType;
         this.filterGrade[1].options = this.alarmType;
       } else {

@@ -81,7 +81,7 @@ export default class DownConfigModel extends Vue {
                 From.resetFields();
                 parent.closeModal(); // 关闭下发配置
                 parent.openCheckModel(); // 打开查询
-                parent.startCountDown(); // 开启倒计时
+                parent.startCheckCountDown(); // 开启倒计时
               }
             }, 1500);
           } else {

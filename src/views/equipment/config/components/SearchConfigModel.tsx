@@ -32,6 +32,11 @@ export default class SearchConfigModel extends Vue {
     this.$emit('close');
     this.loading = false;
   }
+  renderData() {
+    return this.data && this.data.length > 0 ? this.data.map((item: any, index: number) => <li class="item">
+      <span class="item_title">配置项{index + 1}:</span><span>{item.tag}</span>,<span>{item.paras}</span>【{item.realCfgVal}】
+      </li>) : <li class="noConfig">暂无配置</li>
+  }
 
   render() {
     return (
@@ -44,13 +49,9 @@ export default class SearchConfigModel extends Vue {
       >
         <ul class="SearchConfigModelContent">
           {
-            this.data && this.data.length > 0 ? this.data.map((item: any) => {
-              return (
-                <li class="item">
-                  <span class="item_title">配置项1:</span><span>{item.tag}</span>,<span>{item.paras}</span>【{item.realCfgVal}】
-                </li>
-              );
-            }) : <li class="noConfig">暂无配置</li>
+            this.data.origin === '列表' ?
+              this.renderData() : this.num !== 0 ?
+                <div class="noConfig">正在查询配置参数，请稍等...</div> : this.renderData()
           }
         </ul>
       </el-dialog>

@@ -146,7 +146,7 @@ export default class AddModal extends Vue {
 
   // 角色删除时调用
   removeTag(val: any) {
-    console.log(val);
+    // console.log(val);
   }
 
   selectChange(val: any) {

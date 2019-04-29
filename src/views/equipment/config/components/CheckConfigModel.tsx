@@ -34,13 +34,6 @@ export default class CheckConfigModel extends Vue {
 
   disBtn: boolean = false;
 
-  // @Watch('num')
-  // dataChange() {
-  //   if (this.num === 0) {
-  //     this.step += 1;
-  //   }
-  // }
-
   closeModal() {
     this.$emit('close');
     this.loading = false;
@@ -76,7 +69,9 @@ export default class CheckConfigModel extends Vue {
           if (parent) {
             parent.closeModal();
             parent.openSearchModel(); // 打开查询配置
+            parent.startSearchCountDown();// 开启倒计时
             parent.searchconfigData = res.entity;
+            parent.searchconfigData.origin = '检测';
           }
         }, 1500);
       } else {
@@ -101,7 +96,11 @@ export default class CheckConfigModel extends Vue {
           }
         </div>
         <div style={{ textAlign: 'center' }}>
-          <el-button disabled={this.num > 0 || this.disBtn} loading={this.loading} on-click={this.handleCheck}>
+          <el-button
+            disabled={this.num > 0 || this.disBtn}
+            loading={this.loading}
+            on-click={this.handleCheck}
+          >
             {
               this.num > 0 ? <span>查询配置({this.num}s)</span> : <span>查询配置</span>
             }

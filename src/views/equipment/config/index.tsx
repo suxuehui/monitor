@@ -173,15 +173,30 @@ export default class ConfigModel extends Vue {
   ];
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
+  // row.online === 1 && row.productName && row.productName.substr(0, 3) === item
   statusSet(row: any) {
-    if (this.ableConfig.length > 1) {
-      this.ableConfig.forEach(
-        (item: any) => !(
-          row.online === 1 && row.productName && row.productName.substr(0, 3) === item
-        ),
-      );
+    let flag = false;
+    // 判断有无配置
+    if (this.ableConfig.length > 0) {
+      // 判断是否在线
+      if (row.online === 1) {
+        this.ableConfig.forEach((item: any) => {
+          if (row.productName && row.productName.substr(0, 3) === item) {
+            // 满足条件
+            flag = false;
+          } else {
+            flag = true;
+          }
+        });
+      } else {
+        // 离线
+        flag = true;
+      }
+    } else {
+      // 没有配置项
+      flag = true;
     }
-    return true;
+    return flag;
   }
 
   // // 表格参数
@@ -275,15 +290,17 @@ export default class ConfigModel extends Vue {
 
   mounted() {
     // 设备型号
-    deviceModel('WIRELESS').then((res) => {
+    deviceModel('WIRED').then((res) => {
       const otuList: any = [];
       res.entity.forEach((item: any, index: number) => {
-        item.terminalModelList.forEach((it: any, ind: number) => {
-          otuList.push({
-            value: it.id,
-            label: it.name,
+        if (item.dictionary.name === 'OTU') {
+          item.terminalModelList.forEach((it: any, ind: number) => {
+            otuList.push({
+              value: it.id,
+              label: it.name,
+            });
           });
-        });
+        }
       });
       otuList.unshift({
         value: '',
@@ -329,6 +346,7 @@ export default class ConfigModel extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // 获取可以操作配置的类型
     SendClientTypeaAndVersion(null).then((res: any) => {
       const { entity, result } = res;
       if (result.resultCode === '0') {
@@ -367,10 +385,12 @@ export default class ConfigModel extends Vue {
       this.clearconfigData = row;
     } else if (key === 'checkConfig') { // 查询配置
       this.searchconfigData = [];
+      this.startSearchCountDown();
       queryCfg(row.imei).then((res: any) => {
         if (res.result.resultCode === '0') {
           this.searchconfigVisible = true;
           this.searchconfigData = JSON.parse(JSON.stringify(res.entity));
+          this.searchconfigData.origin = '列表';
         } else {
           this.$message.error(res.result.resultMessage);
         }
@@ -381,6 +401,7 @@ export default class ConfigModel extends Vue {
     } else if (key === 'btName') { // 蓝牙名称
       this.btNameVisible = true;
       this.btNameData = row;
+      this.btNameTime = utils.getNowTime();
     }
   }
 
@@ -430,6 +451,8 @@ export default class ConfigModel extends Vue {
 
   btNameData: any = {};
 
+  btNameTime: string = '';
+
   // 配置参数校验
   checkconfigVisible: boolean = false;
 
@@ -462,6 +485,10 @@ export default class ConfigModel extends Vue {
     this.searchconfigVisible = false; // 查询配置
     this.checkLogVisible = false; // 查询操作记录
     this.checkconfigVisible = false; // 参数校验
+    this.checkCountDownNum = 30;
+    this.searchCountDownNum = 5;
+    clearInterval(this.checkTimer);
+    clearInterval(this.searchTimer);
   }
 
   // 打开配置参数校验
@@ -472,13 +499,15 @@ export default class ConfigModel extends Vue {
   // 打开查询配置
   openSearchModel() {
     this.searchconfigVisible = true;
-    clearInterval(this.timer);
+    clearInterval(this.checkTimer);
+    clearInterval(this.searchTimer);
   }
 
   // 关闭配置参数校验
   closeCheckModel() {
     this.checkconfigVisible = false;
-    clearInterval(this.timer);
+    clearInterval(this.checkTimer);
+    clearInterval(this.searchTimer);
   }
 
   // 关闭弹窗时刷新
@@ -489,16 +518,31 @@ export default class ConfigModel extends Vue {
   }
 
   // 倒计数量
-  countDownNum: number = 3;
+  checkCountDownNum: number = 30;
+
+  searchCountDownNum: number = 5;
 
   // 倒计时时间
-  timer: any = null;
+  checkTimer: any = null;
 
-  startCountDown() {
-    this.timer = setInterval(() => {
-      this.countDownNum -= 1;
-      if (this.countDownNum === 0) {
-        clearInterval(this.timer);
+  searchTimer: any = null;
+
+  startCheckCountDown() {
+    this.checkTimer = setInterval(() => {
+      if (this.checkCountDownNum === 0) {
+        clearInterval(this.checkTimer);
+      } else {
+        this.checkCountDownNum -= 1;
+      }
+    }, 1000);
+  }
+
+  startSearchCountDown() {
+    this.searchTimer = setInterval(() => {
+      if (this.searchCountDownNum === 0) {
+        clearInterval(this.searchTimer);
+      } else {
+        this.searchCountDownNum -= 1;
       }
     }, 1000);
   }
@@ -538,7 +582,6 @@ export default class ConfigModel extends Vue {
           downLoadTime={this.downLoadTime}
           data={this.downconfigData}
           visible={this.downconfigVisibale}
-          checkVisible={this.checkconfigVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
@@ -556,19 +599,21 @@ export default class ConfigModel extends Vue {
           on-refresh={this.refresh}
         />
         <btname-model
+          time={this.btNameTime}
           data={this.btNameData}
           visible={this.btNameVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
         <checkconfig-model
-          num={this.countDownNum}
+          num={this.checkCountDownNum}
           data={this.checkconfigData}
           visible={this.checkconfigVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
         <searchconfig-model
+          num={this.searchCountDownNum}
           data={this.searchconfigData}
           visible={this.searchconfigVisible}
           on-close={this.closeModal}

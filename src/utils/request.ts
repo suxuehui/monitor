@@ -171,9 +171,10 @@ export default function request(options: Option): Promise<any> {
       Message.error(response.data.result.resultMessage);
       router.replace('/login');
     } else if (statusCode === 401) {
-      if (config.noLoginList.indexOf(window.location.hash) < 0) {
-        router.replace('/login');
-      }
+      // if (config.noLoginList.indexOf(window.location.hash) < 0) {
+      //   router.replace('/login');
+      // }
+      Message.error('无权限操作，请联系管理员');
     }
     return Promise.reject(new Error(msg));
   });

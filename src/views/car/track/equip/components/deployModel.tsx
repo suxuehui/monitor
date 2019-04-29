@@ -38,7 +38,6 @@ export default class DeployModel extends Vue {
   @Watch('time')
   onDataChange() {
     if (this.data.type === 'deploy') {
-      console.log(this.time);
       this.modelForm.startTime = '';
       const obj: any = JSON.parse(JSON.stringify(this.data));
       this.modelForm.frequency = obj.frequency;
