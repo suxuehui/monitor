@@ -128,9 +128,9 @@ export default class AddModal extends Vue {
       data.selectList.forEach((item: any) => {
         this.roleAddList.push({
           value: item.id,
-          label: item.roleName
-        })
-      })
+          label: item.roleName,
+        });
+      });
       this.modelForm.roleIdList = data.roleIdList;
       this.modelForm.realName = data.realName;
       this.modelForm.userName = data.userName;
@@ -308,12 +308,11 @@ export default class AddModal extends Vue {
                   style="width:100%"
                 >
                   {
-                    this.roleAddList.length > 0 ?
-                      this.roleAddList.map((item: any) => (
-                        <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                      )) : this.roleList.map((item: any) => (
-                        <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                      ))
+                    this.roleAddList.length > 0 ? this.roleAddList.map((item: any) => (
+                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                    )) : this.roleList.map((item: any) => (
+                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
+                    ))
                   }
                 </el-select>
               </el-form-item>

@@ -174,7 +174,14 @@ export default class ConfigModel extends Vue {
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
   statusSet(row: any) {
-    return !(row.online === 1 && row.productName && row.productName.substr(0, 3) === 'ovt');
+    if (this.ableConfig.length > 1) {
+      this.ableConfig.forEach(
+        (item: any) => !(
+          row.online === 1 && row.productName && row.productName.substr(0, 3) === item
+        ),
+      );
+    }
+    return true;
   }
 
   // // 表格参数
@@ -322,15 +329,20 @@ export default class ConfigModel extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    // SendClientTypeaAndVersion(null).then((res: any) => {
-    //   const { entity, result } = res;
-    //   if (result.resultCode === '0') {
-
-    //   } else {
-    //     this.$message.error(res.result.resultMessage);
-    //   }
-    // })
+    SendClientTypeaAndVersion(null).then((res: any) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        entity.forEach((item: any) => {
+          this.ableConfig.push(item.versionName);
+        });
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
+
+  // 能够下发，清除，查询配置的
+  ableConfig: any = [];
 
   onlineTypes: OnlineType[] = [
     { key: null, value: null, label: '网络状态(全部)' },

@@ -338,7 +338,7 @@ export default class Dashboard extends Vue {
     this.columnarChart = new window.G2.Chart({
       container: 'columnar',
       forceFit: true,
-      height: 370,
+      height: 400,
       animate: true,
     });
     this.circleChart = new window.G2.Chart({
@@ -544,31 +544,19 @@ export default class Dashboard extends Vue {
           </div>
           <div class="driveBox">
             <div class="leftPart">
-              <ul class="top">
-                {
-                  this.driveData.map((item: any) => <li class="item">
-                    {item.name}
-                    <br />
-                    {item.count}{item.unit}
-                  </li>)
-                }
-              </ul>
               <div id="columnar" class="columnar"></div>
             </div>
             <ul class="rightPart">
               {
-                this.driveRankData.map((item: any) => <li class="item">
+                this.driveData.map((item: any) => <li class="item">
                   <div class="name">
                     {item.name}
                     <span class="arrow arrowColor"></span>
                   </div>
                   <ul class="carList">
                     {
-                      item.arr.length > 0
-                        ? item.arr.map((data: any) => <li class="carDetail">
-                          <span>{data.plateNum}</span>
-                          <span>{data.count}</span>
-                        </li>) : <span class="noData">暂无数据</span>
+                      item.count !== null ? <span class="noData">{item.count}{item.unit}</span>
+                        : <span class="noData">23333</span>
                     }
                   </ul>
                 </li>)
