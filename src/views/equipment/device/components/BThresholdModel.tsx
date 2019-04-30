@@ -38,11 +38,13 @@ export default class BsjThreshold extends Vue {
   onTimeChange() {
     searchThrVal(this.data.imei).then((res: any) => {
       const { entity, result } = res;
+      let obj: any = {};
       if (result.resultCode === '0') {
-        this.modelForm = {
+        obj = {
           batchSetting: 'false',
           ...entity,
         };
+        this.modelForm = Object.assign(this.modelForm, obj);
       } else {
         this.$message.error(result.resultMessage);
       }
@@ -312,9 +314,9 @@ export default class BsjThreshold extends Vue {
                 id="vibrationAcceleration"
                 class="aItemOneInput"
                 v-model={this.modelForm.vibrationAcceleration}
-                placeholder="请输入震动阀值"
+                placeholder="请输入振动阈值"
               />
-              <span class="aItemTitle color909399">震动阀值</span>
+              <span class="aItemTitle color909399">振动阈值</span>
               <span class="star1">*</span>
               <el-button type="text" class="btn" on-click={() => this.getDefaultVal('振动')}>默认值</el-button>
             </div>
