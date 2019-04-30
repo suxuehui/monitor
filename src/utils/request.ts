@@ -158,24 +158,40 @@ export default function request(options: Option): Promise<any> {
     // if (process.env.NODE_ENV === 'production') {
     //   Raven.captureException(JSON.stringify(error));
     // }
+    const { data, statusText } = response;
+    const { result: { resultCode, resultMessage } } = data;
     if (response && response instanceof Object) {
-      const { data, statusText } = response;
       statusCode = response.status;
       msg = data.result.resultMessage || statusText;
     } else {
       statusCode = 600;
       msg = error.message || 'Network Error';
     }
-    // 判断错误码是否为4，4为登录超时，跳转到登录页，或者是http的状态码为401也代表会话失效
-    if (response.data.result.resultCode === 4) {
-      Message.error(response.data.result.resultMessage);
+    // 存在token
+    if (window.localStorage.getItem('token')) {
+      if (statusCode === 401) {
+        Message.error('无权限操作，请联系管理员');
+      } else if (resultCode === 4) {
+        Message.error(resultMessage);
+        router.replace('/login');
+      } else if (resultCode === 401) {
+        Message.error('无权限操作，请联系管理员');
+      }
+    } else {
+      // 首次登录时不存在token
       router.replace('/login');
-    } else if (statusCode === 401) {
-      // if (config.noLoginList.indexOf(window.location.hash) < 0) {
-      //   router.replace('/login');
-      // }
-      Message.error('无权限操作，请联系管理员');
+      Message.error('尚未在该机上查询到登录数据，请登录！');
     }
+    // // 判断错误码是否为4，4为登录超时，跳转到登录页，或者是http的状态码为401也代表会话失效
+    // if (response.data.result.resultCode === 4) {
+    //   Message.error(response.data.result.resultMessage);
+    //   router.replace('/login');
+    // } else if (statusCode === 401) {
+    //   // if (config.noLoginList.indexOf(window.location.hash) < 0) {
+    //   //   router.replace('/login');
+    //   // }
+    //   Message.error('无权限操作，请联系管理员');
+    // }
     return Promise.reject(new Error(msg));
   });
 }
