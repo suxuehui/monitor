@@ -384,18 +384,9 @@ export default class ConfigModel extends Vue {
       this.clearconfigVisible = true;
       this.clearconfigData = row;
     } else if (key === 'checkConfig') { // 查询配置
-      this.searchconfigData = [];
+      this.searchconfigData = row;
       this.startSearchCountDown();
       this.searchconfigVisible = true;
-      queryCfg(row.imei).then((res: any) => {
-        if (res.result.resultCode === '0') {
-          // this.searchconfigVisible = true;
-          this.searchconfigData = JSON.parse(JSON.stringify(res.entity));
-          this.searchconfigData.origin = '列表';
-        } else {
-          this.$message.error(res.result.resultMessage);
-        }
-      });
     } else if (key === 'btAuth') { // 蓝牙鉴权
       this.btAuthVisible = true;
       this.getAuthCode(row);
@@ -476,7 +467,6 @@ export default class ConfigModel extends Vue {
 
   clickAuthTime: string = '';
 
-
   // 关闭弹窗
   closeModal(): void {
     this.downconfigVisibale = false; // 下发配置
@@ -486,8 +476,8 @@ export default class ConfigModel extends Vue {
     this.searchconfigVisible = false; // 查询配置
     this.checkLogVisible = false; // 查询操作记录
     this.checkconfigVisible = false; // 参数校验
-    this.checkCountDownNum = 30;
-    this.searchCountDownNum = 5;
+    this.checkCountDownNum = this.countDownNum;
+    this.searchCountDownNum = this.countDownNum;
     clearInterval(this.checkTimer);
     clearInterval(this.searchTimer);
   }
@@ -519,9 +509,11 @@ export default class ConfigModel extends Vue {
   }
 
   // 倒计数量
-  checkCountDownNum: number = 30;
+  checkCountDownNum: number = 0;
 
-  searchCountDownNum: number = 5;
+  searchCountDownNum: number = 0;
+
+  countDownNum: number = 30;
 
   // 倒计时时间
   checkTimer: any = null;
@@ -529,6 +521,7 @@ export default class ConfigModel extends Vue {
   searchTimer: any = null;
 
   startCheckCountDown() {
+    this.checkCountDownNum = this.countDownNum;
     this.checkTimer = setInterval(() => {
       if (this.checkCountDownNum === 0) {
         clearInterval(this.checkTimer);
@@ -539,6 +532,7 @@ export default class ConfigModel extends Vue {
   }
 
   startSearchCountDown() {
+    this.searchCountDownNum = this.countDownNum;
     this.searchTimer = setInterval(() => {
       if (this.searchCountDownNum === 0) {
         clearInterval(this.searchTimer);
@@ -614,6 +608,7 @@ export default class ConfigModel extends Vue {
           on-refresh={this.refresh}
         />
         <searchconfig-model
+          countNum={this.countDownNum}
           num={this.searchCountDownNum}
           data={this.searchconfigData}
           visible={this.searchconfigVisible}

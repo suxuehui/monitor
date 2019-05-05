@@ -150,7 +150,7 @@ export default class DrivingBehavior extends Vue {
             lng: item.lng,
             lat: item.lat,
             events: [],
-            utctime: item.addTime,
+            utctime: '',
           });
           item && item.driveBehaviors.forEach((its: any, ind: number) => {
             // 数量展示用
@@ -160,8 +160,10 @@ export default class DrivingBehavior extends Vue {
               }
             });
             this.behaviorDetail.forEach((it: any) => {
-              it.events.push(its.type);
-              it.utctime = its.addTime;
+              if (it.lat === item.lat && it.lng === item.lng) {
+                it.utctime = its.addTime;
+                it.events.push(its.type);
+              }
             });
           });
         });

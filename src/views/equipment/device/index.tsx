@@ -403,7 +403,7 @@ export default class Device extends Vue {
     { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备到期', prop: 'serviceEndDay', formatter: this.endDay },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
-    { label: '上线地址', prop: 'imei', formatter: this.upLoc },
+    { label: '上线地址', prop: 'im1ei', formatter: this.upLoc },
     { label: '网络状态', prop: 'online', formatter: this.onlineSelect },
   ];
 

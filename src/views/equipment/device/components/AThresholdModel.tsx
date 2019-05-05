@@ -53,7 +53,7 @@ export default class BsjThreshold extends Vue {
   modelForm: any = {
     cfgName: '',
     batchSetting: '', // 是否批量设置
-    accelerationThreshold: 10, // 急加速加速阈值
+    accelerationThreshold: 0, // 急加速加速阈值
     collisionAcceleration: 0, // 碰撞加速度阈值
     collisionDetectionDuration: 0, // 碰撞检测时长
     collisionDuration: 0, // 碰撞持续时长
@@ -191,7 +191,7 @@ export default class BsjThreshold extends Vue {
       this.modelForm = {
         cfgName: '',
         batchSetting: '', // 是否批量设置
-        accelerationThreshold: 10, // 急加速加速阈值
+        accelerationThreshold: 0, // 急加速加速阈值
         collisionAcceleration: 0, // 碰撞加速度阈值
         collisionDetectionDuration: 0, // 碰撞检测时长
         collisionDuration: 0, // 碰撞持续时长
