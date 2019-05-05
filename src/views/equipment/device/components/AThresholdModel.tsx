@@ -39,10 +39,6 @@ export default class BsjThreshold extends Vue {
       const { entity, result } = res;
       let obj: any = {};
       if (result.resultCode === '0') {
-        this.modelForm = {
-          batchSetting: 'false',
-          ...entity,
-        };
         obj = {
           batchSetting: 'false',
           ...entity,
@@ -190,6 +186,31 @@ export default class BsjThreshold extends Vue {
 
   closeModal() {
     this.$emit('close');
+    this.loading = false;
+    setTimeout(() => {
+      this.modelForm = {
+        cfgName: '',
+        batchSetting: '', // 是否批量设置
+        accelerationThreshold: 10, // 急加速加速阈值
+        collisionAcceleration: 0, // 碰撞加速度阈值
+        collisionDetectionDuration: 0, // 碰撞检测时长
+        collisionDuration: 0, // 碰撞持续时长
+        collisionStopDuration: 0, // 碰撞停车时长
+        decelerationThreshold: 0, // 急减速加速阈值
+        flipAngularthreshold: 0, // 翻转角速度阈值，
+        flipChangeThreshold: 0, // 翻转变化阈值，
+        flipParkingDuration: 0, // 翻转停车时长（秒），
+        initialMileage: 0, // 初始里程，
+        overSpeedDuration: 0, // 超速持续时间,
+        overSpeedSpec: 0, // 超速速度阈值,
+        sharpAngleSpec: 0, // 急转弯角度阈值，
+        sharpHighAngleThreshold: 0, // 急转弯高速角度阈值W2，
+        sharpHighThreshold: 0, // 急转弯高速时速阈值V2，
+        sharpLowAngleThreshold: 0, // 急转弯低速角度阈值W1，
+        sharpLowSpeed: 0, // 急转弯低速时速阈值V1，
+        vibrationAcceleration: 0, // 振动加速度阈值
+      };
+    }, 200);
   }
 
   onSubmit() {
