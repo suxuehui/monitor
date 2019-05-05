@@ -1,6 +1,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Button, DatePicker } from 'element-ui';
-import { getAlarmData, getDrivingData, getVehicleData } from '@/api/dashboard';
+import {
+  getAlarmData, getDrivingData, getOnlineData, getFenceData,
+} from '@/api/dashboard';
 import './index.less';
 
 @Component({
@@ -12,14 +14,14 @@ import './index.less';
 })
 export default class Dashboard extends Vue {
   // 告警数据
-  alarmData: any = []
+  alarmData: any = [];
+
+  // 围栏车辆数据
+  fenceData: any = {};
 
   // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
   // 圆环数据
-  circleData: any = [
-    { item: '在线', count: 80, percent: 0.8 },
-    { item: '离线', count: 20, percent: 0.2 },
-  ];
+  circleData: any = [];
 
   columData: any = [
     { name: '急加速', num: 0 },
@@ -59,9 +61,9 @@ export default class Dashboard extends Vue {
     { name: '平均油耗', arr: [] },
   ];
 
-  totalCount: number = 100;
+  totalCount: number = 0;
 
-  drivingCount: number = 100;
+  drivingCount: number = 0;
 
   helloWord: string = '';
 
@@ -100,9 +102,11 @@ export default class Dashboard extends Vue {
     // 获取告警统计数据
     this.GetAlarmData();
     // 获取车辆统计数据
-    // this.GetVehicleData();
+    this.GetVehicleData();
     // 获取行驶统计数据
     this.GetDrivingData();
+    // 获取围栏车辆数据
+    this.GetFenceData();
   }
 
   resetDriveData() {
@@ -240,30 +244,41 @@ export default class Dashboard extends Vue {
     });
   }
 
+  // 获取围栏内外数据
+  GetFenceData() {
+    getFenceData(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.fenceData = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
   // 获取车辆统计数据
   GetVehicleData() {
-    getVehicleData(null).then((res) => {
+    getOnlineData(null).then((res) => {
       if (res.result.resultCode === '0') {
         const data: any = JSON.parse(JSON.stringify(res.entity));
         const onlinePercent = Math.round(
-          data.onlineCount / (data.onlineCount + data.offlineCount) * 100,
+          data.online / (data.online + data.offline) * 100,
         ) / 100;
         const offlinePercent = Math.round(
-          data.offlineCount / (data.onlineCount + data.offlineCount) * 100,
+          data.offline / (data.online + data.offline) * 100,
         ) / 100;
         const obj1 = {
           item: '在线',
-          count: data.onlineCount,
+          count: data.online,
           percent: onlinePercent,
         };
         const obj2 = {
           item: '离线',
-          count: data.offlineCount,
+          count: data.offline,
           percent: offlinePercent,
         };
-        this.totalCount = data.count;
+        this.totalCount = data.moving;
         this.circleData.push(obj1, obj2);
-        this.drivingCount = data.drivingCount;
+        this.drivingCount = data.offline + data.online;
         // 环状图表
         this.createCircleChart();
       } else {
@@ -348,7 +363,6 @@ export default class Dashboard extends Vue {
       width: 300,
       animate: true,
     });
-    this.createCircleChart();
   }
 
   setHelloWord(time: any) {
@@ -478,6 +492,7 @@ export default class Dashboard extends Vue {
     };
     return (
       <div class="fzkContainer">
+        {/* 监控统计 */}
         <div class="monitorArea">
           <div class="mask"></div>
           <div class="monitorCenter">
@@ -492,6 +507,7 @@ export default class Dashboard extends Vue {
             </div>
           </div>
         </div>
+        {/* 行驶统计 */}
         <div class="driveArea">
           <div class="title">
             行驶数据统计
@@ -564,20 +580,22 @@ export default class Dashboard extends Vue {
             </ul>
           </div>
         </div>
+        {/* 围栏内外 */}
         <ul class="fenceCar">
           <li class="fenceItem">
             <span>无围栏</span>
-            <span>1000辆</span>
+            <span>{this.fenceData.noFence ? this.fenceData.noFence : 0} 辆</span>
           </li>
           <li class="fenceItem">
             <span>围栏外</span>
-            <span>1000辆</span>
+            <span>{this.fenceData.outFence ? this.fenceData.outFence : 0} 辆</span>
           </li>
           <li class="fenceItem">
             <span>围栏内</span>
-            <span>1000辆</span>
+            <span>{this.fenceData.inFence ? this.fenceData.inFence : 0} 辆</span>
           </li>
         </ul>
+        {/* 告警消息 */}
         <div class="alarmArea">
           <div class="title">
             告警消息统计

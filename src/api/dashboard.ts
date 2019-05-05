@@ -19,9 +19,17 @@ export async function getDrivingData(params: any) {
 }
 
 // 监控统计
-export async function getVehicleData(params: any) {
+export async function getOnlineData(params: any) {
   return request({
-    url: '/home/report/vehicleData',
+    url: '/home/report/onlineData',
+    method: 'get',
+  });
+}
+
+// 围栏内外
+export async function getFenceData(params: any) {
+  return request({
+    url: '/home/report/fenceData',
     method: 'get',
   });
 }

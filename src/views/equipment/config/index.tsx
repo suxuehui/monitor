@@ -386,9 +386,10 @@ export default class ConfigModel extends Vue {
     } else if (key === 'checkConfig') { // 查询配置
       this.searchconfigData = [];
       this.startSearchCountDown();
+      this.searchconfigVisible = true;
       queryCfg(row.imei).then((res: any) => {
         if (res.result.resultCode === '0') {
-          this.searchconfigVisible = true;
+          // this.searchconfigVisible = true;
           this.searchconfigData = JSON.parse(JSON.stringify(res.entity));
           this.searchconfigData.origin = '列表';
         } else {

@@ -179,6 +179,7 @@ export default class DrivingBehavior extends Vue {
           { num: 0, txt: '急减速', type: 6 },
           { num: 0, txt: '急转弯', type: 7 },
         ];
+        this.clearCanvas();
         this.$message.error(result.resultMessage);
       }
     });

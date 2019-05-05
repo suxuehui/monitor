@@ -45,7 +45,7 @@ export default class SetModal extends Vue {
     menuSelect({ roleId: this.data.roleId }).then((res) => {
       const { result: { resultCode, resultMessage }, entity } = res;
       if (resultCode === '0') {
-        this.menuList = JSON.parse(JSON.stringify(entity));
+        this.menuList = entity.sort(this.compare('orderNum'));
         this.menuList.forEach((item: any) => {
           arr.push(`${item.id}`);
           if (item.list !== null && item.list.length > 0) {
@@ -66,6 +66,23 @@ export default class SetModal extends Vue {
   // 数组去重
   arrUnique(arr: any) {
     return Array.from(new Set(arr));
+  }
+
+  // 按照指定字符排序
+  compare(prop: any) {
+    return function compareInner(obj1: any, obj2: any) {
+      const val1 = obj1[prop];
+      const val2 = obj2[prop];
+      let num: number = 0;
+      if (val1 < val2) {
+        num = -1;
+      } else if (val1 > val2) {
+        num = 1;
+      } else {
+        num = 0;
+      }
+      return num;
+    };
   }
 
   // 获取角色权限信息
