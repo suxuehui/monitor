@@ -300,7 +300,7 @@ export default class BsjThreshold extends Vue {
               />
               <span class="itemTitle color909399">振动阈值</span>
               <span class="star1">*</span>
-              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('震动')}>默认值</el-button>
+              <el-button type="text" class="btn" on-click={() => this.getDefaultVal('振动')}>默认值</el-button>
             </div>
           </el-form-item>
           <el-form-item label="急加速" prop="accelerationThreshold">

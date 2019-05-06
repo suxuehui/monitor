@@ -136,7 +136,7 @@ export default class DrivingBehavior extends Vue {
       const { entity, result } = res;
       if (result.resultCode === '0') {
         this.behaviorData = [
-          { num: 0, txt: '震动', type: 1 },
+          { num: 0, txt: '振动', type: 1 },
           { num: 0, txt: '碰撞', type: 2 },
           { num: 0, txt: '翻滚', type: 4 },
           { num: 0, txt: '超速', type: 8 },
@@ -173,7 +173,7 @@ export default class DrivingBehavior extends Vue {
         }
       } else {
         this.behaviorData = [
-          { num: 0, txt: '震动', type: 1 },
+          { num: 0, txt: '振动', type: 1 },
           { num: 0, txt: '碰撞', type: 2 },
           { num: 0, txt: '翻滚', type: 4 },
           { num: 0, txt: '超速', type: 8 },
@@ -231,7 +231,7 @@ export default class DrivingBehavior extends Vue {
     // 绘制驾驶行为
     function renderBehavior() {
       // 定义车辆驾驶行为及对应颜色
-      // 0-'' 1-震动 2-碰撞 3-'' 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
+      // 0-'' 1-振动 2-碰撞 3-'' 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
       // ['0', '1震', '2碰', '3', '4翻', '5', '6碰', '7滚', '8超'];
       const NameMap = ['', '震', '碰', '', '翻', '加', '减', '弯', '超'];
       const ColorMap = ['', '#52c41a', '#f5222d', '', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2', '#eb2296'];
@@ -359,9 +359,9 @@ export default class DrivingBehavior extends Vue {
 
   todayActive: boolean = true; // 当天
 
-  sevendayActive: boolean = false; // 7天
+  yesterdayActive: boolean = false; // 昨天
 
-  thirtydayActive: boolean = false; // 30天
+  sevendayActive: boolean = false; // 7天
 
   allActive: boolean = false; // 全部（当前时间往前推三个月）
 
@@ -421,12 +421,12 @@ export default class DrivingBehavior extends Vue {
     };
   }
 
-  thirtyData() {
+  yesterdayData() {
     this.cancelAllActive();
-    this.thirtydayActive = true;
+    this.yesterdayActive = true;
     const day: any = new Date();
     const endTime = day.Format('yyyy-MM-dd');
-    const oldTimestamp = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
+    const oldTimestamp = new Date().getTime() - 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
       new Date(),
@@ -442,7 +442,7 @@ export default class DrivingBehavior extends Vue {
     this.allActive = true;
     const day: any = new Date();
     const endTime = day.Format('yyyy-MM-dd');
-    const oldTimestamp = new Date().getTime() - 90 * 24 * 60 * 60 * 1000;
+    const oldTimestamp = new Date().getTime() - 89 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
       new Date(),
@@ -464,7 +464,7 @@ export default class DrivingBehavior extends Vue {
           endTime: data[1],
         };
       } else {
-        this.$message.error('查询时间范围最大为三个月，请重新选择');
+        this.$message.error('查询时间范围最大为90天，请重新选择');
       }
     }
   }
@@ -484,7 +484,7 @@ export default class DrivingBehavior extends Vue {
   cancelAllActive() {
     this.todayActive = false;
     this.sevendayActive = false;
-    this.thirtydayActive = false;
+    this.yesterdayActive = false;
     this.allActive = false;
   }
 
@@ -542,18 +542,18 @@ export default class DrivingBehavior extends Vue {
               今天
               </li>
             <li
+              id="yesterday"
+              class={['item', this.yesterdayActive ? 'active' : '']}
+              on-click={this.yesterdayData}
+            >
+              昨天
+              </li>
+            <li
               id="sevenDay"
               class={['item', this.sevendayActive ? 'active' : '']}
               on-click={this.sevenData}
             >
               近7天
-              </li>
-            <li
-              id="thirtyDay"
-              class={['item', this.thirtydayActive ? 'active' : '']}
-              on-click={this.thirtyData}
-            >
-              近30天
               </li>
             <li
               id="allDay"

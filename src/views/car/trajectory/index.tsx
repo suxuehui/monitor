@@ -295,9 +295,9 @@ export default class Trajectory extends Vue {
       this.clearCanvas();
       this.isEnd = false;
       this.locChange = false;
-      // 1-震动 2-碰撞 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
+      // 1-振动 2-碰撞 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
       this.behaivorData = [
-        { num: 0, txt: '震动', type: '1' },
+        { num: 0, txt: '振动', type: '1' },
         { num: 0, txt: '碰撞', type: '2' },
         { num: 0, txt: '翻滚', type: '4' },
         { num: 0, txt: '超速', type: '8' },
@@ -767,7 +767,7 @@ export default class Trajectory extends Vue {
         this.isEnd = true;
       }
       this.behaivorData = [
-        { num: 0, txt: '震动', type: '1' },
+        { num: 0, txt: '振动', type: '1' },
         { num: 0, txt: '碰撞', type: '2' },
         { num: 0, txt: '翻滚', type: '4' },
         { num: 0, txt: '超速', type: '8' },
@@ -798,7 +798,7 @@ export default class Trajectory extends Vue {
           }
           // 重置驾驶行为数据
           this.behaivorData = [
-            { num: 0, txt: '震动', type: '1' },
+            { num: 0, txt: '振动', type: '1' },
             { num: 0, txt: '碰撞', type: '2' },
             { num: 0, txt: '翻滚', type: '4' },
             { num: 0, txt: '超速', type: '8' },

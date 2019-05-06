@@ -147,7 +147,7 @@ export default class Driving extends Vue {
       },
     },
     {
-      label: '震动',
+      label: '振动',
       prop: 'lightShakeCount',
       sortable: true,
       sortBy: 'lightShakeCount',
