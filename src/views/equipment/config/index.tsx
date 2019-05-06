@@ -186,17 +186,21 @@ export default class ConfigModel extends Vue {
 
   // protocolVersion 01或07--只有蓝牙秘钥 其他有蓝牙名称、蓝牙鉴权
   protocolVersionSet(row: any) {
-    if (row.protocolVersion === '01' || row.protocolVersion === '07') {
-      return true;
+    if (row.protocolVersion) {
+      if (row.protocolVersion === '01' || row.protocolVersion === '07') {
+        return true;
+      }
+      return false;
     }
-    return false;
   }
 
   protocolSet(row: any) {
-    if (row.protocolVersion === '01' || row.protocolVersion === '07') {
-      return false;
+    if (row.protocolVersion) {
+      if (row.protocolVersion === '01' || row.protocolVersion === '07') {
+        return false;
+      }
+      return true;
     }
-    return true;
   }
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
