@@ -11,6 +11,7 @@ import DownConfigModel from './components/DownConfigModel';
 import ClearConfigModel from './components/ClearConfigModel';
 import BtAuthModel from './components/BtAuthModel';
 import BtNameModel from './components/BtNameModel';
+import BtSecretModel from './components/BtSecretModel';
 import CheckConfigModel from './components/CheckConfigModel';
 import CheckLogModel from './components/CheckLogModel';
 import SearchConfigModel from './components/SearchConfigModel';
@@ -27,6 +28,7 @@ interface OnlineType { key: any, value: any, label: string }
     'clearconfig-model': ClearConfigModel,
     'btauth-model': BtAuthModel,
     'btname-model': BtNameModel,
+    'btsecret-model': BtSecretModel,
     'checkconfig-model': CheckConfigModel,
     'checkOpeLog-model': CheckLogModel,
     'searchconfig-model': SearchConfigModel,
@@ -162,6 +164,7 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '蓝牙鉴权',
       roles: true,
+      disabled: this.protocolVersionSet,
     },
     {
       key: 'btName',
@@ -169,8 +172,32 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '蓝牙名称',
       roles: true,
+      disabled: this.protocolVersionSet,
+    },
+    {
+      key: 'btSecretKey',
+      rowKey: 'id',
+      color: 'blue',
+      text: '蓝牙秘钥',
+      roles: true,
+      disabled: this.protocolSet,
     },
   ];
+
+  // protocolVersion 01或07--只有蓝牙秘钥 其他有蓝牙名称、蓝牙鉴权
+  protocolVersionSet(row: any) {
+    if (row.protocolVersion === '01' || row.protocolVersion === '07') {
+      return true;
+    }
+    return false;
+  }
+
+  protocolSet(row: any) {
+    if (row.protocolVersion === '01' || row.protocolVersion === '07') {
+      return false;
+    }
+    return true;
+  }
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
   // row.online === 1 && row.productName && row.productName.substr(0, 3) === item
@@ -394,6 +421,10 @@ export default class ConfigModel extends Vue {
       this.btNameVisible = true;
       this.btNameData = row;
       this.btNameTime = utils.getNowTime();
+    } else if (key === 'btSecretKey') { // 蓝牙秘钥
+      this.btSecretVisible = true;
+      this.btSecretData = row;
+      this.btSecretTime = utils.getNowTime();
     }
   }
 
@@ -445,6 +476,13 @@ export default class ConfigModel extends Vue {
 
   btNameTime: string = '';
 
+  // 蓝牙秘钥
+  btSecretVisible: boolean = false;
+
+  btSecretData: any = {};
+
+  btSecretTime: string = '';
+
   // 配置参数校验
   checkconfigVisible: boolean = false;
 
@@ -476,8 +514,9 @@ export default class ConfigModel extends Vue {
     this.searchconfigVisible = false; // 查询配置
     this.checkLogVisible = false; // 查询操作记录
     this.checkconfigVisible = false; // 参数校验
-    this.checkCountDownNum = this.countDownNum;
-    this.searchCountDownNum = this.countDownNum;
+    this.checkCountDownNum = this.checkDownNum;
+    this.searchCountDownNum = this.searchDownNum;
+    this.btSecretVisible = false; // 蓝牙秘钥
     clearInterval(this.checkTimer);
     clearInterval(this.searchTimer);
   }
@@ -513,7 +552,9 @@ export default class ConfigModel extends Vue {
 
   searchCountDownNum: number = 0;
 
-  countDownNum: number = 30;
+  checkDownNum: number = 30;
+
+  searchDownNum: number = 35;
 
   // 倒计时时间
   checkTimer: any = null;
@@ -521,7 +562,7 @@ export default class ConfigModel extends Vue {
   searchTimer: any = null;
 
   startCheckCountDown() {
-    this.checkCountDownNum = this.countDownNum;
+    this.checkCountDownNum = this.checkDownNum;
     this.checkTimer = setInterval(() => {
       if (this.checkCountDownNum === 0) {
         clearInterval(this.checkTimer);
@@ -532,7 +573,7 @@ export default class ConfigModel extends Vue {
   }
 
   startSearchCountDown() {
-    this.searchCountDownNum = this.countDownNum;
+    this.searchCountDownNum = this.searchDownNum;
     this.searchTimer = setInterval(() => {
       if (this.searchCountDownNum === 0) {
         clearInterval(this.searchTimer);
@@ -600,6 +641,13 @@ export default class ConfigModel extends Vue {
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
+        <btsecret-model
+          time={this.btSecretTime}
+          data={this.btSecretData}
+          visible={this.btSecretVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
         <checkconfig-model
           num={this.checkCountDownNum}
           data={this.checkconfigData}
@@ -608,7 +656,7 @@ export default class ConfigModel extends Vue {
           on-refresh={this.refresh}
         />
         <searchconfig-model
-          countNum={this.countDownNum}
+          countNum={this.searchDownNum}
           num={this.searchCountDownNum}
           data={this.searchconfigData}
           visible={this.searchconfigVisible}

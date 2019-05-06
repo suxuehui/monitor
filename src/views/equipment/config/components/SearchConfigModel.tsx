@@ -34,7 +34,12 @@ export default class SearchConfigModel extends Vue {
   @Watch('num')
   onDataChange() {
     if (this.num === this.countNum - 1) {
-      this.getConfig();
+      if (this.data.origin && this.data.origin === '检测') {
+        this.getOk = 'ok';
+        this.configArr = JSON.parse(JSON.stringify(this.data.entity));
+      } else {
+        this.getConfig();
+      }
     }
     if (this.num === 0) {
       if (this.getOk === 'ok') {

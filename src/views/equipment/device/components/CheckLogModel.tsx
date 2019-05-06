@@ -111,7 +111,11 @@ export default class CheckLogModel extends Vue {
     { label: '时间', prop: 'time' },
     { label: '事件', prop: 'event' },
     { label: '软件版本', prop: 'softVersion' },
-    { label: '上电状态标志', prop: 'powerOnStatus' },
+    {
+      label: '上电状态标志',
+      prop: 'powerOnStatus',
+      formatter: this.statusSet,
+    },
     {
       label: '重启次数',
       prop: 'restartNumber',
@@ -119,6 +123,28 @@ export default class CheckLogModel extends Vue {
     },
     { label: '离线前状态', prop: 'preOfflineState' },
   ];
+
+  statusSet(row: any) {
+    let str: string = '';
+    switch (row.powerOnStatus) {
+      case 1:
+        str = '软重启';
+        break;
+      case 2:
+        str = '硬重启';
+        break;
+      case 3:
+        str = '低功耗';
+        break;
+      case 4:
+        str = '硬唤醒';
+        break;
+      default:
+        str = '未知';
+        break;
+    }
+    return str;
+  }
 
   numSet(row: any) {
     return row.restartNumber ? `${row.restartNumber}` : '--';

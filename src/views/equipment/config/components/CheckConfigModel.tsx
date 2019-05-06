@@ -70,7 +70,7 @@ export default class CheckConfigModel extends Vue {
             parent.closeModal();
             parent.openSearchModel(); // 打开查询配置
             parent.startSearchCountDown();// 开启倒计时
-            parent.searchconfigData = res.entity;
+            parent.searchconfigData.entity = res.entity;
             parent.searchconfigData.origin = '检测';
           }
         }, 1500);
