@@ -192,6 +192,7 @@ export default class ConfigModel extends Vue {
       }
       return false;
     }
+    return true;
   }
 
   protocolSet(row: any) {
@@ -201,6 +202,7 @@ export default class ConfigModel extends Vue {
       }
       return true;
     }
+    return true;
   }
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
