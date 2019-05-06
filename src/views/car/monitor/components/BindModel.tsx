@@ -48,8 +48,8 @@ export default class BindModal extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
+      this.resetData();
     }, 200);
-    this.resetData();
     this.loading = false;
   }
 

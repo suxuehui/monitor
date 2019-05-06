@@ -505,10 +505,10 @@ export default class EleFence extends Vue {
     let type;
     switch (data) {
       case '1':
-        type = '驶出监控';
+        type = '驶入监控';
         break;
       case '2':
-        type = '驶入监控';
+        type = '驶出监控';
         break;
       case '3':
         type = '驶出入监控';

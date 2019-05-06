@@ -260,12 +260,8 @@ export default class Dashboard extends Vue {
     getOnlineData(null).then((res) => {
       if (res.result.resultCode === '0') {
         const data: any = JSON.parse(JSON.stringify(res.entity));
-        const onlinePercent = Math.round(
-          data.online / (data.online + data.offline) * 100,
-        ) / 100;
-        const offlinePercent = Math.round(
-          data.offline / (data.online + data.offline) * 100,
-        ) / 100;
+        const onlinePercent: number = Number((data.online / (data.online + data.offline)).toFixed(2));
+        const offlinePercent = 1 - onlinePercent;
         const obj1 = {
           item: '在线',
           count: data.online,
@@ -317,7 +313,7 @@ export default class Dashboard extends Vue {
       .color('item', ['#00CA68', '#F25D56'])
       .label('percent', {
         formatter: function formatter(val: any, item: any) {
-          return `${item.point.item}:${val}`;
+          return `${item.point.item}`;
         },
       })
       .style({

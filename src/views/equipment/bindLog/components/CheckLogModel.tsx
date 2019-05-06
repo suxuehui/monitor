@@ -37,10 +37,14 @@ export default class CheckLog extends Vue {
   ];
 
   acceptPerson(row: any) {
-    return row.acceptOrgName && row.acceptRealName && row.acceptUsername
-      ? <el-tooltip class="item" effect="dark" content={`${row.acceptOrgName}+${row.acceptRealName}+${row.acceptUsername}`} placement="top">
+    const str1 = row.acceptOrgName;
+    const str2 = row.acceptRealName ? `+${row.acceptRealName}` : '';
+    const str3 = `+${row.acceptUsername}`;
+    const str = str1 + str2 + str3;
+    return row.acceptOrgName || row.acceptRealName || row.acceptUsername
+      ? <el-tooltip class="item" effect="dark" content={str} placement="top">
         <div>
-          <p>{`${row.acceptOrgName}+${row.acceptRealName}`}</p>
+          <p>{`${row.acceptOrgName}${str2}`}</p>
           <p>{`(${row.acceptUsername})`}</p>
         </div>
       </el-tooltip> : '--';

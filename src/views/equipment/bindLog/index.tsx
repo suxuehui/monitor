@@ -53,7 +53,7 @@ export default class BindLog extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
-    { label: '操作人员', prop: 'opsRealName', formatter: this.opsPerson },
+    { label: '操作人员', prop: 'opsOrgName', formatter: this.opsPerson },
     { label: '操作类型', prop: 'opsType', formatter: this.typeChange },
     { label: '操作时间', prop: 'crtTime' },
     { label: '安装图片', prop: 'installUrl', formatter: this.showInstallPic },
@@ -63,9 +63,9 @@ export default class BindLog extends Vue {
   activated() {
     const FormTable: any = this.$refs.MTable;
     this.defaultPageSize = 5;
-    const data:any = window.localStorage.getItem('deviceInfoFzk');
-    const cid:any = JSON.parse(data).id;
-    const cimei:any = JSON.parse(data).imei;
+    const data: any = window.localStorage.getItem('deviceInfoFzk');
+    const cid: any = JSON.parse(data).id;
+    const cimei: any = JSON.parse(data).imei;
     this.tableParams = {
       page: true,
       pageNum: 1,
@@ -87,8 +87,8 @@ export default class BindLog extends Vue {
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.opreat[0].roles = !!(res[0]); // 验收记录
     });
-    const data:any = window.localStorage.getItem('deviceInfoFzk');
-    const cimei:any = JSON.parse(data).imei;
+    const data: any = window.localStorage.getItem('deviceInfoFzk');
+    const cimei: any = JSON.parse(data).imei;
     // imei
     this.tableParams = {
       page: true,
@@ -126,11 +126,14 @@ export default class BindLog extends Vue {
   checkPicTitle: string = '';
 
   opsPerson(row: any) {
-    const str = `${row.opsOrgName}--${row.opsRealName}--${row.opsUsername}`;
-    return row.opsOrgName && row.opsRealName && row.opsUsername
+    const str1 = row.opsOrgName;
+    const str2 = row.opsRealName ? `--${row.opsRealName}` : '';
+    const str3 = `--${row.opsUsername}`;
+    const str = str1 + str2 + str3;
+    return row.opsOrgName || row.opsRealName || row.opsUsername
       ? <el-tooltip class="item" effect="dark" content={str} placement="top">
         <div>
-          <p>{`${row.opsOrgName}--${row.opsRealName}`}</p>
+          <p>{`${str1}${str2}`}</p>
           <p>{`(${row.opsUsername})`}</p>
         </div>
       </el-tooltip> : '--';
