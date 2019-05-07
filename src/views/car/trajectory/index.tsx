@@ -509,7 +509,7 @@ export default class Trajectory extends Vue {
     // 绘制标记点
     function renderBehavior() {
       // 定义车辆驾驶行为及对应颜色
-      const NameMap = ['', '震', '碰', '', '翻', '加', '减', '弯', '超'];
+      const NameMap = ['', '振', '碰', '', '翻', '加', '减', '弯', '超'];
       const ColorMap = ['', '#52c41a', '#f5222d', '', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2', '#eb2296'];
       const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
       if (!ctx) {

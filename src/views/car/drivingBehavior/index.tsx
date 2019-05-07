@@ -232,8 +232,8 @@ export default class DrivingBehavior extends Vue {
     function renderBehavior() {
       // 定义车辆驾驶行为及对应颜色
       // 0-'' 1-振动 2-碰撞 3-'' 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
-      // ['0', '1震', '2碰', '3', '4翻', '5', '6碰', '7滚', '8超'];
-      const NameMap = ['', '震', '碰', '', '翻', '加', '减', '弯', '超'];
+      // ['0', '1振', '2碰', '3', '4翻', '5', '6碰', '7滚', '8超'];
+      const NameMap = ['', '振', '碰', '', '翻', '加', '减', '弯', '超'];
       const ColorMap = ['', '#52c41a', '#f5222d', '', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2', '#eb2296'];
       const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
       if (!ctx) {
