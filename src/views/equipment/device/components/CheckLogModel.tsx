@@ -134,9 +134,15 @@ export default class CheckLogModel extends Vue {
         str = '硬重启';
         break;
       case 3:
-        str = '低功耗';
+        str = '异常重启';
         break;
       case 4:
+        str = '正常重启';
+        break;
+      case 5:
+        str = '低功耗';
+        break;
+      case 6:
         str = '硬唤醒';
         break;
       default:
