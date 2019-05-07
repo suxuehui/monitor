@@ -1360,7 +1360,7 @@ export default class Monitor extends Vue {
   }
 
   onLineStatus(data: any) {
-    if (data) {
+    if (data === true || data === false) {
       return data ? <span style={{ margin: '0 3px' }}>在线</span> : <span style={{ color: 'red', margin: '0 3px' }}>离线</span>;
     }
     return <span style={{ color: 'red', margin: '0 3px' }}>未知</span>;

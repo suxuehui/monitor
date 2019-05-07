@@ -127,22 +127,22 @@ export default class CheckLogModel extends Vue {
   statusSet(row: any) {
     let str: string = '';
     switch (row.powerOnStatus) {
-      case 1:
+      case '1':
         str = '软重启';
         break;
-      case 2:
+      case '2':
         str = '硬重启';
         break;
-      case 3:
+      case '3':
         str = '异常重启';
         break;
-      case 4:
+      case '4':
         str = '正常重启';
         break;
-      case 5:
+      case '5':
         str = '低功耗';
         break;
-      case 6:
+      case '6':
         str = '硬唤醒';
         break;
       default:

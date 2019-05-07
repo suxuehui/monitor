@@ -180,7 +180,6 @@ export default function request(options: Option): Promise<any> {
     } else {
       // 首次登录时不存在token
       router.replace('/login');
-      Message.error('尚未在该机上查询到登录数据，请登录！');
     }
     // // 判断错误码是否为4，4为登录超时，跳转到登录页，或者是http的状态码为401也代表会话失效
     // if (response.data.result.resultCode === 4) {
