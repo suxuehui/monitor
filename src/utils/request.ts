@@ -153,33 +153,40 @@ export default function request(options: Option): Promise<any> {
     });
   }).catch((error) => {
     const { response } = error;
-    let msg;
-    let statusCode;
     // if (process.env.NODE_ENV === 'production') {
     //   Raven.captureException(JSON.stringify(error));
     // }
-    const { data, statusText } = response;
-    const { result: { resultCode, resultMessage } } = data;
-    if (response && response instanceof Object) {
-      statusCode = response.status;
-      msg = data.result.resultMessage || statusText;
-    } else {
-      statusCode = 600;
-      msg = error.message || 'Network Error';
-    }
-    // 存在token
-    if (window.localStorage.getItem('token')) {
-      if (statusCode === 401) {
-        Message.error('无权限操作，请联系管理员');
-      } else if (resultCode === 4) {
-        Message.error(resultMessage);
-        router.replace('/login');
-      } else if (resultCode === 401) {
+    let msg;
+    let statusCode;
+    if (response.data.result) {
+      const { data, statusText } = response;
+      const { result: { resultCode, resultMessage } } = data;
+      if (response.status === 401) {
         Message.error('无权限操作，请联系管理员');
       }
+      if (response && response instanceof Object) {
+        statusCode = response.status;
+        msg = data.result.resultMessage || statusText;
+      } else {
+        statusCode = 600;
+        msg = error.message || 'Network Error';
+      }
+      // 存在token
+      if (window.localStorage.getItem('token')) {
+        if (statusCode === 401) {
+          Message.error('无权限操作，请联系管理员');
+        } else if (resultCode === 4) {
+          Message.error(resultMessage);
+          router.replace('/login');
+        } else if (resultCode === 401) {
+          Message.error('无权限操作，请联系管理员');
+        }
+      } else {
+        // 首次登录时不存在token
+        router.replace('/login');
+      }
     } else {
-      // 首次登录时不存在token
-      router.replace('/login');
+      Message.error('无权限操作，请联系管理员');
     }
     // // 判断错误码是否为4，4为登录超时，跳转到登录页，或者是http的状态码为401也代表会话失效
     // if (response.data.result.resultCode === 4) {

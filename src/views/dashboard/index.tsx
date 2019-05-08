@@ -16,8 +16,12 @@ export default class Dashboard extends Vue {
   // 告警数据
   alarmData: any = [];
 
+  alarmDataChange: boolean = false;
+
   // 围栏车辆数据
   fenceData: any = {};
+
+  fenceDataChange: boolean = false;
 
   // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
   // 圆环数据
@@ -32,6 +36,8 @@ export default class Dashboard extends Vue {
     { name: '碰撞', num: 0 },
     { name: '翻滚', num: 0 },
   ];
+
+  columDataChange: boolean = false;
 
   // 行驶数据
   driveData: any = [
@@ -91,22 +97,63 @@ export default class Dashboard extends Vue {
 
   circleChart: any = null;
 
+  showAlarmData: boolean = false; // 告警
+
+  showOnlineData: boolean = false; // 在线
+
+  showDrivingData: boolean = false; // 行驶
+
+  showFenceData: boolean = false; // 围栏
+
   created() {
     const getNowRoles: string[] = [
       // 操作
       '/vehicle/monitor/list',
+      '/home/report/alarmData', // 告警
+      '/home/report/onlineData', // 在线
+      '/home/report/drivingData', // 行驶
+      '/home/report/fenceData', // 围栏
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.toMonitor = !!(res[0]);
+      this.showAlarmData = !!(res[1]);
+      this.showOnlineData = !!(res[2]);
+      this.showDrivingData = !!(res[3]);
+      this.showFenceData = !!(res[4]);
+      if (this.showAlarmData) {
+        // 获取告警统计数据
+        this.GetAlarmData();
+      }
+      if (this.showOnlineData) {
+        // 获取车辆统计数据
+        this.GetOnlineData();
+        setTimeout(() => {
+          this.circleChart = new window.G2.Chart({
+            container: 'mountNode',
+            forceFit: false,
+            height: 300,
+            width: 300,
+            animate: true,
+          });
+        }, 10);
+      }
+      if (this.showDrivingData) {
+        // 获取行驶统计数据
+        this.GetDrivingData();
+        setTimeout(() => {
+          this.columnarChart = new window.G2.Chart({
+            container: 'columnar',
+            forceFit: true,
+            height: 400,
+            animate: true,
+          });
+        }, 10);
+      }
+      if (this.showFenceData) {
+        // 获取围栏车辆数据
+        this.GetFenceData();
+      }
     });
-    // 获取告警统计数据
-    this.GetAlarmData();
-    // 获取车辆统计数据
-    this.GetVehicleData();
-    // 获取行驶统计数据
-    this.GetDrivingData();
-    // 获取围栏车辆数据
-    this.GetFenceData();
   }
 
   resetDriveData() {
@@ -153,6 +200,7 @@ export default class Dashboard extends Vue {
         this.columData[4].num = ligntHitCount || 0;
         this.columData[5].num = heavyHitCount || 0;
         this.columData[6].num = rollCount || 0;
+        this.columDataChange = true;
         this.createColumnarChart(str);
         // 行驶次数
         if (drivingCountTop3.length > 0) {
@@ -238,6 +286,7 @@ export default class Dashboard extends Vue {
           item.name = item.type;
         });
         this.alarmData = res.entity;
+        this.alarmDataChange = true;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -249,6 +298,7 @@ export default class Dashboard extends Vue {
     getFenceData(null).then((res) => {
       if (res.result.resultCode === '0') {
         this.fenceData = res.entity;
+        this.fenceDataChange = true;
       } else {
         this.$message.error(res.result.resultMessage);
       }
@@ -256,7 +306,7 @@ export default class Dashboard extends Vue {
   }
 
   // 获取车辆统计数据
-  GetVehicleData() {
+  GetOnlineData() {
     getOnlineData(null).then((res) => {
       if (res.result.resultCode === '0') {
         const data: any = JSON.parse(JSON.stringify(res.entity));
@@ -326,18 +376,20 @@ export default class Dashboard extends Vue {
   // 柱状图表
   createColumnarChart(str?: string) {
     // 柱状图
-    this.columnarChart.source(this.columData);
-    this.columnarChart.scale('num', {
-      tickInterval: 10,
-      alias: '次数',
-    });
-    this.columnarChart
-      .interval()
-      .position('name*num');
-    if (str) {
-      this.columnarChart.changeData(this.columData);
-    } else {
-      this.columnarChart.render();
+    if (this.columnarChart) {
+      this.columnarChart.source(this.columData);
+      this.columnarChart.scale('num', {
+        tickInterval: 10,
+        alias: '次数',
+      });
+      this.columnarChart
+        .interval()
+        .position('name*num');
+      if (str) {
+        this.columnarChart.changeData(this.columData);
+      } else {
+        this.columnarChart.render();
+      }
     }
   }
 
@@ -346,19 +398,6 @@ export default class Dashboard extends Vue {
     this.nowDate = new Date();// 获取系统当前时间
     const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
     this.setHelloWord(myTime);
-    this.columnarChart = new window.G2.Chart({
-      container: 'columnar',
-      forceFit: true,
-      height: 400,
-      animate: true,
-    });
-    this.circleChart = new window.G2.Chart({
-      container: 'mountNode',
-      forceFit: false,
-      height: 300,
-      width: 300,
-      animate: true,
-    });
   }
 
   setHelloWord(time: any) {
@@ -489,122 +528,165 @@ export default class Dashboard extends Vue {
     return (
       <div class="fzkContainer">
         {/* 监控统计 */}
-        <div class="monitorArea">
-          <div class="mask"></div>
-          <div class="monitorCenter">
-            <div id="mountNode" class="mountNode"></div>
-            <div class="title">
-              <span style="marginRight:20px">{this.helloWord}好！当前{this.drivingCount}辆车处于监控中</span>
+        {
+          this.showOnlineData ? <div class="monitorArea">
+            <div class="mask"></div>
+            <div class="monitorCenter">
+              <div id="mountNode" class="mountNode"></div>
               {
-                this.toMonitor
-                  ? <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
-                  : null
-              }
-            </div>
-          </div>
-        </div>
-        {/* 行驶统计 */}
-        <div class="driveArea">
-          <div class="title">
-            行驶数据统计
-          </div>
-          <div class="timeSet">
-            <ul class="normalTime">
-              <li
-                id="toDay"
-                class={['item', this.todayActive ? 'active' : '']}
-                on-click={this.toDayData}
-              >
-                今天
-              </li>
-              <li
-                id="sevenDay"
-                class={['item', this.sevendayActive ? 'active' : '']}
-                on-click={this.sevenData}
-              >
-                近7天
-              </li>
-              <li
-                id="thirtyDay"
-                class={['item', this.thirtydayActive ? 'active' : '']}
-                on-click={this.thirtyData}
-              >
-                近30天
-              </li>
-              <li
-                id="allDay"
-                class={['item', this.allActive ? 'active' : '']}
-                on-click={this.allData}
-              >
-                全部
-              </li>
-            </ul>
-            <el-date-picker
-              id="datePicker"
-              v-model={this.defaultTime}
-              type="datetimerange"
-              class="datePicker"
-              size="mini"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              on-change={(val: any) => this.timeSelect(val)}
-              range-separator="至"
-              start-placeholder="开始"
-              end-placeholder="结束"
-              picker-options={pickerOptions}
-            >
-            </el-date-picker>
-          </div>
-          <div class="driveBox">
-            <div class="leftPart">
-              <div id="columnar" class="columnar"></div>
-            </div>
-            <ul class="rightPart">
-              {
-                this.driveData.map((item: any) => <li class="item">
-                  <div class="name">
-                    {item.name}
-                    <span class="arrow arrowColor"></span>
-                  </div>
-                  <ul class="carList">
+                this.circleData.length > 0 ? <div class="title">
+                  <span style="marginRight:20px">{this.helloWord}好！当前{this.drivingCount}辆车处于监控中</span>
+                  {
+                    this.toMonitor
+                      ? <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+                      : null
+                  }
+                </div> : <div>
                     {
-                      item.count !== null ? <span class="noData">{item.count}{item.unit}</span>
-                        : <span class="noData">23333</span>
+                      this.toMonitor
+                        ? <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+                        : null
                     }
-                  </ul>
-                </li>)
+                  </div>
               }
-            </ul>
-          </div>
-        </div>
-        {/* 围栏内外 */}
-        <ul class="fenceCar">
-          <li class="fenceItem">
-            <span>无围栏</span>
-            <span>{this.fenceData.noFence ? this.fenceData.noFence : 0} 辆</span>
-          </li>
-          <li class="fenceItem">
-            <span>围栏外</span>
-            <span>{this.fenceData.outFence ? this.fenceData.outFence : 0} 辆</span>
-          </li>
-          <li class="fenceItem">
-            <span>围栏内</span>
-            <span>{this.fenceData.inFence ? this.fenceData.inFence : 0} 辆</span>
-          </li>
-        </ul>
-        {/* 告警消息 */}
-        <div class="alarmArea">
-          <div class="title">
-            告警消息统计
-          </div>
-          <ul class="alarmData">
+            </div>
+          </div> : <div class="monitorArea">
+              <div class="monitorCenter">
+                <div class="title">
+                  {
+                    this.toMonitor
+                      ? <el-button type="primary" id="goMonitor" plain size="small" class="iconfont iconfont-monitor" on-click={this.goMonitor}>   进入监控</el-button>
+                      : null
+                  }
+                </div>
+              </div>
+            </div>
+        }
+        {/* 行驶统计 */}
+        {
+          this.showDrivingData ? <div class="driveArea">
             {
-              this.alarmData.map((item: any) => <li class="alarmItem">
-                <span>{item.name}</span>
-                <span><span style="color:red;marginRight: 3px;">{item.count}</span>次</span>
-              </li>)
+              this.columDataChange ? <div>
+                <div class="title">
+                  行驶数据统计
+              </div>
+                <div class="timeSet">
+                  <ul class="normalTime">
+                    <li
+                      id="toDay"
+                      class={['item', this.todayActive ? 'active' : '']}
+                      on-click={this.toDayData}
+                    >
+                      今天
+              </li>
+                    <li
+                      id="sevenDay"
+                      class={['item', this.sevendayActive ? 'active' : '']}
+                      on-click={this.sevenData}
+                    >
+                      近7天
+              </li>
+                    <li
+                      id="thirtyDay"
+                      class={['item', this.thirtydayActive ? 'active' : '']}
+                      on-click={this.thirtyData}
+                    >
+                      近30天
+              </li>
+                    <li
+                      id="allDay"
+                      class={['item', this.allActive ? 'active' : '']}
+                      on-click={this.allData}
+                    >
+                      全部
+              </li>
+                  </ul>
+                  <el-date-picker
+                    id="datePicker"
+                    v-model={this.defaultTime}
+                    type="datetimerange"
+                    class="datePicker"
+                    size="mini"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    on-change={(val: any) => this.timeSelect(val)}
+                    range-separator="至"
+                    start-placeholder="开始"
+                    end-placeholder="结束"
+                    picker-options={pickerOptions}
+                  >
+                  </el-date-picker>
+                </div>
+              </div> : <div class="titleNone"></div>
             }
-          </ul>
-        </div>
+            <div class="driveBox">
+              <div class="leftPart">
+                <div id="columnar" class="columnar"></div>
+              </div>
+              {
+                this.columDataChange ? <div>
+                  {
+                    this.driveData ? <ul class="rightPart">
+                      {
+                        this.driveData.map((item: any) => <li class="item">
+                          <div class="name">
+                            {item.name}
+                            <span class="arrow arrowColor"></span>
+                          </div>
+                          <ul class="carList">
+                            {
+                              item.count !== null ? <span class="noData">{item.count}{item.unit}</span>
+                                : <span class="noData">23333</span>
+                            }
+                          </ul>
+                        </li>)
+                      }
+                    </ul> : null
+                  }
+                </div> : null
+              }
+            </div>
+          </div> : <div class="driveArea">
+            </div>
+        }
+        {/* 围栏内外 */}
+        {
+          this.showFenceData ?
+            this.fenceDataChange ?
+              <ul class="fenceCar">
+                <li class="fenceItem">
+                  <span>无围栏</span>
+                  <span>{this.fenceData.noFence ? this.fenceData.noFence : 0} 辆</span>
+                </li>
+                <li class="fenceItem">
+                  <span>围栏外</span>
+                  <span>{this.fenceData.outFence ? this.fenceData.outFence : 0} 辆</span>
+                </li>
+                <li class="fenceItem">
+                  <span>围栏内</span>
+                  <span>{this.fenceData.inFence ? this.fenceData.inFence : 0} 辆</span>
+                </li>
+              </ul> : <ul class="fenceCar"></ul>
+            : <ul class="fenceCar"></ul>
+        }
+        {/* 告警消息 */}
+        {
+          this.showAlarmData ?
+            this.alarmDataChange ?
+              <div class="alarmArea">
+                <div class="title">
+                  告警消息统计
+                </div>
+                <ul class="alarmData">
+                  {
+                    this.alarmData.map((item: any) => <li class="alarmItem">
+                      <span>{item.name}</span>
+                      <span><span style="color:red;marginRight: 3px;">{item.count}</span>次</span>
+                    </li>)
+                  }
+                </ul>
+              </div> : <div class="alarmArea"></div>
+            : <div class="alarmArea"></div>
+        }
       </div >
     );
   }
