@@ -656,6 +656,7 @@ export default class Monitor extends Vue {
    * @param {object} data 车辆数据
    */
   openMsg = (data: any) => {
+    console.log(data);
     const infoWindow = new this.BMap.InfoWindow(this.msgContent(data));
     const point = CoordTrasns.transToBaidu(
       {

@@ -983,39 +983,40 @@ export default class Trajectory extends Vue {
               </el-select>
             </div> : null
         }
-        <div
-          class={[
-            'loc-change-box3', !this.locChange
-              ? 'loc-active'
-              : '',
-          ]}>
-          <img class="speedContorl-img" src={require('@/assets/speedcontrol.png')}></img>
-          <el-button
-            class="add btn"
-            size="small"
-            icon="el-icon-plus"
-            on-click={this.zoomAdd}></el-button>
-          <el-button
-            class="less btn"
-            size="small"
-            icon="el-icon-minus"
-            on-click={this.zoomReduce}></el-button>
-          {!this.locChange
-            ? <el-button
-              class="down btn"
-              size="small"
-              type="primary"
-              icon="el-icon-arrow-down"
-              on-click={this.hideTable}></el-button>
-            : <el-button
-              class="up btn"
-              size="small"
-              type="primary"
-              icon="el-icon-arrow-up"
-              on-click={this.showTable}></el-button>
-          }
-        </div>
+
         <div class={`car-table-tra-fzk ${!this.locChange ? 'table-active' : ''}`}>
+          <div
+            class={[
+              'loc-change-box3', !this.locChange
+                ? 'loc-active'
+                : '',
+            ]}>
+            <img class="speedContorl-img" src={require('@/assets/speedcontrol.png')}></img>
+            <el-button
+              class="add btn"
+              size="small"
+              icon="el-icon-plus"
+              on-click={this.zoomAdd}></el-button>
+            <el-button
+              class="less btn"
+              size="small"
+              icon="el-icon-minus"
+              on-click={this.zoomReduce}></el-button>
+            {!this.locChange
+              ? <el-button
+                class="down btn"
+                size="small"
+                type="primary"
+                icon="el-icon-arrow-down"
+                on-click={this.hideTable}></el-button>
+              : <el-button
+                class="up btn"
+                size="small"
+                type="primary"
+                icon="el-icon-arrow-up"
+                on-click={this.showTable}></el-button>
+            }
+          </div>
           <filter-table
             ref="table"
             class="map-table"

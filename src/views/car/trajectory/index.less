@@ -69,30 +69,12 @@
     width: 34px;
     margin-bottom: 10px;
   }
-  .loc-change-box3 {
-    position: absolute;
-    bottom: 10px;
-    right: 20px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    transition: all .5s ease-in-out;
-    .btn {
-      margin-left: 0px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .less {
-      margin-bottom: 10px;
-    }
-  }
   .car-table-tra-fzk {
     width: 100%;
     position: absolute;
     bottom: -390px;
-    transition: all .5s ease-in-out;
+    // transition: all .5s ease-in-out;
     background-color: #fff;
-    overflow-y: auto;
     .pagination{
       text-align: center;
     }
@@ -102,6 +84,23 @@
       th .cell,
       td .cell {
         text-align: center;
+      }
+    }
+    .loc-change-box3 {
+      position: absolute;
+      bottom: 390px;
+      right: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      // transition: all .5s ease-in-out;
+      .btn {
+        margin-left: 0px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      .less {
+        margin-bottom: 10px;
       }
     }
   }
@@ -116,7 +115,7 @@
     top: 10px;
   }
   .loc-active {
-    bottom: 360px;
+    top: -410px;
   }
   .table-active {
     bottom: 0;

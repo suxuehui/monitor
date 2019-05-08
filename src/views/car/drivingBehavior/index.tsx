@@ -410,7 +410,7 @@ export default class DrivingBehavior extends Vue {
     this.sevendayActive = true;
     const day: any = new Date();
     const endTime = day.Format('yyyy-MM-dd');
-    const oldTimestamp = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+    const oldTimestamp = new Date().getTime() - 6 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
       new Date(),
@@ -429,11 +429,11 @@ export default class DrivingBehavior extends Vue {
     const oldTimestamp = new Date().getTime() - 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
-      new Date(),
+      new Date(oldTimestamp),
     ];
     this.searchTime = {
       startTime: this.unix2time(oldTimestamp),
-      endTime,
+      endTime: this.unix2time(oldTimestamp),
     };
   }
 
