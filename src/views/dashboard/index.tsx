@@ -310,7 +310,9 @@ export default class Dashboard extends Vue {
     getOnlineData(null).then((res) => {
       if (res.result.resultCode === '0') {
         const data: any = JSON.parse(JSON.stringify(res.entity));
-        const onlinePercent: number = Number((data.online / (data.online + data.offline)).toFixed(2));
+        const onlinePercent: number = Number(
+          (data.online / (data.online + data.offline)).toFixed(2),
+        );
         const offlinePercent = 1 - onlinePercent;
         const obj1 = {
           item: '在线',
@@ -650,9 +652,9 @@ export default class Dashboard extends Vue {
         }
         {/* 围栏内外 */}
         {
-          this.showFenceData ?
-            this.fenceDataChange ?
-              <ul class="fenceCar">
+          this.showFenceData
+            ? this.fenceDataChange
+              ? <ul class="fenceCar">
                 <li class="fenceItem">
                   <span>无围栏</span>
                   <span>{this.fenceData.noFence ? this.fenceData.noFence : 0} 辆</span>
@@ -670,9 +672,9 @@ export default class Dashboard extends Vue {
         }
         {/* 告警消息 */}
         {
-          this.showAlarmData ?
-            this.alarmDataChange ?
-              <div class="alarmArea">
+          this.showAlarmData
+            ? this.alarmDataChange
+              ? <div class="alarmArea">
                 <div class="title">
                   告警消息统计
                 </div>

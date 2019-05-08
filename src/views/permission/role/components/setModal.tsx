@@ -102,8 +102,7 @@ export default class SetModal extends Vue {
           arr = lodash.cloneDeep(entity.menuIds.split(','));
           arr.forEach((item: any, index: number) => {
             // 设置>0：取消对首页的验证
-            console.log(this.checkBoxMainArr.indexOf(item)  === -1,item)
-            if (this.checkBoxMainArr.indexOf(item)  === -1) {
+            if (this.checkBoxMainArr.indexOf(item) === -1) {
               this.checkList.push(item);
             }
           });

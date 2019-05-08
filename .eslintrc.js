@@ -46,5 +46,6 @@ module.exports = {
     "prettier.singleQuote": true,
     "prefer-destructuring": 0,
     "no-unused-expressions": 0,
+    "no-nested-ternary": 1,
   }
 }
