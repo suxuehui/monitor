@@ -50,7 +50,9 @@ export default class SetModal extends Vue {
           arr.push(`${item.id}`);
           if (item.list !== null && item.list.length > 0) {
             item.list.forEach((it: any) => {
-              arr.push(`${it.id}`);
+              if (it.list !== null && it.list.length > 0) {
+                arr.push(`${it.id}`);
+              }
             });
           }
           this.checkBoxMainArr = this.arrUnique(arr);
@@ -100,7 +102,8 @@ export default class SetModal extends Vue {
           arr = lodash.cloneDeep(entity.menuIds.split(','));
           arr.forEach((item: any, index: number) => {
             // 设置>0：取消对首页的验证
-            if (this.checkBoxMainArr.indexOf(item) <= 0) {
+            console.log(this.checkBoxMainArr.indexOf(item)  === -1,item)
+            if (this.checkBoxMainArr.indexOf(item)  === -1) {
               this.checkList.push(item);
             }
           });
