@@ -105,15 +105,27 @@ export default class Trajectory extends Vue {
       if (val.length === 2) {
         const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
         const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
-        this.outParams.startTime = startT;
-        this.outParams.endTime = endT;
+        const startT1 = new Date(startT).getTime();
+        const endT1 = new Date(endT).getTime();
+        if (endT1 - startT1 < 90 * 24 * 60 * 60 * 1000) {
+          this.outParams = {
+            startTime: startT,
+            endTime: endT,
+          };
+        } else {
+          const date = new Date();
+          const startTime1 = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+          this.outParams.startTime = new Date(startTime1).Format('yyyy-MM-dd hh:mm:ss');
+          this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
+          this.$message.error('查询时间不能超过3个月，请重新选择');
+        }
       } else {
         this.outParams.startTime = `${val[0]}`;
         this.outParams.endTime = `${val[1]}`;
       }
     } else {
-      this.outParams.startTime = '';
-      this.outParams.endTime = '';
+      this.outParams.startTime = null;
+      this.outParams.endTime = null;
     }
   }
 

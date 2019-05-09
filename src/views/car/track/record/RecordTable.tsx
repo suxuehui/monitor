@@ -164,8 +164,8 @@ export default class RecordTable extends Vue {
         const endT1 = new Date(endT).getTime();
         if (endT1 - startT1 < 90 * 24 * 60 * 60 * 1000) {
           this.outParams = {
-            startTime: startT,
-            endTime: endT,
+            startDate: startT,
+            endDate: endT,
           };
         } else {
           const date = new Date();

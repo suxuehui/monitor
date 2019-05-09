@@ -37,29 +37,33 @@ export default class DeviceLearnModel extends Vue {
 
   contentRender() {
     if (this.step === 0) {
-      return <p style={{ lineHeight: ' 50px', fontSize: '16px', marginBottom: '10px' }}>确定进行设备学习？</p>
-    } else if (this.step === 1) {
+      return <p style={{ lineHeight: ' 50px', fontSize: '16px', marginBottom: '10px' }}>确定进行设备学习？</p>;
+    }
+    if (this.step === 1) {
       return <div>
         <img src={learnOk} />
         <p style={{ lineHeight: '50px', marginBottom: '10px' }}>学习成功</p>
       </div>;
-    } else if (this.step === 2) {
+    }
+    if (this.step === 2) {
       return <div>
         <img src={learnWrong} />
         <p style={{ lineHeight: '50px' }}>学习失败</p>
       </div>;
-    } else if (this.step === 3) {
+    }
+    if (this.step === 3) {
       return <div>
         <img src={learnWrong} />
         <p style={{ lineHeight: '50px' }}>学习失败（设备不支持）</p>
       </div>;
     }
+    return true;
   }
 
   onSubmit() {
     this.loading = true;
     const imei: any = {
-      imei: this.data.imei
+      imei: this.data.imei,
     };
     modelMatch(this.data.imei).then((res) => {
       // 学习成功
@@ -70,14 +74,14 @@ export default class DeviceLearnModel extends Vue {
           this.loading = false;
           this.$message.success(res.result.resultMessage);
         }, 1500);
-      } else if(res.result.resultCode === '1') { // 学习不成功，不支持
+      } else if (res.result.resultCode === '1') { // 学习不成功，不支持
         setTimeout(() => {
           this.step = 3;
           this.contentRender();
           this.loading = false;
           this.$message.error(res.result.resultMessage);
         }, 1500);
-      } else if(res.result.resultCode === '2') { // 学习不成功,失败
+      } else if (res.result.resultCode === '2') { // 学习不成功,失败
         setTimeout(() => {
           this.step = 2;
           this.contentRender();
@@ -85,22 +89,7 @@ export default class DeviceLearnModel extends Vue {
           this.$message.error(res.result.resultMessage);
         }, 500);
       }
-    })
-    // setTimeout(() => {
-    //   this.step = 1;
-    //   this.contentRender();
-    //   this.loading = false;
-    // }, 1000);
-    // setTimeout(() => {
-    //   this.step = 2;
-    //   this.contentRender();
-    //   this.loading = false;
-    // }, 3000);
-    // setTimeout(() => {
-    //   this.step = 3;
-    //   this.contentRender();
-    //   this.loading = false;
-    // }, 6000);
+    });
   }
 
   render() {
@@ -119,8 +108,8 @@ export default class DeviceLearnModel extends Vue {
         </div>
 
         {
-          this.step !== 1 ?
-            <div style={{ textAlign: 'center' }}>
+          this.step !== 1
+            ? <div style={{ textAlign: 'center' }}>
               <el-button
                 size="small"
                 type="primary"

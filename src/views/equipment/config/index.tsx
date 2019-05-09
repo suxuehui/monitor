@@ -442,7 +442,7 @@ export default class ConfigModel extends Vue {
       this.btSecretVisible = true;
       this.btSecretData = row;
       this.btSecretTime = utils.getNowTime();
-    } else if(key === 'deviceLearn'){ // 设备学习
+    } else if (key === 'deviceLearn') { // 设备学习
       this.deviceLearnVisible = true;
       this.deviceLearnData = row;
     }
