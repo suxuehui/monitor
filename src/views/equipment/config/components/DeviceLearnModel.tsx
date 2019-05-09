@@ -88,6 +88,11 @@ export default class DeviceLearnModel extends Vue {
           this.loading = false;
           this.$message.error(res.result.resultMessage);
         }, 500);
+      } else {
+        setTimeout(() => {
+          this.loading = false;
+          this.$message.error(res.result.resultMessage);
+        }, 1500);
       }
     });
   }

@@ -28,12 +28,12 @@ export default class BtSecretModel extends Vue {
 
   @Watch('time')
   onTimeChange() {
-    // 查询蓝牙名称
+    // 查询蓝牙秘钥
     getBtName(this.data.imei).then((res: any) => {
       if (res.result.resultCode === '0') {
         this.btSecret = res.entity;
       } else {
-        this.$message.error('该设备暂无蓝牙名称');
+        this.$message.error('该设备暂无蓝牙秘钥');
       }
     });
   }
