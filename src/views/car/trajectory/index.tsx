@@ -157,6 +157,11 @@ export default class Trajectory extends Vue {
       prop: 'fuelCons',
       sortable: true,
       sortBy: 'fuelCons',
+      formatter(row: any) {
+        return row.fuelCons !== null
+          ? `${row.fuelCons}L`
+          : '--';
+      },
     }, {
       label: '耗电',
       prop: 'powerCons',

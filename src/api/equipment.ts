@@ -261,3 +261,13 @@ export async function SendClientTypeaAndVersion(params: any) {
     method: 'post',
   });
 }
+
+// 机器学习
+export async function modelMatch(params: any) {
+  return request({
+    url: '/device/terminal/modelMatch',
+    method: 'post',
+    data: params,
+    fetchType: 'JSON',
+  });
+}

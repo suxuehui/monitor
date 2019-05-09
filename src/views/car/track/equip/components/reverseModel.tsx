@@ -225,7 +225,7 @@ export default class ReverseModel extends Vue {
               v-model={this.modelForm.frequency}
               placeholder="请输入追踪频率"
             >
-              <template slot="append">次/分钟</template>
+              <template slot="append">分钟/次</template>
             </el-input>
           </el-form-item>
         </el-form>

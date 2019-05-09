@@ -15,6 +15,7 @@ import BtSecretModel from './components/BtSecretModel';
 import CheckConfigModel from './components/CheckConfigModel';
 import CheckLogModel from './components/CheckLogModel';
 import SearchConfigModel from './components/SearchConfigModel';
+import DeviceLearnModel from './components/DeviceLearnModel';
 import utils from '@/utils';
 
 interface OnlineType { key: any, value: any, label: string }
@@ -32,6 +33,7 @@ interface OnlineType { key: any, value: any, label: string }
     'checkconfig-model': CheckConfigModel,
     'checkOpeLog-model': CheckLogModel,
     'searchconfig-model': SearchConfigModel,
+    'deviceLearn-model': DeviceLearnModel,
   },
   name: 'ConfigModel',
 })
@@ -182,6 +184,13 @@ export default class ConfigModel extends Vue {
       roles: true,
       disabled: this.protocolSet,
     },
+    {
+      key: 'deviceLearn',
+      rowKey: 'id',
+      color: 'blue',
+      text: '设备学习',
+      roles: true,
+    },
   ];
 
   // protocolVersion 01或07--只有蓝牙秘钥 其他有蓝牙名称、蓝牙鉴权
@@ -301,6 +310,7 @@ export default class ConfigModel extends Vue {
       '/device/terminal/queryCfg/{imei}', // 查询配置
       '/device/terminal/createBluetoothAuthCode', // 蓝牙鉴权
       '/device/terminal/settingBluetoothName', // 蓝牙名称
+      '/device/terminal/modelMatch', // 设备学习
       '/device/terminal/opsList', // 操作记录查看
       '/device/terminal/configurationExport', // 导出
     ];
@@ -310,8 +320,9 @@ export default class ConfigModel extends Vue {
       this.opreat[2].roles = !!(res[2]); // 查询配置
       this.opreat[3].roles = !!(res[3]); // 蓝牙鉴权
       this.opreat[4].roles = !!(res[4]); // 蓝牙名称
-      this.showOprateBtn = !!(res[5]); // 操作记录查看
-      this.showExportBtn = !!(res[6]); // 导出
+      this.opreat[5].roles = !!(res[5]); // 设备学习
+      this.showOprateBtn = !!(res[6]); // 操作记录查看
+      this.showExportBtn = !!(res[7]); // 导出
     });
   }
 
@@ -431,6 +442,9 @@ export default class ConfigModel extends Vue {
       this.btSecretVisible = true;
       this.btSecretData = row;
       this.btSecretTime = utils.getNowTime();
+    } else if(key === 'deviceLearn'){ // 设备学习
+      this.deviceLearnVisible = true;
+      this.deviceLearnData = row;
     }
   }
 
@@ -499,6 +513,11 @@ export default class ConfigModel extends Vue {
 
   searchconfigData: any = {};
 
+  // 设备学习
+  deviceLearnVisible: boolean = false;
+
+  deviceLearnData: any = {};
+
   // 操作记录
   checkLogTitle: string = '';
 
@@ -523,6 +542,7 @@ export default class ConfigModel extends Vue {
     this.checkCountDownNum = this.checkDownNum;
     this.searchCountDownNum = this.searchDownNum;
     this.btSecretVisible = false; // 蓝牙秘钥
+    this.deviceLearnVisible = false; // 设备学习
     clearInterval(this.checkTimer);
     clearInterval(this.searchTimer);
   }
@@ -674,6 +694,12 @@ export default class ConfigModel extends Vue {
           title={this.checkLogTitle}
           data={this.checkLogData}
           visible={this.checkLogVisible}
+          on-close={this.closeModal}
+          on-refresh={this.refresh}
+        />
+        <deviceLearn-model
+          data={this.deviceLearnData}
+          visible={this.deviceLearnVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />

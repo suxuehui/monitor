@@ -161,9 +161,6 @@ export default function request(options: Option): Promise<any> {
     if (response.data.result) {
       const { data, statusText } = response;
       const { result: { resultCode, resultMessage } } = data;
-      if (response.status === 401) {
-        Message.error('无权限操作，请联系管理员');
-      }
       if (response && response instanceof Object) {
         statusCode = response.status;
         msg = data.result.resultMessage || statusText;

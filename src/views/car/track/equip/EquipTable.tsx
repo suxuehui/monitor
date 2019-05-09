@@ -183,7 +183,7 @@ export default class EquipTable extends Vue {
           str = row.trackDuration > 0 ? `${row.trackDuration}分钟` : '--';
           break;
         case 'trackFrequency':
-          str = row.trackFrequency > 0 ? `${row.trackFrequency}次/分钟` : '--';
+          str = row.trackFrequency > 0 ? `${row.trackFrequency}分钟/次` : '--';
           break;
         case 'trackDate':
           str = row.trackDate ? utils.removeMarks(row.trackDate) : '--';
