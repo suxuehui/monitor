@@ -136,6 +136,10 @@ export default class BindModal extends Vue {
       this.modelForm.url = response.entity;
       this.showUpBtn = false;
     } else {
+      const upModel: any = this.$refs.uploadModel;
+      setTimeout(() => {
+        upModel.$children[0].clearFiles();
+      }, 200);
       this.$message.error(response.result.resultMessage);
     }
   }
