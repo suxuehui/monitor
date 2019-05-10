@@ -1133,12 +1133,12 @@ export default class Monitor extends Vue {
       }
       return `${str1}；${str2}`;
     } if (unit === 'authorizedStatus') {
-      if (data.authorizedStatus !== null) {
+      if (data.authorizedStatus !== null && data.authorizedStatus !== undefined) {
         return data.authorizedStatus ? '授权' : '夺权';
       }
       return '未知';
     } if (unit === 'oilStatus') {
-      if (data.oilStatus !== null) {
+      if (data.oilStatus !== null && data.oilStatus !== undefined) {
         return data.oilStatus ? '通油' : '断油';
       }
       return '未知';
@@ -1164,12 +1164,12 @@ export default class Monitor extends Vue {
   setDoorStatus(doorStatus: boolean, lockStatus: boolean) {
     let str1: string = '';
     let str2: string = '';
-    if (doorStatus !== null) {
+    if (doorStatus !== null&& doorStatus !== undefined) {
       str1 = doorStatus ? '开启' : '关闭';
     } else {
       str1 = '未知';
     }
-    if (lockStatus !== null) {
+    if (lockStatus !== null && lockStatus !== undefined) {
       str2 = lockStatus ? '已上锁' : '未上锁';
     } else {
       str2 = '未知';

@@ -114,10 +114,10 @@ export default class Notice extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'check') {
-      this.checkData = row;
-      this.checkVisible = true;
       noticeView({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
+          this.checkData = row;
+          this.checkVisible = true;
           this.$store.dispatch('getNotice');
         } else {
           this.$message.error(res.result.resultMessage);
