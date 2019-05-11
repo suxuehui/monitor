@@ -1122,12 +1122,12 @@ export default class Monitor extends Vue {
       let str1: string = '';
       let str2: string = '';
       if (data.defenceStatus !== null && data.defenceStatus !== undefined) {
-        str1 = data.defenceStatus ? '设防' : '撤防';
+        str1 = data.defenceStatus ? '设备设防' : '设备撤防';
       } else {
         str1 = '未知';
       }
       if (data.defenceSource !== null && data.defenceSource !== undefined) {
-        str2 = data.defenceSource ? '设防' : '撤防';
+        str2 = data.defenceSource ? '原车设防' : '原车撤防';
       } else {
         str2 = '未知';
       }
