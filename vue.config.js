@@ -1,3 +1,8 @@
+// 导入compression-webpack-plugin
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+// 定义压缩文件类型
+const productionGzipExtensions = ['js', 'css'];
+
 module.exports = {
   outputDir: 'dist',
 
@@ -7,12 +12,24 @@ module.exports = {
   // 生产环境 sourceMap
   productionSourceMap: false,
 
-  configureWebpack: (config) => {
-    if (process.env.NODE_ENV === 'production') {
-      // 为生产环境修改配置...
-    } else {
-      // 为开发环境修改配置...
-    }
+  // configureWebpack: (config) => {
+  //   if (process.env.NODE_ENV === 'production') {
+  //     // 为生产环境修改配置...
+  //   } else {
+  //     // 为开发环境修改配置...
+  //   }
+  // },
+
+  configureWebpack: {
+    plugins: [
+      new CompressionWebpackPlugin({
+        filename: '[path].gz[query]',
+        algorithm: 'gzip',
+        // test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+        threshold: 10240,
+        minRatio: 0.8,
+      }),
+    ],
   },
 
   chainWebpack: (config) => {
