@@ -73,7 +73,7 @@ export default class Driving extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '所属商户', prop: 'orgName' },
-    { label: '车牌号', prop: 'platenum' },
+    { label: '车牌号', prop: 'plateNum' },
     { label: '车架号', prop: 'vin' },
     {
       label: '行驶次数',
@@ -86,29 +86,29 @@ export default class Driving extends Vue {
     },
     {
       label: '行驶里程',
-      prop: 'mileageCount',
+      prop: 'drivingMileage',
       sortable: true,
-      sortBy: 'mileageCount',
+      sortBy: 'drivingMileage',
       formatter(row: any) {
-        return `${row.mileageCount} km`;
+        return `${row.drivingMileage} km`;
       },
     },
     {
       label: '行驶时间',
-      prop: 'drivingTimeCount',
+      prop: 'drivingMinute',
       sortable: true,
-      sortBy: 'drivingTimeCount',
+      sortBy: 'drivingMinute',
       formatter(row: any) {
-        return `${row.drivingTimeCount} 分钟`;
+        return `${row.drivingMinute} 分钟`;
       },
     },
     {
       label: '耗油量',
-      prop: 'oilCount',
+      prop: 'drivingOil',
       sortable: true,
-      sortBy: 'oilCount',
+      sortBy: 'drivingOil',
       formatter(row: any) {
-        return `${row.oilCount} L`;
+        return `${row.drivingOil} L`;
       },
     }, {
       label: '急加速',
@@ -130,47 +130,47 @@ export default class Driving extends Vue {
     },
     {
       label: '急转弯',
-      prop: 'turnCount',
+      prop: 'sharpTurnCount',
       sortable: true,
-      sortBy: 'turnCount',
+      sortBy: 'sharpTurnCount',
       formatter(row: any) {
-        return `${row.turnCount} 次`;
+        return `${row.sharpTurnCount} 次`;
       },
     },
     {
       label: '超速',
-      prop: 'lightShakeCount',
+      prop: 'overSpeed',
       sortable: true,
-      sortBy: 'lightShakeCount',
+      sortBy: 'overSpeed',
       formatter(row: any) {
-        return `${row.lightShakeCount} 次`;
+        return `${row.overSpeed} 次`;
       },
     },
     {
       label: '振动',
-      prop: 'lightShakeCount',
+      prop: 'shockCount',
       sortable: true,
-      sortBy: 'lightShakeCount',
+      sortBy: 'shockCount',
       formatter(row: any) {
-        return `${row.lightShakeCount} 次`;
+        return `${row.shockCount} 次`;
       },
     },
     {
       label: '碰撞',
-      prop: 'heavyHitCount',
+      prop: 'impactCount',
       sortable: true,
-      sortBy: 'heavyHitCount',
+      sortBy: 'impactCount',
       formatter(row: any) {
-        return `${row.heavyHitCount} 次`;
+        return `${row.impactCount} 次`;
       },
     },
     {
       label: '翻滚',
-      prop: 'rollCount',
+      prop: 'overTurn',
       sortable: true,
-      sortBy: 'rollCount',
+      sortBy: 'overTurn',
       formatter(row: any) {
-        return `${row.rollCount} 次`;
+        return `${row.overTurn} 次`;
       },
     },
   ];

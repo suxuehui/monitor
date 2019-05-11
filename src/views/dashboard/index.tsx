@@ -58,15 +58,6 @@ export default class Dashboard extends Vue {
     },
   ];
 
-  // 行驶数据排行
-  driveRankData: any = [
-    { name: '行驶次数', arr: [] },
-    { name: '行驶里程', arr: [] },
-    { name: '行驶时间', arr: [] },
-    { name: '耗油量', arr: [] },
-    { name: '平均油耗', arr: [] },
-  ];
-
   totalCount: number = 0;
 
   drivingCount: number = 0;
@@ -127,27 +118,10 @@ export default class Dashboard extends Vue {
       if (this.showOnlineData) {
         // 获取车辆统计数据
         this.GetOnlineData();
-        setTimeout(() => {
-          this.circleChart = new window.G2.Chart({
-            container: 'mountNode',
-            forceFit: false,
-            height: 300,
-            width: 300,
-            animate: true,
-          });
-        }, 10);
       }
       if (this.showDrivingData) {
         // 获取行驶统计数据
         this.GetDrivingData();
-        setTimeout(() => {
-          this.columnarChart = new window.G2.Chart({
-            container: 'columnar',
-            forceFit: true,
-            height: 400,
-            animate: true,
-          });
-        }, 10);
       }
       if (this.showFenceData) {
         // 获取围栏车辆数据
@@ -180,90 +154,27 @@ export default class Dashboard extends Vue {
     getDrivingData(time).then((res) => {
       if (res.result.resultCode === '0') {
         const {
-          drivingCount, mileageCount, drivingTimeCount, oilCount,
-          avgOilCons, speedUpCount, speedDownCount, turnCount,
-          lightShakeCount, ligntHitCount, heavyHitCount, rollCount,
-          avgOilCountTop3, drivingCountTop3, drivingTimeTop3, mileageCountTop3, oilCountTop3,
+          drivingCount, drivingMileage, drivingMinute, drivingOil,
+          avgOilCons, speedUpCount, speedDownCount, sharpTurnCount,
+          overSpeed, shockCount, impactCount, overTurn,
         } = res.entity;
         // 行驶数据
         this.resetDriveData();
-        this.driveData[0].count = drivingCount || 0;
-        this.driveData[1].count = mileageCount || 0;
-        this.driveData[2].count = drivingTimeCount || 0;
-        this.driveData[3].count = oilCount || 0;
-        this.driveData[4].count = avgOilCons ? avgOilCons.toFixed(2) : 0;
+        this.driveData[0].count = drivingCount || 0; // 行驶次数
+        this.driveData[1].count = drivingMileage || 0; // 行驶里程
+        this.driveData[2].count = drivingMinute || 0; // 行驶时间
+        this.driveData[3].count = drivingOil || 0; // 耗油量
+        this.driveData[4].count = avgOilCons ? avgOilCons.toFixed(2) : 0; // 平均油耗
         // 柱状图
-        this.columData[0].num = speedUpCount || 0;
-        this.columData[1].num = speedDownCount || 0;
-        this.columData[2].num = turnCount || 0;
-        this.columData[3].num = lightShakeCount || 0;
-        this.columData[4].num = ligntHitCount || 0;
-        this.columData[5].num = heavyHitCount || 0;
-        this.columData[6].num = rollCount || 0;
+        this.columData[0].num = speedUpCount || 0; // 急加速
+        this.columData[1].num = speedDownCount || 0; // 急减速
+        this.columData[2].num = sharpTurnCount || 0; // 急转弯
+        this.columData[3].num = overSpeed || 0; // 超速
+        this.columData[4].num = shockCount || 0; // 振动
+        this.columData[5].num = impactCount || 0; // 碰撞
+        this.columData[6].num = overTurn || 0; // 翻滚
         this.columDataChange = true;
         this.createColumnarChart(str);
-        // 行驶次数
-        if (drivingCountTop3.length > 0) {
-          this.driveRankData[0].arr = [];
-          drivingCountTop3.forEach((item: any) => {
-            this.driveRankData[0].arr.push({
-              plateNum: item.platenum,
-              count: item.drivingCount,
-            });
-          });
-        } else {
-          this.driveRankData[0].arr = [];
-        }
-        // 行驶里程
-        if (mileageCountTop3.length > 0) {
-          this.driveRankData[1].arr = [];
-          mileageCountTop3.forEach((item: any) => {
-            this.driveRankData[1].arr.push({
-              plateNum: item.platenum,
-              count: item.mileageCount,
-            });
-          });
-        } else {
-          this.driveRankData[1].arr = [];
-        }
-        // 行驶时间
-        if (drivingTimeTop3.length > 0) {
-          this.driveRankData[2].arr = [];
-          drivingTimeTop3.forEach((item: any) => {
-            this.driveRankData[2].arr.push({
-              plateNum: item.platenum,
-              count: item.drivingTimeCount,
-            });
-          });
-        } else {
-          this.driveRankData[2].arr = [];
-        }
-        // 耗油量
-        if (oilCountTop3.length > 0) {
-          this.driveRankData[3].arr = [];
-          oilCountTop3.forEach((item: any) => {
-            this.driveRankData[3].arr.push({
-              plateNum: item.platenum,
-              count: item.oilCount,
-            });
-          });
-        } else {
-          this.driveRankData[3].arr = [];
-        }
-        // 平均油耗
-        if (avgOilCountTop3.length > 0) {
-          this.driveRankData[4].arr = [];
-          avgOilCountTop3.forEach((item: any) => {
-            this.driveRankData[4].arr.push({
-              plateNum: item.platenum,
-              count: item.avgOilCount,
-            });
-          });
-        } else {
-          this.driveRankData[4].arr = [];
-        }
-      } else {
-        this.$message.error(res.result.resultMessage);
       }
     });
   }
@@ -400,6 +311,23 @@ export default class Dashboard extends Vue {
     this.nowDate = new Date();// 获取系统当前时间
     const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
     this.setHelloWord(myTime);
+    setTimeout(() => {
+      this.circleChart = new window.G2.Chart({
+        container: 'mountNode',
+        forceFit: false,
+        height: 300,
+        width: 300,
+        animate: true,
+      });
+    }, 150);
+    setTimeout(() => {
+      this.columnarChart = new window.G2.Chart({
+        container: 'columnar',
+        forceFit: true,
+        height: 400,
+        animate: true,
+      });
+    }, 150);
   }
 
   setHelloWord(time: any) {
