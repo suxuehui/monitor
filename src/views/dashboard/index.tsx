@@ -115,10 +115,6 @@ export default class Dashboard extends Vue {
         // 获取告警统计数据
         this.GetAlarmData();
       }
-      if (this.showOnlineData) {
-        // 获取车辆统计数据
-        this.GetOnlineData();
-      }
       if (this.showDrivingData) {
         // 获取行驶统计数据
         this.GetDrivingData();
@@ -126,6 +122,10 @@ export default class Dashboard extends Vue {
       if (this.showFenceData) {
         // 获取围栏车辆数据
         this.GetFenceData();
+      }
+      if (this.showOnlineData) {
+        // 获取车辆统计数据
+        this.GetOnlineData();
       }
     });
   }
@@ -155,7 +155,7 @@ export default class Dashboard extends Vue {
       if (res.result.resultCode === '0') {
         const {
           drivingCount, drivingMileage, drivingMinute, drivingOil,
-          avgOilCons, speedUpCount, speedDownCount, sharpTurnCount,
+          avgOilCount, speedUpCount, speedDownCount, sharpTurnCount,
           overSpeed, shockCount, impactCount, overTurn,
         } = res.entity;
         // 行驶数据
@@ -164,7 +164,7 @@ export default class Dashboard extends Vue {
         this.driveData[1].count = drivingMileage || 0; // 行驶里程
         this.driveData[2].count = drivingMinute || 0; // 行驶时间
         this.driveData[3].count = drivingOil || 0; // 耗油量
-        this.driveData[4].count = avgOilCons ? avgOilCons.toFixed(2) : 0; // 平均油耗
+        this.driveData[4].count = avgOilCount ? avgOilCount.toFixed(2) : 0; // 平均油耗
         // 柱状图
         this.columData[0].num = speedUpCount || 0; // 急加速
         this.columData[1].num = speedDownCount || 0; // 急减速
@@ -174,6 +174,12 @@ export default class Dashboard extends Vue {
         this.columData[5].num = impactCount || 0; // 碰撞
         this.columData[6].num = overTurn || 0; // 翻滚
         this.columDataChange = true;
+        this.columnarChart = new window.G2.Chart({
+          container: 'columnar',
+          forceFit: true,
+          height: 400,
+          animate: true,
+        });
         this.createColumnarChart(str);
       }
     });
@@ -238,6 +244,13 @@ export default class Dashboard extends Vue {
         this.totalCount = data.moving;
         this.circleData.push(obj1, obj2);
         this.drivingCount = data.offline + data.online;
+        this.circleChart = new window.G2.Chart({
+          container: 'mountNode',
+          forceFit: false,
+          height: 300,
+          width: 300,
+          animate: true,
+        });
         // 环状图表
         this.createCircleChart();
       } else {
@@ -248,42 +261,44 @@ export default class Dashboard extends Vue {
 
   // 环状图表
   createCircleChart() {
-    this.circleChart.source(this.circleData, {
-      percent: {
-        formatter: function formatter(val: any) {
-          val = `${val * 100}%`;
-          return val;
+    if (this.circleChart) {
+      this.circleChart.source(this.circleData, {
+        percent: {
+          formatter: function formatter(val: any) {
+            val = `${val * 100}%`;
+            return val;
+          },
         },
-      },
-    });
-    this.circleChart.coord('theta', {
-      radius: 0.70,
-      innerRadius: 0.65,
-    });
-    this.circleChart.tooltip({
-      showTitle: false,
-      itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>',
-    });
-    // 辅助文本
-    this.circleChart.guide().html({
-      position: ['50%', '50%'],
-      html: `<div style="color: #333333;font-size: 14px;text-align: center;width: 10em;">运行车辆<br><span style="color:#333333;font-size:20px">${this.totalCount}</span>台</div>`,
-      alignX: 'middle',
-      alignY: 'middle',
-    });
-    this.circleChart.intervalStack()
-      .position('percent')
-      .color('item', ['#00CA68', '#F25D56'])
-      .label('percent', {
-        formatter: function formatter(val: any, item: any) {
-          return `${item.point.item}`;
-        },
-      })
-      .style({
-        lineWidth: 2,
-        stroke: '#fff',
       });
-    this.circleChart.render();
+      this.circleChart.coord('theta', {
+        radius: 0.70,
+        innerRadius: 0.65,
+      });
+      this.circleChart.tooltip({
+        showTitle: false,
+        itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>',
+      });
+      // 辅助文本
+      this.circleChart.guide().html({
+        position: ['50%', '50%'],
+        html: `<div style="color: #333333;font-size: 14px;text-align: center;width: 10em;">运行车辆<br><span style="color:#333333;font-size:20px">${this.totalCount}</span>台</div>`,
+        alignX: 'middle',
+        alignY: 'middle',
+      });
+      this.circleChart.intervalStack()
+        .position('percent')
+        .color('item', ['#00CA68', '#F25D56'])
+        .label('percent', {
+          formatter: function formatter(val: any, item: any) {
+            return `${item.point.item}`;
+          },
+        })
+        .style({
+          lineWidth: 2,
+          stroke: '#fff',
+        });
+      this.circleChart.render();
+    }
   }
 
   // 柱状图表
@@ -311,23 +326,6 @@ export default class Dashboard extends Vue {
     this.nowDate = new Date();// 获取系统当前时间
     const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
     this.setHelloWord(myTime);
-    setTimeout(() => {
-      this.circleChart = new window.G2.Chart({
-        container: 'mountNode',
-        forceFit: false,
-        height: 300,
-        width: 300,
-        animate: true,
-      });
-    }, 150);
-    setTimeout(() => {
-      this.columnarChart = new window.G2.Chart({
-        container: 'columnar',
-        forceFit: true,
-        height: 400,
-        animate: true,
-      });
-    }, 150);
   }
 
   setHelloWord(time: any) {
