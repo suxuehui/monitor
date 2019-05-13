@@ -156,6 +156,9 @@ export default function request(options: Option): Promise<any> {
     // if (process.env.NODE_ENV === 'production') {
     //   Raven.captureException(JSON.stringify(error));
     // }
+    /**
+     *  无权限时，先提示，在刷新
+     * */
     let msg;
     let statusCode;
     if (response.data.result) {
@@ -172,18 +175,29 @@ export default function request(options: Option): Promise<any> {
       if (window.localStorage.getItem('token')) {
         if (statusCode === 401) {
           Message.error('无权限操作，请联系管理员');
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500);
         } else if (resultCode === 4) {
           Message.error(resultMessage);
           router.replace('/login');
         } else if (resultCode === 401) {
           Message.error('无权限操作，请联系管理员');
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500);
         }
       } else {
         // 首次登录时不存在token
         router.replace('/login');
       }
     } else {
-      Message.error('无权限操作，请联系管理员');
+      if (response.status === 401) {
+        Message.error('无权限操作，请联系管理员');
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500);
+      }
     }
     // // 判断错误码是否为4，4为登录超时，跳转到登录页，或者是http的状态码为401也代表会话失效
     // if (response.data.result.resultCode === 4) {

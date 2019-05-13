@@ -228,9 +228,8 @@ export default class Dashboard extends Vue {
       if (res.result.resultCode === '0') {
         const data: any = JSON.parse(JSON.stringify(res.entity));
         const onlinePercent: number = Number(
-          (data.online / (data.online + data.offline)).toFixed(2),
+          (data.online / (data.online + data.offline)).toFixed(1)
         );
-        const offlinePercent = 1 - onlinePercent;
         const obj1 = {
           item: '在线',
           count: data.online,
@@ -239,7 +238,7 @@ export default class Dashboard extends Vue {
         const obj2 = {
           item: '离线',
           count: data.offline,
-          percent: offlinePercent,
+          percent: 1 - onlinePercent,
         };
         this.totalCount = data.moving;
         this.circleData.push(obj1, obj2);
