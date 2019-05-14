@@ -68,10 +68,9 @@ export default class Dashboard extends Vue {
   nowDate: any = '';
 
   defaultTime: any = [
-    new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
+    new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
     new Date(new Date().getFullYear(), new Date().getMonth(),
-      new Date().getDate(), new Date().getHours(), new Date().getMinutes(),
-      new Date().getSeconds()),
+      new Date().getDate()),
   ]
 
   todayActive: boolean = true;
@@ -190,8 +189,8 @@ export default class Dashboard extends Vue {
   GetDrivingData() {
     const day: any = new Date();
     const time = {
-      endTime: day.Format('yyyy-MM-dd hh:mm:ss'),
-      startTime: `${day.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`,
+      endTime: day.Format('yyyy-MM-dd'),
+      startTime: day.Format('yyyy-MM-dd'),
     };
     this.createdDrivingData(time);
   }
@@ -352,13 +351,11 @@ export default class Dashboard extends Vue {
     this.cancelAllActive();
     this.todayActive = true;
     const day: any = new Date();
-    const startTime = `${day.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`;
-    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const startTime = day.Format('yyyy-MM-dd');
+    const endTime = day.Format('yyyy-MM-dd');
     this.defaultTime = [
-      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
-      new Date(new Date().getFullYear(), new Date().getMonth(),
-        new Date().getDate(), new Date().getHours(), new Date().getMinutes(),
-        new Date().getSeconds()),
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
     ];
     const time = {
       startTime,
@@ -372,17 +369,14 @@ export default class Dashboard extends Vue {
     const Y = `${date.getFullYear()}-`;
     const M = `${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}-`;
     const D = `${date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()} `;
-    const h = `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:`;
-    const m = `${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}:`;
-    const s = (date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds());
-    return Y + M + D + h + m + s;
+    return Y + M + D;
   }
 
   sevenData() {
     this.cancelAllActive();
     this.sevendayActive = true;
     const day: any = new Date();
-    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const endTime = day.Format('yyyy-MM-dd');
     const oldTimestamp = new Date().getTime() - 6 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
@@ -399,7 +393,7 @@ export default class Dashboard extends Vue {
     this.cancelAllActive();
     this.thirtydayActive = true;
     const day: any = new Date();
-    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const endTime = day.Format('yyyy-MM-dd');
     const oldTimestamp = new Date().getTime() - 29 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
@@ -416,7 +410,7 @@ export default class Dashboard extends Vue {
     this.cancelAllActive();
     this.allActive = true;
     const day: any = new Date();
-    const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
+    const endTime = day.Format('yyyy-MM-dd');
     const oldTimestamp = new Date().getTime() - 89 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
@@ -531,10 +525,10 @@ export default class Dashboard extends Vue {
                   <el-date-picker
                     id="datePicker"
                     v-model={this.defaultTime}
-                    type="datetimerange"
+                    type="daterange"
                     class="datePicker"
                     size="mini"
-                    value-format="yyyy-MM-dd HH:mm:ss"
+                    value-format="yyyy-MM-dd"
                     on-change={(val: any) => this.timeSelect(val)}
                     range-separator="至"
                     start-placeholder="开始"

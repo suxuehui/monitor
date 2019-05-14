@@ -176,7 +176,7 @@ export default function request(options: Option): Promise<any> {
         if (statusCode === 401) {
           Message.error('无权限操作，请联系管理员');
           setTimeout(() => {
-            window.location.reload()
+            window.location.reload();
           }, 1500);
         } else if (resultCode === 4) {
           Message.error(resultMessage);
@@ -184,7 +184,7 @@ export default function request(options: Option): Promise<any> {
         } else if (resultCode === 401) {
           Message.error('无权限操作，请联系管理员');
           setTimeout(() => {
-            window.location.reload()
+            window.location.reload();
           }, 1500);
         }
       } else {
@@ -195,7 +195,7 @@ export default function request(options: Option): Promise<any> {
       if (response.status === 401) {
         Message.error('无权限操作，请联系管理员');
         setTimeout(() => {
-          window.location.reload()
+          window.location.reload();
         }, 1500);
       }
     }

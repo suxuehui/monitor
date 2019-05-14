@@ -107,7 +107,7 @@ export default class Trajectory extends Vue {
         const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
         const startT1 = new Date(startT).getTime();
         const endT1 = new Date(endT).getTime();
-        if (endT1 - startT1 < 90 * 24 * 60 * 60 * 1000) {
+        if (endT1 - startT1 < 92 * 24 * 60 * 60 * 1000) {
           this.outParams = {
             startTime: startT,
             endTime: endT,
