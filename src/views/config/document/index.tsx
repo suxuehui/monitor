@@ -71,16 +71,15 @@ export default class DeviceModel extends Vue {
     const getNowRoles: string[] = [
       // 操作
       '/vehicle/config/add', // 新增
-      '/vehicle/config/info', // 详情
       '/vehicle/config/update', // 编辑
       '/vehicle/config/delete', // 删除
       '/vehicle/config/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.showAddBtn = !!(res[0]);
-      this.opreat[0].roles = !!(res[1] && res[2]);
-      this.opreat[1].roles = !!(res[3]);
-      this.showExportBtn = !!(res[4]);
+      this.opreat[0].roles = !!(res[1]);
+      this.opreat[1].roles = !!(res[2]);
+      this.showExportBtn = !!(res[3]);
     });
   }
 

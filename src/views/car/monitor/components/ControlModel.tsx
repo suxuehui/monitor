@@ -44,7 +44,7 @@ export default class ControlModel extends Vue {
 
   // 设置默认选项
   setDefaultOption(data: any) {
-    if (data.cmd === 'CMD_OIL_OFF') {  // 断油
+    if (data.cmd === 'CMD_OIL_OFF') { // 断油
       data.options.forEach((item: any) => {
         if (item.optionName === '停车断油') {
           this.modelForm.cmd = item.optionVal;

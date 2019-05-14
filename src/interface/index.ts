@@ -12,7 +12,7 @@ export interface FilterFormList {
   options?: Array<{ value: any, label: string }>;
   change?: Function;
   itemChange?: Function;
-  pickerOptions?: { shortcuts?: Array<{ text: string, onClick(picker: any): void }>, disabledDate?: Function };
+  pickerOptions?: { shortcuts?: Array<{ text: string, onClick(picker: any): void }>, disabledDate?: Function, onPick?: Function };
 }
 
 export interface TableColumnFilter {

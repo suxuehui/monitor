@@ -115,19 +115,26 @@ export default class Dashboard extends Vue {
         // 获取告警统计数据
         this.GetAlarmData();
       }
-      if (this.showDrivingData) {
-        // 获取行驶统计数据
-        this.GetDrivingData();
-      }
       if (this.showFenceData) {
         // 获取围栏车辆数据
         this.GetFenceData();
+      }
+      if (this.showDrivingData) {
+        // 获取行驶统计数据
+        this.GetDrivingData();
       }
       if (this.showOnlineData) {
         // 获取车辆统计数据
         this.GetOnlineData();
       }
     });
+  }
+
+  mounted() {
+    // 时间
+    this.nowDate = new Date();// 获取系统当前时间
+    const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
+    this.setHelloWord(myTime);
   }
 
   resetDriveData() {
@@ -174,12 +181,6 @@ export default class Dashboard extends Vue {
         this.columData[5].num = impactCount || 0; // 碰撞
         this.columData[6].num = overTurn || 0; // 翻滚
         this.columDataChange = true;
-        this.columnarChart = new window.G2.Chart({
-          container: 'columnar',
-          forceFit: true,
-          height: 400,
-          animate: true,
-        });
         this.createColumnarChart(str);
       }
     });
@@ -243,13 +244,6 @@ export default class Dashboard extends Vue {
         this.totalCount = data.moving;
         this.circleData.push(obj1, obj2);
         this.drivingCount = data.offline + data.online;
-        this.circleChart = new window.G2.Chart({
-          container: 'mountNode',
-          forceFit: false,
-          height: 300,
-          width: 300,
-          animate: true,
-        });
         // 环状图表
         this.createCircleChart();
       } else {
@@ -260,71 +254,77 @@ export default class Dashboard extends Vue {
 
   // 环状图表
   createCircleChart() {
-    if (this.circleChart) {
-      this.circleChart.source(this.circleData, {
-        percent: {
-          formatter: function formatter(val: any) {
-            val = `${val * 100}%`;
-            return val;
-          },
-        },
+    if (!this.circleChart) {
+      this.circleChart = new window.G2.Chart({
+        container: 'mountNode',
+        forceFit: false,
+        height: 300,
+        width: 300,
+        animate: true,
       });
-      this.circleChart.coord('theta', {
-        radius: 0.70,
-        innerRadius: 0.65,
-      });
-      this.circleChart.tooltip({
-        showTitle: false,
-        itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>',
-      });
-      // 辅助文本
-      this.circleChart.guide().html({
-        position: ['50%', '50%'],
-        html: `<div style="color: #333333;font-size: 14px;text-align: center;width: 10em;">运行车辆<br><span style="color:#333333;font-size:20px">${this.totalCount}</span>台</div>`,
-        alignX: 'middle',
-        alignY: 'middle',
-      });
-      this.circleChart.intervalStack()
-        .position('percent')
-        .color('item', ['#00CA68', '#F25D56'])
-        .label('percent', {
-          formatter: function formatter(val: any, item: any) {
-            return `${item.point.item}`;
-          },
-        })
-        .style({
-          lineWidth: 2,
-          stroke: '#fff',
-        });
-      this.circleChart.render();
     }
+    this.circleChart.source(this.circleData, {
+      percent: {
+        formatter: function formatter(val: any) {
+          val = `${val * 100}%`;
+          return val;
+        },
+      },
+    });
+    this.circleChart.coord('theta', {
+      radius: 0.70,
+      innerRadius: 0.65,
+    });
+    this.circleChart.tooltip({
+      showTitle: false,
+      itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>',
+    });
+    // 辅助文本
+    this.circleChart.guide().html({
+      position: ['50%', '50%'],
+      html: `<div style="color: #333333;font-size: 14px;text-align: center;width: 10em;">运行车辆<br><span style="color:#333333;font-size:20px">${this.totalCount}</span>台</div>`,
+      alignX: 'middle',
+      alignY: 'middle',
+    });
+    this.circleChart.intervalStack()
+      .position('percent')
+      .color('item', ['#00CA68', '#F25D56'])
+      .label('percent', {
+        formatter: function formatter(val: any, item: any) {
+          return `${item.point.item}`;
+        },
+      })
+      .style({
+        lineWidth: 2,
+        stroke: '#fff',
+      });
+    this.circleChart.render();
   }
 
   // 柱状图表
   createColumnarChart(str?: string) {
-    // 柱状图
-    if (this.columnarChart) {
-      this.columnarChart.source(this.columData);
-      this.columnarChart.scale('num', {
-        tickInterval: 10,
-        alias: '次数',
+    if (!this.columnarChart) {
+      this.columnarChart = new window.G2.Chart({
+        container: 'columnar',
+        forceFit: true,
+        height: 400,
+        animate: true,
       });
-      this.columnarChart
-        .interval()
-        .position('name*num');
-      if (str) {
-        this.columnarChart.changeData(this.columData);
-      } else {
-        this.columnarChart.render();
-      }
     }
-  }
-
-  mounted() {
-    // 时间
-    this.nowDate = new Date();// 获取系统当前时间
-    const myTime = this.nowDate.getHours() + (this.nowDate.getMinutes() * 0.01);
-    this.setHelloWord(myTime);
+    // 柱状图
+    this.columnarChart.source(this.columData);
+    this.columnarChart.scale('num', {
+      tickInterval: 10,
+      alias: '次数',
+    });
+    this.columnarChart
+      .interval()
+      .position('name*num');
+    if (str) {
+      this.columnarChart.changeData(this.columData);
+    } else {
+      this.columnarChart.render();
+    }
   }
 
   setHelloWord(time: any) {
@@ -383,7 +383,7 @@ export default class Dashboard extends Vue {
     this.sevendayActive = true;
     const day: any = new Date();
     const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
-    const oldTimestamp = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+    const oldTimestamp = new Date().getTime() - 6 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
       new Date(),
@@ -400,7 +400,7 @@ export default class Dashboard extends Vue {
     this.thirtydayActive = true;
     const day: any = new Date();
     const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
-    const oldTimestamp = new Date().getTime() - 30 * 24 * 60 * 60 * 1000;
+    const oldTimestamp = new Date().getTime() - 29 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
       new Date(),
@@ -417,7 +417,7 @@ export default class Dashboard extends Vue {
     this.allActive = true;
     const day: any = new Date();
     const endTime = day.Format('yyyy-MM-dd hh:mm:ss');
-    const oldTimestamp = new Date().getTime() - 90 * 24 * 60 * 60 * 1000;
+    const oldTimestamp = new Date().getTime() - 89 * 24 * 60 * 60 * 1000;
     this.defaultTime = [
       new Date(oldTimestamp),
       new Date(),
@@ -434,7 +434,7 @@ export default class Dashboard extends Vue {
     if (data) {
       const start = new Date(data[0]).getTime();
       const end = new Date(data[1]).getTime();
-      if (end - start < 90 * 24 * 60 * 60 * 1000) {
+      if (end - start < 89 * 24 * 60 * 60 * 1000) {
         const time = {
           startTime: data[0],
           endTime: data[1],

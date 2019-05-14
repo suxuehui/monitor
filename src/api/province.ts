@@ -26,4 +26,3 @@ export async function getDistrict(params: any) {
     data: params,
   });
 }
-
