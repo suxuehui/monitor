@@ -309,9 +309,9 @@ export default class BsjThreshold extends Vue {
                 id="accelerationThreshold"
                 class="bItemOneInput"
                 v-model={this.modelForm.accelerationThreshold}
-                placeholder="请输入加速阀值"
+                placeholder="请输入加速阈值"
               />
-              <span class="itemTitle color909399">加速阀值</span>
+              <span class="itemTitle color909399">加速阈值</span>
               <span class="star2">*</span>
               <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急加速')}>默认值</el-button>
             </div>
@@ -322,9 +322,9 @@ export default class BsjThreshold extends Vue {
                 id="decelerationThreshold"
                 class="bItemOneInput"
                 v-model={this.modelForm.decelerationThreshold}
-                placeholder="请输入减速阀值"
+                placeholder="请输入减速阈值"
               />
-              <span class="itemTitle color909399">减速阀值</span>
+              <span class="itemTitle color909399">减速阈值</span>
               <span class="star2">*</span>
               <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急减速')}>默认值</el-button>
             </div>
@@ -378,9 +378,9 @@ export default class BsjThreshold extends Vue {
                   id="collisionAcceleration"
                   class="bItemFourInput"
                   v-model={this.modelForm.collisionAcceleration}
-                  placeholder="请输入碰撞阀值"
+                  placeholder="请输入碰撞阈值"
                 />
-                <span class="itemTitle color909399">碰撞阀值</span>
+                <span class="itemTitle color909399">碰撞阈值</span>
               </el-col>
               <el-col span={6} class="bItemFourItem">
                 <el-input

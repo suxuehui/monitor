@@ -316,9 +316,9 @@ export default class BsjThreshold extends Vue {
                   id="overSpeedSpec"
                   class="aItemTwoInput"
                   v-model={this.modelForm.overSpeedSpec}
-                  placeholder="请输入超速阀值"
+                  placeholder="请输入超速阈值"
                 />
-                <span class="aItemTitle color909399">超速阀值</span>
+                <span class="aItemTitle color909399">超速阈值</span>
               </el-col>
               <el-col span={12} class="aItemTwoItem">
                 <el-input
@@ -352,9 +352,9 @@ export default class BsjThreshold extends Vue {
                 id="accelerationThreshold"
                 class="aItemOneInput"
                 v-model={this.modelForm.accelerationThreshold}
-                placeholder="请输入加速阀值"
+                placeholder="请输入加速阈值"
               />
-              <span class="aItemTitle color909399">加速阀值</span>
+              <span class="aItemTitle color909399">加速阈值</span>
               <span class="star2">*</span>
               <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急加速')}>默认值</el-button>
             </div>
@@ -365,9 +365,9 @@ export default class BsjThreshold extends Vue {
                 id="decelerationThreshold"
                 class="aItemOneInput"
                 v-model={this.modelForm.decelerationThreshold}
-                placeholder="请输入减速阀值"
+                placeholder="请输入减速阈值"
               />
-              <span class="aItemTitle color909399">减速阀值</span>
+              <span class="aItemTitle color909399">减速阈值</span>
               <span class="star2">*</span>
               <el-button type="text" class="btn" on-click={() => this.getDefaultVal('急减速')}>默认值</el-button>
             </div>
@@ -379,9 +379,9 @@ export default class BsjThreshold extends Vue {
                   id="sharpAngleSpec"
                   class="aItemFiveInput"
                   v-model={this.modelForm.sharpAngleSpec}
-                  placeholder="请输入转弯阀值"
+                  placeholder="请输入转弯阈值"
                 />
-                <span class="aItemTitle color909399">转弯阀值</span>
+                <span class="aItemTitle color909399">转弯阈值</span>
               </el-col>
               <el-col class="aItemFiveItem">
                 <el-input
@@ -430,9 +430,9 @@ export default class BsjThreshold extends Vue {
                   id="collisionAcceleration"
                   class="aItemFourInput"
                   v-model={this.modelForm.collisionAcceleration}
-                  placeholder="请输入碰撞阀值"
+                  placeholder="请输入碰撞阈值"
                 />
-                <span class="aItemTitle color909399">碰撞阀值</span>
+                <span class="aItemTitle color909399">碰撞阈值</span>
               </el-col>
               <el-col span={6} class="aItemFourItem">
                 <el-input

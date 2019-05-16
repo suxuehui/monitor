@@ -576,7 +576,7 @@ export default class Device extends Vue {
 
   changelocData: any = {};
 
-  // 阀值设置
+  // 阈值设置
   // BSJ或WK
   bThresholdData: any = {};
 
@@ -684,8 +684,8 @@ export default class Device extends Vue {
     this.acceptVisible = false; // 验收
     this.upLocVisible = false; // 线上地址
     this.changelocVisible = false; // 切换地址
-    this.aThresholdVisible = false; // 阀值bsj wk
-    this.bThresholdVisible = false; // 阀值2a1
+    this.aThresholdVisible = false; // 阈值bsj wk
+    this.bThresholdVisible = false; // 阈值2a1
     this.checkLogVisible = false; // 日志
     this.loading = false;
     this.changelocData = {}; // 切换地址
