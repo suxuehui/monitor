@@ -125,39 +125,36 @@ export default class AddModal extends Vue {
   onDataChange(data: any) {
     if (data.userId > 0) {
       this.resetData();
-      data.selectList.forEach((item: any) => {
-        this.roleAddList.push({
-          value: item.id,
-          label: item.roleName,
+      if (data.selectList) {
+        data.selectList.forEach((item: any) => {
+          this.roleAddList.push({
+            value: item.id,
+            label: item.roleName,
+          });
         });
-      });
-      this.modelForm.roleIdList = data.roleIdList;
+      } else {
+        this.roleAddList = [];
+      }
+      this.modelForm.roleIdList = data.roleIdList ? data.roleIdList : [];
       this.modelForm.realName = data.realName;
       this.modelForm.userName = data.userName;
       this.modelForm.remark = data.remark;
       this.modelForm.password = '********';
       this.phoneNumber = data.userName;
-      this.roleLen = data.roleIdList.length;
+      this.roleLen = data.roleIdList ? data.roleIdList.length : 0;
     }
   }
 
   // 编辑时角色数组长度
   roleLen: number = 0;
 
-  // 角色删除时调用
-  removeTag(val: any) {
-    // console.log(val);
-  }
-
   selectChange(val: any) {
     this.change = !this.change;
-    val.forEach((element: any) => {
-      if (element === 3) {
-        this.isInstaller = true;
-      } else {
-        this.isInstaller = false;
-      }
-    });
+    if (val.indexOf(3) > -1) {
+      this.isInstaller = true;
+    } else {
+      this.isInstaller = false;
+    }
     if (this.isInstaller) {
       if (this.phoneNumber) {
         const exp: any = /^1[0-9]{10}$/;
@@ -204,7 +201,7 @@ export default class AddModal extends Vue {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
     obj = {
-      roleIdList: this.modelForm.roleIdList.join(','),
+      roleIdList: this.modelForm.roleIdList ? this.modelForm.roleIdList.join(',') : '',
       realName: this.modelForm.realName,
       username: this.modelForm.userName,
       password: this.modelForm.password,
@@ -234,7 +231,7 @@ export default class AddModal extends Vue {
         } else {
           // 修改
           obj.userId = this.data.userId;
-          if (this.modelForm.roleIdList.length === 0) {
+          if (!this.modelForm.roleIdList || this.modelForm.roleIdList.length === 0) {
             this.$message.error('成员角色不能为空！');
             this.loading = false;
             return false;
@@ -303,14 +300,13 @@ export default class AddModal extends Vue {
                   multiple={true}
                   filterable={true}
                   on-change={this.selectChange}
-                  on-remove-tag={this.removeTag}
                   placeholder={this.change ? '请选择角色类型' : '请选择角色类型'}
                   style="width:100%"
                 >
                   {
-                    this.roleAddList.length > 0 ? this.roleAddList.map((item: any) => (
+                    this.title === '新增成员' ? this.roleList.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                    )) : this.roleList.map((item: any) => (
+                    )) : this.roleAddList.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }
