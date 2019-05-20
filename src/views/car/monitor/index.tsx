@@ -448,7 +448,7 @@ export default class Monitor extends Vue {
   // 车辆详情
   carDetailArr: any = [
     { label: '卫星星数:', prop: 'star', unit: '颗' },
-    { label: '网络质量:', prop: 'gsm', unit: '' },
+    { label: '网络质量:', prop: 'gsm' },
     { label: 'ACC状态:', prop: 'acc' },
     { label: '引擎状态:', prop: 'engine' },
     { label: '排挡档位:', prop: 'gear', unit: '档' },
@@ -656,7 +656,6 @@ export default class Monitor extends Vue {
    * @param {object} data 车辆数据
    */
   openMsg = (data: any) => {
-    console.log(data);
     const infoWindow = new this.BMap.InfoWindow(this.msgContent(data));
     const point = CoordTrasns.transToBaidu(
       {
@@ -739,7 +738,7 @@ export default class Monitor extends Vue {
    * @param {string} id 车辆id
    */
   getCarDetail(id: string) {
-    let carDetail: any = {};
+    let carDetail1: any = {};
     this.detailShow = true;
     vehicleInfo({ id }).then((res) => {
       if (res.result.resultCode === '0') {
@@ -752,11 +751,11 @@ export default class Monitor extends Vue {
             coordinateSystem: res.entity.coordinateSystem,
           }).then((response: any) => {
             if (response.status === 0) {
-              carDetail = {
+              carDetail1 = {
                 address: response.result.formatted_address + response.result.sematic_description,
                 ...res.entity,
               };
-              this.carDetail = carDetail;
+              this.carDetail = carDetail1;
             }
           });
           // 判断当前是否展示的其他车辆
@@ -764,11 +763,11 @@ export default class Monitor extends Vue {
             this.setNowCarPosi(res.entity);
           }
         } else {
-          carDetail = {
+          carDetail1 = {
             address: '未知位置',
             ...res.entity,
           };
-          this.carDetail = carDetail;
+          this.carDetail = carDetail1;
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');
@@ -1072,6 +1071,13 @@ export default class Monitor extends Vue {
    */
   renderStatus(value: boolean | string | number, data: any, unit?: any) {
     const gettype = Object.prototype.toString;
+    // 卫星星数
+    if (unit === '颗') {
+      if (value >= 0) {
+        return `${value}${unit}`;
+      }
+      return '未知';
+    }
     // 剩余油量%
     if (unit === 'L') {
       const num: any = value; // 剩余油量
@@ -1082,13 +1088,6 @@ export default class Monitor extends Vue {
     }
     // 剩余电量
     if (unit === '%') {
-      if (value && value >= 0) {
-        return `${value}${unit}`;
-      }
-      return '未知';
-    }
-    // 卫星星数
-    if (unit === '颗') {
       if (value && value >= 0) {
         return `${value}${unit}`;
       }
@@ -1164,7 +1163,7 @@ export default class Monitor extends Vue {
   setDoorStatus(doorStatus: boolean, lockStatus: boolean) {
     let str1: string = '';
     let str2: string = '';
-    if (doorStatus !== null&& doorStatus !== undefined) {
+    if (doorStatus !== null && doorStatus !== undefined) {
       str1 = doorStatus ? '开启' : '关闭';
     } else {
       str1 = '未知';

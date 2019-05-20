@@ -16,7 +16,7 @@ const infoCount = {
   actions: {
     // 获取通知数量
     getNotice: (context: any) => new Promise((resolve, reject) => {
-      noticeNotHandled({ status: 1 }).then(({ result, entity }) => {
+      noticeNotHandled({ status: 0 }).then(({ result, entity }) => {
         if (result.resultCode === '0') {
           context.commit('SVAENOTICE', entity);
         }
@@ -27,7 +27,7 @@ const infoCount = {
     }),
     // 获取新的告警消息数量
     getAlarm: (context: any) => new Promise((resolve, reject) => {
-      getNotHandled({ status: 1 }).then(({ result, entity }) => {
+      getNotHandled({ status: 0 }).then(({ result, entity }) => {
         if (result.resultCode === '0') {
           context.commit('SVAEALARM', entity);
         }

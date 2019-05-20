@@ -71,7 +71,7 @@ export default class Merchants extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '商户名称', prop: 'orgName' },
-    { label: '关联门店', prop: 'oldLevelNames', formatter: this.nameSet },
+    { label: '关联门店', prop: 'oldNames', formatter: this.nameSet },
     { label: '同步设备', prop: 'deviceNames' },
     { label: '登录账号', prop: 'manageUser' },
     { label: '切换地址', prop: 'manageUser11', formatter: this.locSet },
@@ -99,11 +99,11 @@ export default class Merchants extends Vue {
   ];
 
   nameSet(row: any) {
-    const nameLevArr: any = row.oldLevelNames && row.oldLevelNames.indexOf(',') > -1 ? row.oldLevelNames && row.oldLevelNames.split(',') : [row.oldLevelNames];
+    const nameLevArr: any = row.oldNames && row.oldNames.indexOf(',') > -1 ? row.oldNames && row.oldNames.split(',') : [row.oldNames];
     const nameArr: any = [];
     nameLevArr.forEach((item: any) => {
       if (item) {
-        nameArr.push(item.split('-')[1]);
+        nameArr.push(item);
       }
     });
     let showName: string = '';

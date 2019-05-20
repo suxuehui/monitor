@@ -107,7 +107,7 @@ export default class AddModal extends Vue {
     const nameArr: any = [];
     arr.forEach((item: any) => {
       if (item) {
-        nameArr.push(item.split('-')[1]);
+        nameArr.push(item.split('****')[1]);
       }
     });
     return nameArr;
@@ -379,8 +379,8 @@ export default class AddModal extends Vue {
     const arr: any = this.oldLevAndName && this.oldLevAndName.indexOf(',') > -1 ? this.oldLevAndName.split(',') : [this.oldLevAndName];
     arr.forEach((item: any) => {
       if (item) {
-        oldShopLevelCodeArr.push(item.split('-')[0]);
-        oldShopNameArr.push(item.split('-')[1]);
+        oldShopLevelCodeArr.push(item.split('****')[0]);
+        oldShopNameArr.push(item.split('****')[1]);
       }
     });
     const nameAndLev: any = JSON.parse(JSON.stringify(this.nameAndLev)); // 编辑后关联商户数据
@@ -510,6 +510,7 @@ export default class AddModal extends Vue {
   // 搜索商户
   remoteMethod(query: any) {
     if (query !== '') {
+      this.shopFilteredList = [];
       this.selectLoading = true;
       getAllShopNameMoni({ name: query }).then((res) => {
         if (res.result.resultCode === '0') {
@@ -525,7 +526,6 @@ export default class AddModal extends Vue {
           this.nameAndLev = this.nameAndLev;
         } else {
           this.selectLoading = false;
-          this.shopFilteredList = [];
           this.$message.error(res.result.resultMessage);
         }
       });

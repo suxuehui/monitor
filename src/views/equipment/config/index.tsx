@@ -320,7 +320,8 @@ export default class ConfigModel extends Vue {
       this.opreat[2].roles = !!(res[2]); // 查询配置
       this.opreat[3].roles = !!(res[3]); // 蓝牙鉴权
       this.opreat[4].roles = !!(res[4]); // 蓝牙名称
-      this.opreat[5].roles = !!(res[5]); // 设备学习
+      this.opreat[5].roles = !!(res[4]); // 蓝牙秘钥
+      this.opreat[6].roles = !!(res[5]); // 设备学习
       this.showOprateBtn = !!(res[6]); // 操作记录查看
       this.showExportBtn = !!(res[7]); // 导出
     });
