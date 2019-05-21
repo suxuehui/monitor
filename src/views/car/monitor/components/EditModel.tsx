@@ -42,9 +42,6 @@ export default class EditModel extends Vue {
     ],
     plateNum: [
       { required: true, message: '请输入车牌号', trigger: 'blur' },
-      {
-        validator: this.checkPlateNum, trigger: 'blur',
-      },
     ],
   }
 
@@ -64,23 +61,6 @@ export default class EditModel extends Vue {
         }
       } else {
         callback(new Error('车架号不能为空，请输入'));
-      }
-    }, 500);
-  }
-
-  // 验证车牌号
-  @Emit()
-  checkPlateNum(rule: any, value: string, callback: Function) {
-    setTimeout(() => {
-      if (value) {
-        const exp: any = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领车假A-Z]{1}[A-Z]{1}[A-Z0-9]{4,5}[A-Z0-9挂学警港澳]{1}$/;
-        if (exp.test(value)) {
-          callback();
-        } else {
-          callback(new Error('车牌号输入不合法，请重新输入'));
-        }
-      } else {
-        callback(new Error('车牌号不能为空，请输入'));
       }
     }, 500);
   }
@@ -106,7 +86,7 @@ export default class EditModel extends Vue {
     const From: any = this.$refs.modelForm;
     setTimeout(() => {
       From.resetFields();
-    }, 200);
+    }, 500);
     this.loading = false;
   }
 
@@ -165,7 +145,7 @@ export default class EditModel extends Vue {
                 </el-form-item>
               </el-col>
               <el-col span={24}>
-                <el-form-item label="车牌号" prop="plateNum">
+                <el-form-item label="车牌号" prop="plateNum" >
                   <el-input
                     id="plateNum"
                     v-model={this.modelForm.plateNum}
