@@ -9,6 +9,7 @@ export async function roleAdd(params: any) {
     data: params,
   });
 }
+
 // 角色修改
 export async function roleUpdate(params: any) {
   return request({
@@ -17,6 +18,7 @@ export async function roleUpdate(params: any) {
     data: params,
   });
 }
+
 // 角色信息
 export async function roleInfo(params: any) {
   return request({
@@ -25,6 +27,7 @@ export async function roleInfo(params: any) {
     data: params,
   });
 }
+
 // 角色启用\禁用
 export async function roleUpdateStatus(params: any) {
   return request({
@@ -33,6 +36,7 @@ export async function roleUpdateStatus(params: any) {
     data: params,
   });
 }
+
 // 角色分配权限
 export async function roleSaveRoleMenu(params: any) {
   return request({
@@ -42,6 +46,7 @@ export async function roleSaveRoleMenu(params: any) {
     data: params,
   });
 }
+
 // 角色列表
 export async function roleSelect(params: any) {
   return request({
@@ -50,6 +55,7 @@ export async function roleSelect(params: any) {
     data: params,
   });
 }
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 成员管理
 // 成员新增
@@ -60,6 +66,7 @@ export async function userAdd(params: any) {
     data: params,
   });
 }
+
 // 成员修改
 export async function userUpdate(params: any) {
   return request({
@@ -68,6 +75,7 @@ export async function userUpdate(params: any) {
     data: params,
   });
 }
+
 // 成员解冻
 export async function userUnlock(params: any) {
   return request({
@@ -77,6 +85,7 @@ export async function userUnlock(params: any) {
     data: params,
   });
 }
+
 // 成员冻结
 export async function userLock(params: any) {
   return request({
@@ -86,6 +95,7 @@ export async function userLock(params: any) {
     data: params,
   });
 }
+
 // 修改密码
 export async function resetPW(params: any) {
   return request({
@@ -95,11 +105,13 @@ export async function resetPW(params: any) {
     data: params,
   });
 }
+
 // 检测成员是否存在
 export async function userCheck(params: any) {
   return request({
-    url: `/sys/user/exist/${params}`,
+    url: '/sys/user/exist',
     method: 'post',
+    data: params,
   });
 }
 

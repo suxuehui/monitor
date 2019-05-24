@@ -98,7 +98,7 @@ export default class AddModal extends Vue {
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        userCheck(value).then((res) => {
+        userCheck({ userName: value }).then((res) => {
           this.phoneNumber = value;
           if (res.result.resultCode === '0') {
             if (this.isInstaller) {
