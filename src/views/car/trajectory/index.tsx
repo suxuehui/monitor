@@ -312,15 +312,15 @@ export default class Trajectory extends Vue {
       this.clearCanvas();
       this.isEnd = false;
       this.locChange = false;
-      // 1-振动 2-碰撞 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
+      // 1-振动 2-碰撞 3-翻滚 4-急加速 5-急减速 6-急转弯 7-超速
       this.behaivorData = [
         { num: 0, txt: '振动', type: '1' },
         { num: 0, txt: '碰撞', type: '2' },
-        { num: 0, txt: '翻滚', type: '4' },
-        { num: 0, txt: '超速', type: '8' },
-        { num: 0, txt: '急加速', type: '5' },
-        { num: 0, txt: '急减速', type: '6' },
-        { num: 0, txt: '急转弯', type: '7' },
+        { num: 0, txt: '翻滚', type: '3' },
+        { num: 0, txt: '超速', type: '7' },
+        { num: 0, txt: '急加速', type: '4' },
+        { num: 0, txt: '急减速', type: '5' },
+        { num: 0, txt: '急转弯', type: '6' },
       ];
     }
   }
@@ -786,11 +786,11 @@ export default class Trajectory extends Vue {
       this.behaivorData = [
         { num: 0, txt: '振动', type: '1' },
         { num: 0, txt: '碰撞', type: '2' },
-        { num: 0, txt: '翻滚', type: '4' },
-        { num: 0, txt: '超速', type: '8' },
-        { num: 0, txt: '急加速', type: '5' },
-        { num: 0, txt: '急减速', type: '6' },
-        { num: 0, txt: '急转弯', type: '7' },
+        { num: 0, txt: '翻滚', type: '3' },
+        { num: 0, txt: '超速', type: '7' },
+        { num: 0, txt: '急加速', type: '4' },
+        { num: 0, txt: '急减速', type: '5' },
+        { num: 0, txt: '急转弯', type: '6' },
       ];
       this.plateNum = val.platenum;
       // 清除播放
@@ -801,7 +801,14 @@ export default class Trajectory extends Vue {
       // 清除轨迹点信息框
       this.getMapContorl().removeTrackInfoBox();
       // 根据轨迹id，查询轨迹详情
-      tripGPS({ id: val.tripId }).then((res) => {
+      const obj: any = {
+        vehicleId: val.vehicleId,
+        startTime: val.startTime,
+      };
+      if (val.endTime && val.endTime !== null) {
+        obj.endTime = val.endTime;
+      }
+      tripGPS(obj).then((res) => {
         if (res.result.resultCode === '0') {
           let data = res.entity;
           // 判断轨迹数据是否为空
@@ -817,11 +824,11 @@ export default class Trajectory extends Vue {
           this.behaivorData = [
             { num: 0, txt: '振动', type: '1' },
             { num: 0, txt: '碰撞', type: '2' },
-            { num: 0, txt: '翻滚', type: '4' },
-            { num: 0, txt: '超速', type: '8' },
-            { num: 0, txt: '急加速', type: '5' },
-            { num: 0, txt: '急减速', type: '6' },
-            { num: 0, txt: '急转弯', type: '7' },
+            { num: 0, txt: '翻滚', type: '3' },
+            { num: 0, txt: '超速', type: '7' },
+            { num: 0, txt: '急加速', type: '4' },
+            { num: 0, txt: '急减速', type: '5' },
+            { num: 0, txt: '急转弯', type: '6' },
           ];
           // 循环转换轨迹坐标点
           data = data.filter((item: any, index: number) => {

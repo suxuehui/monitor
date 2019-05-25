@@ -49,7 +49,7 @@ export default class Merchants extends Vue {
       key: 'keyword',
       type: 'input',
       label: '角色名称',
-      placeholder: '商户名称、关联门店名称、登录账号',
+      placeholder: '商户名称、登录账号',
     },
   ];
 

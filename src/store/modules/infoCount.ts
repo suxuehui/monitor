@@ -16,7 +16,7 @@ const infoCount = {
   actions: {
     // 获取通知数量
     getNotice: (context: any) => new Promise((resolve, reject) => {
-      noticeNotHandled({ status: 0 }).then(({ result, entity }) => {
+      noticeNotHandled({ status: 1 }).then(({ result, entity }) => {
         if (result.resultCode === '0') {
           context.commit('SVAENOTICE', entity);
         }

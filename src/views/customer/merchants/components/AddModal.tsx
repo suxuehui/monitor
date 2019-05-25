@@ -307,7 +307,7 @@ export default class AddModal extends Vue {
         const obj = {
           userName: value,
           customerFlag: true,
-        }
+        };
         userCheck(obj).then((res) => {
           if (res.result.resultCode === '0') {
             callback();

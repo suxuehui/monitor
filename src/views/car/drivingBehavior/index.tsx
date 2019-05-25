@@ -138,11 +138,11 @@ export default class DrivingBehavior extends Vue {
         this.behaviorData = [
           { num: 0, txt: '振动', type: 1 },
           { num: 0, txt: '碰撞', type: 2 },
-          { num: 0, txt: '翻滚', type: 4 },
-          { num: 0, txt: '超速', type: 8 },
-          { num: 0, txt: '急加速', type: 5 },
-          { num: 0, txt: '急减速', type: 6 },
-          { num: 0, txt: '急转弯', type: 7 },
+          { num: 0, txt: '翻滚', type: 3 },
+          { num: 0, txt: '超速', type: 7 },
+          { num: 0, txt: '急加速', type: 4 },
+          { num: 0, txt: '急减速', type: 5 },
+          { num: 0, txt: '急转弯', type: 6 },
         ];
         this.behaviorDetail = [];
         entity.forEach((item: any, index: number) => {
@@ -175,11 +175,11 @@ export default class DrivingBehavior extends Vue {
         this.behaviorData = [
           { num: 0, txt: '振动', type: 1 },
           { num: 0, txt: '碰撞', type: 2 },
-          { num: 0, txt: '翻滚', type: 4 },
-          { num: 0, txt: '超速', type: 8 },
-          { num: 0, txt: '急加速', type: 5 },
-          { num: 0, txt: '急减速', type: 6 },
-          { num: 0, txt: '急转弯', type: 7 },
+          { num: 0, txt: '翻滚', type: 3 },
+          { num: 0, txt: '超速', type: 7 },
+          { num: 0, txt: '急加速', type: 4 },
+          { num: 0, txt: '急减速', type: 5 },
+          { num: 0, txt: '急转弯', type: 6 },
         ];
         this.clearCanvas();
         this.$message.error(result.resultMessage);
