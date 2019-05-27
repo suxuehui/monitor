@@ -257,15 +257,15 @@ export default class Dashboard extends Vue {
       this.circleChart = new window.G2.Chart({
         container: 'mountNode',
         forceFit: false,
-        height: 300,
-        width: 300,
+        height: 315,
+        width: 315,
         animate: true,
       });
     }
     this.circleChart.source(this.circleData, {
       percent: {
         formatter: function formatter(val: any) {
-          val = `${val * 100}%`;
+          val = `${val.toFixed(2) * 100}%`;
           return val;
         },
       },
@@ -290,7 +290,7 @@ export default class Dashboard extends Vue {
       .color('item', ['#00CA68', '#F25D56'])
       .label('percent', {
         formatter: function formatter(val: any, item: any) {
-          return `${item.point.item}`;
+          return `${item.point.count}辆(${item.point.percent.toFixed(2) * 100}%)`;
         },
       })
       .style({
@@ -441,6 +441,7 @@ export default class Dashboard extends Vue {
   }
 
   alarmClick(data: any) {
+    this.$router.push({ name: '告警消息', params: { alarmType: '18' } });
     console.log(data);
   }
 
