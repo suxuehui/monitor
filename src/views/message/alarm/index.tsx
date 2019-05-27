@@ -210,6 +210,17 @@ export default class Alarm extends Vue {
     this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
+  activated() {
+    const table: any = this.$refs.table;
+    if (this.$route.params && this.$route.params.alarmType) {
+      const newParams = JSON.parse(JSON.stringify(this.filterParams));
+      newParams.alarmType = this.$route.params.alarmType;
+      table.resetSearchFun(newParams)
+    } else {
+      table.reloadTable();
+    }
+  }
+
   statusDom(row: any) {
     const type = row.status ? 'success' : 'danger';
     return <el-tag size="medium" type={type}>{row.status ? '已处理' : '未处理'}</el-tag>;
@@ -280,6 +291,12 @@ export default class Alarm extends Vue {
     this.filterParams.query[1] = date;
     this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
     this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
+    if (this.$route.params && this.$route.params.alarmType) {
+      this.filterParams.alarmType = this.$route.params.alarmType;
+    } else {
+      const table: any = this.$refs.table;
+      table.reloadTable();
+    }
   }
 
   mounted() {

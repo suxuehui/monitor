@@ -12,6 +12,7 @@
       :is-reset-change="isResetChange"
       @search="searchFun"
       @clearOut="clearFun"
+      @reSearch="resetSearchFun"
       @export="exportBack"
       @setTable="setTable"
       @addFun="addBack"
@@ -202,6 +203,15 @@ export default class FilterTable extends Vue {
   @Emit()
   clearFun(callBack: Function) {
     this.$emit('clearOutParams', callBack);
+  }
+
+  /**
+   * @method 首页跳转至告警消息时,重置搜索栏显示
+   */
+  @Emit()
+  resetSearchFun(data:any) {
+    const filter: any = this.$refs.MFilter;
+    filter.reSearch(data);
   }
 
   /**

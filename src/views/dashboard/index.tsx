@@ -441,8 +441,7 @@ export default class Dashboard extends Vue {
   }
 
   alarmClick(data: any) {
-    this.$router.push({ name: '告警消息', params: { alarmType: '18' } });
-    console.log(data);
+    this.$router.push({ name: '告警消息', params: { alarmType: data } });
   }
 
   render(h: any) {
@@ -604,8 +603,8 @@ export default class Dashboard extends Vue {
                 </div>
                 <ul class="alarmData">
                   {
-                    this.alarmData.map((item: any) => <li class="alarmItem" onClick={() => this.alarmClick(item.name)}>
-                      <span>{item.name}</span>
+                    this.alarmData.map((item: any) => <li class="alarmItem" onClick={() => this.alarmClick(item.type)}>
+                      <span>{item.typeName}</span>
                       <span><span style="color:red;marginRight: 3px;">{item.count}</span>次</span>
                     </li>)
                   }

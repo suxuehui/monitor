@@ -379,7 +379,7 @@ export default class Trajectory extends Vue {
        */
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
       tempPoint.speed = data[i].obdSpeed >= 0 ? data[i].obdSpeed : data[i].gpsSpeed;
-      tempPoint.uTCTime = this.utc2now(data[i].utctime);
+      tempPoint.uTCTime = data[i].time;
       tempPoint.direction = data[i].direction;
       tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
       tempPoint.lnglat = `${data[i].lng.toFixed(2)},${data[i].lat.toFixed(2)}`;

@@ -135,6 +135,19 @@ export default class MFilter extends Vue {
   }
 
   /**
+   * @method 首页跳转至告警消息时
+   */
+  @Emit()
+  reSearch(newParams: any): void {
+    // 接受新的初始化值
+    if (newParams) {
+      this.initParams = JSON.parse(JSON.stringify(newParams));
+    }
+    this.params = JSON.parse(JSON.stringify(this.initParams));
+    this.$emit('search', this.params);
+  }
+
+  /**
    * @method 重置事件
    */
   @Emit()
