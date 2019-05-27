@@ -212,12 +212,14 @@ export default class Alarm extends Vue {
 
   activated() {
     const table: any = this.$refs.table;
-    if (this.$route.params && this.$route.params.alarmType) {
-      const newParams = JSON.parse(JSON.stringify(this.filterParams));
-      newParams.alarmType = this.$route.params.alarmType;
-      table.resetSearchFun(newParams)
-    } else {
-      table.reloadTable();
+    if (table) {
+      if (this.$route.params && this.$route.params.alarmType) {
+        const newParams = JSON.parse(JSON.stringify(this.filterParams));
+        newParams.alarmType = this.$route.params.alarmType;
+        table.resetSearchFun(newParams);
+      } else {
+        table.reloadTable();
+      }
     }
   }
 
@@ -295,7 +297,7 @@ export default class Alarm extends Vue {
       this.filterParams.alarmType = this.$route.params.alarmType;
     } else {
       const table: any = this.$refs.table;
-      table.reloadTable();
+      table && table.reloadTable();
     }
   }
 
