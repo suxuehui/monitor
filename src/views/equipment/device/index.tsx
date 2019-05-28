@@ -67,7 +67,7 @@ export default class Device extends Vue {
       key: 'keyword',
       type: 'input',
       label: '模糊查询',
-      placeholder: 'imei、车牌、配置名称、产品编码',
+      placeholder: 'imei号、主机编码、ICCID、车牌号',
     },
   ];
 

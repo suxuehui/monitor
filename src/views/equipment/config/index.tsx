@@ -61,11 +61,10 @@ export default class ConfigModel extends Vue {
       options: [],
     },
     {
-      key: 'terminalModel',
-      type: 'select',
-      label: '设备型号',
-      placeholder: '请选择设备型号',
-      options: [],
+      key: 'keyword',
+      type: 'input',
+      label: '输入搜索',
+      placeholder: 'imei号、主机编码、车牌号、配置名称、产品编码',
     },
   ];
 
@@ -351,7 +350,6 @@ export default class ConfigModel extends Vue {
         value: '',
         label: '设备型号(全部)',
       });
-      this.filterList[2].options = otuList;
       this.filterGrade[2].options = otuList;
     });
     // 网络状态

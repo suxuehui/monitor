@@ -205,6 +205,7 @@ export default class Alarm extends Vue {
     const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
     newParams.query[0] = new Date(starTime);
     newParams.query[1] = date;
+    newParams.alarmType = '';
     callBack(newParams);
     this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');
     this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');

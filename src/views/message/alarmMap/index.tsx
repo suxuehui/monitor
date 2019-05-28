@@ -22,7 +22,7 @@ export default class AlarmMap extends Vue {
   // 当前地图对象实例
   Address: any = {};
 
-  akNums: string = 'K52pNzWT61z1EHvdZptaSmlPRc7mKbjC'
+  akNums: string = 'cskMWmoCWHhddU60VgY4NQ9OmllrphFz'
 
   locAddress: string = '';
 

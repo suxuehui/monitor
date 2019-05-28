@@ -115,11 +115,10 @@ export default class Monitor extends Vue {
       options: [],
     },
     {
-      key: 'fenceIO',
-      type: 'select',
-      label: '围栏内外',
-      placeholder: '请选择围栏内外',
-      options: [],
+      key: 'keyword',
+      type: 'input',
+      label: '输入搜索',
+      placeholder: '车牌/车架',
     },
   ];
 
@@ -566,7 +565,6 @@ export default class Monitor extends Vue {
           label: '围栏内外（全部）',
           value: '',
         });
-        this.filterList[3].options = res.entity;
         this.filterGrade[3].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
