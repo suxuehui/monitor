@@ -18,7 +18,7 @@ export default class Driving extends Vue {
   // 普通筛选
   filterList: FilterFormList[] = [
     {
-      key: 'levelcode',
+      key: 'levelCode',
       type: 'levelcode',
       label: '所属商户',
       filterable: true,
@@ -55,7 +55,7 @@ export default class Driving extends Vue {
 
   // 筛选参数
   filterParams: any = {
-    levelcode: '',
+    levelCode: '',
     query: [null, null],
     keyword: '',
   };
@@ -213,7 +213,7 @@ export default class Driving extends Vue {
         res.entity.unshift({
           id: Math.random(),
           levelCode: '',
-          orgName: '全部',
+          orgName: '所属商户(全部)',
         });
         this.filterList[0].options = res.entity;
       } else {
