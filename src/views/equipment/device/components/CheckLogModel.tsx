@@ -156,7 +156,7 @@ export default class CheckLogModel extends Vue {
     };
     return (
       <el-dialog
-        width="660px"
+        width="700px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}
@@ -185,6 +185,7 @@ export default class CheckLogModel extends Vue {
             table-params={this.tableParams}
             url={this.url}
             row-key="rowKey"
+            pagerCount={5}
             pageSizeList={[5, 10, 15]}
             fetchType='post'
             dataType={'JSON'}

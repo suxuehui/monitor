@@ -228,7 +228,7 @@ export default class Dashboard extends Vue {
       if (res.result.resultCode === '0') {
         const data: any = JSON.parse(JSON.stringify(res.entity));
         const onlinePercent: number = Number(
-          (data.online / (data.online + data.offline)).toFixed(1),
+          (data.online / (data.online + data.offline)),
         );
         const obj1 = {
           item: '在线',

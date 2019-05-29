@@ -62,7 +62,10 @@ export default class MTable extends Vue {
   // 固定高度--固定表头
   @Prop() private height!: string;
 
-  // 固定高度--固定表头
+  // 页码按钮数量,当总页数超过该值时会折叠 大于等于 5 且小于等于 21 的奇数
+  @Prop() private pagerCount!: number;
+
+  // 最高高度
   @Prop() private maxHeight!: string;
 
   // 本地存储名称
@@ -256,6 +259,7 @@ export default class MTable extends Vue {
         </el-table>
         <el-pagination
           class="pagination"
+          pager-count={this.pagerCount}
           on-size-change={this.handleSizeChange}
           on-current-change={this.handleCurrentChange}
           current-page={this.pageParams.pageNum}

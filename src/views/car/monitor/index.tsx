@@ -721,10 +721,12 @@ export default class Monitor extends Vue {
   // 获取当前车辆控制列表
   getCarControlList(data: any) {
     this.remoteControlArr = [];
-    cmdList({ vehicleId: data.id }).then((res: any) => {
+    cmdList({ vehicleId: data }).then((res: any) => {
       const { result, entity } = res;
       if (result.resultCode === '0') {
-        this.remoteControlArr = entity;
+        setTimeout(() => {
+          this.remoteControlArr = entity;
+        }, 500);
       } else {
         this.$message.error(result.resultMessage);
       }
@@ -753,7 +755,8 @@ export default class Monitor extends Vue {
                 address: response.result.formatted_address + response.result.sematic_description,
                 ...res.entity,
               };
-              this.carDetail = carDetail1;
+              this.carDetail = Object.assign(carDetail1, this.carDetail);
+              // this.carDetail = carDetail1
             }
           });
           // 判断当前是否展示的其他车辆
@@ -762,10 +765,11 @@ export default class Monitor extends Vue {
           }
         } else {
           carDetail1 = {
-            address: '未知位置',
+            address: '未知地址',
             ...res.entity,
           };
-          this.carDetail = carDetail1;
+          this.carDetail = Object.assign(carDetail1, this.carDetail);
+          // this.carDetail = carDetail1
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');
@@ -1069,9 +1073,9 @@ export default class Monitor extends Vue {
    */
   renderStatus(value: boolean | string | number, data: any, unit?: any) {
     const gettype = Object.prototype.toString;
-    // 卫星星数
+    // 卫星星数 `${value}${unit}`;
     if (unit === '颗') {
-      if (value >= 0) {
+      if (value !== null && value >= 0) {
         return `${value}${unit}`;
       }
       return '未知';
@@ -1176,6 +1180,7 @@ export default class Monitor extends Vue {
 
   currentCarId: number = 0;
 
+  searchCarId: number = 0;
 
   setInfo(val: any) {
     this.currentCarId = val.id;
@@ -1183,7 +1188,7 @@ export default class Monitor extends Vue {
     window.localStorage.setItem('monitorCurrentCarPlate', val.plateNum);
   }
 
-  // 关闭设备信息、远程控制显示
+  // 关闭设备信息、远程控制显示 
   hideDeviceTran() {
     this.showDeviceTran = false;
   }
@@ -1192,12 +1197,18 @@ export default class Monitor extends Vue {
     return this.showTerminal;
   }
 
+  // 设备信息、远程控制不展示
+  hideTran() {
+    this.showControlTran = false;
+    this.showDeviceTran = false;
+  }
+
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
       this.hideDeviceTran();
       this.setInfo(val);
-      this.getCarControlList(val); // 获取车辆控制列表
+      this.hideTran();
       if (this.getShowTerminal() === true) {
         this.findTerminalList(val.id); // 获取设备列表
       }
@@ -1297,6 +1308,10 @@ export default class Monitor extends Vue {
       this.showControlTran = false;
     }
     if (data === '控制') {
+      if (this.searchCarId !== this.currentCarId) {
+        this.getCarControlList(this.currentCarId); // 获取车辆控制列表
+        this.searchCarId = this.currentCarId;
+      }
       this.showDeviceTran = false;
       this.showControlTran = !this.showControlTran;
     }
@@ -1494,13 +1509,15 @@ export default class Monitor extends Vue {
           <transition name="el-fade-in-linear">
             <div v-show={this.showControlTran}>
               {
-                this.remoteControlArr.length > 0 ? <ul class="controlList">
-                  {
-                    this.remoteControlArr.map((item: any, index: number) => (
-                      <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
-                    ))
-                  }
-                </ul> : <span class="noControl">未绑定有线设备，暂无控制功能</span>
+                this.remoteControlArr.length !== 0
+                  ? this.remoteControlArr.length > 0
+                    ? <ul class="controlList">
+                      {
+                        this.remoteControlArr.map((item: any, index: number) => (
+                          <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
+                        ))
+                      }
+                    </ul> : <span class="noControl">未绑定有线设备，暂无控制功能</span> : <span class="noControl">数据查询中...</span>
               }
             </div>
           </transition>
