@@ -55,6 +55,7 @@ export default class CheckLogModel extends Vue {
         new Date().getSeconds()),
     ];
     const date = new Date();
+    this.tableParams.pageNum = 1;
     this.tableParams.imei = this.data.imei;
     this.tableParams.startTime = utils.returnTime();
     this.tableParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
@@ -144,7 +145,8 @@ export default class CheckLogModel extends Vue {
   getTableData() {
     const mTable: any = this.$refs.MTable;
     if (mTable) {
-      mTable.getData();
+      mTable.clearPageParams();
+      mTable.getData(this.tableParams);
     }
   }
 
@@ -156,7 +158,7 @@ export default class CheckLogModel extends Vue {
     };
     return (
       <el-dialog
-        width="700px"
+        width="850px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}

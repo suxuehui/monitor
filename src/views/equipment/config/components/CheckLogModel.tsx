@@ -76,7 +76,7 @@ export default class CheckLogModel extends Vue {
   render() {
     return (
       <el-dialog
-        width="700px"
+        width="850px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}
