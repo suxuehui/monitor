@@ -755,8 +755,7 @@ export default class Monitor extends Vue {
                 address: response.result.formatted_address + response.result.sematic_description,
                 ...res.entity,
               };
-              this.carDetail = Object.assign(carDetail1, this.carDetail);
-              // this.carDetail = carDetail1
+              this.carDetail = carDetail1;
             }
           });
           // 判断当前是否展示的其他车辆
@@ -768,8 +767,7 @@ export default class Monitor extends Vue {
             address: '未知地址',
             ...res.entity,
           };
-          this.carDetail = Object.assign(carDetail1, this.carDetail);
-          // this.carDetail = carDetail1
+          this.carDetail = carDetail1;
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');

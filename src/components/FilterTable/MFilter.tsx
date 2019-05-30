@@ -312,12 +312,28 @@ export default class MFilter extends Vue {
           placeholder={item.placeholder}>
         </el-date-picker>;
         break;
-      // 日期区间选择
+      // 日期时间区间选择
       case 'datetimerange':
         itemDom = <el-date-picker
           id={item.key}
           v-model={this.params[item.key]}
           type="datetimerange"
+          align="right"
+          pickerOptions={item.pickerOptions}
+          on-change={item.change
+            ? item.change
+            : (e: Array<Date>) => this.rangeChange(e, item.value ? item.value : [])
+          }
+          start-placeholder={item.placeholder[0]}
+          end-placeholder={item.placeholder[1]}>
+        </el-date-picker>;
+        break;
+      // 日期区间选择
+      case 'daterange':
+        itemDom = <el-date-picker
+          id={item.key}
+          v-model={this.params[item.key]}
+          type="daterange"
           align="right"
           pickerOptions={item.pickerOptions}
           on-change={item.change

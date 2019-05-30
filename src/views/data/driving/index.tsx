@@ -32,7 +32,7 @@ export default class Driving extends Vue {
     },
     {
       key: 'query',
-      type: 'datetimerange',
+      type: 'daterange',
       label: '告警时间',
       placeholder: ['开始', '结束'],
       change: this.dateChange,
@@ -180,8 +180,8 @@ export default class Driving extends Vue {
       if ((val[1].getTime() - val[0].getTime()) > 90 * 24 * 60 * 60 * 1000) {
         this.$message.error('查询时间不能超过3个月，请重新选择');
       } else {
-        this.outParams.startTime = val[0].Format('yyyy-MM-dd hh:mm:ss');
-        this.outParams.endTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.startTime = val[0].Format('yyyy-MM-dd');
+        this.outParams.endTime = val[1].Format('yyyy-MM-dd');
       }
     } else {
       this.clear();
@@ -202,11 +202,23 @@ export default class Driving extends Vue {
     newParams.query[0] = new Date(startTime);
     newParams.query[1] = date;
     callBack(newParams);
-    this.outParams.startTime = new Date(startTime).Format('yyyy-MM-dd hh:mm:ss');
-    this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.startTime = new Date(startTime).Format('yyyy-MM-dd');
+    this.outParams.endTime = date.Format('yyyy-MM-dd');
   }
 
   created() {
+    const getNowRoles: string[] = [
+      // 操作
+      '/statistics/driving/exportExcel', // 导出
+    ];
+    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+      this.exportBtn = !!(res[0]); // 导出
+    });
+    this.setDays();
+  }
+
+  constructor(props: any) {
+    super(props);
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -220,14 +232,10 @@ export default class Driving extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    const getNowRoles: string[] = [
-      // 操作
-      '/statistics/driving/exportExcel', // 导出
-    ];
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.exportBtn = !!(res[0]); // 导出
-    });
-    this.setDays();
+  }
+
+  mounted() {
+
   }
 
   setDays() {
@@ -236,8 +244,8 @@ export default class Driving extends Vue {
     const startTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
     this.filterParams.query[0] = new Date(startTime);
     this.filterParams.query[1] = date;
-    this.outParams.startTime = new Date(startTime).Format('yyyy-MM-dd hh:mm:ss');
-    this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.startTime = new Date(startTime).Format('yyyy-MM-dd');
+    this.outParams.endTime = date.Format('yyyy-MM-dd');
   }
 
   exportBtn: boolean = false;
