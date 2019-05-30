@@ -259,7 +259,7 @@ export default class Alarm extends Vue {
         res.entity.unshift({
           id: Math.random(),
           levelcode: '',
-          orgName: '全部',
+          orgName: '商户门店(全部)',
         });
         this.filterList[0].options = res.entity;
         this.filterGrade[0].options = res.entity;
