@@ -718,6 +718,9 @@ export default class Monitor extends Vue {
     return direction;
   }
 
+  // 远程控制选项
+  remoteControlArr: any = [];
+
   // 获取当前车辆控制列表
   getCarControlList(data: any) {
     this.remoteControlArr = [];
@@ -728,6 +731,9 @@ export default class Monitor extends Vue {
           this.remoteControlArr = entity;
         }, 500);
       } else {
+        setTimeout(() => {
+          this.remoteControlArr = [''];
+        }, 500);
         this.$message.error(result.resultMessage);
       }
     });
@@ -1315,9 +1321,6 @@ export default class Monitor extends Vue {
     }
   }
 
-  // 远程控制选项
-  remoteControlArr = [];
-
   // 车辆控制
   carControl(item: any) {
     this.controlData = {
@@ -1508,7 +1511,7 @@ export default class Monitor extends Vue {
             <div v-show={this.showControlTran}>
               {
                 this.remoteControlArr.length !== 0
-                  ? this.remoteControlArr.length > 0
+                  ? this.remoteControlArr.length > 1
                     ? <ul class="controlList">
                       {
                         this.remoteControlArr.map((item: any, index: number) => (

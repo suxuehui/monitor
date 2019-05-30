@@ -378,7 +378,7 @@ export default class Trajectory extends Vue {
        * BMap.PointCollection中的元素为BMap.Point，在加入点集合BMap.PointCollection之前，让BMap.Point携带数据
        */
       const tempPoint = new this.BMap.Point(data[i].lng, data[i].lat);
-      tempPoint.speed = data[i].obdSpeed >= 0 ? data[i].obdSpeed : data[i].gpsSpeed;
+      tempPoint.speed = data[i].obdSpeed >= 0 ? data[i].obdSpeed : data[i].speed;
       tempPoint.uTCTime = data[i].time;
       tempPoint.direction = data[i].direction;
       tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
