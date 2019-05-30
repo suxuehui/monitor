@@ -390,24 +390,27 @@ export default class MapContorl {
 
   getDirection(itm: number) {
     let direction = '';
-    if (itm > 337.5 || itm <= 22.5) {
-      direction = '北方';
-    } else if (itm > 22.5 && itm <= 67.5) {
-      direction = '东北方';
-    } else if (itm > 67.5 && itm <= 112.5) {
-      direction = '东方';
-    } else if (itm > 112.5 && itm <= 157.5) {
-      direction = '东南方';
-    } else if (itm > 157.5 && itm <= 202.5) {
-      direction = '南方';
-    } else if (itm > 202.5 && itm <= 247.5) {
-      direction = '西南方';
-    } else if (itm > 247.5 && itm <= 292.5) {
-      direction = '西方';
-    } else if (itm > 292.5 && itm <= 337.5) {
-      direction = '西北方';
+    if (itm) {
+      if (itm > 337.5 || itm <= 22.5) {
+        direction = '北方';
+      } else if (itm > 22.5 && itm <= 67.5) {
+        direction = '东北方';
+      } else if (itm > 67.5 && itm <= 112.5) {
+        direction = '东方';
+      } else if (itm > 112.5 && itm <= 157.5) {
+        direction = '东南方';
+      } else if (itm > 157.5 && itm <= 202.5) {
+        direction = '南方';
+      } else if (itm > 202.5 && itm <= 247.5) {
+        direction = '西南方';
+      } else if (itm > 247.5 && itm <= 292.5) {
+        direction = '西方';
+      } else if (itm > 292.5 && itm <= 337.5) {
+        direction = '西北方';
+      }
+    } else {
+      direction = '未知';
     }
-    direction = '未知';
     return direction;
   }
 
