@@ -773,7 +773,7 @@ export default class Monitor extends Vue {
             address: '未知地址',
             ...res.entity,
           };
-          this.carDetail = carDetail1;
+          // this.carDetail = carDetail1;
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');

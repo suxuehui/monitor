@@ -64,6 +64,13 @@ export default class Device extends Vue {
       options: [],
     },
     {
+      key: 'online',
+      type: 'select',
+      label: '网络状态',
+      placeholder: '请选择网络状态',
+      options: [],
+    },
+    {
       key: 'keyword',
       type: 'input',
       label: '模糊查询',
@@ -301,6 +308,7 @@ export default class Device extends Vue {
     // 设备状态
     this.filterGrade[2].options = this.terminalStatus;
     // 网络状态
+    this.filterList[2].options = this.onlineStatus;
     this.filterGrade[3].options = this.onlineStatus;
   }
 

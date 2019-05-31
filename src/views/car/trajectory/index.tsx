@@ -28,7 +28,7 @@ export default class Trajectory extends Vue {
   // 底部表格开关
   filterList: FilterFormList[] = [
     {
-      key: 'time',
+      key: 'query',
       type: 'datetimerange',
       label: '时间',
       placeholder: [
@@ -75,7 +75,7 @@ export default class Trajectory extends Vue {
 
   filterParams: any = {
     checkboxTime: '',
-    time: '',
+    query: [],
     startTime: '',
     endTime: '',
   };
@@ -93,10 +93,16 @@ export default class Trajectory extends Vue {
     total: 'entity.count',
   };
 
-  clear() {
+  clear(callBack: Function) {
+    const newParams = JSON.parse(JSON.stringify(this.filterParams));
+    const date = new Date();
+    const starTime = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0);
+    newParams.query[0] = new Date(starTime);
+    newParams.query[1] = date;
+    callBack(newParams);
     this.outParams = {
-      startTime: '',
-      endTime: '',
+      startTime: new Date(starTime).Format('yyyy-MM-dd hh:mm:ss'),
+      endTime: date.Format('yyyy-MM-dd hh:mm:ss'),
     };
   }
 
@@ -300,6 +306,13 @@ export default class Trajectory extends Vue {
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.showExportBtn = !!(res[0]);
     });
+    // 当天
+    const date = new Date();
+    const starTime = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0);
+    this.filterParams.query[0] = starTime;
+    this.filterParams.query[1] = date;
+    this.outParams.startTime = starTime.Format('yyyy-MM-dd hh:mm:ss');
+    this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
   }
 
   // 切换回当前页面的时候，重新获取数据，去掉前面的轨迹数据
@@ -1054,6 +1067,7 @@ export default class Trajectory extends Vue {
             on-downBack={this.downLoad}
             dataType={'JSON'}
             fetchType={'post'}
+            isResetChange={true}
             out-params={this.outParams}
             highlight-current-row={true}
             on-currentChange={this.currentChange}
