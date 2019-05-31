@@ -91,7 +91,7 @@ export default class EleFence extends Vue {
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '所属商户(全部)',
       options: [],
     },
     {
@@ -137,7 +137,7 @@ export default class EleFence extends Vue {
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '所属商户(全部)',
       options: [],
     },
     {
@@ -407,7 +407,7 @@ export default class EleFence extends Vue {
         res.entity.unshift({
           id: Math.random(),
           levelCode: '',
-          orgName: '全部商户',
+          orgName: '所属商户（全部）',
         });
         this.filterList[0].options = res.entity;
         this.filterGrade[0].options = res.entity;

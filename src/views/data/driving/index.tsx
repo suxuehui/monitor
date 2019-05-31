@@ -27,7 +27,7 @@ export default class Driving extends Vue {
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '所属商户(全部)',
       options: [],
     },
     {
@@ -217,8 +217,7 @@ export default class Driving extends Vue {
     this.setDays();
   }
 
-  constructor(props: any) {
-    super(props);
+  mounted() {
     // 门店
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
@@ -232,10 +231,6 @@ export default class Driving extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-  }
-
-  mounted() {
-
   }
 
   setDays() {

@@ -84,7 +84,7 @@ export default class Monitor extends Vue {
         children: 'children',
         label: 'orgName',
       },
-      placeholder: '请选择所属商户',
+      placeholder: '所属商户(全部)',
       options: [],
     },
     {
