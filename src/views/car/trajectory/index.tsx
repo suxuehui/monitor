@@ -336,7 +336,11 @@ export default class Trajectory extends Vue {
         { num: 0, txt: '急转弯', type: '6' },
       ];
     }
+    this.carPlateNum = window.localStorage.getItem('monitorCurrentCarPlate');
   }
+
+  // 当前车辆车牌
+  carPlateNum: any = '';
 
   // 清除图层
   clearCanvas = () => {
@@ -996,6 +1000,7 @@ export default class Trajectory extends Vue {
             </li>)
           }
         </ul>
+        <span class="car-plate">{this.carPlateNum}</span>
         <div id="map"></div>
         {
           this.currentTrackData.length

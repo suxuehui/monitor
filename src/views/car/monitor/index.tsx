@@ -668,6 +668,10 @@ export default class Monitor extends Vue {
     );
   }
 
+  closeMsg = () => {
+    this.SMap.closeInfoWindow();
+  }
+
   /**
    * @method 车辆信息框内容
    * @param {object} content 车辆数据
@@ -746,6 +750,7 @@ export default class Monitor extends Vue {
   getCarDetail(id: string) {
     let carDetail1: any = {};
     this.detailShow = true;
+    this.closeMsg();
     vehicleInfo({ id }).then((res) => {
       if (res.result.resultCode === '0') {
         // 如果车辆坐标为空-位置为未知
@@ -765,9 +770,9 @@ export default class Monitor extends Vue {
             }
           });
           // 判断当前是否展示的其他车辆
-          if (this.currentCarId !== 0) {
-            this.setNowCarPosi(res.entity);
-          }
+          // if (this.currentCarId !== 0) {
+          //   this.setNowCarPosi(res.entity);
+          // }
         } else {
           carDetail1 = {
             address: '未知地址',
@@ -1192,11 +1197,6 @@ export default class Monitor extends Vue {
     window.localStorage.setItem('monitorCurrentCarPlate', val.plateNum);
   }
 
-  // 关闭设备信息、远程控制显示 
-  hideDeviceTran() {
-    this.showDeviceTran = false;
-  }
-
   getShowTerminal() {
     return this.showTerminal;
   }
@@ -1210,16 +1210,11 @@ export default class Monitor extends Vue {
   // 单击表格-选择车辆
   currentChange = (val: any) => {
     if (val) {
-      this.hideDeviceTran();
       this.setInfo(val);
       this.hideTran();
       if (this.getShowTerminal() === true) {
         this.findTerminalList(val.id); // 获取设备列表
       }
-      // 查询此车辆详细数据
-      this.getCarDetail(val.id);
-      // 以此车辆为中心点查询车辆
-      this.radiusGetData(val.id);
       if (val.lat && val.lng) {
         this.mapCenter = {
           lat: val.lat,
@@ -1235,6 +1230,10 @@ export default class Monitor extends Vue {
         };
         this.SMap.centerAndZoom(new this.BMap.Point(106.496422, 29.627258), 15);
       }
+      // 查询此车辆详细数据
+      this.getCarDetail(val.id);
+      // 以此车辆为中心点查询车辆
+      this.radiusGetData(val.id);
     }
   }
 
