@@ -234,12 +234,11 @@ export default class Driving extends Vue {
   }
 
   setDays() {
-    // 三个月
+    // 当天
     const date = new Date();
-    const startTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
-    this.filterParams.query[0] = new Date(startTime);
+    this.filterParams.query[0] = date;
     this.filterParams.query[1] = date;
-    this.outParams.startTime = new Date(startTime).Format('yyyy-MM-dd');
+    this.outParams.startTime = date.Format('yyyy-MM-dd');
     this.outParams.endTime = date.Format('yyyy-MM-dd');
   }
 
