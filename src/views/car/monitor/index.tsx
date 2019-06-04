@@ -644,7 +644,7 @@ export default class Monitor extends Vue {
     this.CarMarker.forEach((item: any, index: number) => {
       item.addEventListener('click', () => {
         this.openMsg(this.mapCarData[index]);
-        this.getCarDetail(this.mapCarData[index].id);
+        this.getCarDetail(this.mapCarData[index].id, this.mapCarData[index]);
       });
     });
   }
@@ -746,14 +746,16 @@ export default class Monitor extends Vue {
   /**
    * @method 根据车辆ID获取车辆详情
    * @param {string} id 车辆id
+   * @param {Object} data 车辆data
    */
-  getCarDetail(id: string) {
+  getCarDetail(id: string, data?: any, target?:string) {
     let carDetail1: any = {};
     this.detailShow = true;
     this.closeMsg();
     vehicleInfo({ id }).then((res) => {
       if (res.result.resultCode === '0') {
         // 如果车辆坐标为空-位置为未知
+        this.setNowCarPosi(res.entity, data);
         if (res.entity.lat && res.entity.lng) {
           // gps坐标转换为实际地址
           gpsToAddress({
@@ -770,9 +772,8 @@ export default class Monitor extends Vue {
             }
           });
           // 判断当前是否展示的其他车辆
-          if (this.currentCarId !== 0) {
-            this.setNowCarPosi(res.entity);
-          }
+          // if (this.currentCarId !== 0) {
+          // }
         } else {
           carDetail1 = {
             address: '未知地址',
@@ -786,12 +787,10 @@ export default class Monitor extends Vue {
     });
   }
 
-  setNowCarPosi = (val: any) => {
-    // this.mapCenter = {
-    //   lat: val.lat,
-    //   lng: val.lng,
-    // };
-    this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+  setNowCarPosi = (val: any, data?: any) => {
+    if (data && data.lng && data.lat) {
+      this.SMap.centerAndZoom(new this.BMap.Point(data.lng, data.lat), 15);
+    }
     this.radiusGetData(val.id);
   }
 

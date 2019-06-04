@@ -152,7 +152,7 @@ export default class DrivingBehavior extends Vue {
             events: [],
             utctime: '',
           });
-          item && item.driveBehaviors.forEach((its: any, ind: number) => {
+          item && item.driveEvents.forEach((its: any, ind: number) => {
             // 数量展示用
             this.behaviorData.forEach((it: any) => {
               if (its.type === it.type) {
@@ -231,10 +231,9 @@ export default class DrivingBehavior extends Vue {
     // 绘制驾驶行为
     function renderBehavior() {
       // 定义车辆驾驶行为及对应颜色
-      // 0-'' 1-振动 2-碰撞 3-'' 4-翻转 5-急加速 6-急减速 7-急转弯 8-超速
-      // ['0', '1振', '2碰', '3', '4翻', '5', '6碰', '7滚', '8超'];
-      const NameMap = ['', '振', '碰', '', '翻', '加', '减', '弯', '超'];
-      const ColorMap = ['', '#52c41a', '#f5222d', '', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2', '#eb2296'];
+      // 0-'' 1-振动 2-碰撞 3-翻转 4-急加速 5-急减速 6-急转弯 7-超速
+      const NameMap = ['', '振', '碰', '翻', '加', '减', '弯', '超'];
+      const ColorMap = ['', '#52c41a', '#f5222d', '#eb2f96', '#1890ff', '#2f54eb', '#13c2c2', '#eb2296'];
       const ctx: CanvasRenderingContext2D = self.canvasBehavior.canvas.getContext('2d');
       if (!ctx) {
         return;
