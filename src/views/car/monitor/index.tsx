@@ -770,9 +770,9 @@ export default class Monitor extends Vue {
             }
           });
           // 判断当前是否展示的其他车辆
-          // if (this.currentCarId !== 0) {
-          //   this.setNowCarPosi(res.entity);
-          // }
+          if (this.currentCarId !== 0) {
+            this.setNowCarPosi(res.entity);
+          }
         } else {
           carDetail1 = {
             address: '未知地址',
@@ -787,10 +787,10 @@ export default class Monitor extends Vue {
   }
 
   setNowCarPosi = (val: any) => {
-    this.mapCenter = {
-      lat: val.lat,
-      lng: val.lng,
-    };
+    // this.mapCenter = {
+    //   lat: val.lat,
+    //   lng: val.lng,
+    // };
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
     this.radiusGetData(val.id);
   }
