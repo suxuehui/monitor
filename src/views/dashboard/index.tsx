@@ -257,22 +257,22 @@ export default class Dashboard extends Vue {
       this.circleChart = new window.G2.Chart({
         container: 'mountNode',
         forceFit: false,
-        height: 315,
-        width: 315,
+        height: 350,
+        width: 350,
         animate: true,
       });
     }
     this.circleChart.source(this.circleData, {
       percent: {
-        formatter: function formatter(val: any) {
-          val = `${val.toFixed(2) * 100}%`;
+        formatter: function formatter(data: any) {
+          let val: any = `${(data * 100).toFixed(0)}%`;
           return val;
         },
       },
     });
     this.circleChart.coord('theta', {
-      radius: 0.70,
-      innerRadius: 0.65,
+      radius: 0.62,
+      innerRadius: 0.59,
     });
     this.circleChart.tooltip({
       showTitle: false,
@@ -290,7 +290,7 @@ export default class Dashboard extends Vue {
       .color('item', ['#00CA68', '#F25D56'])
       .label('percent', {
         formatter: function formatter(val: any, item: any) {
-          return `${item.point.count}辆(${item.point.percent.toFixed(2) * 100}%)`;
+          return `${item.point.count}辆(${(item.point.percent * 100).toFixed(0)}%)`;
         },
       })
       .style({
