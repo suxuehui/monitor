@@ -94,7 +94,7 @@ export default class Login extends Vue {
   created() {
     getAuthCodeToken(null).then((res) => {
       this.imgToken = res.entity;
-      localStorage.setItem('token', res.entity);
+      localStorage.setItem('token', `10086${res.entity}`);
       this.getCodeImg();
     });
   }

@@ -129,6 +129,10 @@ const user = {
         reject(error);
       }
     }),
+    // 加载loading
+    showLoading: (context: any,flag:boolean) => {
+      context.commit('LOADING', flag)
+    },
   },
 };
 

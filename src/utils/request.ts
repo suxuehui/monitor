@@ -26,8 +26,8 @@ const fetch = (options: Option) => {
   const { method = 'get', fetchType } = options;
   // 合并请求头，每次都带上token值
   options.headers = {
-    ...options.headers,
     token: window.localStorage.getItem('token'),
+    ...options.headers,
   };
   // 对数据进行处理
   let cloneData: any = lodash.cloneDeep(data);

@@ -38,29 +38,44 @@ Vue.component('filter-table', FilterTable);
 Vue.config.productionTip = false;
 
 let flag: boolean = true;
-// 路由拦截，权限验证和菜单生成
-router.beforeEach((to, from, next) => {
-  if (!store.state.app.menuData.length && flag) { // 判断是否获取到菜单数据,并且只执行一次
-    flag = false;
-    store.dispatch('getUserInfo').then(() => {
-      const toPath = config.noLoginList.indexOf(`#${to.path}`) > -1 ? '/dashboard' : to.path;
-      store.dispatch('AddTabPane', toPath).then(() => {
-        next({
-          path: toPath, query: to.query, params: to.params, replace: true,
+const token: any = window.localStorage.getItem('token');
+if (token && token.indexOf('10086') === -1) {
+  // 路由拦截，权限验证和菜单生成
+  router.beforeEach((to, from, next) => {
+    if (!store.state.app.menuData.length && flag) { // 判断是否获取到菜单数据,并且只执行一次
+      flag = false;
+      store.dispatch('getUserInfo').then(() => {
+        const toPath = config.noLoginList.indexOf(`#${to.path}`) > -1 ? '/dashboard' : to.path;
+        store.dispatch('AddTabPane', toPath).then(() => {
+          next({
+            path: toPath, query: to.query, params: to.params, replace: true,
+          });
         });
+      }).catch((err) => {
+        if (config.noLoginList.indexOf(to.path) < 0) {
+          next({ name: '登录', replace: true });
+        }
+        next();
       });
-    }).catch((err) => {
-      if (config.noLoginList.indexOf(to.path) < 0) {
-        next({ name: '登录', replace: true });
-      }
-      next();
-    });
-    return false;
-  }
-  next();
-  return true;
-});
-
+      return false;
+    }
+    next();
+    return true;
+  });
+} else {
+  store.dispatch('showLoading', false);
+  router.beforeEach((to, from, next) => {
+    if (flag) {
+      flag = false;
+      next({ name: '登录', replace: true });
+      setTimeout(() => {
+        store.dispatch('showLoading', true);
+      }, 1000);
+    }
+    next();
+    return true;
+  });
+}
 
 new Vue({
   router,
