@@ -104,7 +104,7 @@ export default class MapContorl {
       // 判断是否为最后一个坐标点
       if (this.playNumber === this.trackData.length - 1) {
         window.clearInterval(this.playTimers);
-        this.playNumber = 0;
+        this.playNumber = this.trackData.length - 1;
       }
       // 创建坐标点对象
       const Point = new window.BMap.Point(
