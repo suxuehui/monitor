@@ -86,7 +86,6 @@ export default class AddModal extends Vue {
       this.modelForm.orgName = data.orgName;
       this.modelForm.contactUser = data.contactUser;
       this.modelForm.manageUser = data.manageUser;
-      this.modelForm.password = '********';
       if (data.chgAddrAble === 1) {
         this.modelForm.mainAddr = data.mainAddr.split(':')[0];
         this.modelForm.mainAddrPort = data.mainAddr.split(':')[1];
@@ -236,17 +235,32 @@ export default class AddModal extends Vue {
    */
   @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
-    setTimeout(() => {
+    if (this.data.id > 0) {
+      // 编辑
       if (this.modelForm.password) {
-        if (this.isChineseChar(this.modelForm.password)) {
-          callback(new Error('登录密码格式有误，请重新输入'));
-        } else {
-          callback();
-        }
+        setTimeout(() => {
+          if (this.isChineseChar(this.modelForm.password)) {
+            callback(new Error('登录密码格式有误，请重新输入'));
+          } else {
+            callback();
+          }
+        }, 500);
       } else {
-        callback(new Error('登录密码不能为空'));
+        callback();
       }
-    }, 500);
+    } else {
+      setTimeout(() => {
+        if (this.modelForm.password) {
+          if (this.isChineseChar(this.modelForm.password)) {
+            callback(new Error('登录密码格式有误，请重新输入'));
+          } else {
+            callback();
+          }
+        } else {
+          callback(new Error('登录密码不能为空'));
+        }
+      }, 500);
+    }
   }
 
   /**
@@ -472,7 +486,7 @@ export default class AddModal extends Vue {
           });
         } else {
           obj.id = this.data.id;
-          if (obj.password === '********') {
+          if (obj.password === '') {
             delete obj.password;
           }
           if (obj.chgAddrAble === '2') {

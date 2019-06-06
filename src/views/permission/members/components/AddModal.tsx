@@ -72,17 +72,33 @@ export default class AddModal extends Vue {
 
   @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
-    setTimeout(() => {
+    if (this.data.userId > 0) {
+      // 编辑
       if (this.modelForm.password) {
-        if (this.isChineseChar(this.modelForm.password)) {
-          callback(new Error('登录密码格式有误，请重新输入'));
-        } else {
-          callback();
-        }
+        setTimeout(() => {
+          if (this.isChineseChar(this.modelForm.password)) {
+            callback(new Error('登录密码格式有误，请重新输入'));
+          } else {
+            callback();
+          }
+        }, 500);
       } else {
-        callback(new Error('登录密码不能为空'));
+        callback();
       }
-    }, 500);
+    } else {
+      // 新增
+      setTimeout(() => {
+        if (this.modelForm.password) {
+          if (this.isChineseChar(this.modelForm.password)) {
+            callback(new Error('登录密码格式有误，请重新输入'));
+          } else {
+            callback();
+          }
+        } else {
+          callback(new Error('登录密码不能为空'));
+        }
+      }, 500);
+    }
   }
 
   // 检测角色
@@ -139,7 +155,7 @@ export default class AddModal extends Vue {
       this.modelForm.realName = data.realName;
       this.modelForm.userName = data.userName;
       this.modelForm.remark = data.remark;
-      this.modelForm.password = '********';
+      // this.modelForm.password = '********';
       this.phoneNumber = data.userName;
       this.roleLen = data.roleIdList ? data.roleIdList.length : 0;
     }
@@ -236,7 +252,7 @@ export default class AddModal extends Vue {
             this.loading = false;
             return false;
           }
-          if (obj.password === '********') {
+          if (obj.password === '') {
             delete obj.password;
           } else if (obj.password === '') {
             this.$message.error('密码不能为空！');
@@ -281,7 +297,7 @@ export default class AddModal extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        <el-form model={this.modelForm} status-icon ref="modelForm" rules={this.rules} label-width="80px" class="fzkAddMember">
+        <el-form model={this.modelForm} ref="modelForm" rules={this.rules} label-width="80px" class="fzkAddMember">
           <el-row>
             <el-col span={12}>
               <el-form-item label="成员姓名" prop="realName">
