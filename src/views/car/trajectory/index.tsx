@@ -108,26 +108,35 @@ export default class Trajectory extends Vue {
 
   timeRangeChange(val: any) {
     if (val) {
-      if (val.length === 2) {
-        const startT = val[0].Format('yyyy-MM-dd hh:mm:ss');
-        const endT = val[1].Format('yyyy-MM-dd hh:mm:ss');
-        const startT1 = new Date(startT).getTime();
-        const endT1 = new Date(endT).getTime();
-        if (endT1 - startT1 < 92 * 24 * 60 * 60 * 1000) {
-          this.outParams = {
-            startTime: startT,
-            endTime: endT,
-          };
+      const startT = val[0].Format('yyyy-MM-dd hh:mm:ss'); // 所选时间开始
+      const endT = val[1].Format('yyyy-MM-dd hh:mm:ss'); // 所选时间结束
+      const startT1 = new Date(startT).getTime(); // 所选时间开始毫秒数
+      const endT1 = new Date(endT).getTime(); // 所选时间结束毫秒数
+      const todayDateStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0); // 当天开始
+      const todayDateStart1 = new Date(todayDateStart).getTime();
+      const todayDateEnd = new Date(); // 当天当前时间
+      if (startT1 === endT1) {
+        // 所选时间是同一天
+        if (startT1 === todayDateStart1) {
+          this.outParams.startTime = new Date(todayDateStart).Format('yyyy-MM-dd hh:mm:ss');
+          this.outParams.endTime = new Date(todayDateEnd).Format('yyyy-MM-dd hh:mm:ss');
         } else {
-          const date = new Date();
-          const startTime1 = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
-          this.outParams.startTime = new Date(startTime1).Format('yyyy-MM-dd hh:mm:ss');
-          this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
-          this.$message.error('查询时间不能超过3个月，请重新选择');
+          const targetEnd = new Date(startT1 +24* 60 * 60 * 1000 - 1 * 1000);
+          this.outParams.startTime = new Date(startT1).Format('yyyy-MM-dd hh:mm:ss');
+          this.outParams.endTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
         }
+      } else if (endT1 - startT1 < 92 * 24 * 60 * 60 * 1000) {
+        // 所选时间范围在3个月以内
+        this.outParams = {
+          startTime: startT,
+          endTime: endT,
+        };
       } else {
-        this.outParams.startTime = `${val[0]}`;
-        this.outParams.endTime = `${val[1]}`;
+        const date = new Date();
+        const startTime1 = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+        this.outParams.startTime = new Date(startTime1).Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.endTime = date.Format('yyyy-MM-dd hh:mm:ss');
+        this.$message.error('查询时间不能超过3个月，请重新选择');
       }
     } else {
       this.outParams.startTime = null;
@@ -817,6 +826,8 @@ export default class Trajectory extends Vue {
       this.getMapContorl().removeTrackPointOverlay('trackpoint_in');
       // 清除轨迹点信息框
       this.getMapContorl().removeTrackInfoBox();
+      // 清除图层
+      this.clearCanvas();
       // 根据轨迹id，查询轨迹详情
       const obj: any = {
         vehicleId: val.vehicleId,

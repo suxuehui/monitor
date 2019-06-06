@@ -751,6 +751,7 @@ export default class Monitor extends Vue {
   getCarDetail(id: string, data?: any, target?:string) {
     let carDetail1: any = {};
     this.detailShow = true;
+    const oldCarDetail = JSON.parse(JSON.stringify(this.carDetail));
     this.closeMsg();
     vehicleInfo({ id }).then((res) => {
       if (res.result.resultCode === '0') {
@@ -780,6 +781,8 @@ export default class Monitor extends Vue {
             ...res.entity,
           };
           this.carDetail = carDetail1;
+          this.carDetail.plateNum = oldCarDetail.plateNum;
+          this.carDetail.orgName=oldCarDetail.orgName;
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');
