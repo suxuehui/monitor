@@ -22,6 +22,7 @@
             prefix-icon="iconfont-lock"
             type="password"
             placeholder="请输入密码"
+            @keyup.native.enter="submitForm('ruleForm')"
           />
         </el-form-item>
         <el-form-item prop="captcha">
