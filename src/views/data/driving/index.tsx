@@ -198,7 +198,7 @@ export default class Driving extends Vue {
   clearOut(callBack: Function) {
     const newParams = JSON.parse(JSON.stringify(this.filterParams));
     const date = new Date();
-    const startTime = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+    const startTime = new Date(date.getTime());
     newParams.query[0] = new Date(startTime);
     newParams.query[1] = date;
     callBack(newParams);
