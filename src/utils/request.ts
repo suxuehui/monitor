@@ -175,19 +175,17 @@ export default function request(options: Option): Promise<any> {
       if (window.localStorage.getItem('token')) {
         if (statusCode === 401) {
           Message.error('无权限操作，请联系管理员');
-          console.log(1)
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 1000);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         } else if (resultCode === 4) {
           Message.error(resultMessage);
           router.replace('/login');
         } else if (resultCode === 401) {
           Message.error('无权限操作，请联系管理员');
-          console.log(3);
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 1000);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }
       } else {
         // 首次登录时不存在token
@@ -197,10 +195,9 @@ export default function request(options: Option): Promise<any> {
       if (window.localStorage.getItem('token')) {
         if (response.status === 401) {
           Message.error('无权限操作，请联系管理员');
-          console.log(2)
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 1000);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }
       }
     }
