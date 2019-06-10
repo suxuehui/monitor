@@ -455,7 +455,7 @@ export default class Trajectory extends Vue {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       if (totalPoints.length !== 0) {
         // 绘制带速度颜色的轨迹
-        for (let i = 0, len = totalPoints.length; i < len - 2; i += 1) {
+        for (let i = 0, len = totalPoints.length; i < len - 1; i += 1) {
           // pointToPixel:可视区域坐标转经纬度坐标
           const pixel = self.SMap.pointToPixel(totalPoints[i]);
           const nextPixel = self.SMap.pointToPixel(totalPoints[i + 1]);
