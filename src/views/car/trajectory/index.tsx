@@ -115,22 +115,20 @@ export default class Trajectory extends Vue {
       const todayDateStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0); // 当天开始
       const todayDateStart1 = new Date(todayDateStart).getTime();
       const todayDateEnd = new Date(); // 当天当前时间
-      if (startT1 === endT1) {
-        // 所选时间是同一天
-        if (startT1 === todayDateStart1) {
+      if (startT1 === endT1) { // 所选时间是同一天
+        if (startT1 === todayDateStart1) { // 所选时间是今天
           this.outParams.startTime = new Date(todayDateStart).Format('yyyy-MM-dd hh:mm:ss');
           this.outParams.endTime = new Date(todayDateEnd).Format('yyyy-MM-dd hh:mm:ss');
-        } else {
-          const targetEnd = new Date(startT1 +24* 60 * 60 * 1000 - 1 * 1000);
+        } else { // 所选时间不是今天
+          const targetEnd = new Date(startT1 + 24 * 60 * 60 * 1000 - 1 * 1000);
           this.outParams.startTime = new Date(startT1).Format('yyyy-MM-dd hh:mm:ss');
           this.outParams.endTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
         }
       } else if (endT1 - startT1 < 92 * 24 * 60 * 60 * 1000) {
         // 所选时间范围在3个月以内
-        this.outParams = {
-          startTime: startT,
-          endTime: endT,
-        };
+        const targetEnd = new Date(endT1 + 24 * 60 * 60 * 1000 - 1 * 1000);
+        this.outParams.startTime = startT;
+        this.outParams.endTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
       } else {
         const date = new Date();
         const startTime1 = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
