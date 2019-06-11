@@ -116,6 +116,7 @@ export default class ChangePawModal extends Vue {
               this.loading = false;
               this.$emit('close');
               this.$message.success(res.result.resultMessage);
+              localStorage.removeItem('token');
               window.location.reload();
             }, 1500);
           } else {
