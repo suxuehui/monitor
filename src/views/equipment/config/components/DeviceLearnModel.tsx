@@ -65,7 +65,7 @@ export default class DeviceLearnModel extends Vue {
     const imei: any = {
       imei: this.data.imei,
     };
-    modelMatch(this.data.imei).then((res) => {
+    modelMatch(imei).then((res) => {
       // 学习成功
       if (res.result.resultCode === '0') {
         setTimeout(() => {

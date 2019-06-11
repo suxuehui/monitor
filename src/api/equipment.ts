@@ -268,6 +268,5 @@ export async function modelMatch(params: any) {
     url: '/device/terminal/modelMatch',
     method: 'post',
     data: params,
-    fetchType: 'JSON',
   });
 }
