@@ -124,11 +124,15 @@ export default class Trajectory extends Vue {
           this.outParams.startTime = new Date(startT1).Format('yyyy-MM-dd hh:mm:ss');
           this.outParams.endTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
         }
-      } else if (endT1 - startT1 < 92 * 24 * 60 * 60 * 1000) {
-        // 所选时间范围在3个月以内
-        const targetEnd = new Date(endT1 + 24 * 60 * 60 * 1000 - 1 * 1000);
-        this.outParams.startTime = startT;
-        this.outParams.endTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
+      } else if (endT1 - startT1 < 92 * 24 * 60 * 60 * 1000) { // 所选时间范围在3个月以内
+        if (`${startT}`.indexOf('00:00:00') > 0 && `${endT}`.indexOf('00:00:00') > 0) { // 未选择时分秒
+          const targetEnd = new Date(endT1 + 24 * 60 * 60 * 1000 - 1 * 1000);
+          this.outParams.startTime = startT;
+          this.outParams.endTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
+        } else { // 选择了时分秒
+          this.outParams.startTime = startT;
+          this.outParams.endTime = new Date(endT).Format('yyyy-MM-dd hh:mm:ss');
+        }
       } else {
         const date = new Date();
         const startTime1 = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
