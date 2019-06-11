@@ -401,11 +401,11 @@ export default class AddModal extends Vue {
         oldShopNameArr.push(item.split('****')[1]);
       }
     });
-    const nameAndLev: any = JSON.parse(JSON.stringify(this.nameAndLev)); // 编辑后关联商户数据
+    const nameAndLevs: any = JSON.parse(JSON.stringify(this.nameAndLev)); // 编辑后关联商户数据
     const editOld: any = []; // 编辑后 原本 4S商户名称
     const editNew: any = []; // 编辑后 新加入 4S商户名称
     const editNewCodes: any = []; // 编辑后 新加入 4S商户名称
-    nameAndLev.forEach((item: any) => {
+    nameAndLevs.forEach((item: any) => {
       if (item.indexOf('***') > -1) {
         editNew.push(item);
       }
@@ -421,7 +421,7 @@ export default class AddModal extends Vue {
     const changeArr = this.getArrDifference(oldShopNameArr, editOld); // 编辑前后改变的4S门店
     changeArr.forEach((item: any) => {
       if (oldShopNameArr.indexOf(item) > -1) {
-        oldShopLevelCodeArr.splice(oldShopLevelCodeArr.indexOf(item), 1); // 去除已经被删除掉4S商户的levelcode值
+        oldShopLevelCodeArr.splice(oldShopNameArr.indexOf(item), 1); // 去除已经被删除掉4S商户的levelcode值
       }
     });
     const endArr = oldShopLevelCodeArr.concat(editNewCodes);
