@@ -434,6 +434,7 @@ export default class MapContorl {
         }
         infor.push(['定位时间', new Date(data.uTCTime).Format('yyyy-MM-dd hh:mm:ss')]);
         infor.push(['定位地址', `${address}(${data.lnglat})`]);
+        infor.push(['卫星星数', `${data.star}`]);
         this.setTrackInfoBox({
           plateNum: data.plateNum,
           infor,

@@ -96,7 +96,9 @@ export default class Trajectory extends Vue {
   clear(callBack: Function) {
     const newParams = JSON.parse(JSON.stringify(this.filterParams));
     const date = new Date();
-    const starTime = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0);
+    const starTime = new Date(
+      new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0,
+    );
     newParams.query[0] = new Date(starTime);
     newParams.query[1] = date;
     callBack(newParams);
@@ -112,7 +114,9 @@ export default class Trajectory extends Vue {
       const endT = val[1].Format('yyyy-MM-dd hh:mm:ss'); // 所选时间结束
       const startT1 = new Date(startT).getTime(); // 所选时间开始毫秒数
       const endT1 = new Date(endT).getTime(); // 所选时间结束毫秒数
-      const todayDateStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0); // 当天开始
+      const todayDateStart = new Date(
+        new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0,
+      ); // 当天开始
       const todayDateStart1 = new Date(todayDateStart).getTime();
       const todayDateEnd = new Date(); // 当天当前时间
       if (startT1 === endT1) { // 所选时间是同一天
@@ -319,7 +323,9 @@ export default class Trajectory extends Vue {
     });
     // 当天
     const date = new Date();
-    const starTime = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0);
+    const starTime = new Date(
+      new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0,
+    );
     this.filterParams.query[0] = starTime;
     this.filterParams.query[1] = date;
     this.outParams.startTime = starTime.Format('yyyy-MM-dd hh:mm:ss');
@@ -410,7 +416,8 @@ export default class Trajectory extends Vue {
       tempPoint.uTCTime = data[i].time;
       tempPoint.direction = data[i].direction;
       tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
-      tempPoint.lnglat = `${data[i].lng.toFixed(2)},${data[i].lat.toFixed(2)}`;
+      tempPoint.lnglat = `${data[i].lng},${data[i].lat}`;
+      tempPoint.star = data[i].star;
       tempPoint.event = data[i].events;
       totalPoints.push(tempPoint);
     }
