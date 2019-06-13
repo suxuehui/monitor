@@ -168,6 +168,8 @@ export default class FilterTable extends Vue {
    */
   reloadTable(type?: string) {
     const table: any = this.$refs.MTable;
+    // 恢复当前页面到第一页
+    table.clearPageParams();
     // 延迟100ms加载数据
     setTimeout(() => {
       table.reload(type);

@@ -1196,7 +1196,6 @@ export default class Monitor extends Vue {
   setInfo(val: any) {
     this.currentCarId = val.id;
     this.carDetail = val;
-    window.localStorage.setItem('monitorCurrentCarPlate', val.plateNum);
   }
 
   getShowTerminal() {
@@ -1366,12 +1365,14 @@ export default class Monitor extends Vue {
   tripHis() {
     const id = `${this.currentCarId}`;
     this.$router.push({ name: '车辆轨迹', params: { id } });
+    window.localStorage.setItem('monitorCurrentCarPlate', this.carDetail.plateNum);
   }
 
   // 驾驶行为
   behaviorList() {
     const id = `${this.currentCarId}`;
     this.$router.push({ name: '驾驶行为', params: { id } });
+    window.localStorage.setItem('monitorCurrentCarPlate', this.carDetail.plateNum);
   }
 
   onLineStatus(data: any) {
