@@ -417,7 +417,7 @@ export default class Trajectory extends Vue {
       tempPoint.direction = data[i].direction;
       tempPoint.printSpeed = commonfun.getSpeed(data[i].speed);
       tempPoint.lnglat = `${data[i].lng},${data[i].lat}`;
-      tempPoint.star = data[i].star;
+      tempPoint.star = data[i].star ? data[i].star : '--';
       tempPoint.event = data[i].events;
       totalPoints.push(tempPoint);
     }
