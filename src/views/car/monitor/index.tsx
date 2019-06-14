@@ -334,9 +334,13 @@ export default class Monitor extends Vue {
     return str;
   }
 
-  // 表格数据源添加单位
+  // 表格数据源添加单位 剩余油量 剩余电量 续航里程 累计里程 电瓶电压
   changeStatus(data: any, unit: string) {
-    return data > 0 ? data + unit : '--';
+    if(data !== null && data >= 0){
+      return data + unit;
+    } else {
+      return '--';
+    }
   }
 
   // 表格操作栏配置数组
@@ -748,7 +752,7 @@ export default class Monitor extends Vue {
    * @param {string} id 车辆id
    * @param {Object} data 车辆data
    */
-  getCarDetail(id: string, data?: any, target?:string) {
+  getCarDetail(id: string, data?: any, target?: string) {
     let carDetail1: any = {};
     this.detailShow = true;
     const oldCarDetail = JSON.parse(JSON.stringify(this.carDetail));
@@ -782,7 +786,7 @@ export default class Monitor extends Vue {
           };
           this.carDetail = carDetail1;
           this.carDetail.plateNum = oldCarDetail.plateNum;
-          this.carDetail.orgName=oldCarDetail.orgName;
+          this.carDetail.orgName = oldCarDetail.orgName;
         }
       } else {
         this.$message.error(res.result.resultMessage || '暂无车辆信息');
