@@ -431,7 +431,7 @@ export default class Device extends Vue {
 
   // 查看上线地址
   upLoc(row: any) {
-    return <el-button type="text" disabled={!row.switchAddress && this.showUpUrl} on-click={() => this.checkLoc(row)}>查看地址</el-button>;
+    return <el-button type="text" disabled={!(row.switchAddress && this.showUpUrl)} on-click={() => this.checkLoc(row)}>查看地址</el-button>;
   }
 
   // 点击操作时的时间
