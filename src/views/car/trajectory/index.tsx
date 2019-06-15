@@ -340,6 +340,8 @@ export default class Trajectory extends Vue {
       const TableRecord: any = this.$refs.table;
       TableRecord.reloadTable();
       this.clearCanvas();
+      // 清除轨迹点信息框
+      this.getMapContorl().removeTrackInfoBox();
       this.isEnd = false;
       this.locChange = false;
       // 1-振动 2-碰撞 3-翻滚 4-急加速 5-急减速 6-急转弯 7-超速
