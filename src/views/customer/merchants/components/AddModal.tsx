@@ -235,7 +235,7 @@ export default class AddModal extends Vue {
    */
   @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
-    if (this.data.id > 0) {
+    if (this.title === '编辑商户') {
       // 编辑
       if (this.modelForm.password) {
         setTimeout(() => {
@@ -249,6 +249,7 @@ export default class AddModal extends Vue {
         callback();
       }
     } else {
+      // 新增
       setTimeout(() => {
         if (this.modelForm.password) {
           if (this.isChineseChar(this.modelForm.password)) {
@@ -482,6 +483,7 @@ export default class AddModal extends Vue {
                 From.resetFields();
                 this.nameAndLev = '';
                 this.deviceType = [];
+                this.shopFilteredList = [];
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -513,6 +515,7 @@ export default class AddModal extends Vue {
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
                 this.resetData();
+                this.shopFilteredList = [];
                 this.$emit('refresh');
               }, 1500);
             } else {
