@@ -197,6 +197,9 @@ export default class RecordTable extends Vue {
 
   pageDataChange(val: any) {
     const data: any = lodash.cloneDeep(val);
+    if (data.length === 0) {
+      data[0] = '空数据';
+    }
     data.forEach((item: any, index: number) => {
       this.$emit('location', item);
     });

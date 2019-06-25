@@ -181,11 +181,39 @@ export default class Alarm extends Vue {
 
   dateChange(val: any) {
     if (val) {
-      if ((val[1].getTime() - val[0].getTime()) > 7 * 24 * 60 * 60 * 1000) {
-        this.$message.error('查询时间不能超过7天');
+      const startT = val[0].Format('yyyy-MM-dd hh:mm:ss'); // 所选时间开始
+      const endT = val[1].Format('yyyy-MM-dd hh:mm:ss'); // 所选时间结束
+      const startT1 = new Date(startT).getTime(); // 所选时间开始毫秒数
+      const endT1 = new Date(endT).getTime(); // 所选时间结束毫秒数
+      const todayDateStart = new Date(
+        new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0,
+      ); // 当天开始
+      const todayDateStart1 = new Date(todayDateStart).getTime();
+      const todayDateEnd = new Date(); // 当天当前时间
+      if (startT1 === endT1) { // 所选时间是同一天
+        if (startT1 === todayDateStart1) { // 所选时间是今天
+          this.outParams.queryStartTime = new Date(todayDateStart).Format('yyyy-MM-dd hh:mm:ss');
+          this.outParams.queryEndTime = new Date(todayDateEnd).Format('yyyy-MM-dd hh:mm:ss');
+        } else { // 所选时间不是今天
+          const targetEnd = new Date(startT1 + 24 * 60 * 60 * 1000 - 1 * 1000);
+          this.outParams.queryStartTime = new Date(startT1).Format('yyyy-MM-dd hh:mm:ss');
+          this.outParams.queryEndTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
+        }
+      } else if (endT1 - startT1 < 92 * 24 * 60 * 60 * 1000) { // 所选时间范围在3个月以内
+        if (`${startT}`.indexOf('00:00:00') > 0 && `${endT}`.indexOf('00:00:00') > 0) { // 未选择时分秒
+          const targetEnd = new Date(endT1 + 24 * 60 * 60 * 1000 - 1 * 1000);
+          this.outParams.queryStartTime = startT;
+          this.outParams.queryEndTime = new Date(targetEnd).Format('yyyy-MM-dd hh:mm:ss');
+        } else { // 选择了时分秒
+          this.outParams.queryStartTime = startT;
+          this.outParams.queryEndTime = new Date(endT).Format('yyyy-MM-dd hh:mm:ss');
+        }
       } else {
-        this.outParams.queryStartTime = val[0].Format('yyyy-MM-dd hh:mm:ss');
-        this.outParams.queryEndTime = val[1].Format('yyyy-MM-dd hh:mm:ss');
+        const date = new Date();
+        const startTime1 = new Date(date.getTime() - (90 * 24 * 60 * 60 * 1000));
+        this.outParams.queryStartTime = new Date(startTime1).Format('yyyy-MM-dd hh:mm:ss');
+        this.outParams.queryEndTime = date.Format('yyyy-MM-dd hh:mm:ss');
+        this.$message.error('查询时间不能超过3个月，请重新选择');
       }
     } else {
       this.clear();

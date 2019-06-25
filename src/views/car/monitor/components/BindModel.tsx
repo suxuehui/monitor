@@ -1,5 +1,5 @@
 import {
-  Component, Prop, Vue,
+  Component, Prop, Vue, Emit,
 } from 'vue-property-decorator';
 import {
   Tag, Dialog, Row, Col, Form, FormItem, Input, Button,
@@ -33,7 +33,23 @@ export default class BindModal extends Vue {
   rules = {
     imei: [
       { required: true, message: '请输入imei号', trigger: 'blur' },
+      {
+        validator: this.checkIMEI, trigger: 'blur',
+      },
     ],
+  }
+
+  // 消除imei号前后空格
+  @Emit()
+  checkIMEI(rule: any, value: string, callback: Function) {
+    setTimeout(() => {
+      if (value) {
+        this.modelForm.imei = this.modelForm.imei.replace(/^\s*|\s*$/g, "");
+        callback();
+      } else {
+        callback();
+      }
+    }, 500);
   }
 
   // 重置数据

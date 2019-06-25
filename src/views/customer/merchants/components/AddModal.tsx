@@ -537,7 +537,7 @@ export default class AddModal extends Vue {
 
   // 搜索商户
   remoteMethod(query: any) {
-    if (query !== '') {
+    if (query !== '' && this.strLen(query) >= 6) {
       this.shopFilteredList = [];
       this.selectLoading = true;
       getAllShopNameMoni({ name: query }).then((res) => {
@@ -560,11 +560,31 @@ export default class AddModal extends Vue {
     }
   }
 
+  // 返回字符串长度
+  strLen(str: any) {
+    var len = 0;
+    for (var i = 0; i < str.length; i++) {
+      var c = str.charCodeAt(i);
+      //单字节加1 
+      if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
+        len++;
+      }
+      else {
+        len += 2;
+      }
+    }
+    return len;
+  }
+
   // 名字加levelCode 多个门店
   nameAndLev: any = [];
 
   shopChecked(val: any) {
     this.nameAndLev = val;
+  }
+
+  shopNameInput(val: any) {
+    console.log(val);
   }
 
   // 切换地址
@@ -641,10 +661,12 @@ export default class AddModal extends Vue {
                   v-model={this.nameAndLev}
                   filterable={true}
                   remote={true}
-                  placeholder="请选择商户"
+                  placeholder="请输入门店名称进行查询"
                   multiple={true}
                   remote-method={this.remoteMethod}
                   on-change={this.shopChecked}
+                  on-blur={this.shopNameInput}
+                  loading-text={'查询中...'}
                   loading={this.selectLoading}
                   style="width:100%">
                   {

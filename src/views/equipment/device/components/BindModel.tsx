@@ -78,7 +78,8 @@ export default class BindModal extends Vue {
     setTimeout(() => {
       if (value) {
         const exp: any = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领车假A-Z]{1}[A-Z]{1}[A-Z0-9]{4,5}[A-Z0-9挂学警港澳]{1}$/;
-        if (exp.test(value)) {
+        this.modelForm.plateNum = this.modelForm.plateNum.replace(/^\s*|\s*$/g, "");
+        if (exp.test(this.modelForm.plateNum)) {
           callback();
         } else {
           callback(new Error('车牌号输入不合法，请重新输入'));

@@ -120,34 +120,39 @@ export default class Track extends Vue {
   }
 
   setMapLoc = (val: any) => {
-    const infoWindow = new this.BMap.InfoWindow(this.msgContent(val));
-    const pt = new this.BMap.Point(val.lng, val.lat);
-    const myIconRed = new this.BMap.Icon(locaIconRed, new this.BMap.Size(32, 32));
-    const myIconBlue = new this.BMap.Icon(locaIconBlue, new this.BMap.Size(32, 32));
-    const pointRed = new this.BMap.Marker(pt, { icon: myIconRed });
-    const pointBlue = new this.BMap.Marker(pt, { icon: myIconBlue });
-    // 点击事件渲染
-    if (val.origin === 'click') {
-      this.SMap.removeOverlay(pointRed);
-      this.SMap.addOverlay(pointBlue);
-      this.SMap.centerAndZoom(val.lng, val.lat);
-    } else { // 循环渲染
-      this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
-      this.SMap.addOverlay(pointRed);
+    if (val && val.vehicleID) {
+      const infoWindow = new this.BMap.InfoWindow(this.msgContent(val));
+      const pt = new this.BMap.Point(val.lng, val.lat);
+      const myIconRed = new this.BMap.Icon(locaIconRed, new this.BMap.Size(32, 32));
+      const myIconBlue = new this.BMap.Icon(locaIconBlue, new this.BMap.Size(32, 32));
+      const pointRed = new this.BMap.Marker(pt, { icon: myIconRed });
+      const pointBlue = new this.BMap.Marker(pt, { icon: myIconBlue });
+      // 点击事件渲染
+      if (val.origin === 'click') {
+        this.SMap.removeOverlay(pointRed);
+        this.SMap.addOverlay(pointBlue);
+        this.SMap.centerAndZoom(val.lng, val.lat);
+      } else { // 循环渲染
+        this.SMap.centerAndZoom(new this.BMap.Point(val.lng, val.lat), 15);
+        this.SMap.addOverlay(pointRed);
+      }
+      this.SMap.openInfoWindow(
+        infoWindow,
+        pt,
+      );
+      pointRed.addEventListener('click', () => {
+        this.SMap.removeOverlay(pointRed);
+        this.SMap.addOverlay(pointBlue);
+        this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
+      });
+      infoWindow.addEventListener('close', () => {
+        this.SMap.removeOverlay(pointBlue);
+        this.SMap.addOverlay(pointRed);
+      });
+    } else {
+      this.SMap.clearOverlays();
+      // this.SMap.centerAndZoom(new this.BMap.Point(106.560421, 29.563694), 15);
     }
-    this.SMap.openInfoWindow(
-      infoWindow,
-      pt,
-    );
-    pointRed.addEventListener('click', () => {
-      this.SMap.removeOverlay(pointRed);
-      this.SMap.addOverlay(pointBlue);
-      this.SMap.openInfoWindow(infoWindow, pt); // 开启信息窗口
-    });
-    infoWindow.addEventListener('close', () => {
-      this.SMap.removeOverlay(pointBlue);
-      this.SMap.addOverlay(pointRed);
-    });
   }
 
   msgContent(content: any) {

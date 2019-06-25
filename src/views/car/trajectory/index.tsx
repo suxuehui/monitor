@@ -57,7 +57,7 @@ export default class Trajectory extends Vue {
               const start = new Date(`${end.Format('yyyy-MM-dd hh:mm:ss').replace(/\s\w+:\w+:\w+/g, '')} 00:00:00`);
               end.setTime(start.getTime());
               start.setTime(start.getTime() - (3600 * 1000 * 24));
-              picker.$emit('pick', [start, end]);
+              picker.$emit('pick', [start, start]);
             },
           }, {
             text: '最近一周',
@@ -79,6 +79,8 @@ export default class Trajectory extends Vue {
     startTime: '',
     endTime: '',
   };
+
+  timeTarget: string = '';
 
   outParams: any = {
     startTime: '',
