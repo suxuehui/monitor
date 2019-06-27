@@ -336,7 +336,7 @@ export default class Monitor extends Vue {
 
   // 表格数据源添加单位 剩余油量 剩余电量 续航里程 累计里程 电瓶电压
   changeStatus(data: any, unit: string) {
-    if(data !== null && data >= 0){
+    if (data !== null && data >= 0) {
       return data + unit;
     } else {
       return '--';
@@ -922,6 +922,13 @@ export default class Monitor extends Vue {
       const { entity, result } = res;
       if (result.resultCode === '0') {
         entity.forEach((item: any) => {
+          if (`${item.online}` === 'true') {
+            item.onlineName = '在线';
+          } else if (`${item.online}` === 'false') {
+            item.onlineName = '离线';
+          } else if (`${item.online}` === 'null') {
+            item.onlineName = '未知';
+          }
           if (item.wireless === 0) {
             this.wiredTerminals.push(item);
           } else if (item.wireless === 1) {
@@ -1482,11 +1489,15 @@ export default class Monitor extends Vue {
                       <li class="deviceLi">
                         <span class="deviceModel w700">型号</span>
                         <span class="deviceIMEI w700">imei号</span>
+                        <span class="deviceModel w700">网络</span>
+                        <span class="deviceModel w700">状态</span>
                       </li>
                       {
                         this.wiredTerminals.map((item: any) => <li class="deviceLi">
                           <span class="deviceModel">{item.terminalModel}</span>
                           <span class="deviceIMEI">{item.imei}</span>
+                          <span class="deviceModel">{item.flag4G ? '4G':'2G'}</span>
+                          <span class="deviceModel">{item.onlineName}</span>
                         </li>)
                       }
                     </ul> : null
@@ -1499,11 +1510,15 @@ export default class Monitor extends Vue {
                       <li class="deviceLi">
                         <span class="deviceModel w700">型号</span>
                         <span class="deviceIMEI w700">imei号</span>
+                        <span class="deviceModel w700">网络</span>
+                        <span class="deviceModel w700">状态</span>
                       </li>
                       {
                         this.wirelessTerminals.map((item: any) => <li class="deviceLi">
                           <span class="deviceModel">{item.terminalModel}</span>
                           <span class="deviceIMEI">{item.imei}</span>
+                          <span class="deviceModel">{item.flag4G ? '4G':'2G'}</span>
+                          <span class="deviceModel">{item.onlineName}</span>
                         </li>)
                       }
                     </ul> : null

@@ -407,6 +407,7 @@ export default class Device extends Vue {
     { label: 'ICCID', prop: 'iccId' },
     { label: '设备型号', prop: 'terminalModel' },
     { label: '网络类型', prop: 'wireless', formatter: this.wireCheck },
+    { label: '网络制式', prop: 'flag4G' },
     { label: '当前车辆', prop: 'plateNum' },
     { label: '安绑记录', prop: 'plateNum1', formatter: this.bindLog },
     { label: '设备状态', prop: 'status', formatter: this.terSelect },
@@ -427,6 +428,11 @@ export default class Device extends Vue {
   // 是否无线设备
   wireCheck(row: any) {
     return row.wireless === 0 ? <el-tag>有线</el-tag> : <el-tag type="success">无线</el-tag>;
+  }
+
+  // 网络制式
+  flag4GCheck(row: any) {
+    return row.flag4G.indexOf('4') >= 0 ? <el-tag>4G</el-tag> : <el-tag type="success">2G</el-tag>;
   }
 
   // 查看上线地址
