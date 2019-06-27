@@ -1323,12 +1323,11 @@ export default class Monitor extends Vue {
       this.showControlTran = false;
     }
     if (data === '控制') {
-      if (this.searchCarId !== this.currentCarId) {
-        this.getCarControlList(this.currentCarId); // 获取车辆控制列表
-        this.searchCarId = this.currentCarId;
-      }
       this.showDeviceTran = false;
       this.showControlTran = !this.showControlTran;
+      if (this.showControlTran) {
+        this.getCarControlList(this.currentCarId); // 获取车辆控制列表
+      }
     }
   }
 
@@ -1496,7 +1495,7 @@ export default class Monitor extends Vue {
                         this.wiredTerminals.map((item: any) => <li class="deviceLi">
                           <span class="deviceModel">{item.terminalModel}</span>
                           <span class="deviceIMEI">{item.imei}</span>
-                          <span class="deviceModel">{item.flag4G ? '4G':'2G'}</span>
+                          <span class="deviceModel">{item.flag4G ? '4G' : '2G'}</span>
                           <span class="deviceModel">{item.onlineName}</span>
                         </li>)
                       }
@@ -1517,7 +1516,7 @@ export default class Monitor extends Vue {
                         this.wirelessTerminals.map((item: any) => <li class="deviceLi">
                           <span class="deviceModel">{item.terminalModel}</span>
                           <span class="deviceIMEI">{item.imei}</span>
-                          <span class="deviceModel">{item.flag4G ? '4G':'2G'}</span>
+                          <span class="deviceModel">{item.flag4G ? '4G' : '2G'}</span>
                           <span class="deviceModel">{item.onlineName}</span>
                         </li>)
                       }
