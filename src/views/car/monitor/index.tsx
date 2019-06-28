@@ -736,7 +736,7 @@ export default class Monitor extends Vue {
       const { result, entity } = res;
       if (result.resultCode === '0') {
         setTimeout(() => {
-          this.remoteControlArr = entity;
+          this.remoteControlArr = entity.length > 0 ? entity : [''];
         }, 500);
       } else {
         setTimeout(() => {
@@ -1538,7 +1538,7 @@ export default class Monitor extends Vue {
                           <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
                         ))
                       }
-                    </ul> : <span class="noControl">未绑定有线设备，暂无控制功能</span> : <span class="noControl">数据查询中...</span>
+                    </ul> : <span class="noControl">暂无控制功能</span> : <span class="noControl">数据查询中...</span>
               }
             </div>
           </transition>
