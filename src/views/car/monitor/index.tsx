@@ -727,21 +727,27 @@ export default class Monitor extends Vue {
   }
 
   // 远程控制选项
-  remoteControlArr: any = [];
+  remoteControlArr: any = null;
+
+  // 是否获取到远程控制命令
+  remoteControlArrLoading: boolean = false;
 
   // 获取当前车辆控制列表
   getCarControlList(data: any) {
     this.remoteControlArr = [];
+    this.remoteControlArrLoading = true;
     cmdList({ vehicleId: data }).then((res: any) => {
       const { result, entity } = res;
       if (result.resultCode === '0') {
         setTimeout(() => {
-          this.remoteControlArr = entity.length > 0 ? entity : [''];
-        }, 500);
+          this.remoteControlArrLoading = false;
+          this.remoteControlArr = entity.length > 0 ? entity : [];
+        }, 300);
       } else {
         setTimeout(() => {
-          this.remoteControlArr = [''];
-        }, 500);
+          this.remoteControlArrLoading = false;
+          this.remoteControlArr = [];
+        }, 300);
         this.$message.error(result.resultMessage);
       }
     });
@@ -1318,6 +1324,8 @@ export default class Monitor extends Vue {
 
   // 展示三角形
   showTran(data: string) {
+    this.remoteControlArr = [];
+    this.remoteControlArrLoading = false;
     if (data === '设备') {
       this.showDeviceTran = !this.showDeviceTran;
       this.showControlTran = false;
@@ -1395,6 +1403,28 @@ export default class Monitor extends Vue {
   // 绑定、解绑完成后刷新设备列表
   getTerminalList(data: any): void {
     this.findTerminalList(data.id);
+  }
+
+  showRemoteControlArr() {
+    let result: any = null;
+    if (!this.remoteControlArrLoading) {
+      if (this.remoteControlArr && this.remoteControlArr.length > 0) {
+        result = (
+          <ul class="controlList">
+            {
+              this.remoteControlArr.map((item: any, index: number) => (
+                <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
+              ))
+            }
+          </ul>
+        )
+      } else {
+        result = <span class="noControl">暂无控制功能</span>;
+      }
+    } else {
+      result = <span class="noControl">数据查询中...</span>
+    }
+    return result;
   }
 
   render() {
@@ -1530,15 +1560,7 @@ export default class Monitor extends Vue {
           <transition name="el-fade-in-linear">
             <div v-show={this.showControlTran}>
               {
-                this.remoteControlArr.length !== 0
-                  ? this.remoteControlArr.length > 1
-                    ? <ul class="controlList">
-                      {
-                        this.remoteControlArr.map((item: any, index: number) => (
-                          <li class="controlItem" on-click={() => this.carControl(item)}>{item.desc}</li>
-                        ))
-                      }
-                    </ul> : <span class="noControl">暂无控制功能</span> : <span class="noControl">数据查询中...</span>
+                this.showRemoteControlArr()
               }
             </div>
           </transition>
