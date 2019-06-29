@@ -21,6 +21,8 @@ export default class UploadModel extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private title: any;
+
   @Prop() private time: any;
 
   loading: boolean = false;
@@ -33,7 +35,7 @@ export default class UploadModel extends Vue {
     return (
       <el-dialog
         width="520px"
-        title="上线地址"
+        title={this.title}
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}

@@ -321,6 +321,9 @@ export default class Device extends Vue {
   // 查看上线地址
   showUpUrl: boolean = true;
 
+  // 上线地址标题
+  uploadTitle: string = '';
+
   mounted() {
     // 获取所有设备类型、型号
     deviceModel('ALL').then((res) => {
@@ -437,7 +440,7 @@ export default class Device extends Vue {
 
   // 查看上线地址
   upLoc(row: any) {
-    return <el-button type="text" disabled={!(row.switchAddress && this.showUpUrl)} on-click={() => this.checkLoc(row)}>查看地址</el-button>;
+    return <el-button type="text" disabled={!(this.showUpUrl)} on-click={() => this.checkLoc(row)}>查看地址</el-button>;
   }
 
   // 点击操作时的时间
@@ -449,6 +452,7 @@ export default class Device extends Vue {
 
   // 查看上线地址
   checkLoc(data: any) {
+    this.uploadTitle = `上线地址：${data.imei}`;
     getOnlineUrl(data.id).then((res: any) => {
       const { result, entity } = res;
       if (result.resultCode === '0') {
@@ -762,6 +766,7 @@ export default class Device extends Vue {
           on-refresh={this.refresh}
         />
         <upload-model
+          title={this.uploadTitle}
           data={this.upLocData}
           visible={this.upLocVisible}
           on-close={this.closeModal}
