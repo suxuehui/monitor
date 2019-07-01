@@ -338,9 +338,7 @@ export default class Monitor extends Vue {
   changeStatus(data: any, unit: string) {
     if (data !== null && data >= 0) {
       return data + unit;
-    } else {
-      return '--';
-    }
+    } return '--';
   }
 
   // 表格操作栏配置数组
@@ -1348,6 +1346,12 @@ export default class Monitor extends Vue {
       vin: this.carDetail.vin,
       operateStr: item.desc,
     };
+    if(this.controlData.cmd === "CMD_AUTH_OIL_ON"){
+      this.controlData.operateStr = '立即通油（电）';
+    }
+    if(this.controlData.cmd === "CMD_AUTH_OIL_OFF"){
+      this.controlData.operateStr = '熄火后断油（电）';
+    }
     this.controlVisible = true;
     this.controlTitle = this.setControlTitle(item.desc);
     this.cclickTime = utils.getNowTime();
@@ -1355,21 +1359,7 @@ export default class Monitor extends Vue {
 
   // 车辆控制弹框标题
   setControlTitle(num: string) {
-    let title = '';
-    switch (num) {
-      case '夺权':
-        title = '夺权选择';
-        break;
-      case '授权':
-        title = '授权选择';
-        break;
-      case '断油':
-        title = '断油选择';
-        break;
-      default:
-        title = '操作确认';
-        break;
-    }
+    let title = '操作确认';
     return title;
   }
 
@@ -1417,12 +1407,12 @@ export default class Monitor extends Vue {
               ))
             }
           </ul>
-        )
+        );
       } else {
         result = <span class="noControl">暂无控制功能</span>;
       }
     } else {
-      result = <span class="noControl">数据查询中...</span>
+      result = <span class="noControl">数据查询中...</span>;
     }
     return result;
   }
