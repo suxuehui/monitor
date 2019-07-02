@@ -1346,10 +1346,10 @@ export default class Monitor extends Vue {
       vin: this.carDetail.vin,
       operateStr: item.desc,
     };
-    if(this.controlData.cmd === "CMD_AUTH_OIL_ON"){
+    if (this.controlData.desc === '通油') {
       this.controlData.operateStr = '立即通油（电）';
     }
-    if(this.controlData.cmd === "CMD_AUTH_OIL_OFF"){
+    if (this.controlData.desc === '断油') {
       this.controlData.operateStr = '熄火后断油（电）';
     }
     this.controlVisible = true;
@@ -1359,7 +1359,7 @@ export default class Monitor extends Vue {
 
   // 车辆控制弹框标题
   setControlTitle(num: string) {
-    let title = '操作确认';
+    const title = '操作确认';
     return title;
   }
 
