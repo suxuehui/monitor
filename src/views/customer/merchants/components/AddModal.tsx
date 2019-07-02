@@ -537,7 +537,7 @@ export default class AddModal extends Vue {
 
   // 搜索商户
   remoteMethod(query: any) {
-    if (query !== '' && this.strLen(query) >= 6) {
+    if (query !== '') {
       this.shopFilteredList = [];
       this.selectLoading = true;
       getAllShopNameMoni({ name: query }).then((res) => {
@@ -558,22 +558,6 @@ export default class AddModal extends Vue {
         }
       });
     }
-  }
-
-  // 返回字符串长度
-  strLen(str: any) {
-    var len = 0;
-    for (var i = 0; i < str.length; i++) {
-      var c = str.charCodeAt(i);
-      //单字节加1 
-      if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
-        len++;
-      }
-      else {
-        len += 2;
-      }
-    }
-    return len;
   }
 
   // 名字加levelCode 多个门店
