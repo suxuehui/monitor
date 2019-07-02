@@ -438,9 +438,9 @@ export default class AddModal extends Vue {
 
   // 去除地址前后空格
   removeBlank(main: any, port: any) {
-    const str1 = main.replace(/^\s*|\s*$/g, "");
-    const str2 = port.replace(/^\s*|\s*$/g, "");
-    return `${str1}:${str2}`
+    const str1 = main.replace(/^\s*|\s*$/g, '');
+    const str2 = port.replace(/^\s*|\s*$/g, '');
+    return `${str1}:${str2}`;
   }
 
   onSubmit() {
@@ -461,10 +461,15 @@ export default class AddModal extends Vue {
       orgName: this.modelForm.orgName, // 添加的商户名
       manageUser: this.modelForm.manageUser, // 账号
       password: this.modelForm.password, // 密码
-      deviceType: this.deviceType.indexOf('1026') > -1 ? this.typeAllList.join(',') : this.deviceType.join(','), // 设备类型
+      deviceType: this.deviceType.indexOf('1026') > -1
+        ? this.typeAllList.join(',') : this.deviceType.join(','), // 设备类型
       chgAddrAble: this.reBootStatus, // 是否切换服务地址
-      mainAddr: this.removeBlank(this.modelForm.mainAddr, this.modelForm.mainAddrPort), // 主地址
-      secondaryAddr: this.removeBlank(this.modelForm.secondaryAddr, this.modelForm.secondaryAddrPort), // 主地址
+      mainAddr: this.removeBlank(
+        this.modelForm.mainAddr, this.modelForm.mainAddrPort,
+      ), // 主地址
+      secondaryAddr: this.removeBlank(
+        this.modelForm.secondaryAddr, this.modelForm.secondaryAddrPort,
+      ), // 主地址
     };
     From.validate((valid: any) => {
       if (valid) {
