@@ -31,125 +31,39 @@ export default class AddModal extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private carModelTime: any;
+
   @Prop() private brandAddList: any; // 品牌列表
 
   modelForm: any = {
     name: '',
-    energyType: '',
-    fuelTankCap: '',
     brandSeries: [],
+    description: '',
   };
 
   loading: boolean = false;
 
-  // 图片上传
-  dialogImageUrl: string = '';
-
-  dialogVisible: boolean = false;
-
-
   rules = {
-    brandSeries: [
-      { required: true, message: '请选择品牌车系' },
-    ],
-    energyType: [
-      { required: true, message: '请选择能源类型' },
-    ],
     name: [
       { required: true, message: '请输入车型名称', trigger: 'blur' },
     ],
   }
-
-  fuelTankCapRule = [
-    { required: true, message: '请输入油箱容量' },
-    {
-      validator: this.checkTank, trigger: 'blur',
-    },
-  ]
 
   props: any = {
     value: 'value',
     children: 'name',
   }
 
-  energyOptions: ActiveType[] = [
-    { key: 1, value: 1, label: '燃油' },
-    { key: 2, value: 2, label: '电动' },
-    { key: 3, value: 3, label: '混动' },
-  ]
+  selectedList: any = [];
 
-  selectStatus: boolean = false;
-
-  oilInput: boolean = true;
-
-  // 验证油箱容量
-  @Emit()
-  checkTank(rule: any, value: string, callback: Function) {
-    setTimeout(() => {
-      if (value) {
-        if (parseInt(value, 10) > 200) {
-          callback(new Error('请输入正确的油箱容量'));
-        } else {
-          callback();
-        }
-      } else {
-        callback(new Error('油箱容量不能为空'));
-      }
-    }, 500);
-  }
-
-  handleItemChange(val: any) {
-    const obj = {
-      brandId: val[0],
-    };
-    this.getSeries(obj, val[0]);
-  }
-
-  getSeries(obj: any, val: number) {
-    seriesAll(obj).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.brandAddList.map((item: any, index: number) => {
-          this.brandAddList[index].name = [];
-          if (val === item.value) {
-            setTimeout(() => {
-              if (res.entity.length > 0) {
-                res.entity.map((items: any) => {
-                  this.brandAddList[index].name.push({
-                    label: items.name,
-                    value: items.id,
-                  });
-                  return true;
-                });
-              } else {
-                this.brandAddList[index].name.push({
-                  label: '暂无车系可供选择',
-                  value: Math.random(),
-                  disabled: true,
-                });
-              }
-            }, 100);
-          }
-          return true;
-        });
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
-  }
-
-  @Watch('data')
-  onDataChange(data: any) {
-    if (data.id > 0) {
-      const obj = { brandId: data.brandId };
+  @Watch('carModelTime')
+  onDataChange() {
+    if (this.data.id > 0) {
       this.modelForm = {
-        name: data.name,
-        energyType: data.energyType,
-        fuelTankCap: parseInt(data.fuelTankCap, 10),
-        brandSeries: [data.brandId, data.seriesId],
+        name: this.data.name,
+        description: this.data.description,
+        brandSeries: [this.data.brandId, this.data.seriesId],
       };
-      this.oilInput = data.energyType !== 2;
-      this.getSeries(obj, this.data.brandId);
-      this.selectStatus = true;
     } else {
       this.resetData();
     }
@@ -159,41 +73,38 @@ export default class AddModal extends Vue {
   resetData() {
     this.modelForm = {
       name: '',
-      energyType: '',
-      fuelTankCap: null,
       brandSeries: [],
+      description: '',
     };
-    this.selectStatus = false;
-  }
-
-  energyChange(val: any) {
-    if (val === 2) {
-      this.oilInput = false;
-    } else {
-      this.oilInput = true;
-    }
+    this.selectedList = [];
   }
 
   closeModal() {
     this.$emit('close');
-    const From: any = this.$refs.modelForm;
     setTimeout(() => {
       this.resetData();
-      From.resetFields();
     }, 400);
     this.loading = false;
+  }
+
+  handleItemChange() {
+
   }
 
   onSubmit() {
     this.loading = true;
     const From: any = this.$refs.modelForm;
+    if (this.modelForm.brandSeries.length !== 2) {
+      this.$message.error('请选择品牌车系');
+      this.loading = false;
+      return false;
+    }
     const obj = {
       id: this.data.id > 0 ? this.data.id : null,
       brandId: this.modelForm.brandSeries[0],
       seriesId: this.modelForm.brandSeries[1],
       name: this.modelForm.name,
-      energyType: this.modelForm.energyType,
-      fuelTankCap: this.oilInput ? this.modelForm.fuelTankCap : '',
+      description: this.modelForm.description,
     };
     From.validate((valid: any) => {
       if (valid) {
@@ -205,7 +116,7 @@ export default class AddModal extends Vue {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
-                this.selectStatus = false;
+                this.resetData();
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -222,7 +133,7 @@ export default class AddModal extends Vue {
                 this.loading = false;
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
-                this.selectStatus = false;
+                this.resetData();
                 this.$emit('refresh');
               }, 1500);
             } else {
@@ -260,11 +171,11 @@ export default class AddModal extends Vue {
                   style="width:100%"
                   placeholder="请选择品牌车系"
                   options={this.brandAddList}
-                  disabled={this.selectStatus}
-                  on-active-item-change={this.handleItemChange}
+                  on-change={this.handleItemChange}
                   props={this.props}
                 ></el-cascader>
               </el-form-item>
+              <span class="star">*</span>
             </el-col>
             <el-col span={24}>
               <el-form-item label="车型名称" prop="name">
@@ -273,42 +184,19 @@ export default class AddModal extends Vue {
                   v-model={this.modelForm.name}
                   placeholder="请输入车型名称"
                 ></el-input>
-
               </el-form-item>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="能源类型" prop="energyType">
-                <el-select
-                  id="energyType"
-                  v-model={this.modelForm.energyType}
-                  placeholder="请选择能源类型"
-                  filterable={true}
-                  style="width:100%"
-                  on-change={this.energyChange}
-                >
-                  {
-                    this.energyOptions.map((item: any) => (
-                      <el-option value={item.value} label={item.label} >{item.label}</el-option>
-                    ))
-                  }
-                </el-select>
+              <el-form-item label="车系描述" prop="description">
+                <el-input
+                  id="description"
+                  type="textarea"
+                  rows={3}
+                  v-model={this.modelForm.description}
+                  placeholder="请输入车系描述"
+                ></el-input>
               </el-form-item>
             </el-col>
-            {
-              this.oilInput
-                ? <el-col span={24}>
-                  <el-form-item label="油箱容量" prop="fuelTankCap" rules={!this.oilInput ? null : this.fuelTankCapRule}>
-                    <el-input
-                      id="fuelTankCap"
-                      type="number"
-                      v-model={this.modelForm.fuelTankCap}
-                      placeholder="请输入油箱容量"
-                    >
-                      <template slot="append">L</template>
-                    </el-input>
-                  </el-form-item>
-                </el-col> : null
-            }
           </el-row>
         </el-form>
         <el-row>

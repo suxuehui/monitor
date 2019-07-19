@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import qs from 'qs';
 import { Tag } from 'element-ui';
+import utils from '@/utils';
 import exportExcel from '@/api/export';
 import { seriesDelete, seriesInfo, brandAll } from '@/api/model';
 import AddModel from './components/Addmodel';
@@ -21,7 +22,7 @@ export default class Series extends Vue {
       key: 'brandId',
       type: 'select',
       label: '品牌',
-      placeholder: '请选择品牌',
+      placeholder: '所有品牌',
       options: [],
     },
     {
@@ -67,9 +68,9 @@ export default class Series extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '品牌名称', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
     { label: '车系名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
     { label: '车系描述', prop: 'description' },
+    { label: '所属品牌', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
     { label: '车型数量', prop: 'modelNum', formatter: (row: any) => (row.modelNum ? row.modelNum : '--') },
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },
   ];
@@ -142,7 +143,7 @@ export default class Series extends Vue {
       setTimeout(() => {
         this.addVisible = true;
         this.addTitle = '编辑车系';
-      }, 200);
+      }, 20);
     } else if (key === 'delete') {
       seriesDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
@@ -179,7 +180,7 @@ export default class Series extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '车系列表', '/vehicle/series/exportExcel');
+    exportExcel(data1, `车系列表${utils.returnNowTime()}`, '/vehicle/series/exportExcel');
   }
 
   render(h: any) {

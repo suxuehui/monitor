@@ -159,7 +159,7 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="model">
           <el-row>
             <el-col span={24}>
-              <el-form-item label="选择品牌" prop="brandId">
+              <el-form-item label="所属品牌" prop="brandId">
                 <el-select
                   id="brandId"
                   v-model={this.modelForm.brandId}

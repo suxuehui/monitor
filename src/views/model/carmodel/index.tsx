@@ -3,8 +3,9 @@ import { FilterFormList, tableList, Opreat } from '@/interface';
 import { Tag } from 'element-ui';
 import qs from 'qs';
 import exportExcel from '@/api/export';
+import utils from '@/utils';
 import {
-  modelInfo, modelDelete, brandAll, seriesAll,
+  modelInfo, modelDelete, brandAll, seriesAll, allList,
 } from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
@@ -22,9 +23,10 @@ export default class CarModel extends Vue {
       key: 'brandGroup',
       type: 'cascader',
       label: '品牌',
-      placeholder: '请选择品牌车系',
+      placeholder: '品牌车系（全部）',
       options: [],
       props: {},
+      filterable: true,
       change: this.brandLoad,
     },
     {
@@ -73,11 +75,10 @@ export default class CarModel extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '品牌名称', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
-    { label: '车系名称', prop: 'seriesName', formatter: (row: any) => (row.seriesName ? row.seriesName : '--') },
     { label: '车型名称', prop: 'name' },
-    { label: '能源类型', prop: 'energyType', formatter: (row: any) => (row.energyType ? row.energyType : '--') },
-    { label: '油箱容量', prop: 'fuelTankCap', formatter: this.checkFuelTank },
+    { label: '车型描述', prop: 'description' },
+    { label: '所属车系', prop: 'seriesName', formatter: (row: any) => (row.seriesName ? row.seriesName : '--') },
+    { label: '所属品牌', prop: 'brandName', formatter: (row: any) => (row.brandName ? row.brandName : '--') },
     { label: '车辆数量', prop: 'vehicleNum', formatter: (row: any) => (row.vehicleNum ? `${row.vehicleNum}辆` : '--') },
   ];
 
@@ -139,15 +140,52 @@ export default class CarModel extends Vue {
             name: [],
             value: item.id,
           });
-          return true;
         });
-        this.filterList[0].props = this.props;
-        this.filterList[0].options = this.brandList;
-        this.brandAddList = this.brandList.filter((item: any) => item);
+        this.getAllBrand();
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
+
+  }
+
+  // 获取品牌车系信息
+  getAllBrand() {
+    allList(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        // item 全部数据 
+        res.entity.forEach((item: any) => {
+          // items 品牌数据
+          this.brandList.forEach((items: any) => {
+            if (item.id === items.value) {
+              if (item.children && item.children.length > 0) {
+                item.children.forEach((it: any) => {
+                  items.name.push({
+                    label: it.name,
+                    value: it.id
+                  })
+                })
+              } else {
+                delete items.name;
+              }
+            }
+          })
+        })
+        this.brandList.unshift({
+          id: '',
+          label: '品牌车系（全部）',
+        });
+        this.filterList[0].props = this.props;
+        this.filterList[0].options = this.brandList;
+        this.brandList.forEach((item: any) => {
+          if (item.name) {
+            this.brandAddList.push(item)
+          }
+        })
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    })
   }
 
   brandLoad(val: any) {
@@ -155,31 +193,9 @@ export default class CarModel extends Vue {
       brandId: val[0],
       seriesId: val[1] ? val[1] : null,
     };
-    const obj = {
-      brandId: val[0],
-    };
-    seriesAll(obj).then((res) => {
-      if (res.result.resultCode === '0') {
-        this.brandList.map((item: any, index: number) => {
-          if (val[0] === item.value) {
-            setTimeout(() => {
-              this.brandList[index].name = [];
-              res.entity.map((items: any) => {
-                this.brandList[index].name.push({
-                  label: items.name,
-                  value: items.id,
-                });
-                return true;
-              });
-            }, 200);
-          }
-          return true;
-        });
-      } else {
-        this.$message.error(res.result.resultMessage);
-      }
-    });
   }
+
+  carModelClickTime: string = '';
 
   // 操作
   menuClick(key: string, row: any) {
@@ -188,14 +204,16 @@ export default class CarModel extends Vue {
       modelInfo({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
           this.rowData = res.entity;
+          this.rowData.id = row.id;
+          this.carModelClickTime = utils.getNowTime();
+          setTimeout(() => {
+            this.addVisible = true;
+            this.addTitle = '编辑车型';
+          }, 20);
         } else {
           this.$message.error(res.result.resultMessage);
         }
       });
-      setTimeout(() => {
-        this.addVisible = true;
-        this.addTitle = '编辑车型';
-      }, 300);
     } else if (key === 'delete') {
       modelDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
@@ -211,6 +229,7 @@ export default class CarModel extends Vue {
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增车型';
+    this.carModelClickTime = utils.getNowTime();
   }
 
   clear() {
@@ -224,7 +243,7 @@ export default class CarModel extends Vue {
     this.rowData = {};
     setTimeout(() => {
       addBlock.resetData();
-    }, 200);
+    }, 100);
   }
 
   // 关闭弹窗时刷新
@@ -263,6 +282,7 @@ export default class CarModel extends Vue {
         />
         <add-model
           ref="addTable"
+          carModelTime={this.carModelClickTime}
           brandAddList={this.brandAddList}
           data={this.rowData}
           title={this.addTitle}
