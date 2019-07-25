@@ -82,11 +82,11 @@ const user = {
             email: entity.remark,
           };
           // 设置日志用户数据
-          Raven.setUserContext({
-            userName: entity.userName,
-            userId: entity.userId,
-            lastLoginTime: entity.lastLoginTime,
-          });
+          // Raven.setUserContext({
+          //   userName: entity.userName,
+          //   userId: entity.userId,
+          //   lastLoginTime: entity.lastLoginTime,
+          // });
           // 初始化权限数据
           const permissions: string[] = [];
           if (entity.menus) {
