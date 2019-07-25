@@ -461,7 +461,7 @@ export default class Monitor extends Vue {
     { label: '设防状态:', prop: 'fenceStatus', unit: 'fenceStatus' },
     { label: '授权状态:', prop: 'authorizedStatus', unit: 'authorizedStatus' },
     { label: '油路状态:', prop: 'oilStatus', unit: 'oilStatus' },
-    { label: '充电状态:', prop: 'chargeLight' },
+    { label: '充电状态:', prop: 'chargeLight', unit: 'chargeLightStatus' },
     { label: '车灯状态:', prop: 'allLight' },
     { label: '天窗状态:', prop: 'skyWindow' },
     { label: '引擎盖:', prop: 'hood' },
@@ -1169,6 +1169,8 @@ export default class Monitor extends Vue {
         return data.oilStatus ? '通油' : '断油';
       }
       return '未知';
+    } if (unit === 'chargeLightStatus') {
+      return this.chargeStatusSet(data.chargeLight)
     }
     // 其他情况
     switch (gettype.call(value)) {
@@ -1185,6 +1187,29 @@ export default class Monitor extends Vue {
       default:
         return value;
     }
+  }
+
+  // 充电状态
+  chargeStatusSet(data: any) {
+    let str: string = '';
+    switch (data) {
+      case 0:
+        str = '未知';
+        break;
+      case 1:
+        str = '慢充中';
+        break;
+      case 2:
+        str = '未充电';
+        break;
+      case 3:
+        str = '快充中';
+        break;
+      default:
+        str = '未知';
+        break;
+    }
+    return str;
   }
 
   // 车门关闭、锁状态
