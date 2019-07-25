@@ -156,10 +156,17 @@ export const asyncRouterMap: routerItem[] = [
     children: [
       {
         path: 'document',
-        name: '配置文件',
+        name: '共享配置',
         component: getComponent('config/document/index'),
         permission: '/vehicle/config/list',
         meta: { key: 'Document' },
+      },
+      {
+        path: 'netPlus',
+        name: '网加配置',
+        component: getComponent('config/netPlus/index'),
+        permission: '/vehicle/config/list',
+        meta: { key: 'NetPlus' },
       },
     ],
   },

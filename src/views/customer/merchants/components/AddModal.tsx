@@ -619,7 +619,7 @@ export default class AddModal extends Vue {
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
-                  disabled={this.title !== '新增商户'}
+                  disabled={this.title !== '新增商户' && this.title !== '新增部门'}
                   placeholder="请输入登录账号"
                 ></el-input>
               </el-form-item>
