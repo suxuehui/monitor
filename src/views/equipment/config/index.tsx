@@ -134,7 +134,7 @@ export default class ConfigModel extends Vue {
   // 请求地址
   url: string = '/device/terminal/configurationList';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'downConfig',
       rowKey: 'id',
@@ -314,13 +314,13 @@ export default class ConfigModel extends Vue {
       '/device/terminal/configurationExport', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]); // 下发配置
-      this.opreat[1].roles = !!(res[1]); // 清除配置
-      this.opreat[2].roles = !!(res[2]); // 查询配置
-      this.opreat[3].roles = !!(res[3]); // 蓝牙鉴权
-      this.opreat[4].roles = !!(res[4]); // 蓝牙名称
-      this.opreat[5].roles = !!(res[4]); // 蓝牙秘钥
-      this.opreat[6].roles = !!(res[5]); // 设备学习
+      this.operat[0].roles = !!(res[0]); // 下发配置
+      this.operat[1].roles = !!(res[1]); // 清除配置
+      this.operat[2].roles = !!(res[2]); // 查询配置
+      this.operat[3].roles = !!(res[3]); // 蓝牙鉴权
+      this.operat[4].roles = !!(res[4]); // 蓝牙名称
+      this.operat[5].roles = !!(res[4]); // 蓝牙秘钥
+      this.operat[6].roles = !!(res[5]); // 设备学习
       this.showOprateBtn = !!(res[6]); // 操作记录查看
       this.showExportBtn = !!(res[7]); // 导出
     });
@@ -630,7 +630,7 @@ export default class ConfigModel extends Vue {
           filter-params={this.filterParams}
           add-btn={false}
           opreatWidth={'180px'}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

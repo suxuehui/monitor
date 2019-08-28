@@ -46,7 +46,7 @@ export default class CheckLogModel extends Vue {
 
   url: string = '';
 
-  opreat: Opreat[] = [];
+  operat: Opreat[] = [];
 
   // 表格参数
   tableList: tableList[] = [
@@ -93,9 +93,9 @@ export default class CheckLogModel extends Vue {
             fetchType='post'
             pagerCount={5}
             dataType={'JSON'}
-            opreat={this.opreat}
+            operat={this.operat}
             height={'300'}
-            opreat-width={'180px'}
+            operat-width={'180px'}
             on-tableClick={this.tableClick}
             defaultPageSize={this.defaultPageSize}
           />

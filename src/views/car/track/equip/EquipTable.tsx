@@ -106,7 +106,7 @@ export default class EquipTable extends Vue {
     },
   ];
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'deploy',
       rowKey: 'imei',
@@ -264,8 +264,8 @@ export default class EquipTable extends Vue {
       '/vehicle/tracke/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]);// 配置
-      this.opreat[1].roles = !!(res[1]); // 预约
+      this.operat[0].roles = !!(res[0]);// 配置
+      this.operat[1].roles = !!(res[1]); // 预约
       this.showExportBtn = !!(res[2]); // 导出
     });
   }
@@ -403,9 +403,9 @@ export default class EquipTable extends Vue {
           on-clearOutParams={this.clear}
           localName={'equipTable'}
           default-page-size={5}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
-          opreat-width="150px"
+          operat-width="150px"
         >
         </filter-table>
         <deploy-model

@@ -42,7 +42,7 @@ export default class NetPlus extends Vue {
   // 请求地址
   url: string = '/vehicle/config/list';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'edit',
       rowKey: 'productCode',
@@ -193,7 +193,7 @@ export default class NetPlus extends Vue {
           opreatWidth={'180px'}
           localName={'model'}
           on-addBack={this.addModel}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

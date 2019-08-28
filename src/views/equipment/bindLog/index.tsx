@@ -40,7 +40,7 @@ export default class BindLog extends Vue {
 
   url: string = '/terminal/ops/list';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'checkLog',
       rowKey: 'id',
@@ -85,7 +85,7 @@ export default class BindLog extends Vue {
       '/terminal/accept/list', // 验收记录
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]); // 验收记录
+      this.operat[0].roles = !!(res[0]); // 验收记录
     });
     const data: any = window.localStorage.getItem('deviceInfoFzk');
     const cimei: any = JSON.parse(data).imei;
@@ -258,8 +258,8 @@ export default class BindLog extends Vue {
               row-key="rowKey"
               fetchType='post'
               dataType={'JSON'}
-              opreat={this.opreat}
-              opreat-width={'180px'}
+              operat={this.operat}
+              operat-width={'180px'}
               on-tableClick={this.tableClick}
               defaultPageSize={this.defaultPageSize}
             />
