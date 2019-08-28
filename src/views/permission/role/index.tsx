@@ -50,7 +50,7 @@ export default class Role extends Vue {
   // 请求地址
   url: string = '/sys/role/list';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'edit',
       rowKey: 'roleName',
@@ -115,9 +115,9 @@ export default class Role extends Vue {
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.showAddBtn = !!(res[0]); // 新增
-      this.opreat[0].roles = !!(res[1]); // 编辑
-      this.opreat[1].roles = !!(res[2]); // 冻结解冻
-      this.opreat[2].roles = !!(res[3]); // 设置权限
+      this.operat[0].roles = !!(res[1]); // 编辑
+      this.operat[1].roles = !!(res[2]); // 冻结解冻
+      this.operat[2].roles = !!(res[3]); // 设置权限
       this.showExportBtn = !!(res[4]); // 导出
     });
   }
@@ -228,7 +228,7 @@ export default class Role extends Vue {
           export-btn={this.showExportBtn}
           opreatWidth={'180px'}
           on-addBack={this.addModel}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

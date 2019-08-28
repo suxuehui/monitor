@@ -68,7 +68,7 @@ export default class Driving extends Vue {
   // 请求地址
   url: string = '/statistics/driving/list';
 
-  opreat: Opreat[] = [];
+  operat: Opreat[] = [];
 
   // 表格参数
   tableList: tableList[] = [
@@ -261,7 +261,7 @@ export default class Driving extends Vue {
           on-clearOutParams={this.clearOut}
           localName={'driving'}
           add-btn={false}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

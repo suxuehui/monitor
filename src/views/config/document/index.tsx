@@ -40,7 +40,7 @@ export default class DeviceModel extends Vue {
   // 请求地址
   url: string = '/vehicle/config/list';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'edit',
       rowKey: 'productCode',
@@ -77,8 +77,8 @@ export default class DeviceModel extends Vue {
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.showAddBtn = !!(res[0]);
-      this.opreat[0].roles = !!(res[1]);
-      this.opreat[1].roles = !!(res[2]);
+      this.operat[0].roles = !!(res[1]);
+      this.operat[1].roles = !!(res[2]);
       this.showExportBtn = !!(res[3]);
     });
   }
@@ -169,7 +169,7 @@ export default class DeviceModel extends Vue {
           opreatWidth={'180px'}
           localName={'model'}
           on-addBack={this.addModel}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

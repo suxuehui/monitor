@@ -54,7 +54,7 @@ export default class MTable extends Vue {
   @Prop({ default: 'id' }) private rowKey!: string;
 
   // 操作栏数据
-  @Prop({ default: () => [] }) private opreat!: Opreat[];
+  @Prop({ default: () => [] }) private operat!: Opreat[];
 
   // 操作栏width
   @Prop({ default: '100px' }) private opreatWidth!: string;
@@ -254,7 +254,7 @@ export default class MTable extends Vue {
             })
           }
           {
-            this.showOperate(this.opreat)
+            this.showOperate(this.operat)
           }
         </el-table>
         <el-pagination
@@ -282,7 +282,7 @@ export default class MTable extends Vue {
   opreatJSX(row: any, column: string, cellValue: any, index: number) {
     // 操作数达到5个，使用下拉操作
     let num: number = 0;
-    this.opreat.forEach((item: any) => {
+    this.operat.forEach((item: any) => {
       if (item.roles === true) {
         num += 1;
       }
@@ -294,7 +294,7 @@ export default class MTable extends Vue {
         </span>
         <el-dropdown-menu slot="dropdown">
           {
-            this.opreat.map((item, indexs) => {
+            this.operat.map((item, indexs) => {
               if (item.roles) {
                 return <el-dropdown-item
                   id={`${item.key}`}
@@ -311,9 +311,9 @@ export default class MTable extends Vue {
         </el-dropdown-menu>
       </el-dropdown>;
     }
-    return <div class="table-opreat">
+    return <div class="table-operat">
       {
-        this.opreat.map((item, indexs) => {
+        this.operat.map((item, indexs) => {
           // 红色和橙色按钮操作有提示
           const whiteList = ['red', 'orange'];
           // 操作权限判断

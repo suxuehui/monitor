@@ -25,7 +25,7 @@ export default class CheckLog extends Vue {
 
   url: string = '/terminal/accept/list';
 
-  opreat: Opreat[] = [];
+  operat: Opreat[] = [];
 
   // 表格参数
   tableList: tableList[] = [
@@ -90,8 +90,8 @@ export default class CheckLog extends Vue {
               row-key="rowKey"
               fetchType='post'
               dataType={'JSON'}
-              opreat={this.opreat}
-              opreat-width={'180px'}
+              operat={this.operat}
+              operat-width={'180px'}
               on-tableClick={this.tableClick}
             />
           </div>

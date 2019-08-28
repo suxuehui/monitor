@@ -1104,7 +1104,7 @@ export default class Trajectory extends Vue {
             localName={'trajectory'}
             table-list={this.tableList}
             url={this.tableUrl}
-            opreat-width="150px">
+            operat-width="150px">
           </filter-table>
         </div>
       </div>

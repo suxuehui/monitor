@@ -15,7 +15,7 @@
 | url | 表格请求地址 |    `Object` | -- |
 | dataType | 请求数据类型 | `String` | 'formData' |
 | rowKey | 表格行ID | `String` | 'id' |
-| opreat | 操作栏参数 |    `Object` | -- |
+| operat | 操作栏参数 |    `Object` | -- |
 | opreatWidth | 操作栏width |    `string` | -- |
 | localName | 本地存储表格配置名称 |    `String` | -- |
 | fetchError | 请求数据错误回调事件 |    `Function` | -- |

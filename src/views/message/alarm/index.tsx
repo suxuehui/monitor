@@ -137,7 +137,7 @@ export default class Alarm extends Vue {
   // 请求地址
   url: string = '/message/alarm/list';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'handle',
       rowKey: 'vin',
@@ -277,8 +277,8 @@ export default class Alarm extends Vue {
       '/message/alarm/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]); // 处理
-      this.opreat[1].roles = !!(res[1]); // 处理结果
+      this.operat[0].roles = !!(res[0]); // 处理
+      this.operat[1].roles = !!(res[1]); // 处理结果
       this.showExportBtn = !!(res[2]); // 导出
     });
     // 门店搜索
@@ -409,7 +409,7 @@ export default class Alarm extends Vue {
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           add-btn={false}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           isResetChange={true}

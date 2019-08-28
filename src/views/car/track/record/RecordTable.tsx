@@ -92,7 +92,7 @@ export default class RecordTable extends Vue {
     },
   ];
 
-  opreat: Opreat[] = [];
+  operat: Opreat[] = [];
 
   filterParams: any = {
     query: [null, null],
@@ -237,9 +237,9 @@ export default class RecordTable extends Vue {
           url={this.tableUrl}
           default-page-size={5}
           localName={'recordTable'}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
-          opreat-width="150px"
+          operat-width="150px"
         >
         </filter-table>
       </div>

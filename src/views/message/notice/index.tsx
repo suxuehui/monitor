@@ -41,7 +41,7 @@ export default class Notice extends Vue {
   // 请求地址
   url: string = '/message/notice/list';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'check',
       rowKey: 'title',
@@ -80,8 +80,8 @@ export default class Notice extends Vue {
       '/message/notice/delete', // 删除
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[1]); // 删除
-      this.opreat[1].roles = !!(res[2]); // 查看
+      this.operat[0].roles = !!(res[1]); // 删除
+      this.operat[1].roles = !!(res[2]); // 查看
       this.showAddBtn = !!(res[0]); // 发布
     });
   }
@@ -164,7 +164,7 @@ export default class Notice extends Vue {
           filter-params={this.filterParams}
           add-btn={this.showAddBtn}
           on-addBack={this.addModel}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

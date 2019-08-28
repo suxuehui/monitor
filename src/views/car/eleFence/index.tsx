@@ -205,7 +205,7 @@ export default class EleFence extends Vue {
     },
   ];
 
-  opreat: Opreat[] = [];
+  operat: Opreat[] = [];
 
   filterParams: object = {
     areaValue: '',
@@ -848,9 +848,9 @@ export default class EleFence extends Vue {
             table-list={this.tableList}
             url={this.tableUrl}
             localName={'eleFence'}
-            opreat={this.opreat}
+            operat={this.operat}
             out-params={this.outParams}
-            opreat-width="150px"
+            operat-width="150px"
           >
           </filter-table>
         </div>

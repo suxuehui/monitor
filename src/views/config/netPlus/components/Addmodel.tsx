@@ -45,11 +45,11 @@ export default class AddModal extends Vue {
       name1: '',
       name2: '',
       name3: '',
-    },{
+    }, {
       name1: '',
       name2: '',
       name3: '',
-    },{
+    }, {
       name1: '',
       name2: '',
       name3: '',
@@ -86,6 +86,11 @@ export default class AddModal extends Vue {
   closeModal() {
     this.$emit('close');
     const From: any = this.$refs.modelForm;
+    this.modelForm = {
+      brandId: '', // 品牌
+      seriesId: '', // 车系
+      modalId: [], // 车型
+    }
     this.loading = false;
   }
 
@@ -182,7 +187,7 @@ export default class AddModal extends Vue {
       name2: '',
       name3: '',
       key: Date.now(),
-    }); 
+    });
   }
 
   deleteCfgParam(key: any) {

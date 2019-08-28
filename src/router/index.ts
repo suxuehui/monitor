@@ -297,6 +297,13 @@ export const asyncRouterMap: routerItem[] = [
     meta: { key: 'Permission' },
     children: [
       {
+        path: 'installer',
+        name: '安装专员',
+        component: getComponent('permission/installer/index'),
+        permission: '/sys/role/list',
+        meta: { key: 'Installer' },
+      },
+      {
         path: 'members',
         name: '成员管理',
         component: getComponent('permission/members/index'),

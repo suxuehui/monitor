@@ -25,7 +25,7 @@
       :url="url"
       :data-type="dataType"
       :row-key="rowKey"
-      :opreat="opreat"
+      :operat="operat"
       :height="height"
       :max-height="maxHeight"
       :opreat-width="opreatWidth"
@@ -105,7 +105,7 @@ export default class FilterTable extends Vue {
   @Prop() private rowKey!: string;
 
   // 操作参数
-  @Prop() private opreat!: Opreat[];
+  @Prop() private operat!: Opreat[];
 
   // 操作栏width
   @Prop() private opreatWidth!: string;

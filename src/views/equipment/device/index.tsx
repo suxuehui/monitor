@@ -176,7 +176,7 @@ export default class Device extends Vue {
 
   // 设备状态status 1-待安绑，2-待验收，3-已合格，4-未合格，5-已返厂 ,
   // 网络状态online 1-在线，0-离线
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'bind',
       rowKey: 'imei',
@@ -295,12 +295,12 @@ export default class Device extends Vue {
       '/device/terminal/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[0]); // 绑定
-      this.opreat[1].roles = !!(res[1]); // 解绑
-      this.opreat[2].roles = !!(res[2]); // 验收
-      this.opreat[3].roles = !!(res[3]); // 切换地址
-      this.opreat[4].roles = !!(res[4]); // 阈值
-      this.opreat[5].roles = !!(res[5]); // 日志
+      this.operat[0].roles = !!(res[0]); // 绑定
+      this.operat[1].roles = !!(res[1]); // 解绑
+      this.operat[2].roles = !!(res[2]); // 验收
+      this.operat[3].roles = !!(res[3]); // 切换地址
+      this.operat[4].roles = !!(res[4]); // 阈值
+      this.operat[5].roles = !!(res[5]); // 日志
       this.showOpsBtn = !!(res[6]); // 查看安绑记录
       this.showUpUrl = !!(res[7]); // 查看上线地址
       this.showExportBtn = !!(res[8]); // 导出
@@ -736,7 +736,7 @@ export default class Device extends Vue {
           data-type={'JSON'}
           localName={'device'}
           on-downBack={this.downLoad}
-          opreat={this.opreat}
+          operat={this.operat}
           opreatWidth={'150px'}
           out-params={this.outParams}
           on-clearOutParams={this.clear}

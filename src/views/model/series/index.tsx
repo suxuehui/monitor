@@ -47,7 +47,7 @@ export default class Series extends Vue {
   // 请求地址
   url: string = '/vehicle/series/list';
 
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'edit',
       rowKey: 'name',
@@ -91,8 +91,8 @@ export default class Series extends Vue {
       '/vehicle/series/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[1] && res[2]);
-      this.opreat[1].roles = !!(res[3]);
+      this.operat[0].roles = !!(res[1] && res[2]);
+      this.operat[1].roles = !!(res[3]);
       this.addBtn = !!(res[0]);
       this.exportBtn = !!(res[4]);
     });
@@ -195,7 +195,7 @@ export default class Series extends Vue {
           opreatWidth={'180px'}
           on-addBack={this.addModel}
           localName={'series'}
-          opreat={this.opreat}
+          operat={this.operat}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}

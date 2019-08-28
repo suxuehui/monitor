@@ -342,7 +342,7 @@ export default class Monitor extends Vue {
   }
 
   // 表格操作栏配置数组
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'bind',
       rowKey: 'vin',
@@ -1069,11 +1069,11 @@ export default class Monitor extends Vue {
       '/vehicle/monitor/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = res[0]; // 绑定
-      this.opreat[1].roles = res[1]; // 解绑
-      this.opreat[2].roles = res[2]; // 添加设备
-      this.opreat[3].roles = res[3]; // 编辑
-      this.opreat[4].roles = res[4]; // 删除
+      this.operat[0].roles = res[0]; // 绑定
+      this.operat[1].roles = res[1]; // 解绑
+      this.operat[2].roles = res[2]; // 添加设备
+      this.operat[3].roles = res[3]; // 编辑
+      this.operat[4].roles = res[4]; // 删除
       this.showTerminal = res[5]; // 设备列表
       this.showTrack = res[6] || res[7]; // 追踪设备记录、追踪设备
       this.showDrive = res[8]; // 驾驶行为
@@ -1622,8 +1622,8 @@ export default class Monitor extends Vue {
             table-list={this.tableList}
             default-page-size={5}
             url={this.tableUrl}
-            opreat={this.opreat}
-            opreat-width="150px"
+            operat={this.operat}
+            operat-width="150px"
           >
           </filter-table>
         </div>

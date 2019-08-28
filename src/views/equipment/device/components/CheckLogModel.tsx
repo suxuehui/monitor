@@ -75,7 +75,7 @@ export default class CheckLogModel extends Vue {
 
   url: string = '/device/terminal/findTerminalLog';
 
-  opreat: Opreat[] = [];
+  operat: Opreat[] = [];
 
   // 默认时间
   defaultTime: any = [
@@ -191,8 +191,8 @@ export default class CheckLogModel extends Vue {
             pageSizeList={[5, 10, 15]}
             fetchType='post'
             dataType={'JSON'}
-            opreat={this.opreat}
-            opreat-width={'180px'}
+            operat={this.operat}
+            operat-width={'180px'}
             on-tableClick={this.tableClick}
             defaultPageSize={this.defaultPageSize}
           />

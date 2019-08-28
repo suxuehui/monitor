@@ -137,7 +137,7 @@ export default class Merchants extends Vue {
   }
 
   // 操作
-  opreat: Opreat[] = [
+  operat: Opreat[] = [
     {
       key: 'addDepartment',
       rowKey: 'manageUser',
@@ -181,9 +181,9 @@ export default class Merchants extends Vue {
       '/customer/org/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.opreat[0].roles = !!(res[1]); // 新增
-      this.opreat[1].roles = !!(res[2]); // 编辑
-      this.opreat[2].roles = !!(res[3]); // 冻结
+      this.operat[0].roles = !!(res[1]); // 新增
+      this.operat[1].roles = !!(res[2]); // 编辑
+      this.operat[2].roles = !!(res[3]); // 冻结
       this.addBtn = !!(res[0]); // 解冻
       this.exportBtn = !!(res[4]); // 导出
     });
@@ -308,7 +308,7 @@ export default class Merchants extends Vue {
           filter-params={this.filterParams}
           add-btn={this.addBtn}
           on-addBack={this.addModel}
-          opreat={this.opreat}
+          operat={this.operat}
           opreatWidth={'200px'}
           out-params={this.outParams}
           table-list={this.tableList}
