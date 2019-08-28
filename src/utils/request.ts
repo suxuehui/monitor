@@ -153,9 +153,9 @@ export default function request(options: Option): Promise<any> {
     });
   }).catch((error) => {
     const { response } = error;
-    // if (process.env.NODE_ENV === 'production') {
-    //   Raven.captureException(JSON.stringify(error));
-    // }
+    if (process.env.NODE_ENV === 'production') {
+      // Raven.captureException(JSON.stringify(error));
+    }
     /**
      *  无权限时，先提示，在刷新
      * */

@@ -4,6 +4,7 @@ import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { brandDelete, brandInfo } from '@/api/model';
 import exportExcel from '@/api/export';
+import utils from '@/utils';
 import AddModel from './components/Addmodel';
 
 @Component({
@@ -64,7 +65,7 @@ export default class Brand extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '品牌图标', prop: 'logo', formatter: this.showLogo },
+    // { label: '品牌图标', prop: 'logo', formatter: this.showLogo },
     { label: '品牌名称', prop: 'name', formatter: (row: any) => (row.name ? row.name : '--') },
     { label: '品牌描述', prop: 'description' },
     { label: '车系数量', prop: 'seriesNum', formatter: (row: any) => (row.seriesNum ? row.seriesNum : '--') },
@@ -106,6 +107,8 @@ export default class Brand extends Vue {
     return row.logo ? <img alt="品牌图片" style="width:60px;maxHeight:36px" src={row.logo} /> : '暂无图片';
   }
 
+  clickTime: string = ''
+
   // 操作
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
@@ -113,14 +116,14 @@ export default class Brand extends Vue {
       brandInfo({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
           this.rowData = res.entity;
+          this.rowData.id = row.id;
+          this.addVisible = true;
+          this.addTitle = '编辑品牌';
+          this.clickTime = utils.getNowTime();
         } else {
           this.$message.error(res.result.resultMessage);
         }
       });
-      setTimeout(() => {
-        this.addVisible = true;
-        this.addTitle = '编辑品牌';
-      }, 200);
     } else if (key === 'delete') {
       brandDelete({ id: row.id }).then((res) => {
         if (res.result.resultCode === '0') {
@@ -157,7 +160,7 @@ export default class Brand extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, '品牌列表', '/vehicle/brand/exportExcel');
+    exportExcel(data1, `品牌列表${utils.returnNowTime()}`, '/vehicle/brand/exportExcel');
   }
 
   render(h: any) {
@@ -182,6 +185,7 @@ export default class Brand extends Vue {
           on-menuClick={this.menuClick}
         />
         <add-model
+          time={this.clickTime}
           ref="addTable"
           data={this.rowData}
           title={this.addTitle}

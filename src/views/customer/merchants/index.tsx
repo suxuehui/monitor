@@ -139,6 +139,13 @@ export default class Merchants extends Vue {
   // 操作
   opreat: Opreat[] = [
     {
+      key: 'addDepartment',
+      rowKey: 'manageUser',
+      color: 'green',
+      text: '添加部门',
+      roles: true,
+    },
+    {
       key: 'edit',
       rowKey: 'manageUser',
       color: 'blue',
@@ -258,6 +265,9 @@ export default class Merchants extends Vue {
           this.$message.error(res.result.resultMessage);
         }
       });
+    } else if (key === 'addDepartment') {
+      this.addVisible = true;
+      this.addTitle = '新增部门';
     }
   }
 
@@ -299,7 +309,7 @@ export default class Merchants extends Vue {
           add-btn={this.addBtn}
           on-addBack={this.addModel}
           opreat={this.opreat}
-          opreatWidth={'150px'}
+          opreatWidth={'200px'}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
