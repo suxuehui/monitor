@@ -264,7 +264,8 @@ function returnTime() {
 */
 function returnNowTime() {
   const time = new Date(
-    new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds(),
+    new Date().getFullYear(), new Date().getMonth(), new Date().getDate(),
+    new Date().getHours(), new Date().getMinutes(), new Date().getSeconds(),
   );
   return time.Format('yyyy-MM-dd hh:mm:ss');
 }
