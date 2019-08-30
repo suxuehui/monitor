@@ -130,8 +130,8 @@ const user = {
       }
     }),
     // 加载loading
-    showLoading: (context: any,flag:boolean) => {
-      context.commit('LOADING', flag)
+    showLoading: (context: any, flag:boolean) => {
+      context.commit('LOADING', flag);
     },
   },
 };

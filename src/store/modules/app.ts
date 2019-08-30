@@ -120,7 +120,7 @@ const app = {
       const newList = new Set();
       keepList.forEach((x: string) => newList.add(x));
       keepList = [];
-      newList.forEach((x: string) => keepList.push(x));
+      newList.forEach((x: any) => keepList.push(x));
       await context.commit('KEEP_CHANGE', keepList);
     },
     // 清除列表

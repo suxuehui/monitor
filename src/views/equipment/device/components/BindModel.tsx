@@ -78,7 +78,7 @@ export default class BindModal extends Vue {
     setTimeout(() => {
       if (value) {
         const exp: any = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领车假A-Z]{1}[A-Z]{1}[A-Z0-9]{4,5}[A-Z0-9挂学警港澳]{1}$/;
-        this.modelForm.plateNum = this.modelForm.plateNum.replace(/^\s*|\s*$/g, "");
+        this.modelForm.plateNum = this.modelForm.plateNum.replace(/^\s*|\s*$/g, '');
         if (exp.test(this.modelForm.plateNum)) {
           callback();
         } else {
@@ -94,7 +94,9 @@ export default class BindModal extends Vue {
     this.headers = {
       token: window.localStorage.getItem('token'),
     };
-    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/zuul/verify/file/upload' : '/rootApi/zuul/verify/file/upload';
+    // this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/zuul/verify/file/upload' :
+    //  '/rootApi/zuul/verify/file/upload';
+    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/verify/file/upload' : '/rootApi/verify/file/upload';
   }
 
   @Watch('data')

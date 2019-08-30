@@ -140,3 +140,59 @@ export async function changePsw(params: any) {
     data: params,
   });
 }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// 安装专员
+// 详情
+export async function workerDetail(params: any) {
+  return request({
+    url: '/worker/detail',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 添加
+export async function workerAdd(params: any) {
+  return request({
+    url: '/worker/add',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 编辑
+export async function workerEdit(params: any) {
+  return request({
+    url: '/worker/edit',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 检测安装工登录名是否存在
+export async function workerExist(params: any) {
+  return request({
+    url: '/worker/exist',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 冻结
+export async function workerLock(params: any) {
+  return request({
+    url: '/worker/lock',
+    method: 'post',
+    data: params,
+  });
+}
+
+// 解冻
+export async function workerUnlock(params: any) {
+  return request({
+    url: '/worker/unlock',
+    method: 'post',
+    data: params,
+  });
+}

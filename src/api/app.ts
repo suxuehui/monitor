@@ -33,7 +33,8 @@ export async function getAuthCodeToken(params: any) {
 export async function getAuthCode(params: any, token?: string) {
   const data = qs.stringify(params);
   return axios({
-    url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}/zuul/verify/send/image`,
+    // url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}/zuul/verify/send/image`,
+    url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}/verify/send/image`,
     method: 'post',
     data,
     headers: {

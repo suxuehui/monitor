@@ -3,11 +3,9 @@ import qs from 'qs';
 import { Tag, Tooltip } from 'element-ui';
 import { FilterFormList, tableList, Opreat } from '@/interface';
 import exportExcel from '@/api/export';
-import {
-  roleSelect, userLock, userUnlock, userInfo,
-} from '@/api/permission';
+import { workerDetail, workerLock, workerUnlock } from '@/api/permission';
 import utils from '@/utils';
-import AddModal from '@/views/permission/members/components/AddModal';
+import AddModal from '@/views/permission/installer/components/AddModal';
 
 interface ActiveType { key: any, value: any, label: string }
 
@@ -31,7 +29,7 @@ export default class Installer extends Vue {
       options: [],
     },
     {
-      key: 'keyword',
+      key: 'keyWord',
       type: 'input',
       label: '成员姓名',
       placeholder: '专员姓名或登录账号',
@@ -44,13 +42,13 @@ export default class Installer extends Vue {
   // 筛选参数
   filterParams: any = {
     active: null,
-    keyword: '',
+    keyWord: '',
   };
 
   outParams: any = {};
 
   // 请求地址
-  url: string = '/sys/user/list';
+  url: string = '/worker/list';
 
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '全部' },
@@ -69,7 +67,6 @@ export default class Installer extends Vue {
       color: 'blue',
       text: '编辑',
       roles: true,
-      // disabled: (row: any) => (row.userName === 'admin'),
     },
     {
       key: 'freeze',
@@ -77,7 +74,7 @@ export default class Installer extends Vue {
       color: 'red',
       text: '冻结',
       roles: true,
-      // disabled: (row: any) => (row.userName === 'admin' || row.activeStatus !== 1),
+      disabled: (row: any) => (row.userName === 'admin' || row.activeStatus !== 1),
     },
     {
       key: 'unfreeze',
@@ -85,7 +82,7 @@ export default class Installer extends Vue {
       color: 'green',
       text: '解冻',
       roles: true,
-      // disabled: (row: any) => (row.userName === 'admin' || row.activeStatus === 1),
+      disabled: (row: any) => (row.userName === 'admin' || row.activeStatus === 1),
     },
   ];
 
@@ -115,28 +112,30 @@ export default class Installer extends Vue {
     return <el-tag size="medium" type={type}>{row.activeStatus === 1 ? '正常' : '冻结'}</el-tag>;
   }
 
-  // 新增、编辑
-  addVisible: boolean = false;
-
-  addTitle: string = '';
-
   created() {
     const getNowRoles: string[] = [
       // 操作
-      '/sys/user/save', // 新增
-      '/sys/user/update', // 编辑
-      '/sys/user/lock', // 冻结
-      '/sys/user/unlock', // 解冻
-      '/sys/user/exportExcel', // 导出
+      '/worker/add', // 新增
+      '/worker/edit', // 编辑
+      '/worker/lock', // 冻结
+      '/worker/unlock', // 解冻
+      '/worker/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      // this.showAddBtn = !!(res[0]); // 新增
-      // this.operat[0].roles = !!(res[1]); // 编辑
-      // this.operat[1].roles = !!(res[2]); // 冻结
-      // this.operat[2].roles = !!(res[3]); // 解冻
-      // this.showExportBtn = !!(res[4]); // 导出
+      this.showAddBtn = !!(res[0]); // 新增
+      this.operat[0].roles = !!(res[1]); // 编辑
+      this.operat[1].roles = !!(res[2]); // 冻结
+      this.operat[2].roles = !!(res[3]); // 解冻
+      this.showExportBtn = !!(res[4]); // 导出
     });
   }
+
+  // 新增、编辑
+  modelVisible: boolean = false;
+
+  modelTitle: string = '';
+
+  itemData: any = {}; // 单条数据
 
   // 导出按钮展示
   showExportBtn: boolean = true;
@@ -149,21 +148,47 @@ export default class Installer extends Vue {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
       // 编辑
+      workerDetail({ userAppId: row.userAppId }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.modelVisible = true;
+          this.modelTitle = '编辑专员';
+          this.itemData = res.entity;
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     } else if (key === 'freeze') {
       // 冻结
+      workerLock({ userId: row.userId }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.$message.success(res.result.resultMessage);
+          FromTable.reloadTable();
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     } else if (key === 'unfreeze') {
       // 解冻
+      workerUnlock({ userId: row.userId }).then((res) => {
+        if (res.result.resultCode === '0') {
+          this.$message.success(res.result.resultMessage);
+          FromTable.reloadTable();
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     }
   }
 
   addModel() {
-    this.addVisible = true;
-    this.addTitle = '新增专员';
+    this.modelVisible = true;
+    this.modelTitle = '新增专员';
   }
 
   // 关闭弹窗
   closeModal(): void {
-    this.addVisible = false;
+    this.modelVisible = false;
+    this.itemData = {};
   }
 
   // 关闭弹窗时刷新
@@ -171,6 +196,7 @@ export default class Installer extends Vue {
     const FromTable: any = this.$refs.table;
     FromTable.reloadTable();
     this.closeModal();
+    this.itemData = {};
   }
 
   downLoad(data: any) {
@@ -200,8 +226,9 @@ export default class Installer extends Vue {
         />
         <add-modal
           ref="addTable"
-          title={this.addTitle}
-          visible={this.addVisible}
+          data={this.itemData}
+          title={this.modelTitle}
+          visible={this.modelVisible}
           on-close={this.closeModal}
           on-refresh={this.refresh}
         />
