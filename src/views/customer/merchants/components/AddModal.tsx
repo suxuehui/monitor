@@ -4,7 +4,9 @@ import {
 import {
   Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option, Radio, RadioGroup,
 } from 'element-ui';
-import { customerAdd, customerUpdate, checkOrgName } from '@/api/customer';
+import {
+  customerAdd, customerUpdate, checkOrgName, customerSaveSub,
+} from '@/api/customer';
 import { terminalType } from '@/api/equipment';
 import { getAllShopNameMoni } from '@/api/app';
 import { userCheck } from '@/api/permission';
@@ -81,20 +83,23 @@ export default class AddModal extends Vue {
 
   @Watch('data')
   onDataChange(data: any) {
+    console.log(data);
     if (data.id > 0) {
-      // 编辑
-      this.modelForm.orgName = data.orgName;
-      this.modelForm.contactUser = data.contactUser;
-      this.modelForm.manageUser = data.manageUser;
-      if (data.chgAddrAble === 1) {
-        this.modelForm.mainAddr = data.mainAddr.split(':')[0];
-        this.modelForm.mainAddrPort = data.mainAddr.split(':')[1];
-        this.modelForm.secondaryAddr = data.secondaryAddr.split(':')[0];
-        this.modelForm.secondaryAddrPort = data.secondaryAddr.split(':')[1];
+      if (this.title === '编辑商户') {
+        // 编辑
+        this.modelForm.orgName = data.orgName;
+        this.modelForm.contactUser = data.contactUser;
+        this.modelForm.manageUser = data.manageUser;
+        if (data.chgAddrAble === 1) {
+          this.modelForm.mainAddr = data.mainAddr.split(':')[0];
+          this.modelForm.mainAddrPort = data.mainAddr.split(':')[1];
+          this.modelForm.secondaryAddr = data.secondaryAddr.split(':')[0];
+          this.modelForm.secondaryAddrPort = data.secondaryAddr.split(':')[1];
+        }
+        this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
+        this.nameAndLev = this.setFormat(this.oldLevAndName);
+        this.reBootStatus = data.chgAddrAble === 2 ? '2' : '1';
       }
-      this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
-      this.nameAndLev = this.setFormat(this.oldLevAndName);
-      this.reBootStatus = data.chgAddrAble === 2 ? '2' : '1';
     } else {
       // 新增
       this.resetData();
@@ -446,7 +451,7 @@ export default class AddModal extends Vue {
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
-    this.loading = true;
+    // this.loading = true;
     if (this.nameAndLev === []) {
       this.$message.error('请选择商户');
       this.loading = false;
@@ -479,8 +484,33 @@ export default class AddModal extends Vue {
             delete obj.secondaryAddr;
           }
           obj.oldLevelCode = this.getOldInfo().oldLevelCodes;
-          // 新增
           customerAdd(obj).then((res) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.nameAndLev = '';
+                this.deviceType = [];
+                this.shopFilteredList = [];
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1000);
+            }
+          });
+        } else if (this.title === '新增部门') {
+          if (obj.chgAddrAble === '2') {
+            delete obj.mainAddr;
+            delete obj.secondaryAddr;
+          }
+          obj.oldLevelCode = this.getOldInfo().oldLevelCodes;
+          obj.orgId = this.data.id;
+          console.log(obj);
+          customerSaveSub(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
                 this.loading = false;

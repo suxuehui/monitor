@@ -38,6 +38,7 @@
       :out-params="outParams"
       :default-page-size="defaultPageSize"
       :highlight-current-row="highlightCurrentRow"
+      :tree-props="treeProps"
       @tableClick="tableClick"
       @selectChange="selectChange"
       @currentChange="currentChange"
@@ -76,8 +77,8 @@ export default class FilterTable extends Vue {
   private outParams!: any;
 
   // 表格分页大小参数
- @Prop({ default: () => [5, 10, 15, 20, 50, 100] }) private pageSizeList!: number[];
-
+  @Prop({ default: () => [5, 10, 15, 20, 50, 100] })
+  private pageSizeList!: number[];
 
   // 是否展示新增按钮
   @Prop() private addBtn!: boolean;
@@ -86,7 +87,7 @@ export default class FilterTable extends Vue {
   @Prop() private height!: string;
 
   // 最大高度
-  @Prop() private maxHeight!:string;
+  @Prop() private maxHeight!: string;
 
   // 是否展示导出按钮
   @Prop() private exportBtn!: boolean;
@@ -131,6 +132,9 @@ export default class FilterTable extends Vue {
   // 表格行是否可点击
   @Prop({ default: false })
   private highlightCurrentRow!: boolean;
+
+  // 表格行是否可点击
+  @Prop() private treeProps!: any;
 
   // 重置时，是否改变初始值
   @Prop({ default: false }) private isResetChange!: boolean;
@@ -211,7 +215,7 @@ export default class FilterTable extends Vue {
    * @method 首页跳转至告警消息时,重置搜索栏显示
    */
   @Emit()
-  resetSearchFun(data:any) {
+  resetSearchFun(data: any) {
     const filter: any = this.$refs.MFilter;
     filter.reSearch(data);
   }

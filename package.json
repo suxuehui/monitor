@@ -15,7 +15,7 @@
     "babel-plugin-import": "^1.8.0",
     "babel-plugin-jsx-v-model": "^2.0.3",
     "compression-webpack-plugin": "^2.0.0",
-    "element-ui": "^2.5.4",
+    "element-ui": "^2.10.1",
     "jsonp": "^0.2.1",
     "lodash": "^4.17.10",
     "mockjs": "^1.0.1-beta3",

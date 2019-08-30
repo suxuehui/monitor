@@ -67,3 +67,12 @@ export async function getInfoByLevelCode(params: any) {
     method: 'get',
   });
 }
+
+// 新增部门
+export async function customerSaveSub(params: any) {
+  return request({
+    url: '/customer/org/saveSub',
+    method: 'post',
+    data: params,
+  });
+}

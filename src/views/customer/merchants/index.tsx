@@ -70,7 +70,7 @@ export default class Merchants extends Vue {
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '商户名称', prop: 'orgName' },
+    { label: '商户名称', prop: 'orgName', hasChildren: true },
     { label: '关联门店', prop: 'oldNames', formatter: this.nameSet },
     { label: '同步设备', prop: 'deviceNames' },
     { label: '登录账号', prop: 'manageUser' },
@@ -181,11 +181,11 @@ export default class Merchants extends Vue {
       '/customer/org/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.operat[0].roles = !!(res[1]); // 新增
-      this.operat[1].roles = !!(res[2]); // 编辑
-      this.operat[2].roles = !!(res[3]); // 冻结
-      this.addBtn = !!(res[0]); // 解冻
-      this.exportBtn = !!(res[4]); // 导出
+      // this.operat[0].roles = !!(res[1]); // 新增
+      // this.operat[1].roles = !!(res[2]); // 编辑
+      // this.operat[2].roles = !!(res[3]); // 冻结
+      // this.addBtn = !!(res[0]); // 解冻
+      // this.exportBtn = !!(res[4]); // 导出
     });
   }
 
@@ -268,6 +268,7 @@ export default class Merchants extends Vue {
     } else if (key === 'addDepartment') {
       this.addVisible = true;
       this.addTitle = '新增部门';
+      this.rowData = row;
     }
   }
 
@@ -298,12 +299,18 @@ export default class Merchants extends Vue {
     exportExcel(data1, `商户列表${utils.returnNowTime()}`, '/customer/org/exportExcel');
   }
 
+  treeProps = {
+    children: 'children',
+    hasChildren: 'hasChildren',
+  };
+
   render(h: any) {
     return (
       <div class="customer-member-wrap">
         <filter-table
           ref="table"
           filter-list={this.filterList}
+          treeProps={this.treeProps}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           add-btn={this.addBtn}

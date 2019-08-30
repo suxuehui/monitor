@@ -89,11 +89,13 @@ export default class MTable extends Vue {
   // 分页默认长度
   @Prop({ default: 10 }) private defaultPageSize!: number;
 
+  // 表格头部文字对齐方式
+  @Prop({ default: 'center' }) private headerAlign!: string;
+
   // 表格行是否可点击
   @Prop() private highlightCurrentRow!: boolean;
 
-  // 表格头部文字对齐方式
-  @Prop({ default: 'center' }) private headerAlign!: string;
+  @Prop() private treeProps!: any;
 
   // data
   tableData: any = [];
@@ -236,12 +238,13 @@ export default class MTable extends Vue {
           data={this.tableData}
           on-row-click={this.currentChange}
           on-selection-change={this.selectChange}
+          treeProps={this.treeProps}
           highlightCurrentRow={this.highlightCurrentRow}>
           {
             // 循环渲染表格
             this.tableList.map((item, index) => {
               // 不对数据源进行处理的，进行判空和溢出处理
-              if (!item.formatter) {
+              if (!item.formatter&& !item.hasChildren) {
                 item.formatter = (row: any) => (row[item.prop] !== null && row[item.prop] !== ''
                   ? <el-tooltip effect="dark" content={row[item.prop] !== null ? `${row[item.prop]}` : '--'} placement="top">
                     <p class="text-over">{row[item.prop] !== null ? `${row[item.prop]}` : '--'}</p>

@@ -1,5 +1,5 @@
 // 筛选表单
-type FilterType = 'input' | 'select' | 'cascader' | 'levelcode' | 'datetime' | 'date' | 'daterange' |'datetimerange' | 'checkboxButton';
+type FilterType = 'input' | 'select' | 'cascader' | 'levelcode' | 'datetime' | 'date' | 'daterange' | 'datetimerange' | 'checkboxButton';
 
 export interface FilterFormList {
   key: string;
@@ -12,7 +12,10 @@ export interface FilterFormList {
   options?: Array<{ value: any, label: string }>;
   change?: Function;
   itemChange?: Function;
-  pickerOptions?: { shortcuts?: Array<{ text: string, onClick(picker: any): void }>, disabledDate?: Function, onPick?: Function };
+  pickerOptions?: {
+    shortcuts?: Array<{ text: string, onClick(picker: any): void }>,
+    disabledDate?: Function, onPick?: Function
+  };
 }
 
 export interface TableColumnFilter {
@@ -35,6 +38,7 @@ export interface tableList {
   sortBy?: string | any | Function,
   sortOrders?: any,
   resizable?: boolean,
+  hasChildren?: boolean,
   /* Function(row, column, cellValue, index) */
   formatter?: (row: any, cloumn: any, cellValue: any, index: number) => any,
   showOverflowTooltip?: boolean,

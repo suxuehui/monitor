@@ -2744,9 +2744,10 @@ elegant-spinner@^1.0.1:
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/elegant-spinner/download/elegant-spinner-1.0.1.tgz#db043521c95d7e303fd8f345bedc3349cfb0729e"
 
-element-ui@^2.5.4:
-  version "2.7.2"
-  resolved "https://registry.npm.taobao.org/element-ui/download/element-ui-2.7.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Felement-ui%2Fdownload%2Felement-ui-2.7.2.tgz#8bc5bef5c3c53a2170422516b4324e70069c23d1"
+element-ui@^2.10.1:
+  version "2.12.0"
+  resolved "https://registry.npm.taobao.org/element-ui/download/element-ui-2.12.0.tgz#a893bc11ae4f7dbb7e9d541606f23e643f131ee4"
+  integrity sha1-qJO8Ea5Pfbt+nVQWBvI+ZD8THuQ=
   dependencies:
     async-validator "~1.8.1"
     babel-helper-vue-jsx-merge-props "^2.0.0"
