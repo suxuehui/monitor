@@ -92,7 +92,7 @@ export default class NetPlus extends Vue {
       '/vehicle/config/exportExcel', // 导出
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      // 
+      //
     });
   }
 
@@ -119,20 +119,20 @@ export default class NetPlus extends Vue {
   menuClick(key: string, row: any) {
     const FromTable: any = this.$refs.table;
     if (key === 'edit') {
-      console.log('编辑')
+      console.log('编辑');
       // configInfo({ id: row.id }).then((res) => {
       //   if (res.result.resultCode === '0') {
       //     this.rowData = res.entity;
       //     setTimeout(() => {
-            this.addVisible = true;
-            this.addTitle = '修改配置';
+      this.addVisible = true;
+      this.addTitle = '修改配置';
       //     }, 200);
       //   } else {
       //     this.$message.error(res.result.resultMessage);
       //   }
       // });
     } else if (key === 'able') {
-      console.log('开启')
+      console.log('开启');
       // configDelete({ id: row.id }).then((res) => {
       //   if (res.result.resultCode === '0') {
       //     FromTable.reloadTable('delete');
@@ -142,9 +142,9 @@ export default class NetPlus extends Vue {
       //   }
       // });
     } else if (key === 'forbid') {
-      console.log('禁用')
+      console.log('禁用');
     } else if (key === 'log') {
-      console.log('日志')
+      console.log('日志');
       this.checkLogData = row;
       this.checkLogVisible = true;
       this.clickTime = utils.getNowTime();
