@@ -668,7 +668,7 @@ export default class Device extends Vue {
           this.bclickTime = utils.getNowTime();
           this.bThresholdVisible = true;
           this.bThresholdData = row;
-        } else {
+        } else if (row.clientType !== 23) {
           if (row.drivingCfgPower) {
             this.aclickTime = utils.getNowTime();
             // 上报2a1

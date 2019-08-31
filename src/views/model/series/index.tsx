@@ -85,16 +85,15 @@ export default class Series extends Vue {
     const getNowRoles: string[] = [
       // 操作
       '/vehicle/series/add',
-      '/vehicle/series/info',
       '/vehicle/series/edit',
       '/vehicle/series/delete',
       '/vehicle/series/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.operat[0].roles = !!(res[1] && res[2]);
-      this.operat[1].roles = !!(res[3]);
+      this.operat[0].roles = !!(res[1]);
+      this.operat[1].roles = !!(res[2]);
       this.addBtn = !!(res[0]);
-      this.exportBtn = !!(res[4]);
+      this.exportBtn = !!(res[3]);
     });
 
     brandAll(null).then((res) => {

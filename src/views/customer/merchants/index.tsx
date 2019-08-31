@@ -179,13 +179,15 @@ export default class Merchants extends Vue {
       '/customer/org/lock/{orgId}', // 冻结
       '/customer/org/unlock/{orgId}', // 解冻
       '/customer/org/exportExcel', // 导出
+      '/customer/org/saveSub', // 新增部门
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      // this.operat[0].roles = !!(res[1]); // 新增
-      // this.operat[1].roles = !!(res[2]); // 编辑
-      // this.operat[2].roles = !!(res[3]); // 冻结
-      // this.addBtn = !!(res[0]); // 解冻
-      // this.exportBtn = !!(res[4]); // 导出
+      this.operat[0].roles = !!(res[1]); // 新增
+      this.operat[1].roles = !!(res[2]); // 编辑
+      this.operat[2].roles = !!(res[3]); // 冻结
+      this.operat[3].roles = !!(res[5]); // 冻结
+      this.addBtn = !!(res[0]); // 解冻
+      this.exportBtn = !!(res[4]); // 导出
     });
   }
 

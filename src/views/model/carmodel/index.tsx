@@ -102,16 +102,15 @@ export default class CarModel extends Vue {
     const getNowRoles: string[] = [
       // 操作
       '/vehicle/model/add',
-      '/vehicle/model/info',
       '/vehicle/model/edit',
       '/vehicle/model/delete',
       '/vehicle/model/exportExcel',
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.operat[0].roles = !!(res[1] && res[2]);
-      this.operat[1].roles = !!(res[3]);
+      this.operat[0].roles = !!(res[1]);
+      this.operat[1].roles = !!(res[2]);
       this.addBtn = !!(res[0]);
-      this.exportBtn = !!(res[4]);
+      this.exportBtn = !!(res[3]);
     });
   }
 
@@ -134,7 +133,7 @@ export default class CarModel extends Vue {
   mounted() {
     brandAll(null).then((res) => {
       if (res.result.resultCode === '0') {
-        res.entity.map((item: any, index: number) => {
+        res.entity.forEach((item: any, index: number) => {
           this.brandList.push({
             label: item.name,
             name: [],
@@ -146,14 +145,13 @@ export default class CarModel extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-
   }
 
   // 获取品牌车系信息
   getAllBrand() {
     allList(null).then((res) => {
       if (res.result.resultCode === '0') {
-        // item 全部数据 
+        // item 全部数据
         res.entity.forEach((item: any) => {
           // items 品牌数据
           this.brandList.forEach((items: any) => {
@@ -162,15 +160,15 @@ export default class CarModel extends Vue {
                 item.children.forEach((it: any) => {
                   items.name.push({
                     label: it.name,
-                    value: it.id
-                  })
-                })
+                    value: it.id,
+                  });
+                });
               } else {
                 delete items.name;
               }
             }
-          })
-        })
+          });
+        });
         this.brandList.unshift({
           id: '',
           label: '品牌车系（全部）',
@@ -179,13 +177,13 @@ export default class CarModel extends Vue {
         this.filterList[0].options = this.brandList;
         this.brandList.forEach((item: any) => {
           if (item.name) {
-            this.brandAddList.push(item)
+            this.brandAddList.push(item);
           }
-        })
+        });
       } else {
         this.$message.error(res.result.resultMessage);
       }
-    })
+    });
   }
 
   brandLoad(val: any) {

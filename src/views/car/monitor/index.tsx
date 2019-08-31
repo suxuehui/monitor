@@ -1170,7 +1170,7 @@ export default class Monitor extends Vue {
       }
       return '未知';
     } if (unit === 'chargeLightStatus') {
-      return this.chargeStatusSet(data.chargeLight)
+      return this.chargeStatusSet(data.chargeLight);
     }
     // 其他情况
     switch (gettype.call(value)) {

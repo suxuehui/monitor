@@ -200,8 +200,8 @@ export default class Installer extends Vue {
   }
 
   downLoad(data: any) {
-    // const data1 = qs.stringify(data);
-    // exportExcel(data1, `安装专员${utils.returnNowTime()}`, '/sys/user/exportExcel');
+    const data1 = qs.stringify(data);
+    exportExcel(data1, `安装专员${utils.returnNowTime()}`, '/worker/exportExcel');
   }
 
   render(h: any) {
