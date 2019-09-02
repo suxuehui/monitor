@@ -5,7 +5,7 @@ import qs from 'qs';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
 import {
-  modelInfo, modelDelete, brandAll, seriesAll, allList,
+  modelInfo, modelDelete, brandAll, seriesAll, allBrandList,
 } from '@/api/model';
 import AddModel from './components/Addmodel';
 @Component({
@@ -149,7 +149,7 @@ export default class CarModel extends Vue {
 
   // 获取品牌车系信息
   getAllBrand() {
-    allList(null).then((res) => {
+    allBrandList(null).then((res) => {
       if (res.result.resultCode === '0') {
         // item 全部数据
         res.entity.forEach((item: any) => {

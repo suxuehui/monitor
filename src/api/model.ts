@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
 // 全列表
-export async function allList(params: any) {
+export async function allBrandList(params: any) {
   return request({
     url: '/vehicle/brand/tree',
     method: 'post',

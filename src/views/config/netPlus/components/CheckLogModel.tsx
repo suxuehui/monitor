@@ -46,7 +46,7 @@ export default class CheckLogModel extends Vue {
   @Watch('time')
   onDataChange() {
     this.tableParams.pageNum = 1;
-    this.tableParams.imei = this.data.imei;
+    this.tableParams.cfgId = this.data.id;
     this.getTableData();
   }
 
@@ -54,9 +54,8 @@ export default class CheckLogModel extends Vue {
     page: true,
     pageNum: 1,
     pageSize: 5,
-    imei: '',
   }
-  
+
   // 查询数据
   getTableData() {
     const mTable: any = this.$refs.MTable;
@@ -68,15 +67,15 @@ export default class CheckLogModel extends Vue {
 
   defaultPageSize: any = null;
 
-  url: string = '/device/terminal/findTerminalLog';
+  url: string = '/attachcfg/querylog';
 
   operat: Opreat[] = [];
 
   // 表格参数
   tableList: tableList[] = [
-    { label: '操作人员', prop: 'time' },
-    { label: '操作时间', prop: 'event' },
-    { label: '操作内容', prop: 'softVersion' },
+    { label: '操作人员', prop: 'crtUser' },
+    { label: '操作时间', prop: 'crtTime' },
+    { label: '操作内容', prop: 'content' },
   ];
 
   closeModal() {
@@ -99,7 +98,7 @@ export default class CheckLogModel extends Vue {
         before-close={this.closeModal}
         close-on-click-modal={false}
       >
-        {/* <div class="table">
+        <div class="table">
           <m-table
             ref="MTable"
             class="mTable"
@@ -116,8 +115,7 @@ export default class CheckLogModel extends Vue {
             on-tableClick={this.tableClick}
             defaultPageSize={this.defaultPageSize}
           />
-        </div> */}
-        日志
+        </div>
       </el-dialog>
     );
   }

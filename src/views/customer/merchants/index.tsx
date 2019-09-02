@@ -6,6 +6,7 @@ import {
 } from 'element-ui';
 import exportExcel from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
+import { orgTree } from '@/api/app';
 import AddModal from '@/views/customer/merchants/components/AddModal';
 import utils from '@/utils';
 
@@ -54,13 +55,48 @@ export default class Merchants extends Vue {
   ];
 
   // 高级筛选
-  filterGrade: FilterFormList[] = [];
+  filterGrade: FilterFormList[] = [
+    {
+      key: 'activeStatus',
+      type: 'select',
+      label: '状态',
+      placeholder: '请选择状态',
+      options: [],
+    },
+    {
+      key: 'chgAddrAble',
+      type: 'select',
+      label: '切换地址',
+      placeholder: '请选择地址',
+      options: [],
+    },
+    {
+      key: 'levelcode',
+      type: 'levelcode',
+      label: '所属商户',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
+      placeholder: '所属商户(全部)',
+      options: [],
+    },
+    {
+      key: 'keyword',
+      type: 'input',
+      label: '角色名称',
+      placeholder: '商户名称、登录账号',
+    },
+  ];
 
   // 筛选参数
   filterParams: any = {
     chgAddrAble: '',
     activeStatus: 0,
     keyword: '',
+    levelcode: '',
   };
 
   outParams: any = {};
@@ -71,7 +107,8 @@ export default class Merchants extends Vue {
   // 表格参数
   tableList: tableList[] = [
     { label: '商户名称', prop: 'orgName', hasChildren: true },
-    { label: '关联门店', prop: 'oldNames', formatter: this.nameSet },
+    { label: '关联门店', prop: 'oldNames' },
+    { label: '上级部门', prop: 'parentOrgName' },
     { label: '同步设备', prop: 'deviceNames' },
     { label: '登录账号', prop: 'manageUser' },
     { label: '切换地址', prop: 'chgAddrAble', formatter: this.locSet },
@@ -219,7 +256,24 @@ export default class Merchants extends Vue {
 
   mounted() {
     this.filterList[0].options = this.activeTypes;
+    this.filterGrade[0].options = this.activeTypes;
     this.filterList[1].options = this.chgAddrAbleTypes;
+    this.filterGrade[1].options = this.chgAddrAbleTypes;
+    /**
+     * @method 查询门店列表
+    */
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '所属商户（全部）',
+        });
+        this.filterGrade[2].options = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
   }
 
   // 新增、编辑

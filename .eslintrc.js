@@ -20,6 +20,7 @@ module.exports = {
     'import/no-dynamic-require': 'off',
     'no-param-reassign': 'off',
     'class-methods-use-this': 'off',
+    'consistent-return':'off',
     'linebreak-style': 'off',
     'import/no-unresolved': [
       2,

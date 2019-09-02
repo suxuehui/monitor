@@ -451,7 +451,7 @@ export default class AddModal extends Vue {
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
-    // this.loading = true;
+    this.loading = true;
     if (this.nameAndLev === []) {
       this.$message.error('请选择商户');
       this.loading = false;

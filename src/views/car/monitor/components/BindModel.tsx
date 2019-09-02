@@ -44,7 +44,7 @@ export default class BindModal extends Vue {
   checkIMEI(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        this.modelForm.imei = this.modelForm.imei.replace(/^\s*|\s*$/g, "");
+        this.modelForm.imei = this.modelForm.imei.replace(/^\s*|\s*$/g, '');
         callback();
       } else {
         callback();

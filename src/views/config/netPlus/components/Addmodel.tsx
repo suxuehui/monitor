@@ -2,9 +2,13 @@ import {
   Component, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import {
-  Tag, Dialog, Row, Col, Form, FormItem, Input, Select, Button, Option, Radio, RadioGroup, Table, TableColumn
+  Tag, Dialog, Row, Col, Form, FormItem, Input, Select,
+  Button, Option, Radio, RadioGroup, Table, TableColumn,
 } from 'element-ui';
-
+import {
+  attachcfgInsert, attachcfgEdit,
+} from '@/api/config';
+import { allBrandList } from '@/api/model';
 import './Addmodel.less';
 @Component({
   components: {
@@ -32,34 +36,30 @@ export default class AddModal extends Vue {
 
   @Prop() private data: any;
 
+  @Prop() private time: any;
+
   modelForm: any = {
     brandId: '', // 品牌
     seriesId: '', // 车系
-    modalId: [], // 车型
-    cfgParamAdd: [{
-      name1: '',
-      name2: '',
-      name3: '',
-    },
-    {
-      name1: '',
-      name2: '',
-      name3: '',
-    }, {
-      name1: '',
-      name2: '',
-      name3: '',
-    }, {
-      name1: '',
-      name2: '',
-      name3: '',
-    },],
-    cfgParam: {
-      name1: '',
-      name2: '',
-      name3: '',
-    },
+    modelId: [], // 车型
   };
+
+  // 初始
+  cfgParam: any = {
+    tag: '',
+    param: '',
+    desc: '',
+  };
+
+  cfgParamAdd: any = [];
+
+  brandArr: any = []; // 品牌列表
+
+  seriesArr: any = []; // 品牌列表
+
+  modelArr: any = []; // 品牌列表
+
+  brandAllArr: any = []; // 所有品牌-车系-车型信息
 
   loading: boolean = false;
 
@@ -67,62 +67,114 @@ export default class AddModal extends Vue {
 
   }
 
-  @Watch('data')
-  onDataChange(data: any) {
+  @Watch('time')
+  onDataChange() {
     if (this.data.id > 0) {
-
+      const obj = JSON.parse(JSON.stringify(this.data));
+      // 配置参数
+      console.log(obj);
+      const cfgParamStr = obj.cfgParam.replace(/\["|"]/g, '');
+      const cfgParamArr = JSON.parse(cfgParamStr);
+      this.cfgParam = {
+        tag: cfgParamArr[0].TAG,
+        param: cfgParamArr[0].PARAM,
+        desc: cfgParamArr[0].DESC,
+      };
+      if (cfgParamArr.length > 1) {
+        const arr = cfgParamArr.slice(1);
+        arr.forEach((item: any) => {
+          this.cfgParamAdd.push({
+            tag: item.TAG,
+            param: item.PARAM,
+            desc: item.DESC,
+          });
+        });
+      }
+      // 回填品牌车系车型
+      this.modelForm = {
+        brandId: this.data.brandId,
+        seriesId: this.data.seriesId !== 0 ? this.data.seriesId : '',
+        modelId: this.data.modelId !== 0 ? [this.data.modelId] : '',
+      };
+      // 车系、车型可修改
+      this.seriesAble = false;
+      this.modalAble = this.data.seriesId === 0;
+      // 设置车系、车系选择
+      this.brandAllArr.forEach((item: any) => {
+        if (item.id === this.data.brandId) {
+          if (item.children && item.children.length > 0) {
+            item.children.forEach((items: any) => {
+              // 回填车系
+              this.seriesArr.push({
+                value: items.id,
+                label: items.name,
+              });
+              items.children && items.children.forEach((it: any) => {
+                this.modelArr.push({
+                  label: it.name,
+                  value: it.id,
+                });
+              });
+            });
+          }
+        }
+      });
+      this.reBootStatus = this.data.enable ? '1' : '2';
     } else {
       this.resetData();
     }
   }
 
+  mounted() {
+    // 品牌车系车型
+    allBrandList(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        // item 全部数据
+        res.entity.forEach((item: any) => {
+          this.brandArr.push({
+            label: item.name,
+            value: item.id,
+            children: item.children,
+          });
+        });
+        this.brandAllArr = res.entity;
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
+    });
+  }
+
   // 重置数据
   resetData() {
     this.modelForm = {
-      // 
+      //
     };
   }
 
   closeModal() {
     this.$emit('close');
-    const From: any = this.$refs.modelForm;
     this.modelForm = {
       brandId: '', // 品牌
       seriesId: '', // 车系
-      modalId: [], // 车型
-    }
-    this.loading = false;
+      modelId: [], // 车型
+    };
+    this.modalAble = true;
+    this.seriesAble = true;
+    this.seriesArr = [];
+    this.modelArr = [];
+    this.cfgParamAdd = [];
+    this.cfgParam = {
+      tag: '',
+      param: '',
+      desc: '',
+    };
   }
 
-  reBootStatus: string = '1';
+  reBootStatus: string = '2';
 
   rebootChange(data: any) {
     this.reBootStatus = data;
   }
-
-  brandList: any = [{
-    value: '1',
-    label: '1'
-  }, {
-    value: '2',
-    label: '2'
-  }];
-
-  seriesList: any = [{
-    value: '3',
-    label: '3'
-  }, {
-    value: '4',
-    label: '4'
-  },];
-
-  modalList: any = [{
-    value: '5',
-    label: '5'
-  }, {
-    value: '6',
-    label: '6'
-  }];
 
   seriesAble: boolean = true;
 
@@ -130,68 +182,138 @@ export default class AddModal extends Vue {
 
   // 品牌修改：清空车系，禁用并清空车型
   brandChange(val: any) {
-    console.log(val)
     this.seriesAble = false;
     this.modelForm.seriesId = '';
-    this.modelForm.modalId = [];
+    this.modelForm.modelId = [];
     this.modalAble = true;
+    this.seriesArr = [];
+    this.brandArr.forEach((item: any) => {
+      if (item.value === val) {
+        if (item.children && item.children.length > 0) {
+          item.children.forEach((it: any) => {
+            this.seriesArr.push({
+              label: it.name,
+              value: it.id,
+              children: it.children,
+            });
+          });
+        }
+      }
+    });
   }
 
   // 车系修改：清空车型
   seriesChange(val: any) {
-    console.log(val)
     this.modalAble = false;
-    this.modelForm.modalId = [];
+    this.modelForm.modelId = [];
+    this.modelArr = [];
+    this.seriesArr.forEach((item: any) => {
+      if (item.value === val) {
+        if (item.children && item.children.length > 0) {
+          item.children.forEach((it: any) => {
+            this.modelArr.push({
+              label: it.name,
+              value: it.id,
+            });
+          });
+        }
+      }
+    });
   }
 
-  tableData: any = [{
-    date: '2016-05-02',
-    name: '王小虎',
-    address: '上海市普陀区金沙江路 1518 弄'
-  }, {
-    date: '2016-05-04',
-    name: '王小虎',
-    address: '上海市普陀区金沙江路 1517 弄'
-  }, {
-    date: '2016-05-01',
-    name: '王小虎',
-    address: '上海市普陀区金沙江路 1519 弄'
-  }, {
-    date: '2016-05-03',
-    name: '王小虎',
-    address: '上海市普陀区金沙江路 1516 弄'
-  }]
-
   onSubmit() {
-    console.log(this.modelForm)
-    // this.loading = true;
-    // const From: any = this.$refs.modelForm;
-    // From.validate((valid: any) => {
-    //   if (valid) {
-    //     if (this.title === '新增配置') {
-    //       console.log('新增')
-    //     } else {
-    //       console.log('编辑')
-    //     }
-    //   } else {
-    //     this.loading = false;
-    //     return false;
-    //   }
-    //   return false;
-    // });
+    this.loading = true;
+    const obj: any = {
+      brandId: this.modelForm.brandId,
+      cfgs: [],
+      enable: this.reBootStatus === '1',
+      seriesId: this.modelForm.seriesId,
+      modelIds: this.modelForm.modelId.length > 0 ? this.modelForm.modelId : '',
+    };
+    obj.cfgs.push({
+      desc: this.cfgParam.desc,
+      param: this.cfgParam.param,
+      tag: this.cfgParam.tag,
+    });
+    let flag = true;
+    if (this.cfgParamAdd.length > 0) {
+      this.cfgParamAdd.forEach((item: any) => {
+        if (item.tag && item.param) {
+          obj.cfgs.push(item);
+        } else {
+          this.$message.error('填入数据有误，请核对!');
+          flag = false;
+        }
+      });
+    }
+    if (this.modelForm.brandId === '') {
+      flag = false;
+    }
+    if (this.cfgParam.tag === '' || this.cfgParam.param === '') {
+      flag = false;
+    }
+    if (!flag) {
+      this.loading=false;
+      return false;
+    }
+    const From: any = this.$refs.modelForm;
+    From.validate((valid: any) => {
+      if (valid) {
+        if (this.title === '添加配置') {
+          attachcfgInsert(obj).then((res: any) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.closeModal();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
+        } else {
+          obj.cfgId = this.data.id;
+          attachcfgEdit(obj).then((res: any) => {
+            if (res.result.resultCode === '0') {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.success(res.result.resultMessage);
+                From.resetFields();
+                this.closeModal();
+                this.$emit('refresh');
+              }, 1500);
+            } else {
+              setTimeout(() => {
+                this.loading = false;
+                this.$message.error(res.result.resultMessage);
+              }, 1500);
+            }
+          });
+        }
+      } else {
+        this.loading = false;
+        return false;
+      }
+      return false;
+    });
   }
 
   addCfgParam() {
-    this.modelForm.cfgParamAdd.push({
-      name1: '',
-      name2: '',
-      name3: '',
+    this.cfgParamAdd.push({
+      tag: '',
+      param: '',
+      desc: '',
       key: Date.now(),
     });
   }
 
   deleteCfgParam(key: any) {
-    this.modelForm.cfgParamAdd.splice(key, 1);
+    this.cfgParamAdd.splice(key, 1);
   }
 
   render() {
@@ -210,13 +332,15 @@ export default class AddModal extends Vue {
                 <el-select
                   id="brandId"
                   size="mini"
+                  filterable
                   v-model={this.modelForm.brandId}
                   placeholder="选择品牌"
                   style="width:120px"
+                  disabled={this.title === '编辑配置'}
                   on-change={this.brandChange}
                 >
                   {
-                    this.brandList.map((item: any) => (
+                    this.brandArr.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }
@@ -224,29 +348,31 @@ export default class AddModal extends Vue {
                 <el-select
                   id="seriesId"
                   size="mini"
+                  filterable
                   v-model={this.modelForm.seriesId}
                   placeholder="选择车系"
                   style="width:120px;margin: 0 15px"
-                  disabled={this.seriesAble}
+                  disabled={this.title === '编辑配置' || this.seriesAble}
                   on-change={this.seriesChange}
                 >
                   {
-                    this.seriesList.map((item: any) => (
+                    this.seriesArr.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }
                 </el-select>
                 <el-select
-                  id="modalId"
+                  id="modelId"
                   size="mini"
+                  filterable
                   multiple={true}
-                  v-model={this.modelForm.modalId}
+                  v-model={this.modelForm.modelId}
                   placeholder="选择车型"
-                  style="width:240px"
-                  disabled={this.modalAble}
+                  style="width:260px"
+                  disabled={this.title === '编辑配置' || this.modalAble}
                 >
                   {
-                    this.modalList.map((item: any) => (
+                    this.modelArr.map((item: any) => (
                       <el-option value={item.value} label={item.label} >{item.label}</el-option>
                     ))
                   }
@@ -266,17 +392,17 @@ export default class AddModal extends Vue {
                 <tr class='lineItem'>
                   <td class='inputItem'>
                     <el-input
-                      v-model={this.modelForm.cfgParam.name1}
+                      v-model={this.cfgParam.tag}
                     ></el-input>
                   </td>
                   <td class='inputItem'>
                     <el-input
-                      v-model={this.modelForm.cfgParam.name2}
+                      v-model={this.cfgParam.param}
                     ></el-input>
                   </td>
                   <td class='inputItem'>
                     <el-input
-                      v-model={this.modelForm.cfgParam.name3}
+                      v-model={this.cfgParam.desc}
                     ></el-input>
                   </td>
                   <td>
@@ -284,30 +410,28 @@ export default class AddModal extends Vue {
                   </td>
                 </tr>
                 {
-                  this.modelForm.cfgParamAdd.map((item: any, key: number) => {
-                    return (
-                      <tr class='lineItem'>
-                        <td class='inputItem'>
-                          <el-input
-                            v-model={this.modelForm.cfgParamAdd[key].name1}
-                          ></el-input>
-                        </td>
-                        <td class='inputItem'>
-                          <el-input
-                            v-model={this.modelForm.cfgParamAdd[key].name2}
-                          ></el-input>
-                        </td>
-                        <td class='inputItem'>
-                          <el-input
-                            v-model={this.modelForm.cfgParamAdd[key].name3}
-                          ></el-input>
-                        </td>
-                        <td>
-                          <el-button slot="append" type="text" icon="iconfont-delete icon-close" on-click={() => this.deleteCfgParam(key)}></el-button>
-                        </td>
-                      </tr>
-                    )
-                  })
+                  this.cfgParamAdd.map((item: any, key: number) => (
+                    <tr class='lineItem'>
+                      <td class='inputItem'>
+                        <el-input
+                          v-model={this.cfgParamAdd[key].tag}
+                        ></el-input>
+                      </td>
+                      <td class='inputItem'>
+                        <el-input
+                          v-model={this.cfgParamAdd[key].param}
+                        ></el-input>
+                      </td>
+                      <td class='inputItem'>
+                        <el-input
+                          v-model={this.cfgParamAdd[key].desc}
+                        ></el-input>
+                      </td>
+                      <td>
+                        <el-button slot="append" type="text" icon="iconfont-delete icon-close" on-click={() => this.deleteCfgParam(key)}></el-button>
+                      </td>
+                    </tr>
+                  ))
                 }
               </table>
             </el-col>
