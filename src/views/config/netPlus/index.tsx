@@ -148,12 +148,23 @@ export default class NetPlus extends Vue {
       this.rowData = row;
       this.netPlusClickTime = utils.getNowTime();
     } else if (key === 'able') {
-      console.log('开启');
       attachcfgEnable(row.id).then((res) => {
-        console.log(res);
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
       });
     } else if (key === 'forbid') {
-      console.log('禁用');
+      attachcfgDisable(row.id).then((res) => {
+        if (res.result.resultCode === '0') {
+          FromTable.reloadTable();
+          this.$message.success(res.result.resultMessage);
+        } else {
+          this.$message.error(res.result.resultMessage);
+        }
+      });
     } else if (key === 'log') {
       this.checkLogData = row;
       this.checkLogVisible = true;
@@ -186,7 +197,7 @@ export default class NetPlus extends Vue {
 
   downLoad(data: any) {
     const data1 = qs.stringify(data);
-    exportExcel(data1, `配置列表${utils.returnNowTime()}`, '/vehicle/config/exportExcel');
+    exportExcel(data1, `配置列表${utils.returnNowTime()}`, '/attachcfg/exportExcel');
   }
 
   render(h: any) {
