@@ -245,7 +245,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="username" rules={this.userNameRule}>
+              <el-form-item label="登录账号" prop="username" rules={this.title === '新增专员' ? this.userNameRule : ''}>
                 <el-input
                   id="username"
                   disabled={this.data.userId > 0}
