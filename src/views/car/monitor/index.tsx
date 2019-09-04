@@ -1237,7 +1237,11 @@ export default class Monitor extends Vue {
     return str;
   }
 
-  // 车门关闭、锁状态
+  /**
+   * @method 车门关闭、锁状态
+   * @param doorStatus 门状态
+   * @param lockStatus 锁状态
+   */
   setDoorStatus(doorStatus: boolean, lockStatus: boolean) {
     let str1: string = '';
     let str2: string = '';
@@ -1258,22 +1262,34 @@ export default class Monitor extends Vue {
 
   searchCarId: number = 0;
 
+  /**
+   * @method 每行数据
+   * @param val 每一行数据
+   */
   setInfo(val: any) {
     this.currentCarId = val.id;
     this.carDetail = val;
   }
 
+  /**
+   * @method 是否展示设备控制列表
+   */
   getShowTerminal() {
     return this.showTerminal;
   }
 
-  // 设备信息、远程控制不展示
+  /**
+   * @method 设备信息、远程控制不展示
+   */
   hideTran() {
     this.showControlTran = false;
     this.showDeviceTran = false;
   }
 
-  // 单击表格-选择车辆
+  /**
+   * @method 单击表格-选择车辆
+   * @param val 每行数据
+   */
   currentChange = (val: any) => {
     if (val) {
       this.setInfo(val);
@@ -1303,7 +1319,9 @@ export default class Monitor extends Vue {
     }
   }
 
-  // 地址搜索
+  /**
+   * @method 地址搜索
+   */
   searchAddress(val: string, cb: any) {
     queryAddress(val).then((res) => {
       if (res.status === 0) {
@@ -1320,13 +1338,16 @@ export default class Monitor extends Vue {
     });
   }
 
-  // 选择地址，跳转到相应位置，并查询周围车辆
+  /**
+   * @method 选择地址，跳转到相应位置，并查询周围车辆
+   */
   setAddress = (val: any) => {
     this.mapCenter = {
       lat: val.lat,
       lng: val.lng,
     };
     this.SMap.centerAndZoom(new this.BMap.Point(this.mapCenter.lng, this.mapCenter.lat), 15);
+    // 根据当前地图中心，半径查询车辆
     this.radiusGetData();
     // 添加坐标
     const PT = new this.BMap.Point(val.lng, val.lat);
