@@ -95,8 +95,8 @@ export default class BindModal extends Vue {
       token: window.localStorage.getItem('token'),
     };
     // this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/zuul/verify/file/upload' :
-    //  '/rootApi/zuul/verify/file/upload';
-    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/verify/file/upload' : '/rootApi/verify/file/upload';
+    //  '/rootApi/zuul/verify/file/upload';/external/oss/upload
+    this.uploadUrl = process.env.NODE_ENV === 'production' ? '/api/external/oss/upload' : '/rootApi/external/oss/upload';
   }
 
   @Watch('data')

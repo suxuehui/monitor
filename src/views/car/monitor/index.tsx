@@ -49,29 +49,6 @@ const pointIconRed = require('@/assets/point_red.png');
   name: 'Monitor',
 })
 export default class Monitor extends Vue {
-  // 过滤表单数据
-  filterParams: object = {
-    levelCodeArr: [''],
-    levelCode: ' ',
-    vehicleSource: '',
-    online: '',
-    noMoveTime: '',
-    fenceIO: '',
-    bindStatus: '',
-  };
-
-  // 表格ajax请求返回数据格式
-  backParams: object = {
-    code: 'result.resultCode',
-    codeOK: '0',
-    message: 'result.resultMessage',
-    data: 'entity.data',
-    total: 'entity.count',
-  };
-
-  // 表格ajax请求外部参数
-  outParams: any = {}
-
   // 表格筛选表单配置数组
   filterList: FilterFormList[] = [
     {
@@ -192,6 +169,30 @@ export default class Monitor extends Vue {
     },
   ];
 
+  // 过滤表单数据
+  filterParams: object = {
+    levelCodeArr: [''],
+    levelCode: ' ',
+    vehicleSource: '',
+    online: '',
+    noMoveTime: '',
+    fenceIO: '',
+    bindStatus: '',
+  };
+
+  // 表格ajax请求返回数据格式
+  backParams: object = {
+    code: 'result.resultCode',
+    codeOK: '0',
+    message: 'result.resultMessage',
+    data: 'entity.data',
+    total: 'entity.count',
+  };
+
+  // 表格ajax请求外部参数
+  outParams: any = {}
+
+
   // 表格列配置数组
   tableList: tableList[] = [
     {
@@ -272,12 +273,18 @@ export default class Monitor extends Vue {
     },
   ];
 
-  // 确定车辆来源
-  sourceCheck(data: any) {
-    return data.sourceName.indexOf('系统') >= 0 ? <el-tag size="small">系统生成</el-tag> : <el-tag type="success" size="small">设备绑定</el-tag>;
+  /**
+   * @method 确定车辆来源
+   * @param row 每行数据
+   */
+  sourceCheck(row: any) {
+    return row.sourceName.indexOf('系统') >= 0 ? <el-tag size="small">系统生成</el-tag> : <el-tag type="success" size="small">设备绑定</el-tag>;
   }
 
-  // 无位置变化时间格式化
+  /**
+   * @method 无位置变化时间格式化
+   * @param row 每行数据
+   */
   changeMinutes(row: any) {
     const str: string = this.timeChange(row);
     return row.minutes !== null
@@ -286,7 +293,10 @@ export default class Monitor extends Vue {
       </el-tooltip> : '--';
   }
 
-  // 时间格式转换
+  /**
+   * @method 时间格式转换
+   * @param row 每行数据
+   */
   timeChange(row: any) {
     const day: any = row.minutes / 60 / 24;
     const hour: any = (row.minutes / 60) % 24;
@@ -301,7 +311,10 @@ export default class Monitor extends Vue {
     return str;
   }
 
-  // online
+  /**
+   * @method 在线、离线状态
+   * @param row 每行数据
+   */
   onlineFormat(row: any) {
     let str = null;
     let num = 0;
@@ -334,7 +347,11 @@ export default class Monitor extends Vue {
     return str;
   }
 
-  // 表格数据源添加单位 剩余油量 剩余电量 续航里程 累计里程 电瓶电压
+  /**
+   * @method 表格数据源添加单位 剩余油量 剩余电量 续航里程 累计里程 电瓶电压
+   * @param data 数值
+   * @param unit 单位
+   */
   changeStatus(data: any, unit: string) {
     if (data !== null && data >= 0) {
       return data + unit;
@@ -730,7 +747,10 @@ export default class Monitor extends Vue {
   // 是否获取到远程控制命令
   remoteControlArrLoading: boolean = false;
 
-  // 获取当前车辆控制列表
+  /**
+   * @method 获取当前车辆控制列表
+   * @param data 当前车辆id
+   */
   getCarControlList(data: any) {
     this.remoteControlArr = [];
     this.remoteControlArrLoading = true;
@@ -798,6 +818,11 @@ export default class Monitor extends Vue {
     });
   }
 
+  /**
+   * @method 设置当前车辆位置
+   * @param val 当前车辆信息
+   * @param data 当前车辆位置信息
+   */
   setNowCarPosi = (val: any, data?: any) => {
     if (data && data.lng && data.lat) {
       this.SMap.centerAndZoom(new this.BMap.Point(data.lng, data.lat), 15);
