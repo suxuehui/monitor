@@ -120,6 +120,7 @@ export default class AddModal extends Vue {
       cfgParam: '',
       cfgParamAdd: [],
     };
+    this.reBootStatus = '1';
   }
 
   addCfgParam() {
@@ -143,8 +144,8 @@ export default class AddModal extends Vue {
       this.modelForm.productCode = '';
       this.modelForm.cfgParam = '';
       this.modelForm.cfgParamAdd = [];
-      this.reBootStatus = '1';
     }, 200);
+    this.reBootStatus = '1';
     this.loading = false;
   }
 
