@@ -289,6 +289,7 @@ export default class MFilter extends Vue {
           // props={{ props: item.props }} // 修改props
           // change-on-select
           filterable={true}
+          clearable={true}
           options={item.options}
           v-model={this.params[`${item.key}Arr`]}
           placeholder={item.placeholder}
