@@ -259,9 +259,14 @@ export default class Merchants extends Vue {
     this.filterGrade[0].options = this.activeTypes;
     this.filterList[1].options = this.chgAddrAbleTypes;
     this.filterGrade[1].options = this.chgAddrAbleTypes;
-    /**
-     * @method 查询门店列表
-    */
+    // 查询门店列表
+    this.getOrgTree();
+  }
+
+  /**
+   * @method 查询门店列表
+  */
+  getOrgTree() {
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.unshift({
@@ -341,6 +346,8 @@ export default class Merchants extends Vue {
     setTimeout(() => {
       addBlock.resetData();
     }, 200);
+    // 刷新商户列表信息
+    this.getOrgTree();
   }
 
   // 关闭弹窗时刷新
