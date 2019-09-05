@@ -100,13 +100,12 @@ export default class Header extends Vue {
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.showNotice = res[0];
       this.showAlarm = res[1];
-      if (res[0]) {
-        this.$store.dispatch('getNotice');
-      }
-      if (res[1]) {
-        this.$store.dispatch('getAlarm');
-      }
     });
+  }
+
+  mounted() {
+    this.$store.dispatch('getNotice');
+    this.$store.dispatch('getAlarm');
   }
 
   pswVisible: boolean = false;

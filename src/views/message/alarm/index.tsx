@@ -35,6 +35,7 @@ export default class Alarm extends Vue {
       label: '所属商户',
       filterable: true,
       props: {
+        checkStrictly: true,
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
@@ -73,6 +74,7 @@ export default class Alarm extends Vue {
       props: {
         value: 'levelCode',
         children: 'children',
+        checkStrictly: true,
         label: 'orgName',
       },
       placeholder: '请选择所属商户',

@@ -52,6 +52,7 @@ export default class AddModal extends Vue {
   props: any = {
     value: 'value',
     children: 'name',
+    checkStrictly: true,
   }
 
   selectedList: any = [];

@@ -90,6 +90,7 @@ export default class EleFence extends Vue {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
+        checkStrictly: true,
       },
       placeholder: '所属商户(全部)',
       options: [],
@@ -136,6 +137,7 @@ export default class EleFence extends Vue {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
+        checkStrictly: true,
       },
       placeholder: '所属商户(全部)',
       options: [],
@@ -383,6 +385,7 @@ export default class EleFence extends Vue {
   props: any = {
     value: 'value',
     children: 'children',
+    checkStrictly: true,
   }
 
   // 导出按钮

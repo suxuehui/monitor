@@ -85,6 +85,7 @@ export default class CarModel extends Vue {
   props: any = {
     value: 'value',
     children: 'name',
+    checkStrictly: true,
   }
 
   checkFuelTank(row: any) {

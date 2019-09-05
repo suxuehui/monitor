@@ -277,8 +277,8 @@ export default class MFilter extends Vue {
           props={item.props} // 修改props
           // props={{ props: item.props }} // 修改props
           filterable={item.filterable}
-          change-on-select
-          on-active-item-change={item.itemChange}
+          // change-on-select
+          on-expand-change={item.itemChange}
           on-change={item.change}></el-cascader>;
         break;
       // 门店选择
@@ -287,7 +287,7 @@ export default class MFilter extends Vue {
           id={item.key}
           props={item.props} // 修改props
           // props={{ props: item.props }} // 修改props
-          change-on-select
+          // change-on-select
           filterable={true}
           options={item.options}
           v-model={this.params[`${item.key}Arr`]}

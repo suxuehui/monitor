@@ -79,6 +79,7 @@ export default class Merchants extends Vue {
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
+        checkStrictly: true,
       },
       placeholder: '所属商户(全部)',
       options: [],

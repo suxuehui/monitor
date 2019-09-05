@@ -23,6 +23,7 @@ export default class Driving extends Vue {
       label: '所属商户',
       filterable: true,
       props: {
+        checkStrictly: true,
         value: 'levelCode',
         children: 'children',
         label: 'orgName',
