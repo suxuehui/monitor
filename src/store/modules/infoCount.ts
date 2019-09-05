@@ -6,10 +6,10 @@ const infoCount = {
     alarmCount: 0,
   },
   mutations: {
-    SVAENOTICE: (state: any, data:number) => {
+    SVAENOTICE: (state: any, data: number) => {
       state.noticeCount = data;
     },
-    SVAEALARM: (state: any, data:number) => {
+    SVAEALARM: (state: any, data: number) => {
       state.alarmCount = data;
     },
   },

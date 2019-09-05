@@ -103,7 +103,7 @@ export default class Login extends Vue {
   getCodeImg() {
     getAuthCode({ account: this.imgToken }, this.imgToken).then((response) => {
       if (response.data) {
-        this.codeImg = `data:image/png;base64,${response.data}`;
+        this.codeImg = `data:image/png;base64,${response.data.entity}`;
       }
     });
   }

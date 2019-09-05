@@ -96,7 +96,7 @@ export default class Header extends Vue {
       '/message/notice/list',
       '/message/alarm/list',
     ];
-      // 判断是否有通知公告和告警消息的权限
+    // 判断是否有通知公告和告警消息的权限
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
       this.showNotice = res[0];
       this.showAlarm = res[1];
@@ -104,8 +104,26 @@ export default class Header extends Vue {
   }
 
   mounted() {
-    this.$store.dispatch('getNotice');
-    this.$store.dispatch('getAlarm');
+    const roless: any = this.$store.getters.roles;
+    if (roless.indexOf('/message/notice/list') > -1) {
+      this.$store.dispatch('getNotice');
+    }
+    if (roless.indexOf('/message/alarm/list') > -1) {
+      this.$store.dispatch('getAlarm');
+    }
+    this.getInfo();
+  }
+
+  getInfo() {
+    setInterval(() => {
+      const roless: any = this.$store.getters.roles;
+      if (roless.indexOf('/message/notice/list') > -1) {
+        this.$store.dispatch('getNotice');
+      }
+      if (roless.indexOf('/message/alarm/list') > -1) {
+        this.$store.dispatch('getAlarm');
+      }
+    }, 5000);
   }
 
   pswVisible: boolean = false;
