@@ -301,6 +301,7 @@ export default class EquipTable extends Vue {
         this.filterList[0].props = {
           value: 'value',
           children: 'children',
+          checkStrictly: true,
         };
       } else {
         this.$message.error(res.result.resultMessage);

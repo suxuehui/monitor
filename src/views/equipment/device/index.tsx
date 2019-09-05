@@ -356,11 +356,13 @@ export default class Device extends Vue {
         this.filterList[1].props = {
           value: 'value',
           children: 'children',
+          checkStrictly: true,
         };
         this.filterGrade[1].options = list;
         this.filterGrade[1].props = {
           value: 'value',
           children: 'children',
+          checkStrictly: true,
         };
       } else {
         this.$message.error(res.result.resultMessage);
@@ -390,11 +392,13 @@ export default class Device extends Vue {
         this.filterList[0].props = {
           value: 'value',
           children: 'siruiOrgs',
+          checkStrictly: true,
         };
         this.filterGrade[0].options = entity;
         this.filterGrade[0].props = {
           value: 'value',
           children: 'siruiOrgs',
+          checkStrictly: true,
         };
       } else {
         this.$message.error(res.result.resultMessage);

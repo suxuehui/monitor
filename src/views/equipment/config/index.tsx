@@ -379,11 +379,13 @@ export default class ConfigModel extends Vue {
         this.filterList[0].props = {
           value: 'value',
           children: 'siruiOrgs',
+          checkStrictly: true,
         };
         this.filterGrade[0].options = entity;
         this.filterGrade[0].props = {
           value: 'value',
           children: 'siruiOrgs',
+          checkStrictly: true,
         };
       } else {
         this.$message.error(res.result.resultMessage);
