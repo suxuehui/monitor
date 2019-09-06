@@ -228,7 +228,7 @@ export default class AddModal extends Vue {
       cfgs: [],
       enable: this.reBootStatus === '1',
       seriesId: this.modelForm.seriesId,
-      modelIds: this.modelForm.modelId.length > 0 ? this.modelForm.modelId : '',
+      modelIds: this.modelForm.modelId.length > 0 ? this.modelForm.modelId : [],
     };
     obj.cfgs.push({
       desc: this.cfgParam.desc,
@@ -241,16 +241,26 @@ export default class AddModal extends Vue {
         if (item.tag && item.param) {
           obj.cfgs.push(item);
         } else {
-          this.$message.error('填入数据有误，请核对!');
+          this.loading = false;
           flag = false;
+          return false;
         }
       });
+      if (!flag) {
+        this.$message.error('填入标签或参数存在空白项,请核对!');
+      }
     }
     if (this.modelForm.brandId === '') {
       flag = false;
+      this.loading = false;
+      this.$message.error('品牌不能为空,请选择!');
+      return false;
     }
     if (this.cfgParam.tag === '' || this.cfgParam.param === '') {
       flag = false;
+      this.loading = false;
+      this.$message.error('同一条内容标签、参数必须输入完整!');
+      return false;
     }
     if (!flag) {
       this.loading=false;

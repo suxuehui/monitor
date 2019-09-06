@@ -103,13 +103,17 @@ export default class AddModal extends Vue {
     setTimeout(() => {
       if (value) {
         workerExist({ userName: value }).then((res) => {
+          const exp: any = /^1[0-9]{10}$/;
           this.phoneNumber = value;
           if (res.result.resultCode === '0') {
-            const exp: any = /^1[0-9]{10}$/;
-            if (exp.test(value)) {
-              callback();
+            if (!res.entity) {
+              if (exp.test(value)) {
+                callback();
+              } else {
+                callback(new Error('安装员登录账号必须为手机号!!!'));
+              }
             } else {
-              callback(new Error('安装员登录账号必须为手机号!!!'));
+              callback(new Error('登录账号已存在'));
             }
           } else {
             callback(new Error('登录账号已存在'));
