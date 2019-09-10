@@ -220,11 +220,11 @@ export default class Merchants extends Vue {
       '/customer/org/saveSub', // 新增部门
     ];
     this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.operat[0].roles = !!(res[1]); // 新增
-      this.operat[1].roles = !!(res[2]); // 编辑
-      this.operat[2].roles = !!(res[3]); // 冻结
-      this.operat[3].roles = !!(res[5]); // 冻结
-      this.addBtn = !!(res[0]); // 解冻
+      this.operat[0].roles = !!(res[5]); // 新增部门
+      this.operat[1].roles = !!(res[1]); // 编辑
+      this.operat[2].roles = !!(res[2]); // 冻结
+      this.operat[3].roles = !!(res[3]); // 解冻
+      this.addBtn = !!(res[0]); // 新增
       this.exportBtn = !!(res[4]); // 导出
     });
   }

@@ -326,11 +326,15 @@ export default class AddModal extends Vue {
       if (value) {
         const obj = {
           userName: value,
-          customerFlag: true,
+          appId: 2,
         };
         userCheck(obj).then((res) => {
           if (res.result.resultCode === '0') {
-            callback();
+            if (res.entity) {
+              callback(new Error('登录账号已存在，请重新输入'));
+            } else {
+              callback();
+            }
           } else {
             callback(new Error('登录账号已存在，请重新输入'));
           }
@@ -645,7 +649,7 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="merchants-model">
           <el-row >
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser" rules={this.title === '新增商户' ? this.manageUserRule : null}>
+              <el-form-item label="登录账号" prop="manageUser" rules={this.title === '新增商户' || this.title === '新增部门' ? this.manageUserRule : null}>
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}

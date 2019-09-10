@@ -40,10 +40,6 @@ export default class AddModal extends Vue {
 
   roleAddList: any = [];
 
-  isInstaller: boolean = false;
-
-  isPhoneNumber: boolean = false;
-
   phoneNumber: string = '';
 
   loading: boolean = false;
@@ -114,16 +110,11 @@ export default class AddModal extends Vue {
   checkUsername(rule: any, value: string, callback: Function) {
     setTimeout(() => {
       if (value) {
-        userCheck({ userName: value }).then((res) => {
+        userCheck({ userName: value, appId: 1 }).then((res) => {
           this.phoneNumber = value;
           if (res.result.resultCode === '0') {
-            if (this.isInstaller) {
-              const exp: any = /^1[0-9]{10}$/;
-              if (exp.test(value)) {
-                callback();
-              } else {
-                callback(new Error('安装员登录账号必须为手机号!!!'));
-              }
+            if (res.entity) {
+              callback(new Error('登录账号已存在'));
             } else {
               callback();
             }
@@ -166,22 +157,6 @@ export default class AddModal extends Vue {
 
   selectChange(val: any) {
     this.change = !this.change;
-    if (val.indexOf(3) > -1) {
-      this.isInstaller = true;
-    } else {
-      this.isInstaller = false;
-    }
-    if (this.isInstaller) {
-      if (this.phoneNumber) {
-        const exp: any = /^1[0-9]{10}$/;
-        if (exp.test(this.phoneNumber)) {
-          this.isPhoneNumber = true;
-        } else {
-          this.isPhoneNumber = false;
-          this.$message.error('安装员登录账号必须为手机号!!!');
-        }
-      }
-    }
   }
 
   // 重置数据
