@@ -104,18 +104,18 @@ export default class Header extends Vue {
   }
 
   mounted() {
-    const roless: any = this.$store.getters.roles;
-    if (roless.indexOf('/message/notice/list') > -1) {
-      this.$store.dispatch('getNotice');
-    }
-    if (roless.indexOf('/message/alarm/list') > -1) {
-      this.$store.dispatch('getAlarm');
-    }
+    // const roless: any = this.$store.getters.roles;
+    // if (roless.indexOf('/message/notice/list') > -1) {
+    //   this.$store.dispatch('getNotice');
+    // }
+    // if (roless.indexOf('/message/alarm/list') > -1) {
+    //   this.$store.dispatch('getAlarm');
+    // }
     this.getInfo();
   }
 
   getInfo() {
-    setInterval(() => {
+    setTimeout(() => {
       const roless: any = this.$store.getters.roles;
       if (roless.indexOf('/message/notice/list') > -1) {
         this.$store.dispatch('getNotice');
@@ -123,7 +123,7 @@ export default class Header extends Vue {
       if (roless.indexOf('/message/alarm/list') > -1) {
         this.$store.dispatch('getAlarm');
       }
-    }, 5000);
+    }, 2000);
   }
 
   pswVisible: boolean = false;
