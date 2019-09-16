@@ -47,6 +47,7 @@ export default class AddModal extends Vue {
   rules = {
     realName: [
       { required: true, message: '请输入成员姓名', trigger: 'blur' },
+      { validator: this.checkRealName, trigger: 'blur' },
     ],
     remark: [
       { required: false },
@@ -65,6 +66,15 @@ export default class AddModal extends Vue {
   roleIdRule = [
     { required: true, message: '请选择角色类型', trigger: 'change' },
   ];
+
+  @Emit()
+  checkRealName(rule: any, value: string, callback: Function) {
+    if (value.length > 16) {
+      callback(new Error('登录密码格式有误，请重新输入'));
+    } else {
+      callback();
+    }
+  }
 
   @Emit()
   checkPassword(rule: any, value: string, callback: Function) {
