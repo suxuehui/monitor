@@ -188,13 +188,13 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="车系描述" prop="description">
+              <el-form-item label="车型描述" prop="description">
                 <el-input
                   id="description"
                   type="textarea"
                   rows={3}
                   v-model={this.modelForm.description}
-                  placeholder="请输入车系描述"
+                  placeholder="请输入车型描述"
                 ></el-input>
               </el-form-item>
             </el-col>
