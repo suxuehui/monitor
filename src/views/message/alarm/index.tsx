@@ -354,7 +354,9 @@ export default class Alarm extends Vue {
       this.modelForm = row;
       this.handleVisible = true;
     } else if (key === 'check') {
-      getSolution({ id: row.id }).then((res) => {
+      getSolution({
+        vehicleId: row.vehicleId, msgTime: row.msgTime, alarmType: row.alarmType,
+      }).then((res) => {
         if (res.result.resultCode === '0') {
           this.checkData = res.entity;
           this.checkVisible = true;

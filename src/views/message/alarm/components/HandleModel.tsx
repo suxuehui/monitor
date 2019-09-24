@@ -57,8 +57,10 @@ export default class HandleModel extends Vue {
     this.loading = true;
     const From: any = this.$refs.modelForm;
     obj = {
-      id: this.data.id,
       solution: this.modelForm.solution,
+      vehicleId: this.data.vehicleId,
+      msgTime: this.data.msgTime,
+      alarmType: this.data.alarmType,
     };
     const contentLength = obj.solution.replace(/\s+/g, '').length;
     From.validate((valid: any) => {
