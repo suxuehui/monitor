@@ -8,6 +8,7 @@ import {
   resetTime, deviceModel, getOnlineUrl, orgServer,
 } from '@/api/equipment';
 import { getInfoByLevelCode } from '@/api/customer';
+import { orgTree } from '@/api/app';
 import exportExcel from '@/api/export';
 import utils from '@/utils';
 import BindModel from './components/BindModel';
@@ -48,7 +49,12 @@ export default class Device extends Vue {
       type: 'cascader',
       label: '商户门店',
       filterable: true,
-      props: {},
+      props: {
+        checkStrictly: true,
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
       placeholder: '商户门店（全部）',
       options: [],
       change: this.levelChange,
@@ -58,7 +64,12 @@ export default class Device extends Vue {
       type: 'cascader',
       label: '设备型号',
       filterable: true,
-      props: {},
+      props: {
+        checkStrictly: true,
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
       change: this.typeChange,
       placeholder: '设备型号（全部）',
       options: [],
@@ -369,41 +380,54 @@ export default class Device extends Vue {
       }
     });
     // 获取商户-4s
-    getInfoByLevelCode(null).then((res: any) => {
-      const { entity, result } = res;
-      if (result.resultCode === '0') {
-        entity.forEach((item: any) => {
-          item.label = item.orgName;
-          item.value = item.levelCode;
-          if (item.siruiOrgs.length > 0) {
-            item.siruiOrgs.forEach((it: any) => {
-              it.label = it.name;
-              it.value = it.levelCode;
-            });
-          } else {
-            delete item.siruiOrgs;
-          }
+    orgTree(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.unshift({
+          id: Math.random(),
+          levelCode: '',
+          orgName: '所属商户(全部)',
         });
-        entity.unshift({
-          label: '商户门店（全部）',
-          value: '',
-        });
-        this.filterList[0].options = entity;
-        this.filterList[0].props = {
-          value: 'value',
-          children: 'siruiOrgs',
-          checkStrictly: true,
-        };
-        this.filterGrade[0].options = entity;
-        this.filterGrade[0].props = {
-          value: 'value',
-          children: 'siruiOrgs',
-          checkStrictly: true,
-        };
+        this.filterList[0].options = res.entity;
+        this.filterGrade[0].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
+    // getInfoByLevelCode(null).then((res: any) => {
+    //   const { entity, result } = res;
+    //   if (result.resultCode === '0') {
+    //     entity.forEach((item: any) => {
+    //       item.label = item.orgName;
+    //       item.value = item.levelCode;
+    //       if (item.siruiOrgs.length > 0) {
+    //         item.siruiOrgs.forEach((it: any) => {
+    //           it.label = it.name;
+    //           it.value = it.levelCode;
+    //         });
+    //       } else {
+    //         delete item.siruiOrgs;
+    //       }
+    //     });
+    //     entity.unshift({
+    //       label: '商户门店（全部）',
+    //       value: '',
+    //     });
+    //     this.filterList[0].options = entity;
+    //     this.filterList[0].props = {
+    //       value: 'value',
+    //       children: 'siruiOrgs',
+    //       checkStrictly: true,
+    //     };
+    //     this.filterGrade[0].options = entity;
+    //     this.filterGrade[0].props = {
+    //       value: 'value',
+    //       children: 'siruiOrgs',
+    //       checkStrictly: true,
+    //     };
+    //   } else {
+    //     this.$message.error(res.result.resultMessage);
+    //   }
+    // });
   }
 
   // 表格参数
