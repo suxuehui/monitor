@@ -96,11 +96,13 @@ export default class Header extends Vue {
       '/message/notice/list',
       '/message/alarm/list',
     ];
-    // 判断是否有通知公告和告警消息的权限
-    this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
-      this.showNotice = res[0];
-      this.showAlarm = res[1];
-    });
+    setTimeout(() => {
+      // 判断是否有通知公告和告警消息的权限
+      this.$store.dispatch('checkPermission', getNowRoles).then((res) => {
+        this.showNotice = res[0];
+        this.showAlarm = res[1];
+      });
+    }, 500);
   }
 
   mounted() {
