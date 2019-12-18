@@ -17,7 +17,7 @@
     "compression-webpack-plugin": "^2.0.0",
     "element-ui": "^2.12.0",
     "jsonp": "^0.2.1",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.13",
     "mockjs": "^1.0.1-beta3",
     "path-to-regexp": "^2.2.1",
     "q": "^1.5.1",
