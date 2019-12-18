@@ -196,11 +196,14 @@ export default class SetModal extends Vue {
 
   boxCheck(data: any, node: any) {
     const trees: any = this.$refs.tree;
+    console.log()
     const checkedArr: any = node.checkedKeys;
     let targetId: any = 0;
+    console.log('trees', trees, data.id, checkedArr)
     // 判断是否在上述约束条件中：
     this.ListIdGroup.forEach((item: any) => {
       if (item.keys.indexOf(data.id) > -1) {
+        console.log('item.priKey', item.priKey)
         targetId = item.priKey;
         this.contactList(checkedArr, data.id, targetId);
       } else {

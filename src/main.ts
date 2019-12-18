@@ -45,7 +45,9 @@ if (token && token.indexOf('10086') === -1) {
     if (!store.state.app.menuData.length && flag) { // 判断是否获取到菜单数据,并且只执行一次
       flag = false;
       store.dispatch('getUserInfo').then(() => {
-        const toPath = config.noLoginList.indexOf(`#${to.path}`) > -1 ? '/dashboard' : to.path;
+        console.log('config.noLoginList', config.noLoginList)
+        const toPath = to.path;
+        console.log('toPath', toPath)
         store.dispatch('AddTabPane', toPath).then(() => {
           next({
             path: toPath, query: to.query, params: to.params, replace: true,
