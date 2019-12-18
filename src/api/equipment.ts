@@ -184,13 +184,22 @@ export async function getBtName(params: any) {
   });
 }
 
-// 设置蓝牙名称
+// 设置蓝牙名称OTU
 export async function setBtName(params: any) {
   return request({
     url: '/device/terminal/settingBluetoothName',
     method: 'post',
     data: params,
     fetchType: 'JSON',
+  });
+}
+
+// 设置蓝牙名称DTU
+export async function setDtuBtName(params: any) {
+  return request({
+    url: '/device/terminal/dtuSendCfg',
+    method: 'post',
+    data: params,
   });
 }
 

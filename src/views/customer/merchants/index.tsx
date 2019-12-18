@@ -6,7 +6,7 @@ import {
 } from 'element-ui';
 import exportExcel from '@/api/export';
 import { customerLock, customerUnlock, customerInfo } from '@/api/customer';
-import { orgTree } from '@/api/app';
+import { orgTree, terminalDict } from '@/api/app';
 import AddModal from '@/views/customer/merchants/components/AddModal';
 import utils from '@/utils';
 
@@ -47,6 +47,27 @@ export default class Merchants extends Vue {
       options: [],
     },
     {
+      key: 'levelcode',
+      type: 'levelcode',
+      label: '部门筛选',
+      filterable: true,
+      props: {
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+        checkStrictly: true,
+      },
+      placeholder: '部门筛选(全部)',
+      options: [],
+    },
+    {
+      key: 'deviceType',
+      type: 'select',
+      label: '同步设备',
+      placeholder: '同步设备(全部)',
+      options: [],
+    },
+    {
       key: 'keyword',
       type: 'input',
       label: '角色名称',
@@ -73,7 +94,7 @@ export default class Merchants extends Vue {
     {
       key: 'levelcode',
       type: 'levelcode',
-      label: '所属商户',
+      label: '部门筛选',
       filterable: true,
       props: {
         value: 'levelCode',
@@ -81,13 +102,20 @@ export default class Merchants extends Vue {
         label: 'orgName',
         checkStrictly: true,
       },
-      placeholder: '所属商户(全部)',
+      placeholder: '部门筛选(全部)',
+      options: [],
+    },
+    {
+      key: 'deviceType',
+      type: 'select',
+      label: '同步设备',
+      placeholder: '同步设备(全部)',
       options: [],
     },
     {
       key: 'keyword',
       type: 'input',
-      label: '角色名称',
+      label: '模糊搜索',
       placeholder: '商户名称、登录账号',
     },
   ];
@@ -98,6 +126,7 @@ export default class Merchants extends Vue {
     activeStatus: 0,
     keyword: '',
     levelcode: '',
+    deviceType: '',
   };
 
   outParams: any = {};
@@ -110,7 +139,7 @@ export default class Merchants extends Vue {
     { label: '商户名称', prop: 'orgName', hasChildren: true },
     { label: '关联门店', prop: 'oldNames' },
     { label: '上级部门', prop: 'parentOrgName' },
-    { label: '同步设备', prop: 'deviceNames' },
+    { label: '同步设备', prop: 'deviceType' },
     { label: '登录账号', prop: 'manageUser' },
     { label: '切换地址', prop: 'chgAddrAble', formatter: this.locSet },
     {
@@ -248,20 +277,43 @@ export default class Merchants extends Vue {
   // 商户状态
   // 是否能切换服务地址：2-不能切换 1-能切换
   chgAddrAbleTypes: ActiveType[] = [
-    { key: '', value: '', label: '切换地址（全部）' },
+    { key: '', value: '', label: '切换地址(全部)' },
     { key: 2, value: 2, label: '不切换' },
     { key: 1, value: 1, label: '切换' },
   ]
 
-  // 是否切换地址
+  // 同步设备，1-默认；2-自定义
+  deviceTypeOptions: ActiveType[] = [
+    { key: '', value: '', label: '同步设备(全部)' },
+    { key: 1, value: 1, label: '默认' },
+    { key: 2, value: 2, label: '自定义' },
+  ]
 
   mounted() {
     this.filterList[0].options = this.activeTypes;
     this.filterGrade[0].options = this.activeTypes;
     this.filterList[1].options = this.chgAddrAbleTypes;
     this.filterGrade[1].options = this.chgAddrAbleTypes;
+    this.filterList[3].options = this.deviceTypeOptions;
+    this.filterGrade[3].options = this.deviceTypeOptions;
     // 查询门店列表
     this.getOrgTree();
+    // 查询默认同步设备类型
+    this.getDefaultDeviceType();
+  }
+
+  // 默认同步设备类型
+  defaultDeviceType: string = '';
+
+  /**
+   * @method 查询默认同步设备类型
+  */
+  getDefaultDeviceType() {
+    terminalDict({ EnumType: 'default_device_type' }).then((res) => {
+      if (res.result.resultCode === '0') {
+        this.defaultDeviceType = res.entity[0].enumValue;
+      }
+    });
   }
 
   /**
@@ -275,6 +327,7 @@ export default class Merchants extends Vue {
           levelCode: '',
           orgName: '所属商户（全部）',
         });
+        this.filterList[2].options = res.entity;
         this.filterGrade[2].options = res.entity;
       } else {
         this.$message.error(res.result.resultMessage);
@@ -363,10 +416,10 @@ export default class Merchants extends Vue {
     exportExcel(data1, `商户列表${utils.returnNowTime()}`, '/customer/org/exportExcel');
   }
 
-  treeProps = {
-    children: 'children',
-    hasChildren: 'hasChildren',
-  };
+  // treeProps = {
+  //   children: 'children',
+  //   hasChildren: 'hasChildren',
+  // };
 
   render(h: any) {
     return (
@@ -374,26 +427,27 @@ export default class Merchants extends Vue {
         <filter-table
           ref="table"
           filter-list={this.filterList}
-          treeProps={this.treeProps}
+          // treeProps={this.treeProps}
           filter-grade={this.filterGrade}
           filter-params={this.filterParams}
           add-btn={this.addBtn}
           on-addBack={this.addModel}
+          localName={'merchants'}
+          on-downBack={this.downLoad}
           operat={this.operat}
           opreatWidth={'200px'}
           out-params={this.outParams}
           table-list={this.tableList}
           url={this.url}
-          localName={'merchants'}
           export-btn={this.exportBtn}
-          on-downBack={this.downLoad}
-          fetch-type={'get'}
           on-menuClick={this.menuClick}
+          fetch-type={'get'}
         />
         <add-modal
           ref="addTable"
           title={this.addTitle}
           visible={this.addVisible}
+          defaultDeviceType={this.defaultDeviceType}
           oldLevAndName={this.oldLevAndName}
           data={this.rowData}
           on-close={this.closeModal}

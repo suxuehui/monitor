@@ -58,7 +58,9 @@ export default class Brand extends Vue {
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
-      disabled: (row: any) => (row.seriesNum > 0 || row.modelNum > 0 || row.vehicleNum > 0),
+      disabled: (row: any) => (
+        row.seriesNum > 0 || row.modelNum > 0 || row.vehicleNum > 0 || row.attachCfgNum > 0
+      ),
       roles: true,
     },
   ];

@@ -238,12 +238,12 @@ export default class BsjThreshold extends Vue {
               this.loading = false;
               this.$message.success(res.result.resultMessage);
               From.resetFields();
-            }, 1500);
+            }, 500);
           } else {
             setTimeout(() => {
               this.loading = false;
               this.$message.error(res.result.resultMessage);
-            }, 1500);
+            }, 500);
           }
         });
       } else {
@@ -284,7 +284,7 @@ export default class BsjThreshold extends Vue {
     return (
       <el-dialog
         width="760px"
-        title="阈值设置2a1"
+        title="阈值设置"
         visible={this.visible}
         before-close={this.closeModal}
         close-on-click-modal={false}

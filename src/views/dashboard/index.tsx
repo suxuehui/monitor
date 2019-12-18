@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Component, Vue } from 'vue-property-decorator';
 import { Button, DatePicker } from 'element-ui';
 import {
@@ -179,11 +180,42 @@ export default class Dashboard extends Vue {
         this.columData[4].num = shockCount || 0; // 振动
         this.columData[5].num = impactCount || 0; // 碰撞
         this.columData[6].num = overTurn || 0; // 翻滚
+        this.columData.forEach((item: any) => {
+          if (item.num > 500) {
+            this.columDataTickInterval = 200;
+          }
+          if (item.num > 1000) {
+            this.columDataTickInterval = 500;
+          }
+          if (item.num > 3000) {
+            this.columDataTickInterval = 700;
+          }
+          if (item.num > 5000) {
+            this.columDataTickInterval = 800;
+          }
+          if (item.num > 7000) {
+            this.columDataTickInterval = 1000;
+          }
+          if (item.num > 10000) {
+            this.columDataTickInterval = 2000;
+          }
+          if (item.num > 15000) {
+            this.columDataTickInterval = 3000;
+          }
+          if (item.num > 20000) {
+            this.columDataTickInterval = 4000;
+          }
+          if (item.num > 30000) {
+            this.columDataTickInterval = 8000;
+          }
+        });
         this.columDataChange = true;
         this.createColumnarChart(str);
       }
     });
   }
+
+  columDataTickInterval: number = 100; // 柱状图间隔
 
   // 获取行驶统计数据
   GetDrivingData() {
@@ -265,7 +297,7 @@ export default class Dashboard extends Vue {
     this.circleChart.source(this.circleData, {
       percent: {
         formatter: function formatter(data: any) {
-          let val: any = `${(data * 100).toFixed(0)}%`;
+          const val: any = `${(data * 100).toFixed(0)}%`;
           return val;
         },
       },
@@ -313,7 +345,7 @@ export default class Dashboard extends Vue {
     // 柱状图
     this.columnarChart.source(this.columData);
     this.columnarChart.scale('num', {
-      tickInterval: 10,
+      tickInterval: this.columDataTickInterval,
       alias: '次数',
     });
     this.columnarChart
@@ -501,30 +533,22 @@ export default class Dashboard extends Vue {
                       id="toDay"
                       class={['item', this.todayActive ? 'active' : '']}
                       on-click={this.toDayData}
-                    >
-                      今天
-              </li>
+                    > 今天 </li>
                     <li
                       id="sevenDay"
                       class={['item', this.sevendayActive ? 'active' : '']}
                       on-click={this.sevenData}
-                    >
-                      近7天
-              </li>
+                    > 近7天 </li>
                     <li
                       id="thirtyDay"
                       class={['item', this.thirtydayActive ? 'active' : '']}
                       on-click={this.thirtyData}
-                    >
-                      近30天
-              </li>
+                    > 近30天 </li>
                     <li
                       id="allDay"
                       class={['item', this.allActive ? 'active' : '']}
                       on-click={this.allData}
-                    >
-                      全部
-              </li>
+                    > 全部 </li>
                   </ul>
                   <el-date-picker
                     id="datePicker"

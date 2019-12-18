@@ -40,6 +40,7 @@ export default class BindModal extends Vue {
   }
 
   // 消除imei号前后空格
+  // value代表需要验证的值，但有时取不到该值，需要使用this.state.xxx取值
   @Emit()
   checkIMEI(rule: any, value: string, callback: Function) {
     setTimeout(() => {
@@ -47,7 +48,7 @@ export default class BindModal extends Vue {
         this.modelForm.imei = this.modelForm.imei.replace(/^\s*|\s*$/g, '');
         callback();
       } else {
-        callback();
+        callback(new Error('请输入imei'));
       }
     }, 500);
   }
@@ -89,12 +90,12 @@ export default class BindModal extends Vue {
               });
               From.resetFields();
               this.resetData();
-            }, 1500);
+            }, 500);
           } else {
             setTimeout(() => {
               this.loading = false;
               this.$message.error(res.result.resultMessage);
-            }, 1500);
+            }, 500);
           }
         });
       } else {

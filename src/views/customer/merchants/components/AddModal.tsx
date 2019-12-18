@@ -2,12 +2,12 @@ import {
   Component, Prop, Vue, Watch, Emit,
 } from 'vue-property-decorator';
 import {
-  Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option, Radio, RadioGroup,
+  Dialog, Row, Col, Form, FormItem, Input, Button, Select, Option, Radio, RadioGroup, Cascader,
 } from 'element-ui';
 import {
   customerAdd, customerUpdate, checkOrgName, customerSaveSub,
 } from '@/api/customer';
-import { terminalType } from '@/api/equipment';
+import { terminalType, deviceModel } from '@/api/equipment';
 import { getAllShopNameMoni } from '@/api/app';
 import { userCheck } from '@/api/permission';
 import './AddModal.less';
@@ -24,6 +24,7 @@ import './AddModal.less';
     'el-option': Option,
     'el-radio': Radio,
     'el-radio-group': RadioGroup,
+    'el-cascader': Cascader,
   },
 })
 export default class AddModal extends Vue {
@@ -36,69 +37,115 @@ export default class AddModal extends Vue {
 
   @Prop() private oldLevAndName: any;
 
+  @Prop() private defaultDeviceType: any;
+
   modelForm: any = {
     orgName: '', // 添加的商户名
     manageUser: '', // 管理账号、登录账号
     password: '', // 密码
-    deviceType: [], // 设备类型
     mainAddr: '', // 主地址
     secondaryAddr: '', // 副地址
     mainAddrPort: '', // 主地址端口
     secondaryAddrPort: '', // 副地址端口
   };
 
+  address: any = []; // 地址集合
+
   shopFilteredList: any = []; // 商户列表
 
-  typeList: any = []; // 设备类型
+  deviceTypeOptions: any = []; // 设备类型型号列表
 
-  typeAllList: any = []; // 全部设备类型
+  deviceTypeList: any = []; // 设备类型列表
+
+  originDeviceTypeList: any = []; // 原始设备类型列表
+
+  deviceProps: any = {
+    multiple: true,
+  };
 
   loading: boolean = false;
 
   selectLoading: boolean = true; // 筛选关联门店时的loading状态
 
-  created() {
-    // 设备类型
-    terminalType(null).then((res) => {
-      if (res.result.resultCode === '0') {
-        res.entity.forEach((item: any) => {
-          this.typeList.push({
-            key: Math.random(),
-            value: item.enumValue,
-            label: item.name,
+  mounted() {
+    this.setAddress();
+    // 获取所有设备类型、型号
+    deviceModel('ALL').then((res) => {
+      const { entity, result } = res;
+      if (result.resultCode === '0') {
+        const list: any = [];
+        entity.forEach((item: any, index: number) => {
+          this.deviceTypeList.push({
+            value: `${item.dictionary.enumValue}`,
+            arr: [],
           });
-          this.typeAllList.push(item.enumValue);
+          this.originDeviceTypeList = JSON.parse(JSON.stringify(this.deviceTypeList));
+          if (item.terminalModelList.length > 0) {
+            item.terminalModelList.forEach((it: any, ind: number) => {
+              it.label = it.name;
+              it.value = `${it.id}`;
+            });
+            list.push({
+              value: item.dictionary.enumValue,
+              label: item.dictionary.name,
+              children: item.terminalModelList,
+            });
+          } else {
+            list.push({
+              value: item.dictionary.enumValue,
+              label: item.dictionary.name,
+            });
+          }
         });
-        // 设备类型(全部)
-        this.typeList.unshift({
-          key: Math.random(),
-          value: '1026',
-          label: '全部',
-        });
+        this.deviceTypeOptions = JSON.parse(JSON.stringify(list));
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
   }
 
+  // 设置address
+  setAddress() {
+    const deviceTypes = [{ name: 'OTU', value: '3' }, { name: 'BSJ', value: '23' }, { name: 'DTU', value: '20' }];
+    deviceTypes.forEach((item: any) => {
+      this.address.push({
+        clientType: item.value,
+        mainAddr: '', // 主地址
+        secondaryAddr: '', // 副地址
+        mainAddrPort: '', // 主地址端口
+        secondaryAddrPort: '', // 副地址端口
+      });
+    });
+  }
+
   @Watch('data')
   onDataChange(data: any) {
-    console.log(data);
     if (data.id > 0) {
       if (this.title === '编辑商户') {
         // 编辑
         this.modelForm.orgName = data.orgName;
         this.modelForm.contactUser = data.contactUser;
         this.modelForm.manageUser = data.manageUser;
-        if (data.chgAddrAble === 1) {
-          this.modelForm.mainAddr = data.mainAddr.split(':')[0];
-          this.modelForm.mainAddrPort = data.mainAddr.split(':')[1];
-          this.modelForm.secondaryAddr = data.secondaryAddr.split(':')[0];
-          this.modelForm.secondaryAddrPort = data.secondaryAddr.split(':')[1];
-        }
-        this.deviceType = this.data.deviceType ? this.typeEdit(this.data.deviceType) : [];
         this.nameAndLev = this.setFormat(this.oldLevAndName);
         this.reBootStatus = data.chgAddrAble === 2 ? '2' : '1';
+        if (data.deviceType) {
+          this.deviceStatus = '1';
+          this.setShowDeviceType(data.deviceType);
+        } else {
+          this.deviceStatus = '2';
+        }
+        if (data.chgAddrAble === 1) {
+          data.address.forEach((item: any) => {
+            this.address.forEach((it: any) => {
+              if (`${item.clientType}` === it.clientType) {
+                it.mainAddr = item.mainAddr.split(':')[0];
+                it.mainAddrPort = item.mainAddr.split(':')[1];
+                it.secondaryAddr = item.secondaryAddr.split(':')[0];
+                it.secondaryAddrPort = item.secondaryAddr.split(':')[1];
+              }
+            });
+          });
+        }
       }
     } else {
       // 新增
@@ -154,12 +201,8 @@ export default class AddModal extends Vue {
     },
   ]
 
-  netAddressRule = [
-    { required: true, message: '请输入地址', trigger: 'blur' },
-  ]
-
   netMainPortRule = [
-    { required: true, message: '请输入端口', trigger: 'blur' },
+    // { required: true, message: '请输入端口', trigger: 'blur' },
     {
       validator: this.netMainPortValue,
     },
@@ -198,22 +241,13 @@ export default class AddModal extends Vue {
     }, 500);
   }
 
-
   /**
    * @method 端口校验规则
    */
   @Emit()
   netMainPortValue(rule: any, value: string, callback: Function) {
     setTimeout(() => {
-      if (this.modelForm.mainAddrPort) {
-        if (!this.isNumber(this.modelForm.mainAddrPort)) {
-          callback(new Error('端口输入错误，请重新输入'));
-        } else {
-          callback();
-        }
-      } else {
-        callback(new Error('端口不能为空'));
-      }
+      // console.log(value);
     }, 500);
   }
 
@@ -230,7 +264,7 @@ export default class AddModal extends Vue {
           callback();
         }
       } else {
-        callback(new Error('端口不能为空'));
+        callback(new Error('端口不能为空1'));
       }
     }, 500);
   }
@@ -306,7 +340,7 @@ export default class AddModal extends Vue {
    * @method 设备类型规则
    */
   checkTypeValue(rule: any, value: string, callback: Function) {
-    if (this.deviceType) {
+    if (this.syncDeviceType) {
       setTimeout(() => {
         callback();
       }, 200);
@@ -346,13 +380,7 @@ export default class AddModal extends Vue {
   }
 
   typeEdit(str: string) {
-    let arr: any = [];
-    if (str.split(',').length === this.typeList.length - 1) {
-      arr = ['1026'];
-    } else {
-      arr = str.split(',');
-    }
-    return arr;
+    return str.split(',');
   }
 
   // 重置数据
@@ -361,15 +389,17 @@ export default class AddModal extends Vue {
       orgName: '', // 添加的商户名
       manageUser: '', // 管理账号、登录账号
       password: '', // 密码
-      deviceType: [], // 设备类型
       mainAddr: '', // 主地址
       secondaryAddr: '', // 副地址
       mainAddrPort: '', // 主地址端口
       secondaryAddrPort: '', // 副地址端口
     };
     this.reBootStatus = '2';
+    this.deviceStatus = '2';
     this.nameAndLev = []; // 关联门店
-    this.deviceType = [];
+    this.syncDeviceType = [];
+    this.address = [];
+    this.setAddress();
   }
 
   closeModal() {
@@ -452,6 +482,36 @@ export default class AddModal extends Vue {
     return `${str1}:${str2}`;
   }
 
+  addressChange() {
+    const arr: any = []; // 填写正确的地址端口
+    const numArr: any = []; // 每个地址端口相加的集合
+    const portArr: any = []; // 保存各个地址端口情况
+    let portStatus: boolean = true;
+    this.address.forEach((item: any) => {
+      if (item.mainAddr || item.mainAddrPort || item.secondaryAddr || item.secondaryAddrPort) {
+        numArr.push(
+          item.mainAddr + item.mainAddrPort + item.secondaryAddr + item.secondaryAddrPort,
+        );
+      }
+      if (item.mainAddr && item.mainAddrPort && item.secondaryAddr && item.secondaryAddrPort) {
+        arr.push({
+          clientType: item.clientType,
+          mainAddr: this.removeBlank(item.mainAddr, item.mainAddrPort),
+          secondaryAddr: this.removeBlank(item.secondaryAddr, item.secondaryAddrPort),
+        });
+        portArr.push(item.mainAddrPort, item.secondaryAddrPort);
+      }
+    });
+    portArr.forEach((it: any) => {
+      if (!this.isNumber(it)) {
+        portStatus = false;
+      }
+    });
+    return {
+      arr, numArr, portArr, portStatus,
+    };
+  }
+
   onSubmit() {
     let obj: any = {};
     const From: any = this.$refs.modelForm;
@@ -461,33 +521,75 @@ export default class AddModal extends Vue {
       this.loading = false;
       return false;
     }
-    if (this.deviceType.length === 0) {
-      this.$message.error('请选择设备类型');
+    // 如果选择了切换地址，必须填写一个完整的地址端口
+    if (this.reBootStatus === '1' && this.addressChange().arr.length === 0) {
+      this.$message.error('至少填写一个完整的切换地址！');
       this.loading = false;
       return false;
     }
+    // 完整地址端口数量和填写了数据的地址端口数量不一致，表明存在数据不全情况
+    if (this.addressChange().arr.length !== this.addressChange().numArr.length) {
+      this.$message.error('地址端口填写不完整，请修改');
+      this.loading = false;
+      return false;
+    }
+    let flag = true;
+    const arr = JSON.parse(JSON.stringify(this.addressChange().arr));
+    arr.forEach((item: any) => {
+      if (/[\u4E00-\u9FA5]/g.test(item.mainAddr) || /[\u4E00-\u9FA5]/g.test(item.secondaryAddr)) {
+        this.$message.error('地址不能填写中文，请修改');
+        this.loading = false;
+        flag = false;
+        return false;
+      }
+    });
+    if (!this.addressChange().portStatus) {
+      this.$message.error('端口填写不正确，请确认');
+      this.loading = false;
+      return false;
+    }
+    if (!flag) {
+      this.loading = false;
+      return false;
+    }
+    const addressObj = this.addressChange().arr;
     obj = {
       orgName: this.modelForm.orgName, // 添加的商户名
       manageUser: this.modelForm.manageUser, // 账号
       password: this.modelForm.password, // 密码
-      deviceType: this.deviceType.indexOf('1026') > -1
-        ? this.typeAllList.join(',') : this.deviceType.join(','), // 设备类型
       chgAddrAble: this.reBootStatus, // 是否切换服务地址
-      mainAddr: this.removeBlank(
-        this.modelForm.mainAddr, this.modelForm.mainAddrPort,
-      ), // 主地址
-      secondaryAddr: this.removeBlank(
-        this.modelForm.secondaryAddr, this.modelForm.secondaryAddrPort,
-      ), // 主地址
+      address: addressObj,
     };
+    if (this.deviceStatus === '1') {
+      const strArr: any = [];
+      this.deviceTypeList = JSON.parse(JSON.stringify(this.originDeviceTypeList));
+      this.deviceTypeList.forEach((item: any) => {
+        this.syncDeviceType.forEach((it: any) => {
+          if (item.value === it[0]) {
+            item.arr.push(it[1]);
+          }
+        });
+        if (item.arr.length > 0) {
+          strArr.push(`${item.value}:${item.arr.join(',')}`);
+        }
+      });
+      obj.deviceType = `${strArr.join(';')};`;
+    } else {
+      obj.deviceType = '';
+    }
+    if (obj.deviceType === ';') {
+      this.$message.error('同步设备类型不能为空');
+      this.loading = false;
+      return false;
+    }
     From.validate((valid: any) => {
       if (valid) {
         if (this.title === '新增商户') {
           if (obj.chgAddrAble === '2') {
-            delete obj.mainAddr;
-            delete obj.secondaryAddr;
+            delete obj.address;
           }
           obj.oldLevelCode = this.getOldInfo().oldLevelCodes;
+          console.log(obj);
           customerAdd(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -495,10 +597,10 @@ export default class AddModal extends Vue {
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
                 this.nameAndLev = '';
-                this.deviceType = [];
+                this.syncDeviceType = [];
                 this.shopFilteredList = [];
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
@@ -508,8 +610,7 @@ export default class AddModal extends Vue {
           });
         } else if (this.title === '新增部门') {
           if (obj.chgAddrAble === '2') {
-            delete obj.mainAddr;
-            delete obj.secondaryAddr;
+            delete obj.address;
           }
           obj.oldLevelCode = this.getOldInfo().oldLevelCodes;
           obj.orgId = this.data.id;
@@ -521,10 +622,10 @@ export default class AddModal extends Vue {
                 this.$message.success(res.result.resultMessage);
                 From.resetFields();
                 this.nameAndLev = '';
-                this.deviceType = [];
+                this.syncDeviceType = [];
                 this.shopFilteredList = [];
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
@@ -538,8 +639,7 @@ export default class AddModal extends Vue {
             delete obj.password;
           }
           if (obj.chgAddrAble === '2') {
-            delete obj.mainAddr;
-            delete obj.secondaryAddr;
+            delete obj.address;
           }
           obj.oldLevelCode = this.editGetOldInfo();
           if (obj.oldLevelCode === '') {
@@ -547,6 +647,7 @@ export default class AddModal extends Vue {
             this.loading = false;
             return false;
           }
+          console.log(obj);
           customerUpdate(obj).then((res) => {
             if (res.result.resultCode === '0') {
               setTimeout(() => {
@@ -556,12 +657,12 @@ export default class AddModal extends Vue {
                 this.resetData();
                 this.shopFilteredList = [];
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.error(res.result.resultMessage);
-              }, 1500);
+              }, 500);
             }
           });
         }
@@ -607,40 +708,132 @@ export default class AddModal extends Vue {
   }
 
   shopNameInput(val: any) {
-    console.log(val);
+    // console.log(val);
   }
 
-  // 切换地址
-  reBootStatus: string = '2';
+  reBootStatus: string = '2'; // 切换地址
 
   rebootChange(data: any) {
     this.reBootStatus = data;
   }
 
-  // 设备类型设置
-  deviceType: any = [];
+  deviceStatus: string = '2'; // 同步设备类型型号
 
-  typeChecked(val: any) {
-    if (val.length > 1) {
-      if (val.indexOf('1026') > -1) {
-        if (val[0] === '1026') {
-          this.deviceType = val.slice(1, val.length);
-        } else {
-          this.deviceType = ['1026'];
-        }
-      } else {
-        this.deviceType = val;
-      }
-    } else {
-      this.deviceType = val;
+  // 切换设备同步类型选项 1自定义 2默认
+  deviceChange(data: any) {
+    this.deviceStatus = data;
+    if (data === '1') {
+      this.setShowDeviceType(this.defaultDeviceType);
     }
-    this.modelForm.deviceType = this.deviceType;
+  }
+
+  // 设置默认展示设备类型
+  setShowDeviceType(data: any) {
+    const arr: any = data.split(';');
+    const arr1: any = [];
+    arr.forEach((item: any) => {
+      if (item) {
+        const arr2 = item.split(':');
+        if (arr2[1] && arr2[1].indexOf(',') > -1) {
+          const arr3 = arr2[1].split(',');
+          arr3.forEach((it: any) => {
+            arr1.push([
+              `${arr2[0]}`, it,
+            ]);
+          });
+        } else {
+          arr1.push([
+            `${arr2[0]}`, arr2[1],
+          ]);
+        }
+      }
+    });
+    this.syncDeviceType = JSON.parse(JSON.stringify(arr1));
+  }
+
+  // 设备类型设置
+  syncDeviceType: any = [];
+
+  typeChecked(val: any) { }
+
+  deviceTypeChange(val: any) {
+    // console.log(val);
+  }
+
+  // 数组去重
+  arrUnique(arr: any) {
+    return Array.from(new Set(arr));
+  }
+
+  renderDeviceAddress() {
+    const deviceTypes = [{ name: 'OTU', value: '3' }, { name: 'BSJ', value: '23' }, { name: 'DTU', value: '20' }];
+    const obj: any = [];
+    deviceTypes.forEach((item: any, index: number) => {
+      obj.push(
+        <el-col span={24}>
+          <el-col span={2}>
+            <div class="deviceTypeName">{item.name}</div>
+          </el-col>
+          <el-col span={7} style="marginLeft:-20px">
+            <el-form-item
+              label="主地址"
+              prop="mainAddr"
+            >
+              <el-input
+                id={`mainAddr${index}`}
+                v-model={this.address[index].mainAddr}
+                placeholder="请输入地址"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col span={4}>
+            <el-form-item
+              label="端口"
+              prop="mainAddrPort"
+              label-width={'60px'}
+            >
+              <el-input
+                id={`mainAddrPort${index}`}
+                v-model={this.address[index].mainAddrPort}
+                placeholder="请输入端口"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col span={7}>
+            <el-form-item
+              label="副地址"
+              prop="secondaryAddr"
+            >
+              <el-input
+                id={`secondaryAddr${index}`}
+                v-model={this.address[index].secondaryAddr}
+                placeholder="请输入地址"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col span={4}>
+            <el-form-item
+              label="端口"
+              prop="secondaryAddrPort"
+              label-width={'60px'}
+            >
+              <el-input
+                id={`secondaryAddrPort${index}`}
+                v-model={this.address[index].secondaryAddrPort}
+                placeholder="请输入端口"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-col>,
+      );
+    });
+    return obj;
   }
 
   render() {
     return (
       <el-dialog
-        width="700px"
+        width="850px"
         title={this.title}
         visible={this.visible}
         before-close={this.closeModal}
@@ -649,7 +842,11 @@ export default class AddModal extends Vue {
         <el-form model={this.modelForm} rules={this.rules} ref="modelForm" label-width="80px" class="merchants-model">
           <el-row >
             <el-col span={12}>
-              <el-form-item label="登录账号" prop="manageUser" rules={this.title === '新增商户' || this.title === '新增部门' ? this.manageUserRule : null}>
+              <el-form-item
+                label="登录账号"
+                prop="manageUser"
+                rules={this.title === '新增商户' || this.title === '新增部门' ? this.manageUserRule : null}
+              >
                 <el-input
                   id="manageUser"
                   v-model={this.modelForm.manageUser}
@@ -678,7 +875,11 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col class="shopName">
-              <el-form-item label="关联门店" prop="oldLevelCode" rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}>
+              <el-form-item
+                label="关联门店"
+                prop="oldLevelCode"
+                rules={this.title === '新增商户' ? this.oldLevelCodeRule : null}
+              >
                 <el-select
                   id="oldLevelCode"
                   v-model={this.nameAndLev}
@@ -707,33 +908,40 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             <el-col class="typeName">
-              <el-form-item label="设备同步" prop="deviceType" rules={this.typeRule}>
-                <el-select
-                  id="deviceType"
-                  v-model={this.deviceType}
-                  filterable={true}
-                  multiple={this.deviceType !== '1026'}
-                  placeholder="请选择设备类型"
-                  style="width:100%"
-                  on-change={this.typeChecked}
-                >
+              <el-form-item label="设备同步" prop="syncDeviceType" rules={this.typeRule}>
+                <div class='deviceTypeGroup'>
+                  <div class="deviceGroup">
+                    <el-radio-group
+                      v-model={this.deviceStatus}
+                      on-change={this.deviceChange}
+                    >
+                      <el-radio id="availableY" label="2">默认</el-radio>
+                      <el-radio id="availableN" label="1">自定义</el-radio>
+                    </el-radio-group>
+                  </div>
                   {
-                    this.typeList.map((item: any) => (
-                      <el-option
-                        id={item.label}
-                        value={item.value}
-                        label={item.label}
-                      >{item.label}</el-option>
-                    ))
+                    this.deviceStatus === '1' ? <el-cascader
+                      style='flex: 3;height: 30px'
+                      props={this.deviceProps}
+                      collapse-tags
+                      clearable
+                      options={this.deviceTypeOptions}
+                      v-model={this.syncDeviceType}
+                      placeholder="请选择设备型号类型"
+                      on-change={this.deviceTypeChange}>
+                    </el-cascader> : <div style='flex:3;opacity:0;height:30px'></div>
                   }
-                </el-select>
-                <span class="star2">*</span>
+                  <span class="star2">*</span>
+                </div>
               </el-form-item>
             </el-col>
             <el-col span={24}>
               <el-form-item label="切换地址" prop="reboot" class="isStart">
                 <div class="radioGroup">
-                  <el-radio-group v-model={this.reBootStatus} on-change={this.rebootChange}>
+                  <el-radio-group
+                    v-model={this.reBootStatus}
+                    on-change={this.rebootChange}
+                  >
                     <el-radio id="availableY" label="2">不切换</el-radio>
                     <el-radio id="availableN" label="1">切换</el-radio>
                   </el-radio-group>
@@ -743,57 +951,7 @@ export default class AddModal extends Vue {
               </el-form-item>
             </el-col>
             {
-              this.reBootStatus === '1'
-                ? <div>
-                  <el-col span={12}>
-                    <el-form-item
-                      label="主地址"
-                      prop="mainAddr"
-                      rules={this.netAddressRule}>
-                      <el-input
-                        id="mainAddr"
-                        v-model={this.modelForm.mainAddr}
-                        placeholder="请输入地址"
-                      ></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col span={12}>
-                    <el-form-item
-                      label="端口"
-                      prop="mainAddrPort"
-                      rules={this.netMainPortRule}>
-                      <el-input
-                        id="mainAddrPort"
-                        v-model={this.modelForm.mainAddrPort}
-                        placeholder="请输入端口"
-                      ></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col span={12}>
-                    <el-form-item
-                      label="副地址"
-                      prop="secondaryAddr"
-                      rules={this.netAddressRule}>
-                      <el-input
-                        id="secondaryAddr"
-                        v-model={this.modelForm.secondaryAddr}
-                        placeholder="请输入地址"
-                      ></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col span={12}>
-                    <el-form-item
-                      label="端口"
-                      prop="secondaryAddrPort"
-                      rules={this.netSecondPortRule}>
-                      <el-input
-                        id="secondaryAddrPort"
-                        v-model={this.modelForm.secondaryAddrPort}
-                        placeholder="请输入端口"
-                      ></el-input>
-                    </el-form-item>
-                  </el-col>
-                </div> : null
+              this.reBootStatus === '1' ? this.renderDeviceAddress() : null
             }
           </el-row>
         </el-form>

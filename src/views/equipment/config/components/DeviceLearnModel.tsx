@@ -73,14 +73,14 @@ export default class DeviceLearnModel extends Vue {
           this.contentRender();
           this.loading = false;
           this.$message.success(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       } else if (res.result.resultCode === '1') { // 学习不成功，不支持
         setTimeout(() => {
           this.step = 3;
           this.contentRender();
           this.loading = false;
           this.$message.error(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       } else if (res.result.resultCode === '2') { // 学习不成功,失败
         setTimeout(() => {
           this.step = 2;
@@ -92,7 +92,7 @@ export default class DeviceLearnModel extends Vue {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       }
     });
   }

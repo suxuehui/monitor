@@ -147,6 +147,7 @@ export default class Role extends Vue {
   // 权限设置
   setVisible: boolean = false;
 
+  // 设置权限-弹框名称
   setTitle: string = '';
 
   modelForm: any = {

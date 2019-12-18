@@ -68,7 +68,7 @@ export default class CarModel extends Vue {
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
-      disabled: (row: any) => (row.vehicleNum),
+      disabled: (row: any) => (row.vehicleNum > 0 || row.attachCfgNum > 0),
       roles: true,
     },
   ];
@@ -88,15 +88,15 @@ export default class CarModel extends Vue {
     checkStrictly: true,
   }
 
-  checkFuelTank(row: any) {
-    let str: any = '';
-    if (row.energyType === '电动') {
-      str = '--';
-    } else {
-      str = `${row.fuelTankCap}L`;
-    }
-    return str;
-  }
+  // checkFuelTank(row: any) {
+  //   let str: any = '';
+  //   if (row.energyType === '电动') {
+  //     str = '--';
+  //   } else {
+  //     str = `${row.fuelTankCap}L`;
+  //   }
+  //   return str;
+  // }
 
   // 权限设置
   created() {
@@ -115,9 +115,10 @@ export default class CarModel extends Vue {
     });
   }
 
-  // 新增、导出按钮展示
+  // 新增
   addBtn: boolean = true;
 
+  // 导出
   exportBtn: boolean = true
 
   // 新增、编辑
@@ -132,6 +133,11 @@ export default class CarModel extends Vue {
   brandAddList: any = [];
 
   mounted() {
+    this.getAllBrand();
+  }
+
+  // 获取所有品牌信息
+  getAllBrand() {
     brandAll(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.forEach((item: any, index: number) => {
@@ -141,15 +147,17 @@ export default class CarModel extends Vue {
             value: item.id,
           });
         });
-        this.getAllBrand();
+        this.buildBrandInfo();
       } else {
         this.$message.error(res.result.resultMessage);
       }
     });
   }
 
-  // 获取品牌车系信息
-  getAllBrand() {
+  initBrand: number = 1; // 初始化品牌信息
+
+  // 组装品牌车系信息
+  buildBrandInfo() {
     allBrandList(null).then((res) => {
       if (res.result.resultCode === '0') {
         // item 全部数据
@@ -170,10 +178,13 @@ export default class CarModel extends Vue {
             }
           });
         });
-        this.brandList.unshift({
-          id: '',
-          label: '品牌车系（全部）',
-        });
+        if (this.initBrand === 1) {
+          this.brandList.unshift({
+            id: '',
+            label: '品牌车系（全部）',
+          });
+          this.initBrand += 1;
+        }
         this.filterList[0].props = this.props;
         this.filterList[0].options = this.brandList;
         this.brandList.forEach((item: any) => {
@@ -226,9 +237,12 @@ export default class CarModel extends Vue {
   }
 
   addModel() {
-    this.addVisible = true;
-    this.addTitle = '新增车型';
-    this.carModelClickTime = utils.getNowTime();
+    setTimeout(() => {
+      this.addVisible = true;
+      this.addTitle = '新增车型';
+      this.carModelClickTime = utils.getNowTime();
+    }, 200);
+    // this.buildBrandInfo();
   }
 
   clear() {

@@ -84,7 +84,7 @@ export async function attachcfgDisable(params: any) {
   });
 }
 
-// 根据配置id查询配置修改历史记录
+// 根据配置id查询配置修改历史记录 未使用
 export async function attachcfgQuerylog(params: any) {
   return request({
     url: '/attachcfg/querylog',

@@ -40,12 +40,12 @@ export default class UnbindModel extends Vue {
           this.loading = false;
           this.$message.success(res.result.resultMessage);
           this.$emit('refresh');
-        }, 1500);
+        }, 500);
       } else {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       }
     });
   }

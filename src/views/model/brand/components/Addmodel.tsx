@@ -154,12 +154,12 @@ export default class AddModal extends Vue {
                 // upModel.$children[0].clearFiles();
                 this.$emit('refresh');
                 // this.showUpBtn = true;
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.error(res.result.resultMessage);
-              }, 1500);
+              }, 500);
             }
           });
         } else {
@@ -179,12 +179,12 @@ export default class AddModal extends Vue {
                 // this.showUpBtn = true;
                 // upModel.$children[0].clearFiles();
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.error(res.result.resultMessage);
-              }, 1500);
+              }, 500);
             }
           });
         }

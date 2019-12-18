@@ -169,12 +169,12 @@ export default class BindModal extends Vue {
               From.resetFields();
               upModel.$children[0].clearFiles();
               this.$emit('refresh');
-            }, 1500);
+            }, 500);
           } else {
             setTimeout(() => {
               this.loading = false;
               this.$message.error(res.result.resultMessage);
-            }, 1500);
+            }, 500);
           }
         });
       } else {

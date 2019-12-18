@@ -6,6 +6,7 @@ export async function customerAdd(params: any) {
     url: '/customer/org/save',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 
@@ -15,6 +16,7 @@ export async function customerUpdate(params: any) {
     url: '/customer/org/update',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }
 
@@ -43,7 +45,7 @@ export async function checkOrgName(params: any) {
   });
 }
 
-// 所有商户列表
+// 所有商户列表 未使用
 export async function getCustomerList(params: any) {
   return request({
     url: '/customer/org/list',
@@ -74,5 +76,6 @@ export async function customerSaveSub(params: any) {
     url: '/customer/org/saveSub',
     method: 'post',
     data: params,
+    fetchType: 'JSON',
   });
 }

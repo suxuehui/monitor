@@ -194,7 +194,6 @@ export default class Monitor extends Vue {
   // 表格ajax请求外部参数
   outParams: any = {}
 
-
   // 表格列配置数组
   tableList: tableList[] = [
     {
@@ -315,6 +314,7 @@ export default class Monitor extends Vue {
 
   /**
    * @method 在线、离线状态
+   * @description 根据字符匹配
    * @param row 每行数据
    */
   onlineFormat(row: any) {
@@ -689,6 +689,7 @@ export default class Monitor extends Vue {
     );
   }
 
+  // 关闭信息提示框
   closeMsg = () => {
     this.SMap.closeInfoWindow();
   }
@@ -829,7 +830,7 @@ export default class Monitor extends Vue {
     if (data && data.lng && data.lat) {
       this.SMap.centerAndZoom(new this.BMap.Point(data.lng, data.lat), 15);
     }
-    this.radiusGetData(val.id);
+    // this.radiusGetData(val.id);
   }
 
   // 清除覆盖物
@@ -892,11 +893,12 @@ export default class Monitor extends Vue {
     }
   }
 
-  // 表格显示隐藏
+  // 表格显示
   showTable(): void {
     this.locChange = false;
   }
 
+  // 表格隐藏
   hideTable(): void {
     this.locChange = true;
   }

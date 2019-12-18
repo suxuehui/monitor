@@ -78,12 +78,12 @@ export default class HandleModel extends Vue {
               this.$message.success(res.result.resultMessage);
               this.resetData();
               this.$emit('refresh');
-            }, 1500);
+            }, 500);
           } else {
             setTimeout(() => {
               this.loading = false;
               this.$message.error(res.result.resultMessage);
-            }, 1500);
+            }, 500);
           }
         });
       } else {

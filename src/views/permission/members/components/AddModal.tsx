@@ -221,12 +221,12 @@ export default class AddModal extends Vue {
                 this.roleAddList = [];
                 this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.error(res.result.resultMessage);
-              }, 1500);
+              }, 500);
             }
           });
         } else {
@@ -254,12 +254,12 @@ export default class AddModal extends Vue {
                 From.resetFields();
                 this.$message.success(res.result.resultMessage);
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.error(res.result.resultMessage);
-              }, 1500);
+              }, 500);
             }
           });
         }

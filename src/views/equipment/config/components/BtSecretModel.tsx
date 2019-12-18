@@ -5,7 +5,7 @@ import {
   Tag, Dialog, Form, FormItem, Input, Button,
 } from 'element-ui';
 import {
-  setBtName, getBtName,
+  setBtName, getBtName, setDtuBtName,
 } from '@/api/equipment';
 
 @Component({
@@ -57,20 +57,37 @@ export default class BtSecretModel extends Vue {
     const obj: any = {
       imei: this.data.imei,
     };
-    setBtName(obj).then((res: any) => {
-      if (res.result.resultCode === '0') {
-        setTimeout(() => {
-          this.loading = false;
-          this.btSecret = res.entity;
-          this.$message.success(res.result.resultMessage);
-        }, 1500);
-      } else {
-        setTimeout(() => {
-          this.loading = false;
-          this.$message.error(res.result.resultMessage);
-        }, 1500);
-      }
-    });
+    if (this.data.clientType === 3) {
+      setBtName(obj).then((res: any) => {
+        if (res.result.resultCode === '0') {
+          setTimeout(() => {
+            this.loading = false;
+            this.btSecret = res.entity;
+            this.$message.success(res.result.resultMessage);
+          }, 500);
+        } else {
+          setTimeout(() => {
+            this.loading = false;
+            this.$message.error(res.result.resultMessage);
+          }, 500);
+        }
+      });
+    } else {
+      setDtuBtName(obj).then((res: any) => {
+        if (res.result.resultCode === '0') {
+          setTimeout(() => {
+            this.loading = false;
+            this.btSecret = res.entity;
+            this.$message.success(res.result.resultMessage);
+          }, 500);
+        } else {
+          setTimeout(() => {
+            this.loading = false;
+            this.$message.error(res.result.resultMessage);
+          }, 500);
+        }
+      });
+    }
   }
 
   render() {

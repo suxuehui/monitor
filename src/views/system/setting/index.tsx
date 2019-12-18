@@ -160,12 +160,12 @@ export default class Setting extends Vue {
           this.loading = false;
           this.initData();
           this.$message.success(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       } else {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       }
     });
   }

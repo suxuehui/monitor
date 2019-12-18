@@ -59,8 +59,8 @@ module.exports = {
     disableHostCheck: true,
     proxy: {
       '/api': {
-        // target: 'http://192.168.3.83:5555/monitor/', // 开发环境地址/
-         target: 'http://192.168.6.194:5555/monitor/', // 开发环境地址/
+        target: 'http://192.168.3.83:5555/monitor/', // 霞霞地址/
+        // target: 'http://192.168.6.160:5555/monitor/', // 开发环境地址/
         // target: 'http://test-monitor-blacktea.mysirui.com/api/monitor/', // 测试环境地址
         //target: 'http://pre-monitor-blacktea.mysirui.com/api/monitor/', // 预发布环境地址
         // target: 'https://monitor-blacktea.mysirui.com/api/monitor/', // 正式环境地址
@@ -70,8 +70,8 @@ module.exports = {
         },
       },
       '/rootApi': {
-        // target: 'http://192.168.3.83:5555/', // 开发环境地址
-        // target: 'http://192.168.6.194:5555/', // 开发环境地址
+        target: 'http://192.168.3.83:5555/', // 霞霞地址
+        // target: 'http://192.168.6.160:5555/', // 开发环境地址
         // target: 'http://test-monitor-blacktea.mysirui.com/api/', // 测试环境地址
         target: 'http://pre-monitor-blacktea.mysirui.com/api/', // 预发布环境地址
         // target: 'https://monitor-blacktea.mysirui.com/api/', // 正式环境地址

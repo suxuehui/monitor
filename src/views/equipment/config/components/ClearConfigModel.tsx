@@ -45,7 +45,7 @@ export default class ClearConfigModel extends Vue {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       }
     });
   }

@@ -44,12 +44,12 @@ export default class ChangelocModel extends Vue {
           this.loading = false;
           this.$message.success(result.resultMessage);
           this.$emit('refresh');
-        }, 1500);
+        }, 500);
       } else {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(result.resultMessage);
-        }, 1500);
+        }, 500);
       }
     });
   }

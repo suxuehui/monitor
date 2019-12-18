@@ -319,7 +319,10 @@ export default class Alarm extends Vue {
     });
     // 当前月份
     const date = new Date();
-    const starTime = new Date(date.getTime() - (7 * 24 * 60 * 60 * 1000));
+    // const starTime = new Date(date.getTime() - (24 * 60 * 60 * 1000));
+    const starTime = new Date(
+      new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0,
+    ); // 当天开始
     this.filterParams.query[0] = new Date(starTime);
     this.filterParams.query[1] = date;
     this.outParams.queryStartTime = new Date(starTime).Format('yyyy-MM-dd hh:mm:ss');

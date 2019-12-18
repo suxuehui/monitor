@@ -50,12 +50,12 @@ export default class BtAuthModel extends Vue {
           this.newCfgVal = res.entity;
           this.loading = false;
           this.$message.success(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       } else {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(res.result.resultMessage);
-        }, 1500);
+        }, 500);
       }
     });
   }

@@ -2,7 +2,7 @@ import axios from 'axios';
 import request from '@/utils/request';
 import qs from 'qs';
 
-// 商户树状数据
+// 商户树状数据--所有数据
 export async function orgTree(params: any) {
   return request({
     url: '/customer/org/queryAllOrgOfFormat',
@@ -11,6 +11,7 @@ export async function orgTree(params: any) {
   });
 }
 
+// 登录
 export async function login(params: any, token: string) {
   return request({
     url: '/sys/login',
@@ -22,6 +23,7 @@ export async function login(params: any, token: string) {
   });
 }
 
+// 获取临时token
 export async function getAuthCodeToken(params: any) {
   return request({
     url: '/guest-acl',
@@ -30,6 +32,7 @@ export async function getAuthCodeToken(params: any) {
   });
 }
 
+// 获取图片验证码
 export async function getAuthCode(params: any, token?: string) {
   const data = qs.stringify(params);
   return axios({
@@ -45,19 +48,21 @@ export async function getAuthCode(params: any, token?: string) {
   });
 }
 
-// 所有商户名称--来自4S门户
-export async function getAllShopName(params: any, token?: string) {
-  return axios({
-    url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}/old/department/selectOptionsAll`,
-    method: 'post',
-    data: params,
-    headers: {
-      token,
-      'Content-Type': 'application/json',
-    },
-  });
-}
+// 所有商户名称--来自4S门户 未使用
+// export async function getAllShopName(params: any, token?: string) {
+//   return axios({
+//     url: `${process.env.NODE_ENV === 'production' ? '/api' : '/rootApi'}
+// /old/department/selectOptionsAll`,
+//     method: 'post',
+//     data: params,
+//     headers: {
+//       token,
+//       'Content-Type': 'application/json',
+//     },
+//   });
+// }
 
+// 按照输入名称模糊搜索4S存在的部门
 export async function getAllShopNameMoni(params: any) {
   return request({
     url: '/customer/org/create/selectOptions',
@@ -66,14 +71,16 @@ export async function getAllShopNameMoni(params: any) {
   });
 }
 
-export async function getCodeImg(params: any) {
-  return request({
-    url: `/sys/user/getImg?r=${Math.random()}`,
-    method: 'get',
-    data: params,
-  });
-}
+// 未使用
+// export async function getCodeImg(params: any) {
+//   return request({
+//     url: `/sys/user/getImg?r=${Math.random()}`,
+//     method: 'get',
+//     data: params,
+//   });
+// }
 
+// 获取用户信息
 export async function getUserInfo(params: any) {
   return request({
     url: '/sys/user/info',
@@ -82,13 +89,14 @@ export async function getUserInfo(params: any) {
   });
 }
 
-export async function getMenu(params: any) {
-  return request({
-    url: '/sys/user/getMenu',
-    method: 'get',
-    data: params,
-  });
-}
+// 未使用
+// export async function getMenu(params: any) {
+//   return request({
+//     url: '/sys/user/getMenu',
+//     method: 'get',
+//     data: params,
+//   });
+// }
 
 // 字典表
 export async function getDict(params: any) {
@@ -108,6 +116,7 @@ export async function terminalDict(params: any) {
   });
 }
 
+// 上传文件
 export async function uploadFile(params: any) {
   return axios({
     url: '/verify/file/upload',
@@ -123,6 +132,7 @@ export async function uploadFile(params: any) {
   });
 }
 
+// 百度地图地址逆解析
 export async function gpsToAddress(params: {
 lat: number,
 lng: number,
@@ -138,6 +148,7 @@ coordinateSystem?: string
   });
 }
 
+// 百度地图查询地址
 export async function queryAddress(params: string) {
   return request({
     url: `https://api.map.baidu.com/place/v2/suggestion?query=${params}&region=全国&city_limit=false&output=json&ak=cskMWmoCWHhddU60VgY4NQ9OmllrphFz`,
@@ -146,6 +157,7 @@ export async function queryAddress(params: string) {
   });
 }
 
+// 百度地图查询gps
 export async function addressToGps(params: string) {
   return request({
     url: `https://api.map.baidu.com/geocoder/v2/?address=${params}&output=json&ak=cskMWmoCWHhddU60VgY4NQ9OmllrphFz&callback=showLocation`,

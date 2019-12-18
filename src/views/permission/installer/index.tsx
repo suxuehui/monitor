@@ -50,6 +50,7 @@ export default class Installer extends Vue {
   // 请求地址
   url: string = '/worker/list';
 
+  // 安装专员状态
   activeTypes: ActiveType[] = [
     { key: null, value: null, label: '全部' },
     { key: 1, value: 1, label: '正常' },
@@ -107,6 +108,10 @@ export default class Installer extends Vue {
     { label: '状态', prop: 'activeStatus', formatter: this.statusDom },
   ];
 
+  /**
+   * @method statusDom 状态
+   * @param row 表格数据
+   * */
   statusDom(row: any) {
     const type = row.activeStatus === 1 ? 'success' : 'danger';
     return <el-tag size="medium" type={type}>{row.activeStatus === 1 ? '正常' : '冻结'}</el-tag>;
@@ -133,14 +138,15 @@ export default class Installer extends Vue {
   // 新增、编辑
   modelVisible: boolean = false;
 
+  // 弹框标题
   modelTitle: string = '';
 
   itemData: any = {}; // 单条数据
 
-  // 导出按钮展示
+  // 导出
   showExportBtn: boolean = true;
 
-  // 新增按钮展示
+  // 新增
   showAddBtn: boolean = true;
 
   // 操作

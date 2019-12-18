@@ -30,6 +30,7 @@ export default class BindModal extends Vue {
 
   loading: boolean = false;
 
+  // 验证条件
   rules = {
     imei: [
       { required: true, message: '请输入imei号', trigger: 'blur' },
@@ -67,16 +68,17 @@ export default class BindModal extends Vue {
               this.loading = false;
               From.resetFields();
               this.$message.success(res.result.resultMessage);
-              this.$emit('refresh');
-            }, 1500);
+              this.$emit('refresh'); // 传出refresh，刷新列表
+            }, 500);
           } else {
             setTimeout(() => {
               this.loading = false;
               this.$message.error(res.result.resultMessage);
-            }, 1500);
+            }, 500);
           }
         });
       } else {
+        // 验证失败，取消loading
         this.loading = false;
         return false;
       }

@@ -164,6 +164,7 @@ export default function request(options: Option): Promise<any> {
     if (response.data.result) {
       const { data, statusText } = response;
       const { result: { resultCode, resultMessage } } = data;
+      console.log(response);
       if (response && response instanceof Object) {
         statusCode = response.status;
         msg = data.result.resultMessage || statusText;
@@ -173,15 +174,13 @@ export default function request(options: Option): Promise<any> {
       }
       // 存在token
       if (window.localStorage.getItem('token')) {
-        if (statusCode === 401) {
-          Message.error('无权限操作，请联系管理员');
+        if (resultCode === 4 || resultCode === '4') {
+          Message.error('访问权限变更，请重新登录');
+          // router.replace('/login');
           setTimeout(() => {
             localStorage.removeItem('token');
             window.location.reload();
           }, 1000);
-        } else if (resultCode === 4) {
-          Message.error(resultMessage);
-          router.replace('/login');
         } else if (resultCode === 401) {
           Message.error('无权限操作，请联系管理员');
           setTimeout(() => {
@@ -189,6 +188,22 @@ export default function request(options: Option): Promise<any> {
             window.location.reload();
           }, 1000);
         }
+        // if (statusCode === 401) {
+        //   Message.error('无权限操作，请联系管理员');
+        //   setTimeout(() => {
+        //     localStorage.removeItem('token');
+        //     window.location.reload();
+        //   }, 1000);
+        // } else if (resultCode === 4) {
+        //   Message.error(resultMessage);
+        //   router.replace('/login');
+        // } else if (resultCode === 401) {
+        //   Message.error('无权限操作，请联系管理员');
+        //   setTimeout(() => {
+        //     localStorage.removeItem('token');
+        //     window.location.reload();
+        //   }, 1000);
+        // }
       } else {
         // 首次登录时不存在token
         router.replace('/login');

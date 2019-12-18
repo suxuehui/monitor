@@ -73,7 +73,7 @@ export default class CheckConfigModel extends Vue {
             parent.searchconfigData.entity = res.entity;
             parent.searchconfigData.origin = '检测';
           }
-        }, 1500);
+        }, 500);
       } else {
         this.loading = false;
         this.$message.error(res.result.resultMessage);

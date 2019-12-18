@@ -30,7 +30,7 @@ export default class SetModal extends Vue {
 
   modelForm: any = {};
 
-  menuList: any = [];
+  menuList: any = []; // 菜单列表
 
   checkedList: number[] = []; // 权限选中项
 
@@ -40,6 +40,7 @@ export default class SetModal extends Vue {
 
   @Watch('time')
   onDataChange(data: any) {
+    // 回填数据
     this.checkBoxMainArr = [];
     const arr: any = [];
     menuSelect({ roleId: this.data.roleId }).then((res) => {
@@ -107,6 +108,7 @@ export default class SetModal extends Vue {
             }
           });
           if (trees) {
+            // 回填选中权限项
             trees.setCheckedKeys(this.checkedList);
           }
         }
@@ -116,6 +118,10 @@ export default class SetModal extends Vue {
     });
   }
 
+  /**
+   * @param priKey 列表权限id
+   * @param keys 列表中操作项权限id集合
+   * */
   ListIdGroup: any = [
     // 车辆监控列表
     {
@@ -141,6 +147,21 @@ export default class SetModal extends Vue {
     {
       priKey: 39,
       keys: [39, 40, 41],
+    },
+    // 品牌
+    {
+      priKey: 47,
+      keys: [42, 43, 44, 45, 46, 47],
+    },
+    // 车系
+    {
+      priKey: 53,
+      keys: [48, 49, 50, 51, 52, 53],
+    },
+    // 车型
+    {
+      priKey: 59,
+      keys: [54, 55, 56, 57, 58, 59],
     },
     // 设备管理
     {
@@ -194,6 +215,9 @@ export default class SetModal extends Vue {
     },
   ]
 
+  /**
+   *  选择权限校验
+   * */
   boxCheck(data: any, node: any) {
     const trees: any = this.$refs.tree;
     console.log()
@@ -212,11 +236,15 @@ export default class SetModal extends Vue {
     });
   }
 
+  /**
+  * 判断点击选项是删除还是添加
+  * */
   contactList(checkedArr: any, clickId: number, targetId: number) {
     const trees: any = this.$refs.tree;
     if (checkedArr.indexOf(clickId) <= -1) {
       // 删除
       this.ListIdGroup.forEach((item: any) => {
+        // 判断点击是否是列表接口
         if (item.priKey === clickId) {
           if (this.getArrEqual(item.keys, checkedArr).length > 0) {
             const arr = lodash.cloneDeep(checkedArr);
@@ -246,8 +274,8 @@ export default class SetModal extends Vue {
   // 找出两个数组相同元素并返回
   getArrEqual(arr1: any, arr2: any) {
     const newArr = [];
-    for (let i = 0; i < arr2.length; i+=1) {
-      for (let j = 0; j < arr1.length; j+=1) {
+    for (let i = 0; i < arr2.length; i += 1) {
+      for (let j = 0; j < arr1.length; j += 1) {
         if (arr1[j] === arr2[i]) {
           newArr.push(arr1[j]);
         }
@@ -277,6 +305,7 @@ export default class SetModal extends Vue {
     );
   }
 
+  // 获取选中状态及半选中状态的节点id组成数组
   getCheckedNodes() {
     const trees: any = this.$refs.tree;
     const arr = trees.getCheckedKeys().concat(trees.getHalfCheckedKeys());
@@ -311,12 +340,12 @@ export default class SetModal extends Vue {
           this.loading = false;
           this.$message.success(res.result.resultMessage);
           this.$emit('refresh');
-        }, 1500);
+        }, 500);
       } else {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(res.result.resultMessage || '未知错误');
-        }, 1500);
+        }, 500);
       }
     });
   }

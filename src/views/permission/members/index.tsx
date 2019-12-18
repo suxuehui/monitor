@@ -101,9 +101,11 @@ export default class Members extends Vue {
     });
   }
 
-  roleTypeList: RoleType[] = []
+  // 搜索条件使用
+  roleTypeList: RoleType[] = [];
 
-  roleTypeAddList: RoleType[] = []
+  // 添加弹窗使用
+  roleTypeAddList: RoleType[] = [];
 
   operat: Opreat[] = [
     {

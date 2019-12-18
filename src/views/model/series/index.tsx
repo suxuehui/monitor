@@ -22,6 +22,7 @@ export default class Series extends Vue {
       key: 'brandId',
       type: 'select',
       label: '品牌',
+      filterable: true,
       placeholder: '所有品牌',
       options: [],
     },
@@ -61,7 +62,7 @@ export default class Series extends Vue {
       color: (row: any) => (row.available === 1 ? 'red' : 'red'),
       text: (row: any) => (row.available === 1 ? '删除' : '删除'),
       msg: (row: any) => (row.available === 1 ? '是否要删除？' : '是否要删除？'),
-      disabled: (row: any) => (row.modelNum > 0 || row.vehicleNum > 0),
+      disabled: (row: any) => (row.modelNum > 0 || row.vehicleNum > 0 || row.attachCfgNum > 0),
       roles: true,
     },
   ];
@@ -95,7 +96,9 @@ export default class Series extends Vue {
       this.addBtn = !!(res[0]);
       this.exportBtn = !!(res[3]);
     });
+  }
 
+  mounted() {
     brandAll(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.map((item: any) => this.brandList.push({
@@ -106,7 +109,6 @@ export default class Series extends Vue {
       } else {
         this.$message.error(res.result.resultMessage);
       }
-      this.brandAddList = this.brandList.filter((item: any) => item);
       // 所有品牌
       this.brandList.unshift({
         key: Math.random(),
@@ -114,6 +116,23 @@ export default class Series extends Vue {
         label: '所有品牌',
       });
       this.filterList[0].options = this.brandList;
+    });
+  }
+
+  initBrand: number = 1; // 初始化品牌信息
+
+  // 获取品牌信息
+  getAllBrand() {
+    brandAll(null).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.map((item: any) => this.brandAddList.push({
+          key: item.id,
+          value: item.id,
+          label: item.name,
+        }));
+      } else {
+        this.$message.error(res.result.resultMessage);
+      }
     });
   }
 
@@ -158,6 +177,7 @@ export default class Series extends Vue {
   addModel() {
     this.addVisible = true;
     this.addTitle = '新增车系';
+    this.getAllBrand();
   }
 
   // 关闭弹窗

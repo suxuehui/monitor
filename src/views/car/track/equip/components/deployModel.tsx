@@ -174,12 +174,12 @@ export default class DeployModel extends Vue {
               this.modelForm.startTime = '';
               this.$emit('refresh');
               From.resetFields();
-            }, 1500);
+            }, 500);
           } else {
             setTimeout(() => {
               this.loading = false;
               this.$message.error(res.result.resultMessage);
-            }, 1500);
+            }, 500);
           }
         });
       } else {

@@ -166,12 +166,12 @@ export default class ReverseModel extends Vue {
               this.$message.success(res.result.resultMessage);
               From.resetFields();
               this.$emit('refresh');
-            }, 1500);
+            }, 500);
           } else {
             setTimeout(() => {
               this.loading = false;
               this.$message.error(res.result.resultMessage);
-            }, 1500);
+            }, 500);
           }
         });
       } else {

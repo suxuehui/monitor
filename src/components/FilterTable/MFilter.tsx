@@ -182,8 +182,10 @@ export default class MFilter extends Vue {
    */
   @Emit()
   levelcodeChange(val: any, key: string): void {
-    const value = JSON.parse(JSON.stringify(val));
-    this.params[key] = value.pop();
+    if (val) {
+      const value = JSON.parse(JSON.stringify(val));
+      this.params[key] = value.pop();
+    }
   }
 
   @Emit()
@@ -259,6 +261,7 @@ export default class MFilter extends Vue {
           style="width: 100%;"
           id={item.key}
           v-model={this.params[item.key]}
+          filterable={item.filterable}
           placeholder={item.placeholder}>
           {
             item.options && item.options.map((items: any, indexs: number) => <el-option

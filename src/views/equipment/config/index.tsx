@@ -88,11 +88,14 @@ export default class ConfigModel extends Vue {
       options: [],
     },
     {
-      key: 'terminalModel',
-      type: 'select',
+      key: 'termimal',
+      type: 'cascader',
       label: '设备型号',
-      placeholder: '请选择设备型号',
+      filterable: true,
+      props: {},
+      placeholder: '设备型号（全部）',
       options: [],
+      change: this.terminalChange,
     },
     {
       key: 'keyword',
@@ -101,6 +104,23 @@ export default class ConfigModel extends Vue {
       placeholder: 'imei号、主机编码、车牌号、配置名称、产品编码',
     },
   ];
+
+  terminalChange(val: any) {
+    this.outParams = {
+      clientType: '',
+      terminalModel: '',
+    };
+    if (val.length === 0) {
+      this.outParams.clientType = '';
+      this.outParams.terminalModel = '';
+    } else if (val.length === 1) {
+      this.outParams.clientType = val[0];
+      this.outParams.terminalModel = '';
+    } else if (val.length === 2) {
+      this.outParams.clientType = val[0];
+      this.outParams.terminalModel = val[1];
+    }
+  }
 
   levelChange(val: any) {
     this.outParams = {
@@ -121,7 +141,7 @@ export default class ConfigModel extends Vue {
 
   // 筛选参数
   filterParams: any = {
-    terminalModel: '',
+    // terminalModel: '',
     online: null,
     levelCODE: [''],
   };
@@ -129,6 +149,8 @@ export default class ConfigModel extends Vue {
   outParams: any = {
     levelCode: '', // 新监控levelcode
     srLevelCode: '', // 4s门户levelcode
+    terminalModel: '', // terminalModel
+    clientType: '', // 设备类型
   };
 
   // 请求地址
@@ -189,52 +211,78 @@ export default class ConfigModel extends Vue {
       color: 'blue',
       text: '设备学习',
       roles: true,
+      disabled: this.deviceLearnSet,
     },
   ];
 
-  // protocolVersion 01或07--只有蓝牙秘钥 其他有蓝牙名称、蓝牙鉴权
-  protocolVersionSet(row: any) {
-    if (row.protocolVersion) {
-      if (row.protocolVersion === '01' || row.protocolVersion === '07') {
-        return true;
-      }
+  deviceLearnSet(row: any) {
+    if (row.clientType === 3) {
       return false;
     }
     return true;
   }
 
-  protocolSet(row: any) {
-    if (row.protocolVersion) {
-      if (row.protocolVersion === '01' || row.protocolVersion === '07') {
+  // 判断蓝牙名称、蓝牙鉴权
+  // protocolVersion 01或07--只有蓝牙秘钥 其他有蓝牙名称、蓝牙鉴权、蓝牙秘钥
+  // 只有OTU(3)的设备才有这些功能 DTU(20)没有这个功能
+  protocolVersionSet(row: any) {
+    if (row.clientType === 3) {
+      // OTU
+      if (row.protocolVersion) {
+        if (row.protocolVersion === '01' || row.protocolVersion === '07') {
+          return true;
+        }
         return false;
       }
+    } else if (row.clientType === 20) {
+      // DTU
       return true;
     }
-    return true;
+  }
+
+  // 判断蓝牙秘钥
+  protocolSet(row: any) {
+    if (row.clientType === 3) {
+      // OTU
+      if (row.protocolVersion) {
+        if (row.protocolVersion === '01' || row.protocolVersion === '07') {
+          return false;
+        }
+        return true;
+      }
+    } if (row.clientType === 20) {
+      // DTU
+      return false;
+    }
   }
 
   // 只有在设备在线与软件版本以ovt开头的情况下，才可点击下发配置、清除配置、查询配置
   // row.online === 1 && row.productName && row.productName.substr(0, 3) === item
+  // 只有OTU(3)的设备才有这些功能 DTU(20)没有这个功能
   statusSet(row: any) {
     let flag = false;
-    // 判断有无配置
-    if (this.ableConfig.length > 0) {
-      // 判断是否在线
-      if (row.online === 1) {
-        this.ableConfig.forEach((item: any) => {
-          if (row.productName && row.productName.substr(0, 3) === item) {
-            // 满足条件
-            flag = false;
-          } else {
-            flag = true;
-          }
-        });
+    if (row.clientType === 3) {
+      // 判断有无配置
+      if (this.ableConfig.length > 0) {
+        // 判断是否在线
+        if (row.online === 1) {
+          this.ableConfig.forEach((item: any) => {
+            if (row.productName && row.productName.substr(0, 3) === item) {
+              // 满足条件
+              flag = false;
+            } else {
+              flag = true;
+            }
+          });
+        } else {
+          // 离线
+          flag = true;
+        }
       } else {
-        // 离线
+        // 没有配置项
         flag = true;
       }
-    } else {
-      // 没有配置项
+    } else if (row.clientType === 20) {
       flag = true;
     }
     return flag;
@@ -337,19 +385,30 @@ export default class ConfigModel extends Vue {
     deviceModel('WIRED').then((res) => {
       const otuList: any = [];
       res.entity.forEach((item: any, index: number) => {
-        if (item.dictionary.name === 'OTU') {
-          item.terminalModelList.forEach((it: any, ind: number) => {
-            otuList.push({
-              value: it.id,
-              label: it.name,
-            });
+        if (item.dictionary.name === 'OTU' || item.dictionary.name === 'DTU') {
+          otuList.push({
+            label: item.dictionary.name,
+            value: Number(item.dictionary.enumValue),
+            children: item.terminalModelList,
           });
         }
+      });
+      otuList.forEach((it: any) => {
+        it.children.forEach((its: any) => {
+          its.label = its.name;
+          its.value = its.id;
+        });
       });
       otuList.unshift({
         value: '',
         label: '设备型号(全部)',
       });
+      console.log(otuList);
+      this.filterGrade[2].props = {
+        value: 'value',
+        children: 'children',
+        checkStrictly: true,
+      };
       this.filterGrade[2].options = otuList;
     });
     // 网络状态

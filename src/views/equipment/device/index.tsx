@@ -96,7 +96,12 @@ export default class Device extends Vue {
       type: 'cascader',
       label: '商户门店',
       filterable: true,
-      props: {},
+      props: {
+        checkStrictly: true,
+        value: 'levelCode',
+        children: 'children',
+        label: 'orgName',
+      },
       placeholder: '商户门店（全部）',
       options: [],
       change: this.levelChange,
@@ -151,20 +156,22 @@ export default class Device extends Vue {
   }
 
   levelChange(val: any) {
+    // console.log(val);
     this.outParams = {
       levelCode: '',
       srLevelCode: '',
     };
-    if (val.length === 0) {
-      this.outParams.levelCode = '';
-      this.outParams.srLevelCode = '';
-    } else if (val.length === 1) {
-      this.outParams.levelCode = val[val.length - 1];
-      this.outParams.srLevelCode = '';
-    } else if (val.length === 2) {
-      this.outParams.levelCode = val[val.length - 2];
-      this.outParams.srLevelCode = val[val.length - 1];
-    }
+    this.outParams.levelCode = val[val.length - 1];
+    // if (val.length === 0) {
+    //   this.outParams.levelCode = '';
+    //   this.outParams.srLevelCode = '';
+    // } else if (val.length === 1) {
+    //   this.outParams.levelCode = val[val.length - 1];
+    //   this.outParams.srLevelCode = '';
+    // } else if (val.length === 2) {
+    //   this.outParams.levelCode = val[val.length - 2];
+    //   this.outParams.srLevelCode = val[val.length - 1];
+    // }
   }
 
   // 筛选参数
@@ -379,7 +386,16 @@ export default class Device extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    // 获取商户-4s
+    // this.getOrgTree();
+  }
+
+  activated() {
+    // 进入设备列表页面，重新获取商户列表
+    this.getOrgTree();
+  }
+
+  // 获取商户-4s
+  getOrgTree() {
     orgTree(null).then((res) => {
       if (res.result.resultCode === '0') {
         res.entity.unshift({
@@ -393,41 +409,6 @@ export default class Device extends Vue {
         this.$message.error(res.result.resultMessage);
       }
     });
-    // getInfoByLevelCode(null).then((res: any) => {
-    //   const { entity, result } = res;
-    //   if (result.resultCode === '0') {
-    //     entity.forEach((item: any) => {
-    //       item.label = item.orgName;
-    //       item.value = item.levelCode;
-    //       if (item.siruiOrgs.length > 0) {
-    //         item.siruiOrgs.forEach((it: any) => {
-    //           it.label = it.name;
-    //           it.value = it.levelCode;
-    //         });
-    //       } else {
-    //         delete item.siruiOrgs;
-    //       }
-    //     });
-    //     entity.unshift({
-    //       label: '商户门店（全部）',
-    //       value: '',
-    //     });
-    //     this.filterList[0].options = entity;
-    //     this.filterList[0].props = {
-    //       value: 'value',
-    //       children: 'siruiOrgs',
-    //       checkStrictly: true,
-    //     };
-    //     this.filterGrade[0].options = entity;
-    //     this.filterGrade[0].props = {
-    //       value: 'value',
-    //       children: 'siruiOrgs',
-    //       checkStrictly: true,
-    //     };
-    //   } else {
-    //     this.$message.error(res.result.resultMessage);
-    //   }
-    // });
   }
 
   // 表格参数
@@ -513,12 +494,12 @@ export default class Device extends Vue {
             formTable.reloadTable();
             this.$message.success(res.result.resultMessage);
           }, 200);
-        }, 1500);
+        }, 500);
       } else {
         setTimeout(() => {
           this.loading = false;
           this.$message.error(res.result.resultMessage ? res.result.resultMessage : '未知错误');
-        }, 1500);
+        }, 500);
       }
     });
   }
@@ -556,9 +537,9 @@ export default class Device extends Vue {
       case 4:
         type = <el-tag size="medium" type="warning" >未合格</el-tag>;
         break;
-      case 5:
-        type = <el-tag size="medium" type="danger" >已返厂</el-tag>;
-        break;
+      // case 5:
+      //   type = <el-tag size="medium" type="danger" >已返厂</el-tag>;
+      //   break;
       default:
         type = <el-tag size="medium" type="info" >未知</el-tag>;
     }
@@ -582,9 +563,9 @@ export default class Device extends Vue {
     {
       key: 4, value: 4, label: '未合格', color: 'warning',
     },
-    {
-      key: 5, value: 5, label: '已返厂', color: 'danger',
-    },
+    // {
+    //   key: 5, value: 5, label: '已返厂', color: 'danger',
+    // },
   ]
 
   // 网络状态 1-在线，0-离线，
@@ -692,12 +673,12 @@ export default class Device extends Vue {
         break;
       // 阈值
       case 'setThreshold':
-        if (row.clientType === 23) {
+        if (row.clientType === 23) { // clientType：设备
           this.bclickTime = utils.getNowTime();
           this.bThresholdVisible = true;
           this.bThresholdData = row;
         } else if (row.clientType !== 23) {
-          if (row.drivingCfgPower) {
+          if (row.drivingCfgPower) { // 是否支持驾驶行为能力配置
             this.aclickTime = utils.getNowTime();
             // 上报2a1
             this.aThresholdVisible = true;

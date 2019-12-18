@@ -8,7 +8,7 @@ import {
 import {
   attachcfgInsert, attachcfgEdit,
 } from '@/api/config';
-import { allBrandList } from '@/api/model';
+import { allBrandList, modelAll } from '@/api/model';
 import './Addmodel.less';
 @Component({
   components: {
@@ -71,8 +71,12 @@ export default class AddModal extends Vue {
   onDataChange() {
     if (this.data.id > 0) {
       const obj = JSON.parse(JSON.stringify(this.data));
+      const objs = {
+        brandId: obj.brandId,
+        seriesId: obj.seriesId,
+      };
+      this.getModelAll(objs);
       // 配置参数
-      console.log(obj);
       const cfgParamStr = obj.cfgParam.replace(/\["|"]/g, '');
       const cfgParamArr = JSON.parse(cfgParamStr);
       this.cfgParam = {
@@ -109,12 +113,12 @@ export default class AddModal extends Vue {
                 value: items.id,
                 label: items.name,
               });
-              items.children && items.children.forEach((it: any) => {
-                this.modelArr.push({
-                  label: it.name,
-                  value: it.id,
-                });
-              });
+              // items.children && items.children.forEach((it: any) => {
+              //   this.modelArr.push({
+              //     label: it.name,
+              //     value: it.id,
+              //   });
+              // });
             });
           }
         }
@@ -153,24 +157,27 @@ export default class AddModal extends Vue {
 
   closeModal() {
     this.$emit('close');
-    this.modelForm = {
-      brandId: '', // 品牌
-      seriesId: '', // 车系
-      modelId: [], // 车型
-    };
-    this.modalAble = true;
-    this.seriesAble = true;
-    this.seriesArr = [];
-    this.modelArr = [];
-    this.cfgParamAdd = [];
-    this.cfgParam = {
-      tag: '',
-      param: '',
-      desc: '',
-    };
+    setTimeout(() => {
+      this.reBootStatus = '1';
+      this.modelForm = {
+        brandId: '', // 品牌
+        seriesId: '', // 车系
+        modelId: [], // 车型
+      };
+      this.modalAble = true;
+      this.seriesAble = true;
+      this.seriesArr = [];
+      this.modelArr = [];
+      this.cfgParamAdd = [];
+      this.cfgParam = {
+        tag: '',
+        param: '',
+        desc: '',
+      };
+    }, 200);
   }
 
-  reBootStatus: string = '2';
+  reBootStatus: string = '1';
 
   rebootChange(data: any) {
     this.reBootStatus = data;
@@ -187,6 +194,7 @@ export default class AddModal extends Vue {
     this.modelForm.modelId = [];
     this.modalAble = true;
     this.seriesArr = [];
+    this.modelForm.brandId = val;
     this.brandArr.forEach((item: any) => {
       if (item.value === val) {
         if (item.children && item.children.length > 0) {
@@ -207,18 +215,30 @@ export default class AddModal extends Vue {
     this.modalAble = false;
     this.modelForm.modelId = [];
     this.modelArr = [];
-    this.seriesArr.forEach((item: any) => {
-      if (item.value === val) {
-        if (item.children && item.children.length > 0) {
-          item.children.forEach((it: any) => {
-            this.modelArr.push({
-              label: it.name,
-              value: it.id,
-            });
+    const obj = {
+      brandId: this.modelForm.brandId,
+      seriesId: val,
+    };
+    this.getModelAll(obj);
+  }
+
+  // 根据品牌车系获取车型
+  getModelAll(data: any) {
+    modelAll(data).then((res) => {
+      if (res.result.resultCode === '0') {
+        res.entity.forEach((it: any) => {
+          this.modelArr.push({
+            label: it.name,
+            value: it.id,
           });
-        }
+        });
       }
     });
+  }
+
+  // 检测是否存在中文
+  isHaveChinese(data: any) {
+    const flag = false;
   }
 
   onSubmit() {
@@ -243,12 +263,10 @@ export default class AddModal extends Vue {
         } else {
           this.loading = false;
           flag = false;
+          this.$message.error('填入标签或参数存在空白项,请核对!');
           return false;
         }
       });
-      if (!flag) {
-        this.$message.error('填入标签或参数存在空白项,请核对!');
-      }
     }
     if (this.modelForm.brandId === '') {
       flag = false;
@@ -262,10 +280,24 @@ export default class AddModal extends Vue {
       this.$message.error('同一条内容标签、参数必须输入完整!');
       return false;
     }
+    let num = 0; // 控制报错只显示一个
+    obj.cfgs.forEach((item: any) => {
+      if (/[\u4E00-\u9FA5]/g.test(item.tag) || /[\u4E00-\u9FA5]/g.test(item.param)) {
+        if (num === 0) {
+          num += 1;
+          flag = false;
+          this.$message.error('标签参数不能填写中文,请修改!');
+          return false;
+        }
+        this.loading = false;
+        return false;
+      }
+    });
     if (!flag) {
-      this.loading=false;
+      this.loading = false;
       return false;
     }
+    console.log(obj.cfgs);
     const From: any = this.$refs.modelForm;
     From.validate((valid: any) => {
       if (valid) {
@@ -278,12 +310,12 @@ export default class AddModal extends Vue {
                 From.resetFields();
                 this.closeModal();
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.error(res.result.resultMessage);
-              }, 1500);
+              }, 500);
             }
           });
         } else {
@@ -296,12 +328,12 @@ export default class AddModal extends Vue {
                 From.resetFields();
                 this.closeModal();
                 this.$emit('refresh');
-              }, 1500);
+              }, 500);
             } else {
               setTimeout(() => {
                 this.loading = false;
                 this.$message.error(res.result.resultMessage);
-              }, 1500);
+              }, 500);
             }
           });
         }
@@ -446,7 +478,7 @@ export default class AddModal extends Vue {
               </table>
             </el-col>
             <el-col span={24}>
-              <el-form-item label="是否重启" prop="reboot" class="isStart">
+              <el-form-item label="是否启用" prop="reboot" class="isStart">
                 <div class="radioGroup">
                   <el-radio-group v-model={this.reBootStatus} on-change={this.rebootChange}>
                     <el-radio id="availableY" label="1">是</el-radio>
